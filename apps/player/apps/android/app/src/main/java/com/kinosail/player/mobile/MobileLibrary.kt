@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,7 +28,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.core.*
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
@@ -37,6 +42,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val preferences = remember(context) { PersonalTabs(context) }
     var tabs by remember(viewer.serverId, viewer.id) { mutableStateOf(preferences.load(viewer)) }
     var destination by remember(viewer.serverId, viewer.id) { mutableStateOf(tabs.first()) }
+    var parent by remember(viewer.serverId, viewer.id) { mutableStateOf<String?>(null) }
     var tabNotice by remember { mutableStateOf<String?>(null) }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
@@ -48,19 +54,21 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val keyboard = LocalSoftwareKeyboardController.current
     val navigate: (String) -> Unit = { chosen ->
         catalog.closeDetail()
+        parent = if (chosen in tabs || chosen == "more") null
+            else if (destination in tabs || destination == "more") destination else parent
         destination = chosen
-        if (chosen !in setOf("home", "listen", "more", "collections"))
+        if (chosen !in OUTSIDE_CATALOG)
             catalog.changeView(if (chosen == "search") "all" else chosen, refreshIfEmpty = true)
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     AutoRetry(state.notice != null && !state.loading && !state.connectionExpired, catalog::retry)
     AutoRetry(state.detailNotice != null && state.listed == null && !state.listBusy, catalog::retryDetail)
     LaunchedEffect(destination, state.loading) {
-        if (!state.loading && destination !in setOf("home", "listen", "more", "collections"))
+        if (!state.loading && destination !in OUTSIDE_CATALOG)
             catalog.changeView(if (destination == "search") "all" else destination)
     }
     LaunchedEffect(grid, destination, state.selected, state.items.size, state.loading, state.notice) {
-        if (destination !in setOf("home", "listen", "more", "collections") && state.selected == null &&
+        if (destination !in OUTSIDE_CATALOG && state.selected == null &&
             !state.loading && state.notice == null && state.items.size < state.total) {
             snapshotFlow { grid.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }.collect { last ->
                 if (last >= state.items.size - 8) catalog.loadMore()
@@ -70,7 +78,11 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
     BackHandler(state.selected != null && playingItem == null && photoItem == null && bookItem == null) { catalog.closeDetail() }
     BackHandler(destination != tabs.first() && state.selected == null && playingItem == null && photoItem == null && bookItem == null) {
-        navigate(tabs.first())
+        navigate(parent ?: tabs.first())
+    }
+    val saveTabs: (List<String>) -> Unit = { value ->
+        try { preferences.save(viewer, value); tabs = value; tabNotice = null }
+        catch (_: Exception) { tabNotice = "Could not save your tabs. Try again." }
     }
     if (playingItem != null) {
         PlaybackScreen(requireNotNull(playingItem), viewer, false, close = { playingItem = null },
@@ -94,11 +106,9 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                 open = catalog::selectHomeItem, play = { playingItem = it }, listening = destination == "listen")
             "more" -> Column {
                 tabNotice?.let { Text(it, modifier = Modifier.padding(20.dp).semantics { liveRegion = LiveRegionMode.Polite }) }
-                MoreScreen(viewer, tabs, saveTabs = { value ->
-                    try { preferences.save(viewer, value); tabs = value; tabNotice = null }
-                    catch (_: Exception) { tabNotice = "Could not save your tabs. Try again." }
-                }, navigate, connection::signOut)
+                MoreScreen(tabs, saveTabs, navigate)
             }
+            "settings" -> SettingsScreen(viewer, catalog, tabs, saveTabs, connection::signOut)
             else -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
                 SailBackdrop()
                 Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -151,6 +161,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
 }
 
+private val OUTSIDE_CATALOG = setOf("home", "listen", "more", "collections", "settings")
+
 private fun findVideoPipHost(context: Context): VideoPipHost? {
     var current: Context = context
     while (current is ContextWrapper) { if (current is VideoPipHost) return current; current = current.baseContext }
@@ -173,8 +185,11 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
                     "book" -> Button(onClick = readBook) { Text(interfaceText("Read book")) }
                 }
                 catalog.state.listed?.let { listed ->
-                    OutlinedButton(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
-                        Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
+                    FilledTonalButton(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
+                        Icon(if (listed) Icons.Filled.Check else Icons.Filled.Add, contentDescription = null,
+                            modifier = Modifier.size(ButtonDefaults.IconSize))
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(interfaceText(if (listed) "In My List" else "My List"))
                     }
                 }
             }
@@ -182,10 +197,34 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
         if (spotlight) MediaSpotlight(item, catalog, null, bleed = 20.dp, topBleed = 20.dp, top = back, actions = actions)
         else MediaHero(item, catalog, tv = false, actions = actions)
         if (item.kind == "photo" && item.stream.isEmpty()) Text(interfaceText("Photo viewing is unavailable for this Viewer."))
+        ContinueWatchingRemoval(item, catalog)
         if (catalog.state.listBusy && catalog.state.listed == null) Text(interfaceText("Loading My List status…"))
         catalog.state.detailNotice?.let {
             Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
             if (catalog.state.listed == null) RetryAction(onClick = catalog::retryDetail)
         }
+    }
+}
+
+@Composable
+private fun ContinueWatchingRemoval(item: CatalogItem, catalog: CatalogModel) {
+    if (item.kind != "video" || item.progress.seconds <= 0 && !item.progress.watched) return
+    var state by remember(item.id) { mutableStateOf("ready") }
+    val scope = rememberCoroutineScope()
+    val removed = interfaceText("Removed from Continue watching.")
+    val failed = interfaceText("Could not remove this title from Continue watching. Try again.")
+    if (state != "removed") TextButton(enabled = state != "busy", onClick = {
+        val (saved, viewerId) = catalog.connection ?: return@TextButton
+        state = "busy"
+        scope.launch {
+            state = try {
+                withContext(Dispatchers.IO) { AccountApi(saved.server).dismissContinueWatching(item.id, saved.token, viewerId) }
+                "removed"
+            } catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled } catch (_: Exception) { "failed" }
+        }
+    }) { Text(interfaceText("Remove from Continue watching")) }
+    when (state) {
+        "removed" -> Text(removed, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        "failed" -> Text(failed, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
     }
 }

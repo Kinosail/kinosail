@@ -73,6 +73,15 @@ fun main(args: Array<String>) {
             check(page.items.size == 200 && page.limit == 200 && page.total == 200)
             check(page.items.all { it.progress.seconds == 1.0 })
         }
+        checkCase("R03-real-server-account-$attempt") {
+            val account = AccountApi(server)
+            val before = account.mediaPreferences(token, viewer)
+            val changed = before.copy(playback = before.playback.copy(rate = 1.5, dialogueBoost = true))
+            check(account.saveMediaPreferences(token, viewer, changed) == changed)
+            check(account.mediaPreferences(token, viewer) == changed)
+            check(account.saveMediaPreferences(token, viewer, before) == before)
+            check(account.previewApproval("111111", token, viewer) == null && !account.approve("111111", token, viewer))
+        }
     }
     Files.writeString(output.resolve("android-result.json"), JsonArray(results).toString())
     check(results.all { (it["passed"] as JsonPrimitive).content == "true" }) {

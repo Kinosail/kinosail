@@ -108,12 +108,12 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                     HomeShelf(title, items, catalog, tv, open = open)
                 } }
                 if (!listening && state.movieGenres.isNotEmpty()) {
-                    if (!tv) item { Text(interfaceText("Movie genres"), style = MaterialTheme.typography.headlineMedium, color = KinoColor.text) }
                     state.movieGenres.forEach { (genre, movies) -> item { HomeShelf(genre, movies, catalog, tv, open = open) } }
                 }
                 if (!state.loading && state.notice == null && state.featured == null) item {
-                    Text(interfaceText(if (listening) "Add music or audiobooks to your Server to see them here."
-                        else "Media added to your Server will appear here."), color = KinoColor.muted)
+                    val message = interfaceText(if (listening) "Add music or audiobooks to your Server to see them here."
+                        else "Media added to your Server will appear here.")
+                    if (tv) Text(message, color = KinoColor.muted) else HomePlaceholder(listening, message)
                 }
                 if (!tv) item { BrowseLinks(browse, tv, listening) }
             }
@@ -126,16 +126,22 @@ internal fun homeCardWidth(tv: Boolean, landscape: Boolean) =
 
 @Composable
 private fun BrowseLinks(browse: (String) -> Unit, tv: Boolean, listening: Boolean) {
-    val views = if (listening) LIBRARY_VIEWS.filter { it.first in setOf("music", "audiobooks") }
+    if (tv) return TvBrowseTiles(if (listening) LIBRARY_VIEWS.filter { it.first in setOf("music", "audiobooks") }
         else LIBRARY_VIEWS.filter { it.first in setOf("movies", "shows", "music", "audiobooks", "photos", "list") } +
-            listOf("collections" to "Collections", "all" to "Library")
-    if (tv) return TvBrowseTiles(views, browse)
+            listOf("collections" to "Collections", "all" to "Library"), browse)
+    val views = LIBRARY_VIEWS.filter { it.first in if (listening) setOf("music", "audiobooks") else setOf("movies", "shows") }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(interfaceText("Browse library"), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
             modifier = Modifier.semantics { heading() })
         LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(vertical = 8.dp)) {
             items(views, key = { it.first }) { (view, title) ->
-                Button(onClick = { browse(view) }) { Text(interfaceText(if (view == "all") "Library" else title)) }
+                OutlinedButton(onClick = { browse(view) }, border = androidx.compose.foundation.BorderStroke(1.dp, KinoColor.signal.copy(alpha = 0.6f)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = KinoColor.signal)) {
+                    Icon(androidx.compose.ui.res.painterResource(browseIcon(view)), contentDescription = null,
+                        modifier = Modifier.size(ButtonDefaults.IconSize))
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(interfaceText(title))
+                }
             }
         }
     }
@@ -163,4 +169,25 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
 private fun HomeAction(label: String, tv: Boolean, onClick: () -> Unit) {
     if (tv) androidx.tv.material3.Button(onClick = onClick) { androidx.tv.material3.Text(label) }
     else Button(onClick = onClick) { Text(label) }
+}
+
+private fun browseIcon(view: String) = when (view) {
+    "movies" -> com.kinosail.player.R.drawable.nav_movies
+    "shows" -> com.kinosail.player.R.drawable.nav_shows
+    "music" -> com.kinosail.player.R.drawable.nav_music
+    else -> com.kinosail.player.R.drawable.nav_audiobooks
+}
+
+@Composable
+private fun HomePlaceholder(listening: Boolean, message: String) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 32.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Icon(androidx.compose.ui.res.painterResource(if (listening) com.kinosail.player.R.drawable.nav_listen
+            else com.kinosail.player.R.drawable.nav_movies), contentDescription = null, tint = KinoColor.muted,
+            modifier = Modifier.size(48.dp))
+        Text(interfaceText(if (listening) "Nothing to listen to yet" else "Your library is ready"),
+            style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
+            modifier = Modifier.semantics { heading() })
+        Text(message, color = KinoColor.muted, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+    }
 }
