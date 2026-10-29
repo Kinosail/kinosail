@@ -1,5 +1,65 @@
 # Swift Apple verification
 
+## Apple follow-up review and deep CI repairs — 2026-10-29
+
+A follow-up review of iPhone, iPad, Apple TV and Apple Watch screens against `DESIGN.md` found these defects. The weekly deep run also had two Apple failures. Each fix has a check that failed first.
+
+| Surface and state | Defect | Covering check |
+| --- | --- | --- |
+| Episode cards, heroes, resume rows, iPhone player header | An episode titled only with the show name read "Example Show / Example Show · S2 E1". It now reads "Episode 1", as the Apple TV app does. | `ScreenFollowUpTests/testEpisodeCardsNeverRepeatTheShowName`, `ShowSeasonSelectionTests.episodeTitlesNeverRepeatTheShowName` |
+| iPhone and iPad details | All episodes and Remove from Continue watching had no icons. Genres used the system secondary color, not the muted role. | `ScreenFollowUpTests/testDetailLinksShowIconsAndGenresUseMutedText` |
+| Settings, About | Privacy policy had no icon, so its text did not line up with the other rows. | `ScreenFollowUpTests/testPrivacyPolicyRowAlignsWithOtherAboutRows` |
+| Comic reader | Disabled Previous was as bright as enabled Next. | `ScreenFollowUpTests/testDisabledReaderPageButtonLooksDimmerThanEnabled` |
+| Apple TV Library hub and Collections | Used `star` and `rectangle.stack` instead of the iOS symbols. The hub has no route on Apple TV today, so no UI test reaches it. | Source review |
+| Apple Watch Remote and Heart pages | Supporting text used the neutral system gray `(144,146,148)` instead of the sage muted role. Connecting to iPhone was centered while every other state is leading. | Screenshot pixel sample: `(160,167,156)` = `#A0A79C` after the fix |
+| Deep CI, Swift code scanning | Under the CodeQL tracer, `swift-plugin-server` failed with "Bad CPU type", so `@Observable` and `@State` did not expand in the Watch target. The scanning xcconfig now puts each device platform plugin folder first, so macros load in the compiler process. | `scripts/ci/test_security_contracts.py`; deep run `40826859256` Swift code scanning passed |
+| Deep CI, Player native contracts | The runner picks an iPhone Duo simulator. Its window control shares rows and fill with the reader pending lines, so the column check measured 63 to 76 points too wide. The check now measures the longest unbroken run per row and ignores groups narrower than a pending line. | `NativePreferencesUXTests` on iPhone Duo: 4 failures before, 8 of 8 after; deep run `40826859256` Player native contracts passed |
+
+**Revision.** Base `617f1f4a` (main). New: the task commits on `mikeo/qa-apple-polish-2`, head `cb08d14c` for the runs below. Xcode 27.1, iOS 27.1, tvOS and watchOS 27 simulators: iPhone 18 Pro, iPad, a new iPhone Duo, Apple TV and a paired watch.
+
+**Test data.** Two isolated copies of `scripts/test-instance.sh` (projects `kinosail-qa-apple-populated` and `kinosail-qa-apple-empty`), each behind `scripts/download-fixture/fault_proxy.py`. The populated copy adds five generated movies with the Drama genre, a long-title movie, `Long Haul (2024).mp4` (SHA-256 `777ce969ebd32f1a05ba3d4087d89da6562ded4cdfccf8dc83b9b6958b6d58e0`) and `Example Show S02E01 Second Season Opener.mp4`, which the Server titles "Example Show". The empty copy has no media. The playback suite used `scripts/ios-playback-fixture.py` with a generated 60-second MP4 (`c77ce1f4fd76a84947ec2993f9ad996054919bf5c2451b82680778d26ea10d7d`). Apple TV runs used `run-tvos-navigation-qa.py` with the 30-second MP4 from `TV-NAVIGATION-QA.md` (`71771b8981828d2663d8ecf3d2b69f6ae8b6492c6f45a90cc855799e0c9323ea`) and `KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE=1`.
+
+| Run | Result |
+| --- | --- |
+| `Kinosail-iOS` unit tests, iPhone 18 Pro | 356 tests in 78 suites passed |
+| `Kinosail-tvOS` unit tests, Apple TV | 341 tests in 78 suites passed |
+| `NativePreferencesUXTests`, iPhone Duo, before the reader fix | 4 reader column failures |
+| `NativePreferencesUXTests`, iPhone Duo and iPhone 18 Pro, after | 8 of 8 passed on each |
+| `Kinosail-iOS-Touch`, iPhone 18 Pro | 20 passed, 5 skipped (Other Servers, Plex and artwork outage need their own fixtures) |
+| `TouchPlaybackInteractionTests`, iPhone 18 Pro | 6 passed, Picture in Picture skipped |
+| `Kinosail-iOS-Touch`, iPad | 17 passed, 5 skipped; `EmptyLibraryTests` and the download outage journey passed on a rerun after a fixture setup error |
+| `IPadWindowTests`, iPad | Portrait narrow windows and the landscape tour passed. iPadOS gave a 375-point window for each 507, 375 and 320 point request. |
+| Apple TV Home empty, pending and failed states | 3 of 3 passed |
+| Apple TV loaded Remote UI classes, groups one and two | 15 and 10 passed |
+| Apple TV loaded group three: playback options, crash, layout polish, playback extras | 10 of 10 passed with the 30-second media. Playback extras fails with 12-second media on both main and this branch, because the credits marker starts after the video ends. |
+| CI contract tests, `python3 -m unittest discover -s scripts/ci` | 168 passed; the new scanning contract failed first |
+| `make max-loc` and `make -C apps/player verify-changed` | Passed: max-loc, diff-check and native-client builds for iOS and tvOS |
+
+Also checked with no defect found: the empty library on iPhone, iPad and Apple TV shows a designed empty state, and no placeholder stays after loading. The Apple Watch Remote page has the black background with the Electric glow, the rounded title and the player picker. iPad landscape uses the sidebar.
+
+Not run: the Heart page with real readings (it needs a Health grant on a device), Apple Watch controls below the first screen (no watch UI automation), the CodeQL tracer locally, physical devices, and the Nox Server. Watch screenshots and the first iPhone and Apple TV runs were lost when the session scratch folder was cleared. The results above are from the reruns.
+
+| File | SHA-256 |
+| --- | --- |
+| iPhone Duo reader baseline log | `433374e05abfb7f2ca0b0149dbd8adc6bb2ec803d900a33410797fb23e6eabbf` |
+| iPhone Duo reader log after | `d92a044e0be36cacc5f0e3b66208eb4bdaf3b29bfdafc58d86847b1f32401cb5` |
+| iPhone reader log after | `68e0ffcb582383a832034cf875832039d55f5c8e6cd91176f85183f233adacc5` |
+| iPhone unit log | `add37bc5a975e8c7d6f4965f7aebdf55a20c0f4c2625d230c4ae803789bc7e17` |
+| Apple TV unit log | `bc7410cfe9f98765816f6bcd95aeacc32c142afd31d329b2fed491bae8914c88` |
+| iPhone touch log | `c6c687f71e2714876e94afc7838fe37f91591b45530e29f70d9ac287d15e634c` |
+| iPhone playback log | `52380e5a8f34453fe104ef4f97e4b7cbdcee6d99dcc54f2c447e14305aa14b6f` |
+| iPad touch log | `54ba60559b31442f731f9948366f2b0be66611c8abea548020f8c630991944bc` |
+| iPad rerun log | `d83ca1e2413d86bb7f74c5a9eb9ae46d45f4b08f8716bcc87a465e9bc733e01b` |
+| Apple TV extras on main, 12-second media | `d79699108256bccdbff883d0903c7766762d8e1869b766d3163c66e76de09434` |
+| Apple TV extras, 30-second media | `58e48a240ca6dee186e3618abc7063b24524b9ac71eb116ccf3b3b06b3a761f4` |
+| Apple TV loaded group one | `23b6d2c2fbc52a97af7c7e53c483ab582e0c52f7d72d2dc2dd426bbf324775a4` |
+| Apple TV loaded group two | `59a26fe88a64284d9b7c770ffd96f17bd02af8f7e72d974de2b5df6672248fd4` |
+| Apple TV loaded group three | `398f17c91c72a464dbbfa06cbe86eb626f71e78936bd9a915c14d771b0a95b59` |
+| iPhone empty Home screenshot | `f192fb5721653ccd7656eb0f2f3b373ec4a5f609d6e05d702f32cba8a36181f0` |
+| iPhone episode cards screenshot | `78378314662efe237b2357e48f0a83c3261fc460b249c1a83ffd5e15afe90f63` |
+| iPad empty Home screenshot | `1c71dbf7379052f7a9f64e7b99856a6dadabfb0820f31876d20b1c7196e5e9c2` |
+| iPad landscape Home screenshot | `fb3a8853a7597be5cfd695d92c3b32b7756a905009ad44d9f506b19d2cac487b` |
+
 ## iPhone and iPad screen review — 2026-10-28
 
 A review of every iPhone and iPad screen against `DESIGN.md` found these defects. Each fix has a test that failed on the baseline and passes now.
