@@ -20,7 +20,7 @@ struct TouchPlaybackHeader: View {
                 .glassEffect(.regular.interactive(), in: .circle)
                 .keyboardShortcut(.cancelAction)
             VStack(alignment: .leading, spacing: 2) {
-                Text(item?.title ?? "Playback")
+                Text(item?.displayTitle ?? "Playback")
                     .font(.headline).lineLimit(compact ? 1 : 2)
                     .accessibilityAddTraits(.isHeader)
                 if !subtitle.isEmpty, !compact {

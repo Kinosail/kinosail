@@ -38,6 +38,9 @@ class SecurityContracts(unittest.TestCase):
         self.assertIn("ARCHS = arm64", workflow)
         for setting in ("COMPILATION_CACHE_ENABLE_CACHING", "SWIFT_ENABLE_COMPILE_CACHE", "SWIFT_USE_INTEGRATED_DRIVER"):
             self.assertIn(f"{setting} = NO", workflow)
+        for sdk, platform in (("iphonesimulator", "iPhoneOS"), ("appletvsimulator", "AppleTVOS"), ("watchsimulator", "WatchOS")):
+            self.assertIn(f"'OTHER_SWIFT_FLAGS[sdk={sdk}*] = $(inherited) -plugin-path "
+                          f"$(DEVELOPER_DIR)/Platforms/{platform}.platform/Developer/usr/lib/swift/host/plugins'", workflow)
         self.assertIn('XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig"', workflow)
         self.assertIn("timeout-minutes: 90", workflow)
         self.assertIn("queries: security-extended", workflow)

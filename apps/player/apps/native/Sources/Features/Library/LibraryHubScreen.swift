@@ -10,9 +10,9 @@ struct LibraryHubScreen: View {
         ScrollView {
             hubSection("Library", [
                 ("All media", "square.grid.2x2", .library(.all)),
-                ("My List", "star", .library(.list)),
+                ("My List", PlayerTab.list.symbol, .library(.list)),
                 ("Unwatched", "play.rectangle", .library(.unwatched)),
-                ("Collections", "rectangle.stack", .collections),
+                ("Collections", PlayerTab.collections.symbol, .collections),
                 ("History", "clock", .library(.history))
             ])
             .padding(.horizontal, KinoTheme.contentPadding)

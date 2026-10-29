@@ -32,7 +32,7 @@ struct CinemaHero<Actions: View>: View {
         } information: {
             VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(title ?? item.title)
+                    Text(title ?? item.displayTitle)
                         .font(.system(size: titleSize, weight: .bold, design: .rounded))
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityAddTraits(.isHeader)

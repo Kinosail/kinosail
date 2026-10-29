@@ -75,7 +75,7 @@ struct SettingsScreen: View {
             }
             Section("About") {
                 NavigationLink { ThanksScreen() } label: { Label("Made possible by", systemImage: "heart") }
-                PrivacyPolicyLink()
+                PrivacyPolicyLink(symbol: "hand.raised")
             }
             Section {
                 #if os(iOS)

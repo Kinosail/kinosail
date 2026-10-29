@@ -49,6 +49,17 @@ struct ShowSeasonSelectionTests {
         }
     }
 
+    @Test(arguments: [
+        ("Example Show", "Episode 1"), ("example show", "Episode 1"), ("S02E01 · Example Show", "Episode 1"),
+        ("S02E01", "Episode 1"), ("S02E01 · Opener", "Opener"), ("Opener", "Opener")
+    ])
+    func episodeTitlesNeverRepeatTheShowName(_ title: String, _ expected: String) throws {
+        let item = try MediaItem(.object(["id": .string("episode"), "kind": .string("video"), "title": .string(title),
+                                          "show": .string("Example Show"), "season": .number(2), "episode": .number(1)]),
+                                 server: ServerAddress("https://media.example"))
+        #expect(ShowSeasonSelection.episodeTitle(item) == expected)
+    }
+
     private func episode(_ id: String, watched: Bool, server: ServerAddress) throws -> MediaItem {
         try MediaItem(.object(["id": .string(id), "kind": .string("video"), "title": .string(id),
                                "progress": .object(["watched": .bool(watched)])]), server: server)

@@ -1,11 +1,12 @@
 import SwiftUI
 
 struct PrivacyPolicyLink: View {
+    var symbol: String?
     private let url = URL(string: "https://kinosail.com/privacy/")!
 
     var body: some View {
         #if os(tvOS)
-        NavigationLink("Privacy policy") {
+        NavigationLink {
             ScrollView {
                 VStack(spacing: 24) {
                     Text("Your library stays on your Server. Kinosail Player stores your session on this device and connects directly to the Server you choose.")
@@ -20,9 +21,13 @@ struct PrivacyPolicyLink: View {
                 .padding(KinoTheme.contentPadding)
             }
             .navigationTitle("Privacy policy")
-        }
+        } label: { label }
         #else
-        Link("Privacy policy", destination: url)
+        Link(destination: url) { label }
         #endif
+    }
+
+    @ViewBuilder private var label: some View {
+        if let symbol { Label("Privacy policy", systemImage: symbol) } else { Text("Privacy policy") }
     }
 }

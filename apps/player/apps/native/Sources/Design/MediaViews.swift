@@ -66,7 +66,7 @@ struct MediaCard: View {
                     .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: focused)
                     #endif
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(item.title).font(KinoTheme.cardTitle).foregroundStyle(KinoTheme.text)
+                    Text(item.displayTitle).font(KinoTheme.cardTitle).foregroundStyle(KinoTheme.text)
                         .mediaLineLimit(2, accessibility: dynamicTypeSize.isAccessibilitySize)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .frame(minHeight: KinoTheme.mediaTitleHeight, alignment: .topLeading)

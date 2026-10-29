@@ -221,20 +221,22 @@ extension NativePreferencesUXTests {
         let scale = CGFloat(width) / window.bounds.width
         var groups: [CGRect] = [], current: CGRect?
         for y in 0..<height {
-            var first: Int?, last = 0, matches = 0
+            var run: (first: Int, last: Int)?, best: (first: Int, last: Int)?, matches = 0
             for x in 0..<width {
                 let offset = (y * width + x) * 4
                 if abs(Int(pixels[offset]) - target[0]) <= 2 &&
                     abs(Int(pixels[offset + 1]) - target[1]) <= 2 && abs(Int(pixels[offset + 2]) - target[2]) <= 2 {
-                    if first == nil { first = x }; last = x; matches += 1
+                    matches += 1
+                    run = run.map { x - $0.last <= 3 ? ($0.first, x) : (x, x) } ?? (x, x)
+                    if let run, run.last - run.first > (best.map { $0.last - $0.first } ?? -1) { best = run }
                 }
             }
-            if let first, matches > width / 8 {
-                let row = CGRect(x: CGFloat(first) / scale, y: CGFloat(y) / scale,
-                    width: CGFloat(last - first + 1) / scale, height: 1 / scale)
+            if let best, matches > width / 8 {
+                let row = CGRect(x: CGFloat(best.first) / scale, y: CGFloat(y) / scale,
+                    width: CGFloat(best.last - best.first + 1) / scale, height: 1 / scale)
                 current = current.map { $0.union(row) } ?? row
             } else if let group = current {
-                if (8...40).contains(group.height) { groups.append(group) }
+                if (8...40).contains(group.height) && group.width >= 180 { groups.append(group) }
                 current = nil
             }
         }

@@ -135,11 +135,14 @@ private struct DetailContent: View {
 
     private var information: some View {
         VStack(alignment: .leading, spacing: 20) {
-            if let message { Text(message).font(.callout).foregroundStyle(.secondary) }
+            if let message { Text(message).font(.callout).foregroundStyle(KinoTheme.muted) }
             if !item.plot.isEmpty { Text(item.plot).font(.body).fixedSize(horizontal: false, vertical: true) }
-            if !item.genres.isEmpty { Text(item.genres).font(.callout).foregroundStyle(.secondary) }
+            if !item.genres.isEmpty { Text(item.genres).font(.callout).foregroundStyle(KinoTheme.muted) }
             #if os(iOS)
-            if !item.showID.isEmpty { NavigationLink("All episodes", value: ScreenDestination.show(item.showID)).frame(minHeight: 44) }
+            if !item.showID.isEmpty {
+                NavigationLink(value: ScreenDestination.show(item.showID)) { Label("All episodes", systemImage: "list.bullet") }
+                    .frame(minHeight: 44)
+            }
             if (item.kind == .video || item.isAudio) && !session.usesDeviceLibrary {
                 NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
                     .frame(minHeight: 44)
@@ -147,7 +150,7 @@ private struct DetailContent: View {
                     .frame(minHeight: 44)
             }
             if item.progress.seconds > 0 || item.progress.watched {
-                Button("Remove from Continue watching") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
+                Button("Remove from Continue watching", systemImage: "minus.circle") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
                     .disabled(busy)
                     .frame(minHeight: 44)
             }

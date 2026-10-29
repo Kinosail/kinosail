@@ -110,6 +110,14 @@ struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         return [artist, year, rating].filter { !$0.isEmpty }.joined(separator: " · ")
     }
 
+    var displayTitle: String {
+        let code = String(format: "S%02dE%02d", season, episode)
+        let name = title.hasPrefix(code) ? title.dropFirst(code.count).trimmingCharacters(in: CharacterSet(charactersIn: " ·")) : title
+        guard episode > 0, name.isEmpty || (!show.isEmpty && name.compare(show, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame)
+        else { return name }
+        return String(localized: "Episode \(episode)")
+    }
+
     var subtitleWithoutYear: String {
         if kind == .video || kind == .show { return show.isEmpty ? artist : "" }
         if !show.isEmpty { return rating }
