@@ -31,77 +31,53 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
     LaunchedEffect(showId, viewer.id) { model.open(showId, viewer.id) }
     AutoRetry(state.notice != null && !state.loading, model::retry)
     DisposableEffect(Unit) { onDispose { model.reset() } }
+    if (tv) { TvShowPage(state, catalog, season, { chosenSeason = it }, model::retry, play); return }
     val hero = if (featured != null && detail != null) featured.copy(title = detail.title, plot = detail.plot, year = detail.year) else null
-    val spotlight = !tv && hero != null && spotlightFits(hero, androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp)
+    val spotlight = hero != null && spotlightFits(hero, androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp)
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
-        LazyColumn(Modifier.fillMaxSize().safeDrawingPadding(), contentPadding = PaddingValues(if (tv) 48.dp else 20.dp),
+        LazyColumn(Modifier.fillMaxSize().safeDrawingPadding(), contentPadding = PaddingValues(20.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)) {
             val back: @Composable () -> Unit = {
-                if (tv) androidx.tv.material3.Button(onClick = close) { androidx.tv.material3.Text(interfaceText("Back to Library")) }
-                else TextButton(onClick = close) { Text(interfaceText("Back")) }
+                TextButton(onClick = close) { Text(interfaceText("Back")) }
             }
             if (!spotlight) item { back() }
-            if (state.loading && detail == null) item { LibraryLoading(home = true, tv = tv, show = true) }
+            if (state.loading && detail == null) item { LibraryLoading(home = true, show = true) }
             state.notice?.let { notice -> item {
                 Text(notice, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                RetryAction(tv, onClick = model::retry)
+                RetryAction(onClick = model::retry)
             } }
             if (featured != null) {
                 item {
                     val action: @Composable () -> Unit = {
                         val label = "${featured.playLabel} · S${featured.season} E${featured.episode}"
-                        if (tv) androidx.tv.material3.Button(onClick = { play(featured) }) { androidx.tv.material3.Text(label) }
-                        else Button(onClick = { play(featured) }) { Text(label) }
+                        Button(onClick = { play(featured) }) { Text(label) }
                     }
                     if (spotlight) MediaSpotlight(hero!!, catalog, interfaceText("Up next") + " · S${featured.season} E${featured.episode}",
                         bleed = 20.dp, topBleed = 20.dp, top = back, actions = action)
-                    else MediaHero(hero!!, catalog, tv, actions = action)
+                    else MediaHero(hero!!, catalog, false, actions = action)
                 }
                 val visible = detail.episodes.filter { it.season == season }
-                if (tv) item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                        Column(Modifier.width(180.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(interfaceText("Seasons"), color = KinoColor.text, style = MaterialTheme.typography.titleLarge)
-                            detail.seasons.forEach { number ->
-                                androidx.tv.material3.Button(onClick = { chosenSeason = number }, modifier = Modifier.semantics { selected = number == season }) {
-                                    androidx.tv.material3.Text(if (number == 0) "Specials" else "Season $number")
-                                }
-                            }
-                        }
-                        LazyRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(12.dp)) {
-                            items(visible, key = CatalogItem::id) { episode ->
-                                androidx.tv.material3.Card(onClick = { play(episode) }, modifier = Modifier.width(300.dp).semantics { contentDescription = episode.title }) {
-                                    Column {
-                                        MediaArtwork(episode, catalog, Modifier.fillMaxWidth())
-                                        EpisodeDescription(episode, Modifier.padding(12.dp))
-                                    }
-                                }
-                            }
+                item { Text(interfaceText("Seasons"), color = KinoColor.text, style = MaterialTheme.typography.titleLarge) }
+                item {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(detail.seasons, key = { it }) { number ->
+                            FilterChip(selected = number == season, onClick = { chosenSeason = number },
+                                label = { Text(if (number == 0) "Specials" else "Season $number") })
                         }
                     }
-                } else {
-                    item { Text(interfaceText("Seasons"), color = KinoColor.text, style = MaterialTheme.typography.titleLarge) }
-                    item {
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            items(detail.seasons, key = { it }) { number ->
-                                FilterChip(selected = number == season, onClick = { chosenSeason = number },
-                                    label = { Text(if (number == 0) "Specials" else "Season $number") })
-                            }
-                        }
-                    }
-                    items(visible, key = CatalogItem::id) { episode ->
-                        Card(onClick = { play(episode) }, modifier = Modifier.semantics { contentDescription = episode.title }, colors = CardDefaults.cardColors(containerColor = KinoColor.surface)) {
-                            BoxWithConstraints(Modifier.fillMaxWidth().padding(12.dp)) {
-                                if (maxWidth < 320.dp || androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f)
-                                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                        MediaArtwork(episode, catalog, Modifier.fillMaxWidth())
-                                        EpisodeDescription(episode)
-                                    }
-                                else Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    MediaArtwork(episode, catalog, Modifier.width(128.dp))
-                                    EpisodeDescription(episode, Modifier.weight(1f))
+                }
+                items(visible, key = CatalogItem::id) { episode ->
+                    Card(onClick = { play(episode) }, modifier = Modifier.semantics { contentDescription = episode.title }, colors = CardDefaults.cardColors(containerColor = KinoColor.surface)) {
+                        BoxWithConstraints(Modifier.fillMaxWidth().padding(12.dp)) {
+                            if (maxWidth < 320.dp || androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f)
+                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    MediaArtwork(episode, catalog, Modifier.fillMaxWidth())
+                                    EpisodeDescription(episode)
                                 }
+                            else Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                MediaArtwork(episode, catalog, Modifier.width(128.dp))
+                                EpisodeDescription(episode, Modifier.weight(1f))
                             }
                         }
                     }
