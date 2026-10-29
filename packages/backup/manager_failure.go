@@ -32,11 +32,11 @@ func backupFailureClass(err error) string {
 	return "write-failed"
 }
 
-type backupFailure struct{ cause error }
+type backupError struct{ cause error }
 
-func (failure backupFailure) Error() string { return backupFailureMessage(failure.cause) }
+func (failure backupError) Error() string { return backupFailureMessage(failure.cause) }
 
-func (failure backupFailure) Unwrap() error { return failure.cause }
+func (failure backupError) Unwrap() error { return failure.cause }
 
 func backupFailureMessage(err error) string {
 	if message, found := backupFailureMessages[backupFailureClass(err)]; found {

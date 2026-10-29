@@ -3,9 +3,11 @@ package servertest
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 )
 
@@ -28,23 +30,13 @@ func (fixture LibraryAPIFixture) EpisodeFilenamesKeepEpisodeTitlesInAPI(t *testi
 		{"Other.Show.S01E09.Pilot.2160p.WEB-DL.DDP5.1.HEVC-GRP.mkv", "S01E09 · Pilot", "Other Show", 1, 9},
 		{"Third Show 3x12.mkv", "S03E12", "Third Show", 3, 12},
 	}
+	files := map[string]string{filepath.Join(season, "Example Show S02E07 Raw Name.nfo"): `<episodedetails><title>Local Name</title></episodedetails>`, "Example Movie (2020) [1920x1080].mkv": "video"}
+	want := map[string]bool{"Example Movie||0|0": true}
 	for _, item := range cases {
-		path := filepath.Join(mediaDir, item.path)
-		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(path, []byte("video"), 0o600); err != nil {
-			t.Fatal(err)
-		}
+		files[item.path] = "video"
+		want[fmt.Sprintf("%s|%s|%d|%d", item.title, item.show, item.season, item.episode)] = true
 	}
-	nfo := filepath.Join(mediaDir, season, "Example Show S02E07 Raw Name.nfo")
-	if err := os.WriteFile(nfo, []byte(`<episodedetails><title>Local Name</title></episodedetails>`), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	movie := "Example Movie (2020) [1920x1080].mkv"
-	if err := os.WriteFile(filepath.Join(mediaDir, movie), []byte("video"), 0o600); err != nil {
-		t.Fatal(err)
-	}
+	writeEpisodeFixtures(t, mediaDir, files)
 	handler := fixture.NewHandler(mediaDir, "", false)
 	response := APICall(t, handler, "", http.MethodGet, "/api/v1/library?limit=100", nil)
 	var catalog struct {
@@ -53,31 +45,27 @@ func (fixture LibraryAPIFixture) EpisodeFilenamesKeepEpisodeTitlesInAPI(t *testi
 			Season, Episode int
 		} `json:"items"`
 	}
-	if err := json.Unmarshal(response.Body.Bytes(), &catalog); err != nil || response.Code != http.StatusOK || len(catalog.Items) != len(cases)+1 {
+	if err := json.Unmarshal(response.Body.Bytes(), &catalog); err != nil || response.Code != http.StatusOK {
 		t.Fatalf("library = %d %q: %v", response.Code, response.Body.String(), err)
 	}
-	found := make(map[string]bool)
-	seen := make([]string, 0, len(catalog.Items))
+	seen := make(map[string]bool, len(catalog.Items))
 	for _, item := range catalog.Items {
-		seen = append(seen, fmt.Sprintf("%s|%s|%d|%d", item.Title, item.Show, item.Season, item.Episode))
-		if item.Title == "Example Movie" && item.Show == "" {
-			found["movie"] = true
-		}
-		for _, want := range cases {
-			if item.Title == want.title && item.Show == want.show && item.Season == want.season && item.Episode == want.episode {
-				found[want.path] = true
-			}
-		}
+		seen[fmt.Sprintf("%s|%s|%d|%d", item.Title, item.Show, item.Season, item.Episode)] = true
 	}
-	for _, want := range cases {
-		if !found[want.path] {
-			t.Errorf("episode %q missing title %q show %q S%dE%d", want.path, want.title, want.show, want.season, want.episode)
+	if !maps.Equal(seen, want) {
+		t.Fatalf("library items = %v, want %v", slices.Sorted(maps.Keys(seen)), slices.Sorted(maps.Keys(want)))
+	}
+}
+
+func writeEpisodeFixtures(t *testing.T, mediaDir string, files map[string]string) {
+	t.Helper()
+	for name, content := range files {
+		path := filepath.Join(mediaDir, name)
+		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+			t.Fatal(err)
 		}
-	}
-	if !found["movie"] {
-		t.Error("movie with a resolution was parsed as an episode")
-	}
-	if t.Failed() {
-		t.Logf("library items: %q", seen)
+		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
