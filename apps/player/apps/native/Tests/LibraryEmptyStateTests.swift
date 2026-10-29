@@ -20,6 +20,12 @@ struct LibraryEmptyStateTests {
         #expect(state.symbol == "magnifyingglass")
     }
 
+    @Test func anEmptyLibraryAsksForLibraryContent() {
+        let state = LibraryEmptyState(view: .all, hasQuery: false)
+        #expect(state.title == "Nothing here yet")
+        #expect(state.message == "Add Library Content to begin.")
+    }
+
     @Test func otherEmptySectionsRemainNeutral() {
         let state = LibraryEmptyState(view: .movies, hasQuery: false)
         #expect(state.title == "Nothing here yet")
