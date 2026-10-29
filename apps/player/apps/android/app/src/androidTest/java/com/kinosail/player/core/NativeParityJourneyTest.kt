@@ -419,7 +419,11 @@ class NativeParityJourneyTest {
         waitText("Speed 1×")
         capture("playback-controls")
         if (tv) instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-        else compose.onNodeWithContentDescription("Close player").activate()
+        else {
+            if (compose.onAllNodesWithContentDescription("Close player").fetchSemanticsNodes().isEmpty())
+                compose.onRoot().performTouchInput { click(center) }
+            compose.onNodeWithContentDescription("Close player").activate()
+        }
         waitText(if (tv) "Continue watching" else "Watching")
     }
 
