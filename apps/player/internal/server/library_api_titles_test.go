@@ -17,3 +17,7 @@ func TestReleaseFilenameUsesHumanTitleInAPIAndWeb(t *testing.T) {
 func TestEpisodeFilenamesKeepEpisodeTitlesInAPI(t *testing.T) {
 	libraryAPIFixture.EpisodeFilenamesKeepEpisodeTitlesInAPI(t)
 }
+
+func TestShortSearchMatchesTitlesAndMetadataWordStarts(t *testing.T) {
+	libraryAPIFixture.ShortSearchMatchesTitlesAndMetadataWordStarts(t)
+}
