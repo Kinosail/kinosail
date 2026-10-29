@@ -2,7 +2,7 @@ import { expect, type Page, type TestInfo } from "@playwright/test";
 import { verifyAuthenticatedDirectRetryWidths } from "./direct-retry-journey";
 import { expectAccessible, openQuickConnect, openSettings, signOut, totp, type HappyPathState } from "./happy-path-helpers";
 
-export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture, beginWatched, finishWatched, errors, cancellations, evidence, passkeyCreated}: HappyPathState) {
+export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture, beginWatched, finishWatched, errors, cancellations, evidence, settled, passkeyCreated}: HappyPathState) {
 	await page.getByText("More", { exact: true }).click();
 	await expectAccessible(page, capture);
 	await page.getByRole("link", { name: "Home", exact: true }).filter({ visible: true }).first().click();
@@ -167,6 +167,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture
 			await page.context().setOffline(false);
 		}
 	}
+	await expect.poll(settled).toBe(true);
 	const unexpected = errors();
 	await testInfo.attach("watched-navigation-cancellations", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
 		browser: testInfo.project.name, cancellations: cancellations(), evidence: evidence(), unexpected, boundary: "Only exact canceled HLS XHRs correlated with committed watched POST303/GET200 navigation"}), contentType: "application/json"});
