@@ -89,11 +89,13 @@ internal fun TvBrowseTiles(views: List<Pair<String, String>>, browse: (String) -
 
 @Composable
 internal fun TvHomeHero(item: CatalogItem) {
-    val metadata = listOf(if (item.showId.isNotEmpty()) "S${item.season} E${item.episode}" else item.year, item.rating, item.genres)
+    val episode = item.show.isNotEmpty() && item.showId.isNotEmpty()
+    val metadata = (if (episode) listOf("S${item.season} E${item.episode}", item.episodeTitle, item.rating)
+        else listOf(if (item.showId.isNotEmpty()) "S${item.season} E${item.episode}" else item.year, item.rating, item.genres))
         .filter(String::isNotEmpty).joinToString(" · ")
     Column(Modifier.widthIn(max = 520.dp).padding(top = 20.dp).semantics { hideFromAccessibility() },
         verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Text(item.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = KinoColor.text,
+        Text(if (episode) item.show else item.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = KinoColor.text,
             maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text(metadata.ifEmpty { " " }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium,
             color = KinoColor.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)

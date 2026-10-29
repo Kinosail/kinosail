@@ -104,6 +104,14 @@ class SessionStore(context: Context, private val keys: SessionKeyProvider = Andr
         }
     }
 
+    @Synchronized
+    fun forgetContinuation(server: ServerAddress, viewer: Viewer, itemId: String) {
+        val history = loadCatalog(server, viewer, "home-history") ?: return
+        val items = history.items.filterNot { it.id == itemId }
+        if (items.size < history.items.size)
+            saveCatalog(server, viewer, "home-history", history.copy(items = items, total = history.total - 1))
+    }
+
     private fun catalogKey(server: ServerAddress, viewer: Viewer, name: String): String {
         viewer.validated()
         require(name in setOf("home-history", "home-recent") ||

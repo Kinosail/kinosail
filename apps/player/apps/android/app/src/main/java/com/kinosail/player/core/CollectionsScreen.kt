@@ -81,8 +81,10 @@ internal fun CollectionsScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolea
                                     modifier = Modifier.padding(10.dp))
                             }
                         }
-                        if (tv) androidx.tv.material3.Card(onClick = { catalog.select(item) }) { content() }
-                        else Card(onClick = { catalog.select(item) }, colors = CardDefaults.cardColors(containerColor = KinoColor.surface)) { content() }
+                        val label = Modifier.semantics { contentDescription = item.title }
+                        if (tv) androidx.tv.material3.Card(onClick = { catalog.select(item) }, modifier = label) { content() }
+                        else Card(onClick = { catalog.select(item) }, modifier = label,
+                            colors = CardDefaults.cardColors(containerColor = KinoColor.surface)) { content() }
                     }
                 }
             }
