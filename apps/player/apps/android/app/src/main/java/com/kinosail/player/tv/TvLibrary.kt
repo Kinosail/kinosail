@@ -12,14 +12,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import kotlinx.coroutines.delay
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onInterceptKeyBeforeSoftKeyboard
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -38,6 +41,7 @@ import com.kinosail.player.design.SailBackdrop
 import com.kinosail.player.mobile.TitleCount
 import kotlinx.coroutines.launch
 
+@OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
@@ -75,7 +79,11 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
     BackHandler(state.selected != null && playingItem == null && photoItem == null) { catalog.closeDetail() }
-    BackHandler(destination != "home" && state.selected == null && playingItem == null && photoItem == null) { destination = "home" }
+    val goHome = {
+        TvFocusMemory.id = if (destination in setOf("search", "settings")) destination else "browse:$destination"
+        destination = "home"
+    }
+    BackHandler(destination != "home" && state.selected == null && playingItem == null && photoItem == null) { goHome() }
     if (playingItem != null) {
         PlaybackScreen(requireNotNull(playingItem), viewer, true, close = { playingItem = null }, onNext = { playingItem = it }); return
     }
@@ -106,8 +114,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
             }
             run {
                 if (destination == "search") {
-                    val field = remember { FocusRequester() }
-                    LaunchedEffect(Unit) { runCatching { field.requestFocus() } }
+                    val imeVisible = WindowInsets.isImeVisible
                     LaunchedEffect(catalog.searchInput) {
                         if (catalog.searchInput.trim() == catalog.activeSearch) return@LaunchedEffect
                         delay(250)
@@ -117,13 +124,16 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                         OutlinedTextField(catalog.searchInput, onValueChange = { if (it.length <= 512) catalog.searchInput = it },
                             label = { androidx.compose.material3.Text(interfaceText("Search library")) }, singleLine = true,
                             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, showKeyboardOnFocus = false),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = { catalog.search(); keyboard?.hide() }),
                             colors = OutlinedTextFieldDefaults.colors(focusedTextColor = KinoColor.text, unfocusedTextColor = KinoColor.text,
                                 focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
                                 focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted,
                                 focusedLeadingIconColor = KinoColor.signal, unfocusedLeadingIconColor = KinoColor.muted),
-                            modifier = Modifier.weight(1f).focusRequester(field))
+                            modifier = Modifier.weight(1f).onInterceptKeyBeforeSoftKeyboard {
+                                if (it.key != Key.Back || imeVisible) false
+                                else { if (it.type == KeyEventType.KeyUp) goHome(); true }
+                            })
                         Button(onClick = { catalog.clearSearch(); keyboard?.hide() }) { Text(interfaceText("Clear search")) }
                     }
                     state.resultQuery?.let { query ->

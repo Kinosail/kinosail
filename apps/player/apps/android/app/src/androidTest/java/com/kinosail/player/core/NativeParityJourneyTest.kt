@@ -766,15 +766,17 @@ class NativeParityJourneyTest {
         org.junit.Assume.assumeTrue(tv)
         waitText("Continue watching")
         compose.onNodeWithText("Search").activate()
-        compose.waitUntil(10_000) { compose.onAllNodes(hasSetTextAction() and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        waitText("Search library")
         compose.onAllNodes(hasText("Search") and hasClickAction()).assertCountEquals(0)
         capture("search-focused")
-        compose.onNode(hasSetTextAction()).performTextInput("New")
-        compose.waitUntil(10_000) { compose.onAllNodes(hasText("“New”", substring = true)).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(hasSetTextAction()).activate()
+        instrumentation.sendStringSync("New")
+        compose.waitUntil(10_000) { compose.onAllNodes(hasText("New”", substring = true)).fetchSemanticsNodes().isNotEmpty() }
         waitFor(hasContentDescription("New Film") and hasClickAction())
         capture("search-live-results")
-        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-        compose.waitUntil(10_000) { compose.onAllNodes(hasText("Search") and hasClickAction() and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        val searchFocused = { compose.onAllNodes(hasText("Search") and hasClickAction() and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        repeat(3) { if (!searchFocused()) { instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK); compose.waitForIdle(); Thread.sleep(1_000) } }
+        compose.waitUntil(10_000) { searchFocused() }
     }
 
     @Test fun tvSettingsFollowAppleTvGroupsAndAskBeforeSignOut() = journey { fixture ->
@@ -800,6 +802,7 @@ class NativeParityJourneyTest {
         compose.onNodeWithText("Cancel").activate()
         compose.waitUntil(10_000) { compose.onAllNodesWithText("Sign out of this device?").fetchSemanticsNodes().isEmpty() }
         assertEquals(0, fixture.signOuts)
+        compose.waitUntil(10_000) { compose.onAllNodes(hasText("Sign out") and isFocused()).fetchSemanticsNodes().isNotEmpty() }
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         compose.waitUntil(10_000) { compose.onAllNodes(hasContentDescription("Settings") and isFocused()).fetchSemanticsNodes().isNotEmpty() }
     }

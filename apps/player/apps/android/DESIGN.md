@@ -90,8 +90,8 @@ button; Android Back closes them. Focus starts on Play or Resume. A show page ad
 row of Season buttons and an Episodes shelf of landscape cards. A failed show page puts
 focus on Try again. TV details use My List or In My List with a plus or check icon.
 
-TV Search opens with focus on the search field and shows results as the Viewer types.
-TV Settings follows Apple TV: the Kinosail mark and title on the left, and grouped
+TV Search shows results as the Viewer types. Back first closes the keyboard, then returns to Home with focus on Search.
+TV Settings follows Apple TV: a settings icon and title on the left, and grouped
 Server & Viewer Profile, Playback & library, and About lists on the right. Sign out
 asks first.
 Use bottom navigation on compact windows and a rail on wider, taller windows.

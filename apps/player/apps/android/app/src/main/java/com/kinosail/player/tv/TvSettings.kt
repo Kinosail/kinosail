@@ -1,7 +1,6 @@
 package com.kinosail.player.tv
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -51,7 +50,6 @@ internal fun TvSettings(viewer: Viewer, catalog: CatalogModel, signOut: () -> Un
             Column(Modifier.weight(0.38f).fillMaxHeight(), verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.End) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Image(painterResource(R.drawable.app_icon), contentDescription = null, modifier = Modifier.size(72.dp))
                     Icon(Icons.Filled.Settings, contentDescription = null, tint = KinoColor.signal, modifier = Modifier.size(48.dp))
                     Text(interfaceText("Settings"), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold,
                         color = KinoColor.text, modifier = Modifier.semantics { heading() })
