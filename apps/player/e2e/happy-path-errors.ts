@@ -31,7 +31,7 @@ export function cancelledWatchedHLS(value: PlaybackErrorEvidence): boolean {
 }
 
 export function captureHappyPathErrors(page: Page, browser: string) {
-  let enabled = true, document = 0, overflow = false;
+  let enabled = true, document = 0, overflow = false, loads = 0;
   const checks: Promise<void>[] = [];
   let action: WatchedAction | undefined;
   const records: PageError[] = [], failures: Failure[] = [], navigations: Navigation[] = [];
@@ -58,15 +58,17 @@ export function captureHappyPathErrors(page: Page, browser: string) {
     const entry = record(message.text() + source);
     if (!entry || browser !== "webkit" || !message.text().startsWith(webkitSelectStyle)) return;
     entry.styleCheck = "pending";
+    const started = loads;
     checks.push(page.evaluate(() => {
       if (window.document.querySelector("style")) return "style element";
       const blocked = [...window.document.querySelectorAll<HTMLElement>("[style]")].find(element => element.getAttribute("style")?.trim() && !element.style.length);
       return blocked ? `blocked style attribute on ${blocked.localName}` : "";
-    }).then(result => {entry.styleCheck = document === entry.document && page.url() === entry.documentURL ? result : "page changed";})
+    }).then(result => {entry.styleCheck = loads === started ? result : "page changed";})
       .catch(() => {entry.styleCheck = "page closed";}));
   });
   page.on("pageerror", error => record(error.message, error.name, error.stack ?? ""));
   page.on("request", request => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) loads++;
     if (request.resourceType() !== "xhr" || request.method() !== "GET" || request.frame() !== page.mainFrame() ||
         !new URL(request.url()).pathname.startsWith("/hls/")) return;
     if (requests.size >= 1024) {overflow = true; return;}
