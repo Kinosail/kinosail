@@ -2,7 +2,8 @@ import type {Page, Request} from "@playwright/test";
 
 type Failure = {url: string; document: number; time: number; method: string; resource: string; failure: string; status: number | null; redirected: boolean};
 type Navigation = {document: number; time: number; committed: number; from: string; to: string; method: string; redirectMethod: string; status: number; redirectStatus: number; newDocument: boolean; timeOrigin?: number};
-type PageError = {document: number; documentURL: string; time: number; name: string; message: string; stack: string};
+type PageError = {document: number; documentURL: string; time: number; name: string; message: string; stack: string; selectStyle?: boolean};
+const webkitSelectStyle = "Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' does not appear in the style-src directive of the Content Security Policy.";
 type WatchedAction = {document: number; time: number; item: string; timeOrigin: number};
 export type PlaybackErrorEvidence = PageError & {browser: string; origin: string; action?: WatchedAction; failures: Failure[]; navigations: Navigation[]};
 
@@ -30,7 +31,7 @@ export function cancelledWatchedHLS(value: PlaybackErrorEvidence): boolean {
 }
 
 export function captureHappyPathErrors(page: Page, browser: string) {
-  let enabled = true, document = 0, overflow = false;
+  let enabled = true, document = 0, overflow = false, checks = 0;
   let action: WatchedAction | undefined;
   const records: PageError[] = [], failures: Failure[] = [], navigations: Navigation[] = [];
   const requests = new Map<Request, Failure>(), posts = new Map<Request, {document: number; time: number; status: number}>();
@@ -39,7 +40,9 @@ export function captureHappyPathErrors(page: Page, browser: string) {
   const record = (message: string, name = "", stack = "") => {
     if (!enabled) return;
     if (records.length >= 1024) {overflow = true; return;}
-    records.push({document, documentURL: page.url(), time: Date.now(), message, name, stack});
+    const entry: PageError = {document, documentURL: page.url(), time: Date.now(), message, name, stack};
+    records.push(entry);
+    return entry;
   };
   page.on("console", message => {
     if (!enabled || message.type() !== "error") return;
@@ -51,7 +54,12 @@ export function captureHappyPathErrors(page: Page, browser: string) {
     const location = message.location();
     let source = "";
     try { source = location.url ? ` at ${new URL(location.url).pathname}:${location.lineNumber}:${location.columnNumber}` : ""; } catch {   }
-    record(message.text() + source);
+    const entry = record(message.text() + source);
+    if (!entry || browser !== "webkit" || message.text() !== webkitSelectStyle || location.url !== entry.documentURL) return;
+    checks++;
+    page.evaluate(() => Boolean(window.document.querySelector("select")) && !window.document.querySelector("style, [style]"))
+      .then(selectOnly => {entry.selectStyle = selectOnly && document === entry.document && page.url() === entry.documentURL;})
+      .catch(() => {}).finally(() => {checks--;});
   });
   page.on("pageerror", error => record(error.message, error.name, error.stack ?? ""));
   page.on("request", request => {
@@ -115,6 +123,7 @@ export function captureHappyPathErrors(page: Page, browser: string) {
       const remaining = [...failures], unexpected: string[] = [];
       accepted = [];
       for (const error of records) {
+        if (error.selectStyle) continue;
         const origin = new URL(error.documentURL).origin;
         const index = remaining.findIndex(failure => cancelledWatchedHLS({...error, origin, browser, action, failures: [failure], navigations}));
         if (index < 0) unexpected.push(`${error.message} (${new URL(error.documentURL).pathname})`);
@@ -127,6 +136,7 @@ export function captureHappyPathErrors(page: Page, browser: string) {
       return unexpected;
     },
     cancellations: () => accepted,
+    settled: () => checks === 0,
     evidence: () => records.map(error => ({...error, browser, action, origin: new URL(error.documentURL).origin, failures, navigations, pendingRequests: [...requests.values()]})),
   };
 }
