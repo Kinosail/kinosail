@@ -14,6 +14,7 @@ import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -474,9 +475,9 @@ class LivePlaybackOverlayTest {
                 try {
                     waitForText("Search")
                     compose.onNodeWithText("Search").performClick()
-                    waitForText("Search library")
-                    compose.onNodeWithText("Search library").performTextInput(title)
-                    compose.onNodeWithText("Search library").performImeAction()
+                    waitForText("Search your library")
+                    compose.onNode(hasSetTextAction()).performTextInput(title)
+                    compose.onNode(hasSetTextAction()).performImeAction()
                     compose.waitUntil(10_000) {
                         var hidden = false
                         scenario.onActivity {
@@ -485,7 +486,7 @@ class LivePlaybackOverlayTest {
                         }
                         hidden
                     }
-                    waitForText("Results: 1 · “$title”")
+                    waitForText("1 title")
                     compose.waitUntil(30_000) {
                         compose.onAllNodesWithContentDescription(title).fetchSemanticsNodes().isNotEmpty()
                     }
