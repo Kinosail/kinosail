@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -569,7 +570,7 @@ class LivePlaybackOverlayTest {
             if (compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isEmpty()) null else speedLabel(),
             if (compose.onAllNodesWithText("Captions ", substring = true).fetchSemanticsNodes().isEmpty()) null else captionsLabel())
         for (label in actions) {
-            val node = compose.onNodeWithText(label).assertIsDisplayed()
+            val node = compose.onNodeWithText(label, useUnmergedTree = true).assertIsDisplayed()
             val bounds = node.fetchSemanticsNode().boundsInWindow
             assertTrue("$label fits the captured screen", bounds.left >= 0 && bounds.top >= 0 &&
                 bounds.right <= pixels.width && bounds.bottom <= pixels.height)
@@ -596,7 +597,7 @@ class LivePlaybackOverlayTest {
         val pixels = screenPixels()
         val root = File(instrumentation.targetContext.filesDir, "video-overlay").apply { mkdirs() }
         File(root, "$name.png").outputStream().use { pixels.compress(Bitmap.CompressFormat.PNG, 100, it) }
-        File(root, "$name-semantics.txt").writeText(compose.onRoot().printToString())
+        File(root, "$name-semantics.txt").writeText(compose.onAllNodes(isRoot()).printToString())
         return pixels
     }
 
