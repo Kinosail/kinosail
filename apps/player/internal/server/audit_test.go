@@ -17,3 +17,7 @@ func TestActivityJournalSurvivesRestartAndStaysOutOfPortableBackup(t *testing.T)
 func TestRepeatedDenialsFromOneSourceStayBounded(t *testing.T) {
 	auditFixture.RepeatedDenialsFromOneSourceStayBounded(t)
 }
+
+func TestUntrustedRequestTextStaysInActivityJournal(t *testing.T) {
+	auditFixture.UntrustedRequestTextStaysInActivityJournal(t)
+}

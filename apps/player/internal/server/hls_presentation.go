@@ -34,8 +34,11 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	if start > 0 {
 		arguments = append(arguments, "-ss", ffmpegSeconds(start))
 	}
-	arguments = append(arguments, "-i", item.Path)
 	refill, _ := ctx.Value(transcodeHLSOutputKey{}).(*transcodeHLSOutput)
+	if refill == nil {
+		arguments = hlsSkippedTailInput(arguments, manager.probe.facts(ctx, item).Duration, start, recipe)
+	}
+	arguments = append(arguments, "-i", item.Path)
 	if refill != nil {
 		arguments = refill.input(arguments, item.Path)
 	}

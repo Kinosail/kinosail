@@ -231,7 +231,7 @@ func (tracker *HTTPTracker) Event(request *http.Request, category, action, targe
 
 func (tracker *HTTPTracker) Record(event Event) {
 	if tracker != nil && tracker.journal != nil {
-		tracker.journal.Record(event)
+		tracker.journal.Record(boundedEvent(event))
 	}
 }
 

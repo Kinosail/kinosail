@@ -131,6 +131,9 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 	if err != nil {
 		return nil, err
 	}
+	if saved, found := readCopiedProjection(directory, filepath.Dir(name), options.Cache); found {
+		manifest = saved
+	}
 	offset, valid := hlsSegmentOffset(manifest, filepath.Base(name), duration)
 	playable := hlsPlaybackDuration(recipe, duration)
 	indexed := false
