@@ -175,12 +175,14 @@ class SearchFeedbackJourneyTest {
         compose.onNodeWithText("Results: 96 · “Fictional”").assertIsDisplayed()
         val clear = compose.onNodeWithText("Clear search").assertIsDisplayed()
         if (tv) {
+            await { !catalog.state.loading && fixture.catalogQueries.last() == "draft" }
             focus(clear)
-            clear.performKeyInput { pressKey(ComposeKey.DirectionCenter) }
-        } else clear.performClick()
+        }
+        val beforeClear = firstPages()
+        if (tv) clear.performKeyInput { pressKey(ComposeKey.DirectionCenter) } else clear.performClick()
         await { !catalog.state.loading && !catalog.hasActiveSearch && fixture.catalogQueries.last().isEmpty() }
         assertTrue(catalog.searchInput.isEmpty())
-        assertEquals("One Clear action must send one new query", submittedRequests + 1, firstPages())
+        assertEquals("One Clear action must send one new query", beforeClear + 1, firstPages())
         await { compose.onAllNodesWithText("Results: 96").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Results: 96").assertIsDisplayed()
         if (tv) clear.assertIsFocused()
