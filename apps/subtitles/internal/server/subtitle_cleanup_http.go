@@ -75,16 +75,16 @@ func previewSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.H
 	return func(writer http.ResponseWriter, request *http.Request) {
 		languages, forced, _, err := subtitleCleanupInput(request, false)
 		if err != nil {
-			localizedError(writer, request, err.Error(), http.StatusBadRequest)
+			cleanupPreviewError(writer, request, "Choose the languages to keep, then select Preview files to hide.", http.StatusBadRequest)
 			return
 		}
 		if settings == nil || !slices.Equal(settings.subtitleLanguages(), languages) && settings.editable("subtitles.language") != nil {
-			localizedError(writer, request, "preferred subtitle language is managed by deployment configuration", http.StatusConflict)
+			cleanupPreviewError(writer, request, "preferred subtitle language is managed by deployment configuration", http.StatusConflict)
 			return
 		}
 		plan, err := planSubtitleCleanup(index, languages, forced)
 		if err != nil {
-			localizedError(writer, request, "subtitle cleanup preview is unavailable", http.StatusServiceUnavailable)
+			cleanupPreviewError(writer, request, "subtitle cleanup preview is unavailable", http.StatusServiceUnavailable)
 			return
 		}
 		files := plan.Files
@@ -96,6 +96,10 @@ func previewSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.H
 			localizedError(writer, request, "subtitle cleanup preview is unavailable", http.StatusInternalServerError)
 		}
 	}
+}
+
+func cleanupPreviewError(writer http.ResponseWriter, request *http.Request, message string, status int) {
+	localizedSettingsPageError(writer, request, "Preview files to hide again", message, "/settings#cleanup", status)
 }
 
 func hideSubtitleCleanup(index *libraryIndex, settings *settingsStore) http.HandlerFunc {

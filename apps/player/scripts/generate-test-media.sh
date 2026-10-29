@@ -146,11 +146,17 @@ cat >"$epub_source/META-INF/container.xml" <<'EOF'
 EOF
 cat >"$epub_source/OEBPS/content.opf" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
-<package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="book-id"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="book-id">kinosail-example-epub</dc:identifier><dc:title>Example EPUB Book</dc:title><dc:language>en</dc:language></metadata><manifest><item id="chapter" href="chapter.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="chapter"/></spine></package>
+<package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="book-id"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="book-id">kinosail-example-epub</dc:identifier><dc:title>Example EPUB Book</dc:title><dc:language>en</dc:language></metadata><manifest><item id="chapter" href="chapter.xhtml" media-type="application/xhtml+xml"/><item id="style" href="style.css" media-type="text/css"/><item id="figure" href="figure.svg" media-type="image/svg+xml"/></manifest><spine><itemref idref="chapter"/></spine></package>
 EOF
 cat >"$epub_source/OEBPS/chapter.xhtml" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><title>Example Chapter</title></head><body><h1>Example Chapter</h1><p>An original generated chapter written to test the Kinosail EPUB reader.</p></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><title>Example Chapter</title><link rel="stylesheet" type="text/css" href="style.css"/></head><body><h1>Example Chapter</h1><p>An original generated chapter written to test the Kinosail EPUB reader.</p><h2>A quiet harbor</h2><p>The boat left the harbor before sunrise. The water was calm, and the crew checked each rope twice before they raised the sail. Nobody spoke while the town lights grew small behind them, because each person was thinking about the long day ahead and the weather that the radio had promised.</p><figure><img src="figure.svg" alt="A generated sail shape"/><figcaption>A generated sail shape.</figcaption></figure><p class="publisher-note">This paragraph uses a style from the book. Read the <a href="#notes">notes</a> at the end of the chapter.</p><h2 id="notes">Notes</h2><p>This chapter is original generated text for testing. It contains headings, paragraphs, a figure, and a link.</p><script>document.documentElement.setAttribute("data-book-script","ran")</script></body></html>
+EOF
+cat >"$epub_source/OEBPS/style.css" <<'EOF'
+.publisher-note{font-style:italic}
+EOF
+cat >"$epub_source/OEBPS/figure.svg" <<'EOF'
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"><rect width="640" height="360" fill="#20271e"/><path d="M320 40 L480 300 L180 300 Z" fill="#c4ff47"/></svg>
 EOF
 (
   cd "$epub_source"

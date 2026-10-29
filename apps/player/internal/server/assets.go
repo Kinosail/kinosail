@@ -40,6 +40,8 @@ var (
 	homeCSS []byte
 	//go:embed static/mobile-tabs.css
 	mobileTabsCSS []byte
+	//go:embed static/text-scale.css
+	textScaleCSS []byte
 	//go:embed static/quick-connect.css
 	quickConnectCSS []byte
 	//go:embed static/connect.js
@@ -125,7 +127,7 @@ func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 	_, _ = writer.Write(serviceWorker)
 }
 
-var applicationStyle = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, mobileTabsCSS, quickConnectCSS, settingsCSS}, nil)
+var applicationStyle = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, mobileTabsCSS, quickConnectCSS, settingsCSS, textScaleCSS}, nil)
 
 var serveStyle = compressedAsset(applicationStyle, "text/css; charset=utf-8")
 
