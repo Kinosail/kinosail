@@ -13,8 +13,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -41,8 +39,9 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     var destination by remember { mutableStateOf("home") }
     var playingItem by remember { mutableStateOf<CatalogItem?>(null) }
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
-    val detailFocus = remember { FocusRequester() }
     val grid = rememberLazyGridState()
+    val homeList = androidx.compose.foundation.lazy.rememberLazyListState()
+    LaunchedEffect(Unit) { TvFocusMemory.id = TvFocusMemory.LAUNCH }
     val scope = rememberCoroutineScope()
     var jumpTarget by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(state.view, state.sort) { grid.scrollToItem(0) }
@@ -82,29 +81,23 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
     if (destination in setOf("home", "listen") && state.selected == null) {
         HomeScreen(viewer, catalog, true, nowPlaying, navigate, catalog::selectHomeItem, play = { playingItem = it },
-            listening = destination == "listen", settings = { navigate("settings") }); return
+            listening = destination == "listen", settings = { navigate("settings") }, list = homeList); return
     }
-    LaunchedEffect(state.selected?.id) {
-        if (state.selected != null) { withFrameNanos { }; detailFocus.requestFocus() }
+    if (state.selected != null) {
+        TvDetail(state.selected, catalog, play = { playingItem = state.selected }, viewPhoto = { photoItem = state.selected }); return
     }
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(48.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
-            val browsing = state.selected == null && destination != "settings"
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(if (state.selected != null) "Kinosail" else if (destination == "settings") interfaceText("Settings")
+                Text(if (destination == "settings") interfaceText("Settings")
                     else interfaceText(if (destination == "search") "Search" else LIBRARY_VIEWS.first { it.first == destination }.second),
                     style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
                     modifier = Modifier.semantics { heading() })
-                Box(Modifier.weight(1f)) { if (browsing && destination != "search" && state.items.isNotEmpty()) TitleCount(state.total) }
-                Button(onClick = { navigate("home") }) { Text(interfaceText("Home")) }
-                if (destination != "search") Button(onClick = { navigate("search") }) { Text(interfaceText("Search")) }
-                if (destination != "settings") Button(onClick = { navigate("settings") }) { Text(interfaceText("Settings")) }
+                Spacer(Modifier.weight(1f))
+                if (destination !in setOf("search", "settings") && state.items.isNotEmpty()) TitleCount(state.total)
             }
-            if (state.selected != null) {
-                TvDetail(state.selected, catalog, Modifier.focusRequester(detailFocus), play = { playingItem = state.selected },
-                    viewPhoto = { photoItem = state.selected })
-            } else if (destination == "settings") {
+            if (destination == "settings") {
                 TvSettings(viewer, connection::signOut)
             } else {
                 if (destination == "search") {
@@ -162,21 +155,23 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
 }
 
 @Composable
-internal fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: Modifier,
-                      play: () -> Unit, viewPhoto: () -> Unit) {
-    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        MediaHero(item, catalog, tv = true) {
+internal fun TvDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit, viewPhoto: () -> Unit) {
+    val firstModifier = Modifier.initialTvFocus(item.id)
+    Box(Modifier.fillMaxSize().background(KinoColor.background)) {
+    TvBackdrop(item, catalog)
+    Column(Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(horizontal = 48.dp, vertical = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        TvHeroInformation(item, catalog, listOf(item.year, item.rating, item.genres).filter(String::isNotEmpty).joinToString(" · ")) {
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 if (item.kind in setOf("video", "music", "audiobook")) Button(onClick = play, modifier = firstModifier) {
                     Text(interfaceText(item.playLabel))
                 } else if (item.kind == "photo") Button(onClick = viewPhoto, enabled = item.stream.isNotEmpty(), modifier = firstModifier) {
                     Text(interfaceText("View photo"))
                 }
-                Button(onClick = catalog::closeDetail) { Text(interfaceText("Back")) }
-            }
-            catalog.state.listed?.let { listed ->
-                Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
-                    Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
+                catalog.state.listed?.let { listed ->
+                    Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
+                        Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
+                    }
                 }
             }
         }
@@ -187,6 +182,7 @@ internal fun TvDetail(item: CatalogItem, catalog: CatalogModel, firstModifier: M
             Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
             if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
         }
+    }
     }
 }
 

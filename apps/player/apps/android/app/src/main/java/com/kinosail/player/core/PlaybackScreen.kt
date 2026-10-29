@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.focus.FocusRequester
@@ -82,6 +83,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     val speedButtonFocus = remember { FocusRequester() }
     val retryFocus = remember { FocusRequester() }
     val trackButtonFocus = remember { FocusRequester() }
+    val promptFocus = remember { FocusRequester() }
+    val surfaceFocus = remember { FocusRequester() }
     val context = LocalContext.current
     var controlsVisible by remember(player) { mutableStateOf(true) }
     val accessibleControls = (context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager)?.isEnabled == true
@@ -120,6 +123,13 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
             playback.start(item, viewer, tv)
     }
     LaunchedEffect(speedPicker, trackPicker) { if (speedPicker || trackPicker) playerView?.hideController() }
+    LaunchedEffect(playback.autoNext) { playback.advanceAutomatically(onNext) }
+    val prompt = playback.prompt.takeIf { !inPip && !audio }
+    LaunchedEffect(prompt?.title, tv) {
+        if (!tv || speedPicker || trackPicker) return@LaunchedEffect
+        withFrameNanos { }
+        runCatching { if (prompt != null) promptFocus.requestFocus() else surfaceFocus.requestFocus() }
+    }
     LaunchedEffect(playback.retryable, tv) { if (playback.retryable && tv) retryFocus.requestFocus() }
     DisposableEffect(playback, audio) { onDispose { if (!audio) playback.stop() } }
     DisposableEffect(player, videoPipHost) {
@@ -142,7 +152,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         if (playerView != null) AndroidView(
             factory = { playerView.apply { if (tv) post { requestFocus() } } },
             update = { it.player = player; it.useController = !inPip },
-            modifier = Modifier.fillMaxSize().then(if (tv) Modifier.focusable().onKeyEvent {
+            modifier = Modifier.fillMaxSize().then(if (tv) Modifier.focusRequester(surfaceFocus).focusable().onKeyEvent {
                 it.nativeKeyEvent.keyCode != KeyEvent.KEYCODE_BACK &&
                     playerView.dispatchKeyEvent(it.nativeKeyEvent)
             } else Modifier),
@@ -169,8 +179,6 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                         focus = trackButtonFocus)
                     else if (playback.captionsAvailable) PlaybackAction(
                         if (playback.captionsEnabled) "Captions on" else "Captions off", tv, playback::toggleCaptions)
-                    if (playback.nextItemId != null) PlaybackAction(interfaceText("Next episode"), tv,
-                        { playback.playNext(onNext) }, enabled = !playback.nextBusy)
                 }
                 if (casting?.active != null) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     TextButton(onClick = { casting.skip(-30.0) }) { Text(interfaceText("Back 30"), color = KinoColor.signal) }
@@ -214,6 +222,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 }
             }
         }
+        if (prompt != null && !speedPicker && !trackPicker)
+            PlaybackPromptButton(prompt, tv, controlsVisible, promptFocus) { playback.choosePrompt(onNext) }
         if (!inPip) ScrubPreview(playerView, playback, tv)
         if (speedPicker && !inPip) PlaybackChoiceSheet(interfaceText("Playback speed"), listOf(PlaybackChoiceGroup(null,
             PlaybackModel.SPEEDS.map { rate -> PlaybackChoice(if (rate == 1f) interfaceText("Normal") else speedText(rate),

@@ -26,20 +26,26 @@ import com.kinosail.player.design.SailBackdrop
 @Composable
 internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowPlaying: CatalogItem?,
                         browse: (String) -> Unit, open: (CatalogItem) -> Unit, play: (CatalogItem) -> Unit,
-                        listening: Boolean = false, settings: () -> Unit = {}) {
+                        listening: Boolean = false, settings: () -> Unit = {},
+                        list: androidx.compose.foundation.lazy.LazyListState = rememberLazyListState()) {
     val model: HomeModel = viewModel()
     val state = model.state.copy(listening = listening)
     LaunchedEffect(viewer.serverId, viewer.id) { model.open(viewer) }
     AutoRetry(state.notice != null && !state.loading, model::retry)
-    DisposableEffect(Unit) { onDispose { model.reset() } }
+    DisposableEffect(Unit) { onDispose { if (!tv) model.reset() } }
     var heroItem by remember(viewer.id, listening) { mutableStateOf<CatalogItem?>(null) }
-    val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val search = remember { androidx.compose.ui.focus.FocusRequester() }
+    var searchFocused by remember { mutableStateOf(false) }
+    androidx.activity.compose.BackHandler(tv && !searchFocused) { runCatching { search.requestFocus() } }
+    val launchTarget = listOf(state.tvWatchingRail, state.movies, state.shows, state.unwatchedShows, state.unwatchedMovies)
+        .firstNotNullOfOrNull { it.firstOrNull()?.id }
+    LaunchedEffect(launchTarget) { if (tv && launchTarget != null && TvFocusMemory.id == TvFocusMemory.LAUNCH) TvFocusMemory.id = launchTarget }
     val spotlight = !tv && state.featured?.let { spotlightFits(it, androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp) } == true
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
         Column(if (tv) Modifier.fillMaxSize().safeDrawingPadding() else Modifier.fillMaxSize()) {
-            if (tv) TvHomeHeader(listening, browse, settings)
+            if (tv) TvHomeHeader(listening, browse, settings, search) { searchFocused = it }
             LazyColumn(Modifier.weight(1f), state = list,
                 contentPadding = if (tv) PaddingValues(start = 48.dp, top = 8.dp, end = 48.dp, bottom = 48.dp) else PaddingValues(20.dp),
                 verticalArrangement = Arrangement.spacedBy(32.dp)) {
@@ -102,7 +108,6 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                     HomeShelf(title, items, catalog, tv, open = open)
                 } }
                 if (!listening && state.movieGenres.isNotEmpty()) {
-                    if (tv) item { Text(interfaceText("Movie genres"), style = MaterialTheme.typography.headlineMedium, color = KinoColor.text) }
                     state.movieGenres.forEach { (genre, movies) -> item { HomeShelf(genre, movies, catalog, tv, open = open) } }
                 }
                 if (!state.loading && state.notice == null && state.featured == null) item {

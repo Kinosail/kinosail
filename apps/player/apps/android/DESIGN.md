@@ -9,6 +9,8 @@ changing Android screens. Translate controls into Android conventions.
 | iPhone Home | Phone Home | Watching or Listening feature, then continuation and recent shelves |
 | iPad navigation | Tablet navigation | Use available window space; Android uses a navigation rail |
 | Apple TV Home | Android TV Home | Fixed Search and Settings, landscape continuation, Browse, recent shelves |
+| Apple TV details and show pages | TvDetail and TvShowPage | Full-bleed backdrop hero, Season row, Episodes shelf |
+| PlaybackPrompt | PlaybackPromptButton | Skip Intro, Skip Recap, Skip, and Next Episode at the trailing edge |
 | Personal tabs | Phone and tablet tabs | Home, TV Shows, Movies, Search, and persistent More; save choices per Viewer Profile |
 | iPhone Settings | Phone and tablet Settings | Server & Viewer Profile, Playback & library, Personalize, and About sections; Sign out asks first |
 | Playback preferences | Playback preferences | Speed, Audio language, Subtitles, Boost Dialog, and Normalize Loudness save automatically |
@@ -42,10 +44,17 @@ large text keep `MediaHero`.
 The video player header follows iPhone: a round Close player button on phones (Back
 closes on TV), the bold title with the year or season and episode, and one row of pill
 actions over a top fade. Each action appears once: Speed, then Audio & captions when
-there is more than one track, otherwise a Captions on/off toggle, then Next episode.
+there is more than one track, otherwise a Captions on/off toggle.
 The Media3 settings gear stays hidden because it would repeat Speed and Audio. The
 Cast button appears only when Cast is ready; a failed Cast setup hides it and logs a
 warning instead of showing a message.
+
+Server markers drive one white prompt at the trailing edge, above the timeline. During
+an intro, recap, or commercial it reads Skip Intro, Skip Recap, or Skip. From the credits,
+or the last 30 seconds without markers, it reads Next Episode. On TV the prompt takes
+focus. Marker types in the Viewer's automatic skip list skip without a prompt. When an
+episode ends, the next one starts by itself up to three times in a row; any choice by the
+Viewer resets that count.
 
 Speed and Audio & captions open one list each. Phones use a bottom sheet and TV uses a
 right-side panel. Each row has a check on the current choice, and choosing a row applies
@@ -66,6 +75,16 @@ them beside each other. Large text restores the stacked arrangement.
 
 Keep TV Search and Settings above the scrolling Home content. Both remain
 reachable after scrolling; Android Back returns from each destination to Home.
+TV Home opens with focus on the first Continue watching card. Back on Home moves
+focus to Search, and Back on Search leaves the app. Back from details, a show, a
+grid, Search, or Settings returns focus to the card or button that opened it.
+TV library grids show only the title, title count, and Sort above the cards.
+TV cards mark unwatched titles with an Electric dot at the top-trailing corner.
+
+TV details and show pages use a full-bleed backdrop that fades to the canvas, with
+the title, metadata, plot, and actions at the bottom-leading edge. They have no Back
+button; Android Back closes them. Focus starts on Play or Resume. A show page adds a
+row of Season buttons and an Episodes shelf of landscape cards.
 Use bottom navigation on compact windows and a rail on wider, taller windows.
 More keeps unpinned destinations and Customize tabs available. Settings is a
 destination like the others, so a Viewer can pin it as a tab. Back from a

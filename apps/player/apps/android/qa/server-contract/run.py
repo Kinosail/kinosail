@@ -56,7 +56,7 @@ if not platforms:
 runtime.append(str(platforms[-1]))
 core = android / "app/src/main/java/com/kinosail/player/core"
 sources = [core / f"{name}.kt" for name in ["ServerAddress", "ServerApi", "StrictJson", "PlaybackApi",
-           "PlaybackCapabilities", "MediaTimeline", "CatalogApi", "CatalogState", "CollectionsApi", "WatchProgress", "ProgressApi", "NetworkDiagnostic",
+           "PlaybackCapabilities", "PlaybackPrompt", "MediaTimeline", "CatalogApi", "CatalogState", "CollectionsApi", "WatchProgress", "ProgressApi", "NetworkDiagnostic",
            "PlaybackPreferencesApi", "AccountApi"]]
 tests = android / "app/src/test/java/com/kinosail/player/core"
 sources += [tests / "PlaybackApiTest.kt", tests / "CatalogPageLimitTest.kt", fixture / "main.kt"]

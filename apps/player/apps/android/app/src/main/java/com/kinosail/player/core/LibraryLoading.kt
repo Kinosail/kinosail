@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -34,15 +35,7 @@ internal fun LibraryLoading(home: Boolean = false, tv: Boolean = false, show: Bo
                 Placeholder(Modifier.width(120.dp).height(48.dp))
             }
         }
-        if (show && tv) Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-            Column(Modifier.width(180.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Placeholder(Modifier.fillMaxWidth().height(28.dp))
-                Placeholder(Modifier.fillMaxWidth().height(48.dp))
-            }
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(12.dp)) {
-                items(3) { LoadingCard(300.dp, 16f / 9f) }
-            }
-        } else if (show) BoxWithConstraints {
+        if (show) BoxWithConstraints {
             val width = maxWidth
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Placeholder(Modifier.width(180.dp).height(28.dp))
@@ -64,6 +57,27 @@ internal fun LibraryLoading(home: Boolean = false, tv: Boolean = false, show: Bo
             val ratio = if (view in setOf("music", "audiobooks")) 1f else if (view == "photos") 16f / 9f else 2f / 3f
             Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
                 repeat(columns) { LoadingCard(width, ratio) }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun TvShowLoading() {
+    val hero = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp.dp * 0.62f
+    Column(Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = "Loading library" },
+        verticalArrangement = Arrangement.spacedBy(28.dp)) {
+        Column(Modifier.fillMaxWidth().heightIn(min = hero), verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Bottom)) {
+            Placeholder(Modifier.width(360.dp).height(44.dp))
+            Placeholder(Modifier.width(220.dp).height(22.dp))
+            Placeholder(Modifier.width(480.dp).height(44.dp))
+            Placeholder(Modifier.width(180.dp).height(40.dp))
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) { repeat(2) { Placeholder(Modifier.width(110.dp).height(40.dp)) } }
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Placeholder(Modifier.width(140.dp).height(28.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+                repeat(4) { LoadingCard(homeCardWidth(tv = true, landscape = true), 16f / 9f, metadata = true) }
             }
         }
     }
