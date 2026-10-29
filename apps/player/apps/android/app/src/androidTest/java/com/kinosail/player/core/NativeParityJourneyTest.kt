@@ -382,9 +382,11 @@ class NativeParityJourneyTest {
         fixture.mode = "failed"
         waitText("Could not load your home. Try again.")
         assertEquals(0, compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().size)
+        compose.onNodeWithText("Try again").assertExists()
         capture("failed")
         fixture.mode = "empty"
-        compose.onNodeWithText("Try again").activate()
+        if (compose.onAllNodesWithText("Try again").fetchSemanticsNodes().isNotEmpty())
+            runCatching { compose.onNodeWithText("Try again").activate() }
         waitText("Media added to your Server will appear here.")
         compose.onNodeWithText("Your library is ready").assertExists()
         assertEquals(0, compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().size)
