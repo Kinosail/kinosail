@@ -9,7 +9,7 @@ struct CollectionsScreen: View {
                 return try await client.collections(policy: policy)
             }) { names in
                 if names.isEmpty {
-                    FeaturePlaceholder(title: "No collections yet", symbol: "rectangle.stack", message: "Collections from your Server will appear here.")
+                    FeaturePlaceholder(title: "No collections yet", symbol: PlayerTab.collections.symbol, message: "Collections from your Server will appear here.")
                 } else {
                     #if os(tvOS)
                     Text("Collections").font(.system(.largeTitle, design: .rounded).bold())
@@ -18,7 +18,7 @@ struct CollectionsScreen: View {
                     LazyVStack(alignment: .leading, spacing: 20) {
                         ForEach(names, id: \.self) { name in
                             NavigationLink(value: ScreenDestination.collection(name)) {
-                                Label(name, systemImage: "rectangle.stack").font(.title3)
+                                Label(name, systemImage: PlayerTab.collections.symbol).font(.title3)
                                     .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
                                     #if os(tvOS)
                                     .padding(12)
@@ -63,7 +63,7 @@ struct CollectionScreen: View {
                 guard let client = session.client else { throw ClientError.http(401) }
                 return try await client.collection(name: name, policy: policy)
             }) { items in
-                if items.isEmpty { FeaturePlaceholder(title: "No titles yet", symbol: "rectangle.stack", message: "This collection is empty.") }
+                if items.isEmpty { FeaturePlaceholder(title: "No titles yet", symbol: PlayerTab.collections.symbol, message: "This collection is empty.") }
                 else {
                     #if os(tvOS)
                     Text(name).font(.system(.largeTitle, design: .rounded).bold())

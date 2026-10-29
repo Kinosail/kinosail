@@ -83,6 +83,8 @@ enum KinoTheme {
 private struct SecondaryControlForeground: ViewModifier {
     #if os(tvOS)
     @FocusState private var focused: Bool
+    #else
+    @Environment(\.isEnabled) private var enabled
     #endif
 
     func body(content: Content) -> some View {
@@ -91,7 +93,7 @@ private struct SecondaryControlForeground: ViewModifier {
             .foregroundStyle(focused ? KinoTheme.tvOSPrimaryInk : KinoTheme.text)
             .focused($focused)
         #else
-        content.foregroundStyle(KinoTheme.text)
+        content.foregroundStyle(enabled ? KinoTheme.text : KinoTheme.muted.opacity(0.45))
         #endif
     }
 }

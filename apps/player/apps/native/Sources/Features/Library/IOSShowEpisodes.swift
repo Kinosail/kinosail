@@ -123,7 +123,8 @@ private struct IOSEpisodeRow: View {
     private var accessibilitySummary: String {
         let state = isNext ? "next" : item.progress.watched ? "watched" :
             item.progress.seconds > 0 ? "resume at \(item.progress.seconds.clock)" : ""
-        return "Episode \(item.episode), \(title)" + (state.isEmpty ? "" : ", \(state)")
+        let number = String(localized: "Episode \(item.episode)")
+        return (title == number ? number : "\(number), \(title)") + (state.isEmpty ? "" : ", \(state)")
     }
 
     var body: some View {

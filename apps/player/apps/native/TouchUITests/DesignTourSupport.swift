@@ -46,7 +46,11 @@ extension XCTestCase {
     }
 
     @MainActor func tourRecord(_ name: String, _ app: XCUIApplication) {
-        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        let screenshot = XCUIScreen.main.screenshot()
+        if let folder = ProcessInfo.processInfo.environment["KINOSAIL_TOUR_SHOTS"], !folder.isEmpty {
+            try? screenshot.pngRepresentation.write(to: URL(fileURLWithPath: folder).appendingPathComponent("\(name).png"))
+        }
+        let attachment = XCTAttachment(screenshot: screenshot)
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)

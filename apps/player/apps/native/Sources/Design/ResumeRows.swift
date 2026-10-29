@@ -85,7 +85,7 @@ private struct ResumeRow: View {
                         .videoZoomArtwork()
                 }
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
+                    Text(item.displayTitle).font(.headline).foregroundStyle(KinoTheme.text)
                         .lineLimit(dynamicType.isAccessibilitySize ? nil : 2)
                     #if os(tvOS)
                     let subtitle = item.subtitleWithoutYear

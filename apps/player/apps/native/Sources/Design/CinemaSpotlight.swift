@@ -95,7 +95,7 @@ struct CinemaSpotlight<Actions: View, Secondary: View>: View {
                         .font(.caption.weight(.heavy)).tracking(1.6)
                         .foregroundStyle(KinoTheme.signal)
                 }
-                Text(title ?? item.title)
+                Text(title ?? item.displayTitle)
                     .font(.system(size: titleSize, weight: .bold, design: .rounded))
                     .tracking(-0.6)
                     .lineLimit(dynamicType.isAccessibilitySize ? nil : 3)
