@@ -19,6 +19,10 @@ func (provider TMDBDetails) TVMetadata(ctx context.Context, item library.Item, i
 	if item.Episode == 0 {
 		return
 	}
+	record.Title = item.Title
+	if record.Title == "" || record.Title == name || record.Title == item.Show || record.Title == item.ShowTitle {
+		record.Title = fmt.Sprintf("S%02dE%02d", item.Season, item.Episode)
+	}
 	var episode struct {
 		ID        int    `json:"id"`
 		Name      string `json:"name"`
