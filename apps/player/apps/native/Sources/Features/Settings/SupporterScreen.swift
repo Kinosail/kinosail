@@ -100,7 +100,7 @@ struct SupporterScreen: View {
         .background(KinoTheme.background)
         .navigationTitle("Supporter")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar { if showsDismiss { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } } }
+        .toolbar { if showsDismiss { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } } }
         #endif
         .task(id: session.supporterRevision) { await load() }
     }

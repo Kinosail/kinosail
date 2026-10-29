@@ -24,7 +24,7 @@ struct MediaLinkScreen: View {
                 }
             }
         }
-        .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
+        .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
     }
 }
