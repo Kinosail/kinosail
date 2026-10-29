@@ -12,6 +12,7 @@ struct LibraryEmptyState {
             switch view {
             case .list: (title, symbol, message) = ("My List is empty", "bookmark", "Save a title with My List to keep it here.")
             case .history: (title, symbol, message) = ("Nothing to continue", "clock.arrow.circlepath", "Play or read something to pick up where you left off.")
+            case .all: (title, symbol, message) = ("Nothing here yet", "play.rectangle", "Add Library Content to begin.")
             default: (title, symbol, message) = ("Nothing here yet", "play.rectangle", "Try another part of your library.")
             }
         }
