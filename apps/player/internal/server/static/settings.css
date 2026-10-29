@@ -70,3 +70,5 @@ html[data-settings-category=system] .settings-shell:not([data-settings-ready]) .
 html[data-settings-category=system] .settings-shell:not([data-settings-ready]) [data-settings-description-category=system]{display:inline}
 html[data-settings-category=migration] .settings-shell:not([data-settings-ready]) .settings-flow>[data-settings-category=migration]:not([role=alert]){display:block}
 html[data-settings-category=migration] .settings-shell:not([data-settings-ready]) [data-settings-description-category=migration]{display:inline}
+.segmented-choice>small{grid-column:1/-1;padding:.15rem .35rem .3rem}
+.settings-shell>section details>summary{min-height:44px;padding-block:.65rem;cursor:pointer}
