@@ -53,7 +53,7 @@ func (login *OIDCHTTP[T]) startFor(writer http.ResponseWriter, request *http.Req
 			login.hooks.Error(writer, request, "too many SSO requests are pending", http.StatusTooManyRequests)
 			return
 		}
-		login.hooks.Error(writer, request, "SSO is unavailable", http.StatusServiceUnavailable)
+		login.hooks.unavailable(writer, request, err, "SSO is unavailable", http.StatusServiceUnavailable)
 		return
 	}
 	http.SetCookie(writer, StateCookie(state, login.hooks.SecureRequest(request)))
