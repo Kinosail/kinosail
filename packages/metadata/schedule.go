@@ -24,13 +24,13 @@ func Schedule(ctx context.Context, available bool, observe func(func([]library.I
 		}
 	}
 	observe(func([]library.Item) { trigger() })
-	go healPeriodically(ctx, trigger)
+	go healPeriodically(ctx, healInterval, trigger)
 	go refreshScheduled(ctx, jobs, refresh)
 	return trigger
 }
 
-func healPeriodically(ctx context.Context, trigger func()) {
-	ticker := time.NewTicker(healInterval)
+func healPeriodically(ctx context.Context, interval time.Duration, trigger func()) {
+	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
 		select {
