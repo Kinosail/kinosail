@@ -21,6 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
@@ -41,17 +44,19 @@ import com.kinosail.player.R
 import com.kinosail.player.design.KinoColor
 
 @Composable
-internal fun TvHomeHeader(listening: Boolean, browse: (String) -> Unit, settings: () -> Unit) {
+internal fun TvHomeHeader(listening: Boolean, browse: (String) -> Unit, settings: () -> Unit, search: FocusRequester,
+                          searchFocused: (Boolean) -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 48.dp, vertical = 16.dp), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        Button(onClick = { browse("search") }, contentPadding = ButtonDefaults.ButtonWithIconContentPadding) {
+        Button(onClick = { TvFocusMemory.id = "search"; browse("search") }, contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+            modifier = Modifier.focusRequester(search).restoresTvFocus("search").onFocusChanged { searchFocused(it.isFocused) }) {
             Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(ButtonDefaults.IconSize))
             Spacer(Modifier.width(ButtonDefaults.IconSpacing))
             Text(interfaceText("Search"))
         }
         Spacer(Modifier.weight(1f))
         Button(onClick = { browse(if (listening) "home" else "listen") }) { Text(interfaceText(if (listening) "Watch" else "Listen")) }
-        IconButton(onClick = settings) { Icon(Icons.Filled.Settings, contentDescription = interfaceText("Settings")) }
+        IconButton(onClick = { TvFocusMemory.id = "settings"; settings() }, modifier = Modifier.restoresTvFocus("settings")) { Icon(Icons.Filled.Settings, contentDescription = interfaceText("Settings")) }
     }
 }
 
@@ -64,7 +69,8 @@ internal fun TvBrowseTiles(views: List<Pair<String, String>>, browse: (String) -
             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)) {
             items(views, key = { it.first }) { (view, title) ->
                 val label = interfaceText(title)
-                Card(onClick = { browse(view) }, modifier = Modifier.width(200.dp).semantics { contentDescription = label },
+                Card(onClick = { TvFocusMemory.id = "browse:$view"; browse(view) },
+                    modifier = Modifier.width(200.dp).restoresTvFocus("browse:$view").semantics { contentDescription = label },
                     colors = CardDefaults.colors(containerColor = KinoColor.surface)) {
                     Row(Modifier.fillMaxWidth().heightIn(min = 60.dp)
                         .background(Brush.linearGradient(listOf(KinoColor.raised, KinoColor.surface)))

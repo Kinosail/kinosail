@@ -6,11 +6,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
 )
 
-var (
-	updateStatusText        = updatecontrol.StatusText
-	updateManagerStatusText = updatecontrol.ManagerStatusText
-)
-
 func updateHTTP(checker *updateChecker) *updatecontrol.HTTPHandlers {
 	handlers, err := updatecontrol.NewHTTPHandlers(checker, updatecontrol.HTTPConfig{ReadJSON: readJSON, JSON: writeJSON, APIError: apiError, WebError: localizedError})
 	if err != nil {
