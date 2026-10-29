@@ -24,7 +24,7 @@ struct LoadingState: View {
                             HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true, showsSubtitle: true).frame(width: 390) } }
                             .padding(.vertical, 24)
                         }
-                        .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                        .scrollIndicators(.hidden).scrollDisabled(true).scrollClipDisabled().accessibilityHidden(true)
                     } else {
                         LazyVGrid(columns: ResumeRows.columns(accessibility: dynamicType.isAccessibilitySize), alignment: .leading, spacing: 28) {
                             ForEach(0..<2) { _ in resumeRow }
@@ -39,7 +39,7 @@ struct LoadingState: View {
                         HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<4) { _ in card(ratio: layout == .tvHomeAudio ? 1 : 2 / 3, showsSubtitle: layout == .tvHomeAudio).frame(width: 230) } }
                         .padding(.vertical, 24)
                     }
-                    .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
+                    .scrollIndicators(.hidden).scrollDisabled(true).scrollClipDisabled().accessibilityHidden(true)
                 }
             }
             #if os(iOS)
@@ -90,9 +90,9 @@ struct LoadingState: View {
                 .tvMovieHeroBleed()
                 .accessibilityHidden(true)
                 HStack(spacing: 16) {
-                    ForEach(0..<3) { _ in Capsule().fill(KinoTheme.raised).frame(width: 156, height: 52) }
+                    ForEach(0..<3) { _ in Capsule().fill(KinoTheme.raised).frame(width: 172, height: 80) }
                 }
-                .padding(.horizontal, 24).padding(.vertical, 18)
+                .padding(.vertical, 18)
                 .accessibilityHidden(true)
                 line(width: 160, height: 28).accessibilityHidden(true)
                 ScrollView(.horizontal) {

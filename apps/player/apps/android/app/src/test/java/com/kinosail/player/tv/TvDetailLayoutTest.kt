@@ -31,16 +31,14 @@ class TvDetailLayoutTest {
         compose.setContent {
             TvKinoTheme {
                 Box(Modifier.fillMaxSize().padding(56.dp)) {
-                    TvDetail(item, catalog, Modifier, play = {}, viewPhoto = {})
+                    TvDetail(item, catalog, play = {}, viewPhoto = {})
                 }
             }
         }
 
         val title = compose.onNodeWithText("Arrival").getUnclippedBoundsInRoot()
         val play = compose.onNodeWithText("Play").getUnclippedBoundsInRoot()
-        val back = compose.onNodeWithText("Back").getUnclippedBoundsInRoot()
         assertTrue("Title should lead the action group", title.top < play.top)
-        assertTrue("Play and Back should form one action row",
-            play.top - back.top < 8.dp && back.top - play.top < 8.dp)
+        assertTrue("Play should stay on the first screen", play.bottom <= 540.dp - 56.dp)
     }
 }

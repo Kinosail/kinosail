@@ -15,7 +15,7 @@ struct LaunchReveal<Content: View>: View {
     #if os(tvOS)
     private static var markSize: CGSize { CGSize(width: 160, height: 206) }
     private static var startScale: CGFloat { 1.04 }
-    private static var startOpacity: Double { 0 }
+    private static var startOpacity: Double { 0.02 }
     #else
     private static var markSize: CGSize { CGSize(width: 100, height: 129) }
     private static var startScale: CGFloat { 1.08 }

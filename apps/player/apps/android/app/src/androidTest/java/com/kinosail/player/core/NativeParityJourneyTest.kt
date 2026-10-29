@@ -230,7 +230,7 @@ class NativeParityJourneyTest {
         waitText("New Film")
         capture("collection-titles")
         compose.onNodeWithText("New Film").activate()
-        waitText("Add to My List")
+        waitText(if (tv) "Add to My List" else "My List")
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         compose.waitUntil(20_000) { compose.onAllNodes(hasText("New Film") and hasClickAction()).fetchSemanticsNodes().isNotEmpty() }
         assertEquals(1, fixture.collectionDetailReads)
@@ -249,6 +249,13 @@ class NativeParityJourneyTest {
             compose.onNode(hasText("PG · Drama · Adventure") and !hasAnyAncestor(hasContentDescription("Next Film")),
                 useUnmergedTree = true).assertExists()
             compose.onNode(hasText("Resume") and hasClickAction()).assertIsDisplayed()
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse library"))
+            compose.onAllNodes(hasText("Movies") and hasClickAction()).assertCountEquals(2)
+            compose.onAllNodes(hasText("TV Shows") and hasClickAction()).assertCountEquals(2)
+            compose.onAllNodes(hasText("Photos") and hasClickAction()).assertCountEquals(0)
+            compose.onAllNodes(hasText("Music") and hasClickAction()).assertCountEquals(0)
+            compose.onAllNodesWithText("Movie genres").assertCountEquals(0)
+            compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(0)
             compose.onNodeWithContentDescription("My List").assertIsDisplayed()
             waitText("89 min left")
             compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo) and !hasAnyAncestor(hasClickAction()),
@@ -302,12 +309,13 @@ class NativeParityJourneyTest {
             compose.onNodeWithText("Search").assertIsDisplayed().activate()
             waitText("Search library")
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            waitText("Continue watching")
-            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
+            compose.waitUntil(10_000) { compose.onAllNodes(hasText("Search") and hasClickAction() and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithText("Unwatched movies").assertIsDisplayed()
             compose.onNodeWithContentDescription("Settings").assertIsDisplayed().activate()
             waitText("Sign out")
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            waitText("Continue watching")
+            compose.waitUntil(10_000) { compose.onAllNodes(hasContentDescription("Settings") and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithText("Unwatched movies").assertIsDisplayed()
             capture("home-navigation-return")
         }
     }
@@ -338,14 +346,14 @@ class NativeParityJourneyTest {
             waitText("New Film")
             compose.onNodeWithText("New Film").activate()
         } else compose.onNodeWithText("Details").performScrollTo().activate()
-        waitText("Add to My List")
+        waitText(if (tv) "Add to My List" else "My List")
         capture("detail")
-        compose.onNodeWithText("Add to My List").performScrollTo().activate()
-        waitText("Remove from My List")
+        compose.onNodeWithText(if (tv) "Add to My List" else "My List").performScrollTo().activate()
+        waitText(if (tv) "Remove from My List" else "In My List")
         assertEquals(1, fixture.listWrites)
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         waitText(if (tv) "Movies" else "Watching")
-        if (tv) compose.onNodeWithText("Home").activate()
+        if (tv) instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         else compose.onNodeWithText("More").activate()
         if (!tv) {
             waitText("Music")
@@ -378,13 +386,14 @@ class NativeParityJourneyTest {
         fixture.mode = "empty"
         compose.onNodeWithText("Try again").activate()
         waitText("Media added to your Server will appear here.")
+        compose.onNodeWithText("Your library is ready").assertExists()
         assertEquals(0, compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().size)
         if (!tv) compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(2)
         capture("empty")
         fixture.mode = "ready"
         if (tv) {
             compose.onNodeWithText("Movies").performScrollTo().activate()
-            compose.onNodeWithText("Home").activate()
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         } else {
             compose.onNodeWithText("Search").activate()
             compose.onNodeWithText("Home").activate()
@@ -461,6 +470,114 @@ class NativeParityJourneyTest {
         waitText(if (tv) "Continue watching" else "Watching")
     }
 
+    @Test fun episodeMarkersOfferSkipThenNextEpisodeAsOnAppleClients() = journey(prepare = {
+        it.episodeMarkers = ""","markers":[{"type":"intro","start":1,"end":12},{"type":"credits","start":15,"end":20}],"autoSkip":[],"next":"episode-two""""
+    }) { fixture ->
+        playFirstEpisode(fixture)
+        waitText("Skip Intro")
+        compose.onAllNodesWithText("Next episode").assertCountEquals(0)
+        capture("playback-skip-intro")
+        compose.onNodeWithText("Skip Intro").activate()
+        compose.waitUntil(20_000) { compose.onAllNodesWithText("Skip Intro").fetchSemanticsNodes().isEmpty() }
+        compose.waitUntil(20_000) { compose.onAllNodesWithText("Next Episode").fetchSemanticsNodes().isNotEmpty() }
+        capture("playback-next-episode")
+        assertEquals(listOf("episode-one"), fixture.playbackReads.toList())
+        compose.waitUntil(30_000) { "episode-two" in fixture.playbackReads }
+        waitText("Second episode")
+        compose.onAllNodesWithText("Skip Intro").assertCountEquals(0)
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+    }
+
+    @Test fun automaticSkipsPassMarkersAndCreditsStartTheNextEpisode() = journey(prepare = {
+        it.episodeMarkers = ""","markers":[{"type":"intro","start":0.5,"end":9},{"type":"credits","start":12,"end":20}],"autoSkip":["intro","credits"],"next":"episode-two""""
+    }) { fixture ->
+        playFirstEpisode(fixture)
+        var prompted = false
+        compose.waitUntil(30_000) {
+            prompted = prompted || compose.onAllNodesWithText("Skip Intro").fetchSemanticsNodes().isNotEmpty() ||
+                compose.onAllNodesWithText("Next Episode").fetchSemanticsNodes().isNotEmpty()
+            "episode-two" in fixture.playbackReads
+        }
+        assertFalse("Markers set to skip automatically must not ask the viewer", prompted)
+        waitText("Second episode")
+        capture("playback-auto-next")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+    }
+
+    @Test fun tvLibraryDetailsAndShowsFollowAppleTvLayout() = journey {
+        org.junit.Assume.assumeTrue(tv)
+        val screen = context.resources.displayMetrics.widthPixels.toFloat()
+        waitText("Continue watching")
+        compose.onNodeWithText("Movies").performScrollTo().activate()
+        waitText("New Film")
+        compose.onAllNodes(hasText("Home") and hasClickAction()).assertCountEquals(0)
+        compose.onAllNodes(hasText("Settings") and hasClickAction()).assertCountEquals(0)
+        compose.onAllNodes(hasTestTag("unwatched") and hasAnyAncestor(hasContentDescription("New Film")), true).assertCountEquals(1)
+        compose.onAllNodes(hasTestTag("unwatched") and hasAnyAncestor(hasContentDescription("Continuing Film")), true).assertCountEquals(0)
+        capture("library-header")
+        compose.onNodeWithContentDescription("New Film").activate()
+        waitText("Add to My List")
+        val backdrop = compose.onNodeWithTag("tv-backdrop", true).fetchSemanticsNode().boundsInRoot
+        assertEquals("Details use a full-bleed backdrop, as on Apple TV", 0f, backdrop.left, 1f)
+        assertEquals("Details use a full-bleed backdrop, as on Apple TV", screen, backdrop.width, 1f)
+        compose.onAllNodes(hasText("Back") and hasClickAction()).assertCountEquals(0)
+        compose.onAllNodesWithText("Kinosail").assertCountEquals(0)
+        compose.waitUntil(5_000) { compose.onAllNodes(hasText("Play") and hasClickAction() and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        capture("detail-backdrop")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        compose.waitUntil(10_000) { compose.onAllNodes(hasContentDescription("New Film") and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        capture("library-focus-restored")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        waitText("Continue watching")
+        compose.onNodeWithText("TV Shows").performScrollTo().activate()
+        waitText("Fixture Series")
+        compose.onNodeWithText("Fixture Series").activate()
+        waitText("Resume · S1 E1")
+        compose.waitUntil(5_000) { compose.onAllNodes(hasText("Resume · S1 E1") and hasClickAction() and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        compose.waitForIdle()
+        val showTitle = compose.onNode(hasText("Fixture Series") and isHeading()).fetchSemanticsNode().boundsInRoot
+        assertTrue("The focused show hero keeps its title on screen, as on Apple TV: $showTitle", showTitle.top >= 24 * context.resources.displayMetrics.density)
+        capture("show-hero-focus")
+        compose.onAllNodes(hasText("Back to Library") and hasClickAction()).assertCountEquals(0)
+        val showBackdrop = compose.onNodeWithTag("tv-backdrop", true).fetchSemanticsNode().boundsInRoot
+        assertEquals("Show pages use a full-bleed backdrop, as on Apple TV", screen, showBackdrop.width, 1f)
+        compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Episodes"))
+        val first = compose.onNode(hasText("Season 1") and hasClickAction()).fetchSemanticsNode().boundsInRoot
+        val second = compose.onNode(hasText("Season 2") and hasClickAction()).fetchSemanticsNode().boundsInRoot
+        assertEquals("Seasons sit in one row, as on Apple TV", first.top, second.top, 1f)
+        assertTrue("Seasons sit in one row, as on Apple TV", second.left > first.right)
+        capture("show-backdrop")
+    }
+
+    @Test fun tvHomeStartsOnContinueWatchingAndBackReachesSearch() = journey {
+        org.junit.Assume.assumeTrue(tv)
+        waitText("Continue watching")
+        compose.waitUntil(10_000) { compose.onAllNodes(hasContentDescription("Continuing Film") and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        compose.onAllNodesWithText("Movie genres").assertCountEquals(0)
+        capture("home-launch-focus")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        compose.waitUntil(10_000) { compose.onAllNodes(hasText("Search") and hasClickAction() and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        capture("home-back-search")
+        compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Recently added movies"))
+        compose.onAllNodes(hasContentDescription("New Film") and hasAnyAncestor(hasScrollToIndexAction()))[0].activate()
+        waitText("Add to My List")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        compose.waitUntil(10_000) { compose.onAllNodes(hasContentDescription("New Film") and isFocused()).fetchSemanticsNodes().isNotEmpty() }
+        compose.onAllNodes(hasContentDescription("New Film") and isFocused())[0].assertIsDisplayed()
+        capture("home-focus-restored")
+    }
+
+    private fun playFirstEpisode(fixture: ParityFixture) {
+        waitText(if (tv) "Continue watching" else "Watching")
+        if (tv) compose.onNodeWithText("TV Shows").performScrollTo().activate()
+        else compose.onNodeWithText("TV Shows").activate()
+        waitText("Fixture Series")
+        compose.onNodeWithText("Fixture Series").activate()
+        waitText("Resume · S1 E1")
+        compose.onNodeWithText("Resume · S1 E1").performScrollTo().activate()
+        compose.waitUntil(20_000) { "episode-one" in fixture.playbackReads }
+    }
+
     @Test fun seasonsKeepPendingFailedEmptyAndLoadedLayoutsDistinct() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.showMode = "pending"
@@ -485,7 +602,7 @@ class NativeParityJourneyTest {
         capture("show-loaded")
         compose.onAllNodes(hasScrollAction())[0].performScrollToIndex(if (tv) 2 else 3)
         compose.onNodeWithText("Season 2").activate()
-        waitText("S2 E1 · Second episode")
+        waitText(if (tv) "Second episode" else "S2 E1 · Second episode")
         capture("show-season-two")
     }
 
@@ -508,7 +625,7 @@ class NativeParityJourneyTest {
         waitText("Nothing in your library yet.")
         capture("catalog-empty")
         fixture.mode = "ready"
-        compose.onNodeWithText("Home").activate()
+        if (tv) instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK) else compose.onNodeWithText("Home").activate()
         waitText(if (tv) "Continue watching" else "Watching")
         if (tv) {
             compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse"))
@@ -524,6 +641,94 @@ class NativeParityJourneyTest {
                 first.width < 130 * context.resources.displayMetrics.density)
         }
         capture("catalog-loaded")
+    }
+
+    @Test fun settingsFollowIphoneSectionsAndSavePlaybackDefaults() = journey { fixture ->
+        org.junit.Assume.assumeFalse(tv)
+        waitText("Watching")
+        compose.onNodeWithText("More").activate()
+        compose.onNodeWithText("Settings").performScrollTo().activate()
+        waitText("Server & Viewer Profile")
+        compose.onNodeWithContentDescription("Viewer Profile: Alex. Server: Fixture library").assertExists()
+        compose.onNodeWithText("Playback & library").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Personalize").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("About").performScrollTo().assertIsDisplayed()
+        capture("settings")
+        fixture.preferencesMode = "pending"
+        compose.onNodeWithText("Playback").performScrollTo().activate()
+        compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading preferences").fetchSemanticsNodes().isNotEmpty() }
+        capture("playback-defaults-pending")
+        fixture.preferencesMode = "failed"
+        waitText("Could not load your playback preferences. Try again.")
+        compose.onAllNodesWithContentDescription("Loading preferences").assertCountEquals(0)
+        capture("playback-defaults-failed")
+        fixture.preferencesMode = "ready"
+        compose.onNodeWithText("Try again").activate()
+        waitText("Boost Dialog")
+        compose.onNode(hasText("Subtitles") and hasText("Off") and hasClickAction()).assertExists()
+        compose.onNode(hasText("Audio language") and hasText("Automatic") and hasClickAction()).assertExists()
+        capture("playback-defaults")
+        compose.onNode(hasText("Boost Dialog") and hasClickAction()).performScrollTo().activate()
+        compose.waitUntil(20_000) { fixture.preferenceWrites.size == 1 }
+        val boosted = JSONObject(fixture.preferenceWrites[0])
+        assertTrue(boosted.getJSONObject("playback").getBoolean("dialogueBoost"))
+        assertEquals("off", boosted.getJSONObject("playback").getString("subtitleLanguage"))
+        assertEquals(30, boosted.getInt("downloadLimitGiB"))
+        assertEquals("dark", boosted.getString("readerTheme"))
+        compose.onNode(hasText("Speed") and hasClickAction()).performScrollTo().activate()
+        waitText("1.5×")
+        compose.onNodeWithText("1.5×").activate()
+        compose.waitUntil(20_000) { fixture.preferenceWrites.size == 2 }
+        assertEquals(1.5, JSONObject(fixture.preferenceWrites[1]).getJSONObject("playback").getDouble("rate"), 0.0)
+        compose.waitUntil(20_000) { compose.onAllNodes(hasText("Speed") and hasText("1.5×") and hasClickAction()).fetchSemanticsNodes().isNotEmpty() }
+        capture("playback-defaults-saved")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        waitText("Server & Viewer Profile")
+        compose.onNodeWithText("Sign out").performScrollTo().activate()
+        waitText("Sign out of this device?")
+        capture("sign-out-confirm")
+        compose.onNodeWithText("Cancel").activate()
+        waitText("Server & Viewer Profile")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        waitText("Customize tabs")
+    }
+
+    @Test fun connectATvReviewsTheCodeBeforeApproving() = journey { fixture ->
+        org.junit.Assume.assumeFalse(tv)
+        waitText("Watching")
+        compose.onNodeWithText("More").activate()
+        compose.onNodeWithText("Settings").performScrollTo().activate()
+        compose.onNodeWithText("Connect a TV").performScrollTo().activate()
+        waitText("Six-digit code")
+        compose.onNodeWithText("Review device").assertIsNotEnabled()
+        compose.onNode(hasSetTextAction()).performTextInput("111111")
+        compose.onNodeWithText("Review device").activate()
+        waitText("That code expired or was already used. Check the code on your TV.")
+        assertEquals(0, fixture.approvals)
+        compose.onNode(hasSetTextAction()).performTextReplacement("482913")
+        compose.onNodeWithText("Review device").activate()
+        waitText("Living room TV")
+        compose.onNodeWithText("Approve only if this code matches the device you want to connect.").assertExists()
+        assertEquals(0, fixture.approvals)
+        capture("connect-tv-review")
+        compose.onNodeWithText("Approve device").performScrollTo().activate()
+        waitText("Device connected")
+        assertEquals(1, fixture.approvals)
+        capture("connect-tv-approved")
+        compose.onNodeWithText("Done").activate()
+        waitText("Server & Viewer Profile")
+    }
+
+    @Test fun detailRemovesTitleFromContinueWatching() = journey { fixture ->
+        org.junit.Assume.assumeFalse(tv)
+        waitText("Watching")
+        compose.onNodeWithText("Details").performScrollTo().activate()
+        waitText("My List")
+        compose.onNodeWithText("Remove from Continue watching").performScrollTo().activate()
+        compose.waitUntil(20_000) { fixture.dismissals == 1 }
+        waitText("Removed from Continue watching.")
+        compose.onAllNodesWithText("Remove from Continue watching").assertCountEquals(0)
+        capture("detail-continue-removed")
     }
 
     private fun SemanticsNodeInteraction.activate() {
@@ -615,6 +820,13 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
     @Volatile var readerSaveInFlight = false
     @Volatile var readerWrites = 0
     @Volatile var listWrites = 0
+    @Volatile var preferencesMode = "ready"
+    val preferenceWrites = java.util.concurrent.CopyOnWriteArrayList<String>()
+    @Volatile var approvals = 0
+    @Volatile var dismissals = 0
+    @Volatile private var preferences = """{"playback":{"audioTrack":"","subtitleTrack":"","rate":1,"audioLanguage":"auto","subtitleLanguage":"off","nightMode":false,"dialogueBoost":false,"volumeBoost":1},"autoDownloadNext":1,"removeWatched":true,"downloadLimitGiB":30,"wifiOnly":false,"readerFontSize":22,"readerTheme":"dark"}"""
+    @Volatile var episodeMarkers = ""
+    val playbackReads = java.util.concurrent.CopyOnWriteArrayList<String>()
     private var listed = false
     private val movie = item("film", "Continuing Film", progress = 90)
     private val newMovie = item("new-film", "New Film")
@@ -723,17 +935,38 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                 listed = JSONObject(requestBody).getBoolean("listed"); listWrites++
                                 """{"listed":$listed}""".toByteArray()
                             }
+                            path == "/api/v1/me/media-preferences" -> {
+                                while (preferencesMode == "pending" && running.get()) Thread.sleep(20)
+                                if (preferencesMode == "failed") { code = 503; "{}".toByteArray() }
+                                else {
+                                    if (parts[0] == "PUT") { preferences = requestBody; preferenceWrites += requestBody }
+                                    preferences.toByteArray()
+                                }
+                            }
+                            path == "/api/v1/quick-connect/482913" -> if (parts[0] == "POST") { approvals++; code = 204; ByteArray(0) }
+                                else """{"code":"482913","device":"Living room TV","expiresAt":"${java.time.Instant.now().plusSeconds(600)}"}""".toByteArray()
+                            path.startsWith("/api/v1/quick-connect/") -> { code = 400; """{"error":"Quick Connect code is invalid or expired"}""".toByteArray() }
+                            path.endsWith("/continue-watching") && parts[0] == "DELETE" -> { dismissals++; code = 204; ByteArray(0) }
                             path.endsWith("/playback-preferences") -> """{"playback":{"audioTrack":"","subtitleTrack":"","rate":1,"audioLanguage":"auto","subtitleLanguage":"off","nightMode":false,"dialogueBoost":false,"volumeBoost":1},"overridden":false}""".toByteArray()
                             path.endsWith("/progress/sync") -> JSONObject(requestBody).getJSONObject("progress").toString().toByteArray()
+                            path.startsWith("/api/v1/items/episode-") && path.endsWith("/playback") -> {
+                                val id = path.removePrefix("/api/v1/items/").removeSuffix("/playback")
+                                playbackReads += id
+                                val extra = if (id == "episode-one") episodeMarkers else ""
+                                """{"policy":"automatic","plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"directAllowed":true,"direct":"/media/$id","directType":"video/mp4","duration":20,"start":0$extra}""".toByteArray()
+                            }
+                            path.startsWith("/api/v1/items/episode-") && path.endsWith("/watch-progress") -> """{"seconds":0,"duration":20}""".toByteArray()
                             path.endsWith("/playback") -> """{"policy":"automatic","plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"directAllowed":true,"direct":"/media/film","directType":"video/mp4","duration":20,"start":0}""".toByteArray()
-                            path == "/media/film" -> {
+                            path == "/media/film" || path.startsWith("/media/episode-") -> {
                                 type = "video/mp4"
                                 InstrumentationRegistry.getInstrumentation().context.assets.open("parity-video.mp4").use { it.readBytes() }
                             }
                             path == "/api/v1/items/film/watch-progress" -> { progressRequests++; progressBody.toByteArray() }
                             path == "/api/v1/items/next-film/watch-progress" -> """{"seconds":30,"duration":3600}""".toByteArray()
                             path.startsWith("/api/v1/items/") -> {
-                                val selected = if (path.endsWith("new-film")) newMovie else if (path.endsWith("/book")) book else movie
+                                val selected = if (path.endsWith("new-film")) newMovie else if (path.endsWith("/book")) book
+                                    else if (path.endsWith("/episode-one")) episodes[0].replace("\"seconds\":12", "\"seconds\":0")
+                                    else if (path.endsWith("/episode-two")) episodes[1] else movie
                                 """{"item":$selected,"listed":$listed,"profileId":"viewer"}""".toByteArray()
                             }
                             path.startsWith("/art/") || path.startsWith("/backdrop/") -> {

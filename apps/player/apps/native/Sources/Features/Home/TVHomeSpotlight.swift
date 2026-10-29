@@ -28,6 +28,8 @@ struct TVHomeSpotlightHeader: View {
                 .font(.system(size: titleSize, weight: .bold, design: .rounded))
                 .lineLimit(dynamicType.isAccessibilitySize ? nil : 1)
                 .minimumScaleFactor(0.7)
+                .frame(height: dynamicType.isAccessibilitySize ? nil : UIFont.systemFont(ofSize: titleSize, weight: .bold).lineHeight,
+                       alignment: .leading)
             Text(item.map(TVHomeSpotlight.metadata) ?? " ")
                 .font(.callout.weight(.medium)).foregroundStyle(KinoTheme.muted)
                 .lineLimit(1)

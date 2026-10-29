@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import select
 import shutil
 import subprocess
@@ -38,12 +39,13 @@ def jar(group, module, version):
     return str(files[0])
 
 
-compiler = [jar("org.jetbrains.kotlin", module, "2.4.20") for module in
+kotlin = re.search(r'kotlin\.plugin\.compose"\) version "([0-9.]+)"', (android / "build.gradle.kts").read_text()).group(1)
+compiler = [jar("org.jetbrains.kotlin", module, kotlin) for module in
             ["kotlin-compiler-embeddable", "kotlin-stdlib", "kotlin-script-runtime", "kotlin-daemon-embeddable"]]
 compiler += [jar("org.jetbrains.kotlin", "kotlin-reflect", "1.6.10"),
              jar("org.jetbrains.kotlinx", "kotlinx-coroutines-core-jvm", "1.11.0"),
              jar("org.jetbrains", "annotations", "13.0")]
-runtime = [jar("org.jetbrains.kotlin", "kotlin-stdlib", "2.4.20"),
+runtime = [jar("org.jetbrains.kotlin", "kotlin-stdlib", kotlin),
            jar("org.jetbrains.kotlinx", "kotlinx-serialization-core-jvm", "1.11.0"),
            jar("org.jetbrains.kotlinx", "kotlinx-serialization-json-jvm", "1.11.0"),
            jar("com.fasterxml.jackson.core", "jackson-core", "2.22.3"),
@@ -54,7 +56,8 @@ if not platforms:
 runtime.append(str(platforms[-1]))
 core = android / "app/src/main/java/com/kinosail/player/core"
 sources = [core / f"{name}.kt" for name in ["ServerAddress", "ServerApi", "StrictJson", "PlaybackApi",
-           "PlaybackCapabilities", "MediaTimeline", "CatalogApi", "CollectionsApi", "WatchProgress", "ProgressApi", "NetworkDiagnostic"]]
+           "PlaybackCapabilities", "PlaybackPrompt", "MediaTimeline", "CatalogApi", "CatalogState", "CollectionsApi", "WatchProgress", "ProgressApi", "NetworkDiagnostic",
+           "PlaybackPreferencesApi", "AccountApi"]]
 tests = android / "app/src/test/java/com/kinosail/player/core"
 sources += [tests / "PlaybackApiTest.kt", tests / "CatalogPageLimitTest.kt", fixture / "main.kt"]
 

@@ -42,7 +42,7 @@ struct TVHomeBrowseSkeleton: View {
                 }
                 .padding(.vertical, 24)
             }
-            .scrollIndicators(.hidden).scrollDisabled(true)
+            .scrollIndicators(.hidden).scrollDisabled(true).scrollClipDisabled()
         }
         .accessibilityHidden(true)
     }
