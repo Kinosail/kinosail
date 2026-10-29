@@ -738,8 +738,10 @@ class NativeParityJourneyTest {
         capture("detail-continue-removed")
         fixture.mode = "pending"
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-        waitFor(hasText("Next Film") and isHeading())
-        compose.onAllNodes(hasText("Continuing Film") and isHeading()).assertCountEquals(0)
+        compose.waitUntil(20_000) {
+            compose.onAllNodes(hasText("Next Film") and isHeading(), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onAllNodes(hasText("Continuing Film") and isHeading(), useUnmergedTree = true).assertCountEquals(0)
         capture("home-continue-removed")
     }
 
