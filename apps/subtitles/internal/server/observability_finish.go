@@ -71,10 +71,12 @@ func requestLogLevel(request *http.Request, facts *requestActivity, pattern stri
 		level = slog.LevelInfo
 	}
 	if status >= http.StatusInternalServerError {
-		return slog.LevelError
+		level = slog.LevelError
+	} else if status >= http.StatusBadRequest {
+		level = slog.LevelWarn
 	}
-	if status >= http.StatusBadRequest {
-		return slog.LevelWarn
+	if facts.logLimit != nil && level > *facts.logLimit {
+		return *facts.logLimit
 	}
 	return level
 }

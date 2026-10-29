@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"io"
+	"log/slog"
 	"net"
 	"net/http"
 	"strconv"
@@ -62,6 +63,12 @@ func validPlaybackSession(value string) bool {
 	return len(value) >= 8 && len(value) <= 64 && strings.IndexFunc(value, func(character rune) bool {
 		return character != '-' && character != '_' && (character < '0' || character > '9') && (character < 'A' || character > 'Z') && (character < 'a' || character > 'z')
 	}) == -1
+}
+
+func limitRequestLog(request *http.Request, level slog.Level) {
+	if facts, ok := request.Context().Value(requestActivityKey{}).(*requestActivity); ok {
+		facts.logLimit = &level
+	}
 }
 
 func markSecurityRecorded(request *http.Request) {

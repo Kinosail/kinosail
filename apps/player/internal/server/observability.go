@@ -22,6 +22,7 @@ type requestActivity struct {
 	playbackSession  string
 	viewer           viewerProfile
 	securityRecorded bool
+	logLimit         *slog.Level
 }
 
 func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler {
@@ -85,10 +86,12 @@ func observedRequestLevel(request *http.Request, pattern string, status int, fac
 		level = slog.LevelInfo
 	}
 	if status >= http.StatusInternalServerError {
-		return slog.LevelError
+		level = slog.LevelError
+	} else if status >= http.StatusBadRequest {
+		level = slog.LevelWarn
 	}
-	if status >= http.StatusBadRequest {
-		return slog.LevelWarn
+	if facts.logLimit != nil && level > *facts.logLimit {
+		return *facts.logLimit
 	}
 	return level
 }

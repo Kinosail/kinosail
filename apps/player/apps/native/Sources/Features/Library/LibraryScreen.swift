@@ -73,8 +73,8 @@ struct LibraryScreen: View {
                 }
                 #endif
                 ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 16) { filters }
-                    VStack(alignment: .leading, spacing: 16) { filters }
+                    HStack(spacing: 16) { filters(fixed: true) }
+                    VStack(alignment: .leading, spacing: 16) { filters(fixed: false) }
                 }
                 #if os(tvOS)
                 .frame(maxWidth: .infinity, alignment: .leading).focusSection()
@@ -200,12 +200,12 @@ struct LibraryScreen: View {
         }
     }
 
-    @ViewBuilder private var filters: some View {
+    @ViewBuilder private func filters(fixed: Bool) -> some View {
         #if os(iOS)
         Picker("Library", selection: $selection) {
             ForEach(searchViews ?? LibraryView.allCases) { Text($0.title).tag($0) }
-        }.fixedSize()
-        sortPicker.fixedSize()
+        }.fixedSize(horizontal: fixed, vertical: fixed)
+        sortPicker.fixedSize(horizontal: fixed, vertical: fixed)
         #else
         if searchMode, let searchViews {
             Picker("Search in", selection: $selection) {
