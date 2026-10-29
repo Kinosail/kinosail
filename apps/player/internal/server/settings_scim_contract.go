@@ -10,7 +10,6 @@ const (
 var (
 	scimConfigurationKeys = scimapp.ConfigurationKeys()
 	scimExpired           = scimapp.Expired
-	scimEndpoint          = scimapp.Endpoint
 )
 
 type scimConfigurationView = scimapp.ConfigurationView[settingControl]

@@ -218,6 +218,9 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		startNumber > 0 && !copiedHLSAudioFromOrigin(timeline, startNumber, recipe.mode) && !copiedHLSWarmAudio(timeline, startNumber, recipe.mode)) {
 		arguments = append(arguments, "-noaccurate_seek")
 	}
+	if timeline == nil && refill == nil {
+		arguments = hlsSkippedTailInput(arguments, duration, start, recipe)
+	}
 	arguments = append(arguments, "-i", item.Path)
 	copyInput := "0"
 	if recipe.mode != "transcode" && len(sourceRecipe.omitted) > 0 {
@@ -226,7 +229,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 			return err
 		}
 	}
-	arguments, err = playback.HLSCodecArguments(playback.HLSCodecInput{AudioOnly: item.Kind == "audio" || item.Kind == "audiobook", Arguments: arguments, Video: video, Compatibility: videoCompatibilityArguments(options.Codec), ItemPath: item.Path, VideoRate: videoRate, AudioRate: audioRate, CopyInput: copyInput, Recipe: sharedHLSRecipe(recipe), Policy: hlsPolicy()})
+	arguments, err = playback.HLSCodecArguments(playback.HLSCodecInput{AudioOnly: item.Kind == "audio" || item.Kind == "audiobook", Arguments: arguments, Video: video, Compatibility: videoCompatibilityArguments(options.Codec), ItemPath: item.Path, VideoRate: videoRate, AudioRate: audioRate, CopyInput: copyInput, RemuxAudio: manager.remuxAudioArguments(ctx, item, recipe), DolbyVisionCodec: playback.DolbyVisionCopyCodec(manager.probe.facts(ctx, item).Video), Recipe: sharedHLSRecipe(recipe), Policy: hlsPolicy()})
 	if err != nil {
 		return err
 	}

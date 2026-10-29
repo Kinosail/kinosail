@@ -15,7 +15,4 @@ func visibleItem(request *http.Request, index *libraryIndex, id string) (library
 	return identitycore.VisibleItem(index, currentViewer(request), id)
 }
 
-var (
-	viewerPolicy = identitycore.LibraryPolicy
-	canView      = identitycore.CanView
-)
+var viewerPolicy = identitycore.LibraryPolicy

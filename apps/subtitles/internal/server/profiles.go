@@ -11,7 +11,6 @@ import (
 
 type (
 	viewerProfile = identitycore.Profile
-	profilePolicy = identitycore.ProfilePolicy
 	passkeyUsage  = sharedpasskeys.Usage
 )
 

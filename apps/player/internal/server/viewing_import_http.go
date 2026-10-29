@@ -90,7 +90,7 @@ func (manager *viewingImportManager) APICreateSync(writer http.ResponseWriter, r
 func (manager *viewingImportManager) APIRunSync(writer http.ResponseWriter, request *http.Request) {
 	view, err := manager.run(request.Context(), request.PathValue("id"))
 	if err != nil {
-		apiError(writer, err, http.StatusBadGateway)
+		apiError(writer, err, viewing.SyncRunStatus(err))
 		return
 	}
 	writeJSON(writer, view, http.StatusOK)
@@ -146,7 +146,7 @@ func (manager *viewingImportManager) WebRunSync(writer http.ResponseWriter, requ
 		return
 	}
 	if _, err := manager.run(request.Context(), id); err != nil {
-		localizedError(writer, request, err.Error(), http.StatusBadGateway)
+		localizedError(writer, request, err.Error(), viewing.SyncRunStatus(err))
 		return
 	}
 	http.Redirect(writer, request, "/settings#viewing-imports", http.StatusSeeOther)

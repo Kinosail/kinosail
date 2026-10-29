@@ -45,7 +45,4 @@ func (source homeSource) Catalog(request *http.Request, shows []library.Show, pa
 	return projection
 }
 
-var (
-	filter      = catalog.Filter
-	sortLibrary = catalog.Sort
-)
+var filter = catalog.Filter
