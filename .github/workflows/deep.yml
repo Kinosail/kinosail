@@ -685,10 +685,15 @@ jobs:
           build-mode: manual
           queries: security-extended
       - run: |
+          # shellcheck disable=SC2016 # Xcode expands these build settings.
           printf '%s\n' 'ARCHS = arm64' 'ONLY_ACTIVE_ARCH = YES' \
             'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
             'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
-            'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
+            'CODE_SIGNING_REQUIRED = NO' \
+            'OTHER_SWIFT_FLAGS[sdk=iphonesimulator*] = $(inherited) -plugin-path $(DEVELOPER_DIR)/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins' \
+            'OTHER_SWIFT_FLAGS[sdk=appletvsimulator*] = $(inherited) -plugin-path $(DEVELOPER_DIR)/Platforms/AppleTVOS.platform/Developer/usr/lib/swift/host/plugins' \
+            'OTHER_SWIFT_FLAGS[sdk=watchsimulator*] = $(inherited) -plugin-path $(DEVELOPER_DIR)/Platforms/WatchOS.platform/Developer/usr/lib/swift/host/plugins' \
+            > "$RUNNER_TEMP/codeql.xcconfig"
           DEVELOPER_DIR=/Applications/Xcode_27.1.app/Contents/Developer \
             XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
       - uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
