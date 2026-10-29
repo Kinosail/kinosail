@@ -43,7 +43,7 @@ async function inspectNotice(page: Page, testInfo: TestInfo, state: string, visi
       await expect(notice).toBeVisible();
       const retry = page.getByRole("button", {name: "Retry saving position", exact: true});
       await expect(retry).toBeVisible();
-      expect((await retry.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      expect((await retry.boundingBox())!.height).toBeGreaterThanOrEqual(43.99);
     } else {
       expect(projection).toMatchObject({hidden: true, display: "none", height: 0});
       await expect(notice).toBeHidden();

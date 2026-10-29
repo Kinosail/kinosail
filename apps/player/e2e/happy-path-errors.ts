@@ -114,7 +114,7 @@ export function captureHappyPathErrors(page: Page, browser: string) {
       for (const error of records) {
         const origin = new URL(error.documentURL).origin;
         const index = remaining.findIndex(failure => cancelledWatchedHLS({...error, origin, browser, action, failures: [failure], navigations}));
-        if (index < 0) unexpected.push(error.message);
+        if (index < 0) unexpected.push(`${error.message} (${new URL(error.documentURL).pathname})`);
         else {
           const [failure] = remaining.splice(index, 1);
           accepted.push({resource: new URL(failure.url).pathname, document: failure.document, time: failure.time});
