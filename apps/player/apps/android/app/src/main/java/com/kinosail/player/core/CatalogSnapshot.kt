@@ -21,7 +21,7 @@ internal object CatalogSnapshot {
                 put("progress", JsonObject(item.progress.json() + ("dismissed" to JsonPrimitive(item.progress.dismissed)))); put("showId", item.showId)
                 put("season", item.season); put("episode", item.episode); put("stream", item.stream)
                 put("artist", item.artist); put("album", item.album)
-                put("backdrop", item.backdrop); put("rating", item.rating); put("genres", item.genres)
+                put("backdrop", item.backdrop); put("rating", item.rating); put("genres", item.genres); put("show", item.show)
             }) } })
         }.toString().toByteArray(Charsets.UTF_8)
         require(raw.size <= 512 * 1024 && decode(raw) == page) { "Invalid catalog snapshot." }

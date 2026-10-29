@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -129,7 +130,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                     val letters = jumpLetters(state, destination == "search")
                     Box(Modifier.weight(1f)) {
-                    LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 240.dp else 96.dp),
+                    LazyVerticalGrid(if (state.view != "photos" && LocalDensity.current.fontScale >= 1.5f) GridCells.Fixed(1)
+                        else GridCells.Adaptive(if (state.view == "photos") 240.dp else 96.dp),
                         modifier = Modifier.fillMaxSize(), state = grid,
                         horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(28.dp),
                         contentPadding = PaddingValues(end = if (letters.isEmpty()) 0.dp else 32.dp, bottom = 24.dp)) {
@@ -211,6 +213,7 @@ private fun ContinueWatchingRemoval(item: CatalogItem, catalog: CatalogModel) {
     if (item.kind != "video" || item.progress.seconds <= 0 && !item.progress.watched) return
     var state by remember(item.id) { mutableStateOf("ready") }
     val scope = rememberCoroutineScope()
+    val store = SessionStore(androidx.compose.ui.platform.LocalContext.current)
     val removed = interfaceText("Removed from Continue watching.")
     val failed = interfaceText("Could not remove this title from Continue watching. Try again.")
     if (state != "removed") TextButton(enabled = state != "busy", onClick = {
@@ -218,7 +221,10 @@ private fun ContinueWatchingRemoval(item: CatalogItem, catalog: CatalogModel) {
         state = "busy"
         scope.launch {
             state = try {
-                withContext(Dispatchers.IO) { AccountApi(saved.server).dismissContinueWatching(item.id, saved.token, viewerId) }
+                withContext(Dispatchers.IO) {
+                    AccountApi(saved.server).dismissContinueWatching(item.id, saved.token, viewerId)
+                    saved.viewer?.let { runCatching { store.forgetContinuation(saved.server, it, item.id) } }
+                }
                 "removed"
             } catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled } catch (_: Exception) { "failed" }
         }

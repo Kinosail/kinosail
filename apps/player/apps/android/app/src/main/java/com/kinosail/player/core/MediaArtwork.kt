@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kinosail.player.design.KinoColor
 
@@ -88,7 +90,7 @@ internal fun MediaHero(item: CatalogItem, catalog: CatalogModel, tv: Boolean,
         val information: @Composable () -> Unit = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(item.title, style = if (tv) MaterialTheme.typography.displayMedium
-                    else MaterialTheme.typography.headlineLarge, color = KinoColor.text)
+                    else MaterialTheme.typography.headlineLarge, color = KinoColor.text, modifier = Modifier.semantics { heading() })
                 val metadata = listOf(item.year, item.rating, item.genres,
                     if (item.showId.isNotEmpty()) "S${item.season} E${item.episode}" else "")
                     .filter(String::isNotEmpty).joinToString(" · ")

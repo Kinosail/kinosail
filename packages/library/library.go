@@ -12,7 +12,9 @@ import (
 )
 
 var (
-	episodeName = regexp.MustCompile(`(?i)^(.*?)\s*S(\d{1,2})E(\d{1,3})\s*(.*)$`)
+	episodeName = regexp.MustCompile(`(?i)^(.*?)\s*(?:S(\d{1,2})E(\d{1,3})|(?:^|[\s._\-\[(])(\d{1,2})x(\d{2,3})(?:$|[\s._\-\])]))\s*(.*)$`)
+	releaseTag  = regexp.MustCompile(`(?i)(?:^|[\s._\-(])(?:\d{3,4}[pi]|4k|uhd|web[\s._-]?(?:dl|rip)|blu[\s._-]?ray|b[dr]rip|hdtv|dvdrip|hdrip|x26[45]|h[\s.]?26[45]|hevc|xvid|10bit|ddp?[\s.]?\d[\s.]\d)(?:$|[\s._\-)])|[\[{]`)
+	releaseTail = regexp.MustCompile(`(?:[\s._-]+(?:WEB|AMZN|NF|DSNP|HMAX|ATVP|HULU|REPACK|PROPER|iNTERNAL|HDR|DV))+$`)
 	movieName   = regexp.MustCompile(`^(.+?)\s*[\[(]((?:19|20)\d{2})[\])](?:\s+(?:\{[^}]*\}|\[[^]]*\]).*)?$`)
 	imdbName    = regexp.MustCompile(`(?i)\{imdb\s+(tt[0-9]{7,9})\}`)
 )
@@ -167,17 +169,30 @@ func episode(relative, title string) (string, int, int, string) {
 	if match == nil {
 		return "", 0, 0, title
 	}
-	season, _ := strconv.Atoi(match[2])
-	number, _ := strconv.Atoi(match[3])
 	show := clean(match[1])
 	if parts := strings.Split(filepath.ToSlash(relative), "/"); len(parts) > 1 {
 		show = clean(parts[0])
 	}
 	episodeTitle := "S" + match[2] + "E" + match[3]
-	if suffix := clean(match[4]); suffix != "" {
+	if match[2] == "" && show == "" {
+		return "", 0, 0, title
+	}
+	season, _ := strconv.Atoi(match[2] + match[4])
+	number, _ := strconv.Atoi(match[3] + match[5])
+	if match[2] == "" {
+		episodeTitle = fmt.Sprintf("S%02dE%02d", season, number)
+	}
+	if suffix := releaseName(match[6]); suffix != "" {
 		episodeTitle += " · " + suffix
 	}
 	return show, season, number, episodeTitle
+}
+
+func releaseName(value string) string {
+	if tag := releaseTag.FindStringIndex(value); tag != nil {
+		value = value[:tag[0]]
+	}
+	return clean(releaseTail.ReplaceAllString(value, ""))
 }
 
 var separators = strings.NewReplacer(".", " ", "_", " ", "-", " ")

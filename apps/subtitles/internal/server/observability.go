@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"log/slog"
 	"net"
 	"net/http"
 	"strconv"
@@ -20,6 +21,7 @@ type requestActivity struct {
 	playbackSession  string
 	viewer           viewerProfile
 	securityRecorded bool
+	logLimit         *slog.Level
 }
 
 func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler {
@@ -32,6 +34,12 @@ func observeRequests(activity *auditStore, route func(*http.Request) string, nex
 		defer observation.finish(request.Context()) //nolint:contextcheck // The deferred audit uses the request context created above.
 		next.ServeHTTP(capture, request)
 	})
+}
+
+func limitRequestLog(request *http.Request, level slog.Level) {
+	if facts, ok := request.Context().Value(requestActivityKey{}).(*requestActivity); ok {
+		facts.logLimit = &level
+	}
 }
 
 func setAuditViewer(request *http.Request, viewer viewerProfile) {

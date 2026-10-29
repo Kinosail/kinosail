@@ -15,6 +15,10 @@ func TestAutomaticBackupsFailClosedWithoutEncryptionKey(t *testing.T) {
 	servertest.AssertAutomaticBackupsFailClosed(t, backupAPIFixture())
 }
 
+func TestPersistentBackupFailureLogsOnceAndRecovers(t *testing.T) {
+	servertest.AssertPersistentBackupFailureLogsOnceAndRecovers(t, backupAPIFixture())
+}
+
 func TestOwnerCanRunEncryptedBackupThroughAPIAndWeb(t *testing.T) {
 	servertest.AssertEncryptedBackupAPIAndWeb(t, backupAPIFixture())
 }

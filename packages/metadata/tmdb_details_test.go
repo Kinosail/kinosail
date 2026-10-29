@@ -23,7 +23,7 @@ func TestTMDBEpisodeDetails(t *testing.T) {
 	t.Parallel()
 	for _, test := range []tmdbEpisodeCase{
 		{"series only", "", 0, nil, false, Record{Title: "Series", Year: "2020", Plot: "original"}, "original.jpg"},
-		{"unavailable", "", 2, nil, true, Record{Title: "Series", Year: "2020", Plot: "original"}, "original.jpg"},
+		{"unavailable", "", 2, nil, true, Record{Title: "S01E02", Year: "2020", Plot: "original"}, "original.jpg"},
 		{"episode", `{"id":9,"name":"Arrival","overview":"Episode plot","air_date":"2021-01-02","still_path":"/still.jpg"}`, 2, nil, false, Record{Title: "S01E02 · Arrival", Year: "2021", Plot: "Episode plot", ProviderIDs: map[string]string{"tmdb": "9"}}, "/still.jpg"},
 		{"preserve provider and poster", `{"id":9,"name":"Arrival","overview":"Episode plot","air_date":"2021-01-02"}`, 2, map[string]string{"tvdb": "7"}, false, Record{Title: "S01E02 · Arrival", Year: "2021", Plot: "Episode plot", ProviderIDs: map[string]string{"tmdb": "9", "tvdb": "7"}}, "original.jpg"},
 	} {

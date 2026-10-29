@@ -1,0 +1,9 @@
+body .destination-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))}
+.curation-card strong,.more-player-actions strong,.primary-action-row button{overflow-wrap:break-word}
+body.show-detail .season-group{container-type:inline-size}
+@container (max-width:52rem){.season-reel{grid-template-columns:minmax(0,1fr)}.season-reel>.episode-preview{position:static}}
+.curation-group>header{flex-wrap:wrap}
+.curation-group>header form{max-width:100%}
+.curation-group>header input{min-width:0}
+.more-player-actions a{grid-template-columns:min(5rem,40%) minmax(0,1fr)}
+@media(max-width:700px){.curation-grid{grid-template-columns:repeat(auto-fill,minmax(max(calc((100% - .8rem)/2),7.5rem),1fr))}}

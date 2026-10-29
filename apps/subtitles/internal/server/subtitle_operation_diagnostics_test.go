@@ -42,6 +42,7 @@ func TestSubtitleOperationLifecycleDiagnosticsAndMetadataExcludePrivatePayloads(
 	assertSubtitleOperationLifecycleLog(t, text, "INFO", "subtitle operation started", prepared.ID, "apply")
 	assertSubtitleOperationLifecycleLog(t, text, "INFO", "subtitle operation completed", prepared.ID, "apply")
 	assertSubtitleOperationLifecycleLog(t, text, "WARN", "subtitle operation rejected", "", "restore")
+	assertSubtitleOperationRejectionsWarnOnce(t, text)
 	assertSubtitleOperationPrivateMetadata(t, config.DataDir, []string{private, target, config.DataDir, config.CacheDir, `"text"`, `"waveform"`, `"speech"`})
 }
 
@@ -137,6 +138,35 @@ func assertSubtitleOperationLifecycleLog(t *testing.T, logs, level, message, id,
 		}
 	}
 	t.Fatalf("missing structured %s lifecycle diagnostic for %s/%s", level, action, message)
+}
+
+func assertSubtitleOperationRejectionsWarnOnce(t *testing.T, logs string) {
+	t.Helper()
+	rejected := make(map[string]bool)
+	var requests []map[string]any
+	for _, line := range strings.Split(logs, "\n") {
+		var entry map[string]any
+		if json.Unmarshal([]byte(line), &entry) != nil {
+			continue
+		}
+		if id, _ := entry["request_id"].(string); entry["msg"] == "subtitle operation rejected" {
+			rejected[id] = true
+		} else if entry["msg"] == "request" {
+			requests = append(requests, entry)
+		}
+	}
+	matched := 0
+	for _, entry := range requests {
+		if id, _ := entry["request_id"].(string); rejected[id] {
+			matched++
+			if entry["level"] != "INFO" {
+				t.Fatalf("rejected operation request line = %v, want INFO beside the specific warning", entry)
+			}
+		}
+	}
+	if len(rejected) < 2 || matched != len(rejected) {
+		t.Fatalf("rejected operations = %d, matching request lines = %d", len(rejected), matched)
+	}
 }
 
 func subtitleOperationLifecycleEntryMatches(entry map[string]any, level, id, action string) bool {

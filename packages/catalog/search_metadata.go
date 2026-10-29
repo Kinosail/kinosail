@@ -17,13 +17,14 @@ func matchesMetadata(item library.Item, query string) bool {
 	size := metadataSearchSize(fields, item.Cast, item.ShowCast)
 	var storage [metadataSearchScratchSize]byte
 	text := storage[:0]
+	title := -1
 	if size > len(storage) {
 		if len(fields[0]) < len(storage) && isASCII(fields[0]) {
 			text = appendASCIISearchField(text, fields[0])
 			if bytes.Contains(text, []byte(query)) {
 				return true
 			}
-			fields = fields[1:]
+			title, fields = len(text), fields[1:]
 		}
 		if matchesLiteralPrefix(fields, query) {
 			return true
@@ -32,6 +33,9 @@ func matchesMetadata(item library.Item, query string) bool {
 	}
 	for _, value := range fields {
 		text = appendSearchField(text, value)
+		if title < 0 {
+			title = len(text)
+		}
 	}
 	for _, people := range [][]library.Person{item.Cast, item.ShowCast} {
 		for _, person := range people {
@@ -39,7 +43,22 @@ func matchesMetadata(item library.Item, query string) bool {
 			text = appendSearchField(text, person.Role)
 		}
 	}
-	return bytes.Contains(text, []byte(query))
+	return containsSearchWord(text, query, title)
+}
+
+func containsSearchWord(text []byte, query string, anywhere int) bool {
+	for offset := 0; offset <= len(text); {
+		position := bytes.Index(text[offset:], []byte(query))
+		if position < 0 {
+			return false
+		}
+		position += offset
+		if position < anywhere || position == 0 || text[position-1] == ' ' || text[position-1] >= utf8.RuneSelf || query[0] >= utf8.RuneSelf {
+			return true
+		}
+		offset = position + 1
+	}
+	return false
 }
 
 func metadataSearchSize(fields []string, cast, showCast []library.Person) int {
@@ -62,11 +81,22 @@ func matchesLiteralPrefix(fields []string, query string) bool {
 		}
 	}
 	for _, value := range fields {
-		if strings.Contains(value[:min(len(value), metadataSearchScratchSize)], query) {
-			return true
+		value = value[:min(len(value), metadataSearchScratchSize)]
+		for offset := strings.Index(value, query); offset >= 0; offset = nextLiteral(value, query, offset) {
+			if offset == 0 || searchASCIIByte(value[offset-1]) == ' ' {
+				return true
+			}
 		}
 	}
 	return false
+}
+
+func nextLiteral(value, query string, offset int) int {
+	next := strings.Index(value[offset+1:], query)
+	if next < 0 {
+		return -1
+	}
+	return offset + 1 + next
 }
 
 func appendSearchField(text []byte, value string) []byte {

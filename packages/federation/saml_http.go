@@ -95,7 +95,10 @@ func (login *SAMLHTTP[T]) writeCallbackError(writer http.ResponseWriter, request
 	switch {
 	case errors.Is(err, ErrInvalidState):
 		message = "SAML response is invalid or expired"
-	case errors.Is(err, ErrProviderUnavailable), errors.Is(err, ErrNotConfigured):
+	case errors.Is(err, ErrNotConfigured):
+		login.hooks.unavailable(writer, request, err, "SAML provider is unavailable", http.StatusBadGateway)
+		return
+	case errors.Is(err, ErrProviderUnavailable):
 		message, status = "SAML provider is unavailable", http.StatusBadGateway
 	case errors.Is(err, ErrTokenInvalid):
 		message, status = "SAML response validation failed", http.StatusUnauthorized
@@ -106,7 +109,7 @@ func (login *SAMLHTTP[T]) writeCallbackError(writer http.ResponseWriter, request
 func (login *SAMLHTTP[T]) metadata(writer http.ResponseWriter, request *http.Request) {
 	data, err := login.flow.Metadata(request.Context())
 	if err != nil {
-		login.hooks.Error(writer, request, "SAML metadata is unavailable", http.StatusServiceUnavailable)
+		login.hooks.unavailable(writer, request, err, "SAML metadata is unavailable", http.StatusServiceUnavailable)
 		return
 	}
 	writer.Header().Set("Content-Type", "application/samlmetadata+xml")
@@ -128,7 +131,7 @@ func (login *SAMLHTTP[T]) startFor(writer http.ResponseWriter, request *http.Req
 			login.hooks.Error(writer, request, "too many SSO requests are pending", http.StatusTooManyRequests)
 			return
 		}
-		login.hooks.Error(writer, request, "SAML SSO is unavailable", http.StatusServiceUnavailable)
+		login.hooks.unavailable(writer, request, err, "SAML SSO is unavailable", http.StatusServiceUnavailable)
 		return
 	}
 	if len(start.PostHTML) != 0 {

@@ -1,6 +1,9 @@
 package federation
 
-import "net/http"
+import (
+	"errors"
+	"net/http"
+)
 
 type WebHooks[T any] struct {
 	CurrentProfileID   func(*http.Request) string
@@ -13,6 +16,14 @@ type WebHooks[T any] struct {
 	Audit              func(*http.Request, T)
 	Error              func(http.ResponseWriter, *http.Request, string, int)
 	APIError           func(http.ResponseWriter, error, int)
+	NotConfigured      func(*http.Request)
+}
+
+func (hooks WebHooks[T]) unavailable(writer http.ResponseWriter, request *http.Request, err error, message string, status int) {
+	if errors.Is(err, ErrNotConfigured) && hooks.NotConfigured != nil {
+		hooks.NotConfigured(request)
+	}
+	hooks.Error(writer, request, message, status)
 }
 
 func (hooks WebHooks[T]) linkSession(request *http.Request, profileID string) string {

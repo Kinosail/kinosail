@@ -53,7 +53,7 @@
 .subtitle-search-field{height:50px;border-color:var(--line);border-radius:10px;background:var(--surface)}
 .subtitle-search-field input{height:48px;font-size:1rem}
 .subtitle-search-field .subtitle-search-submit{height:48px;min-height:48px;flex-basis:48px;border:0}
-.subtitle-filter select{height:50px;font-size:.9rem;border-radius:10px;background-color:var(--surface)}
+.subtitle-filter select{min-height:50px;font-size:.9rem;border-radius:10px;background-color:var(--surface)}
 .subtitle-file-list{margin-top:1rem;border:0}
 .subtitle-file-columns{padding:.8rem 1.1rem;font-size:.8rem;text-transform:none;letter-spacing:normal}
 .subtitle-file>summary{min-height:100px;padding:1rem 1.1rem;border-radius:10px;column-gap:1.5rem}
@@ -72,7 +72,7 @@
   :root{scroll-padding-top:var(--subtitle-header-height,72px);scroll-padding-bottom:calc(var(--subtitle-dock-height,0px) + 1rem)}
   .subtitle-dashboard>.app-header{display:flex;flex-wrap:wrap;justify-content:space-between;min-height:72px;padding:1rem 1.25rem}
   .subtitle-dashboard .brand-lockup{flex:1;overflow:hidden}
-  .subtitle-brand-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .subtitle-brand-name{display:-webkit-box;min-width:0;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow-wrap:break-word}
   .subtitle-brand-name small,.subtitle-dashboard .supporter-long{display:none}
   .subtitle-dashboard .app-header nav{position:fixed;inset:auto 0 0;z-index:60;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,4rem),1fr));justify-content:stretch;gap:.4rem;width:100%;padding:.4rem .25rem max(.4rem,env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
   .subtitle-dashboard .app-header nav a{justify-content:center;min-width:0;white-space:normal;overflow-wrap:anywhere;padding:.6rem 0;font-size:.85rem;min-height:48px}
@@ -155,3 +155,8 @@
 @media(prefers-contrast:more),(prefers-reduced-transparency:reduce),(forced-colors:active){
   :root:not([data-theme=light]) body.subtitle-dashboard:not(.settings-page):not(.auth){background:var(--bg)}
 }
+.subtitle-file-list,.subtitle-overview{container-type:inline-size}
+@container (max-width:17rem){.subtitle-file>summary{grid-template-columns:minmax(0,1fr) 1rem}.subtitle-file-status{grid-column:1;grid-row:2}.subtitle-file-expand{grid-column:2;grid-row:1/3}}
+@media(min-height:601px){@container (max-width:36rem){.subtitle-overview>*{grid-column:1/-1}}}
+.settings-flow #language{container-type:inline-size}
+@container (max-width:17rem){.settings-flow .subtitle-language-add,.subtitle-language-list li{grid-template-columns:minmax(0,1fr)}}

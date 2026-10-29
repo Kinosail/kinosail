@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -33,5 +34,6 @@ func federationWebHooks(store *profileStore) federation.WebHooks[viewerProfile] 
 		RequiresMFA:        func(profile viewerProfile) bool { return profile.TOTPSecret != "" },
 		VerifySecondFactor: store.verifySecondFactor, SignIn: store.signInStrong,
 		Audit: setAuditViewer, Error: localizedError, APIError: apiError,
+		NotConfigured: func(request *http.Request) { limitRequestLog(request, slog.LevelWarn) },
 	}
 }
