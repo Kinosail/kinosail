@@ -2,8 +2,7 @@ import type {Page, Request} from "@playwright/test";
 
 type Failure = {url: string; document: number; time: number; method: string; resource: string; failure: string; status: number | null; redirected: boolean};
 type Navigation = {document: number; time: number; committed: number; from: string; to: string; method: string; redirectMethod: string; status: number; redirectStatus: number; newDocument: boolean; timeOrigin?: number};
-type PageError = {document: number; documentURL: string; time: number; name: string; message: string; stack: string; uaStyle?: boolean};
-const scriptStyle = "kinosail-script-style-violation ";
+type PageError = {document: number; documentURL: string; time: number; name: string; message: string; stack: string; styleCheck?: string};
 const webkitSelectStyle = "Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' does not appear in the style-src directive of the Content Security Policy.";
 type WatchedAction = {document: number; time: number; item: string; timeOrigin: number};
 export type PlaybackErrorEvidence = PageError & {browser: string; origin: string; action?: WatchedAction; failures: Failure[]; navigations: Navigation[]};
@@ -33,14 +32,7 @@ export function cancelledWatchedHLS(value: PlaybackErrorEvidence): boolean {
 
 export function captureHappyPathErrors(page: Page, browser: string) {
   let enabled = true, document = 0, overflow = false;
-  const markup: Promise<void>[] = [], checks: Promise<void>[] = [], styled = new Set<string>(), unstyled = new Set<string>();
-  const scripted = new Map<number, string>();
-  const ready = browser === "webkit" ? page.addInitScript(marker => addEventListener("securitypolicyviolation", event => {
-    if (!event.violatedDirective.startsWith("style-src") || !event.sourceFile) return;
-    let source = "";
-    try { source = new URL(event.sourceFile).pathname.slice(0, 128); } catch {   }
-    console.debug(marker + [event.violatedDirective, event.target instanceof Element ? event.target.localName : "", source, event.lineNumber].join(" "));
-  }, true), scriptStyle) : Promise.resolve();
+  const checks: Promise<void>[] = [];
   let action: WatchedAction | undefined;
   const records: PageError[] = [], failures: Failure[] = [], navigations: Navigation[] = [];
   const requests = new Map<Request, Failure>(), posts = new Map<Request, {document: number; time: number; status: number}>();
@@ -54,7 +46,6 @@ export function captureHappyPathErrors(page: Page, browser: string) {
     return entry;
   };
   page.on("console", message => {
-    if (message.type() === "debug" && message.text().startsWith(scriptStyle)) {scripted.set(document, message.text().slice(scriptStyle.length, 256)); return;}
     if (!enabled || message.type() !== "error") return;
     try {
       const source = new URL(message.location().url), current = new URL(page.url());
@@ -65,9 +56,14 @@ export function captureHappyPathErrors(page: Page, browser: string) {
     let source = "";
     try { source = location.url ? ` at ${new URL(location.url).pathname}:${location.lineNumber}:${location.columnNumber}` : ""; } catch {   }
     const entry = record(message.text() + source);
-    if (!entry || browser !== "webkit" || location.url !== entry.documentURL || !message.text().startsWith(webkitSelectStyle)) return;
-    checks.push(page.evaluate(() => !window.document.querySelector("style"))
-      .then(clean => {entry.uaStyle = clean && document === entry.document && page.url() === entry.documentURL;}).catch(() => {}));
+    if (!entry || browser !== "webkit" || !message.text().startsWith(webkitSelectStyle)) return;
+    entry.styleCheck = "pending";
+    checks.push(page.evaluate(() => {
+      if (window.document.querySelector("style")) return "style element";
+      const blocked = [...window.document.querySelectorAll<HTMLElement>("[style]")].find(element => element.getAttribute("style")?.trim() && !element.style.length);
+      return blocked ? `blocked style attribute on ${blocked.localName}` : "";
+    }).then(result => {entry.styleCheck = document === entry.document && page.url() === entry.documentURL ? result : "page changed";})
+      .catch(() => {entry.styleCheck = "page closed";}));
   });
   page.on("pageerror", error => record(error.message, error.name, error.stack ?? ""));
   page.on("request", request => {
@@ -88,10 +84,6 @@ export function captureHappyPathErrors(page: Page, browser: string) {
   page.on("requestfinished", request => requests.delete(request));
   page.on("response", response => {
     const request = response.request(), failure = requests.get(request);
-    if (browser === "webkit" && request.isNavigationRequest() && request.frame() === page.mainFrame() && markup.length < 1024 &&
-        (response.headers()["content-type"] ?? "").startsWith("text/html")) {
-      markup.push(response.text().then(body => {(/<style\b|<[a-z][^>]*\sstyle\s*=/i.test(body) ? styled : unstyled).add(response.url());}).catch(() => {styled.add(response.url());}));
-    }
     if (failure) failure.status = response.status();
     if (!request.isNavigationRequest() || request.frame() !== page.mainFrame()) return;
     if (request.method() === "POST" && response.status() === 303 && /^\/watched\/[a-f0-9]{16}$/.test(new URL(request.url()).pathname)) {
@@ -135,11 +127,10 @@ export function captureHappyPathErrors(page: Page, browser: string) {
       const remaining = [...failures], unexpected: string[] = [];
       accepted = [];
       for (const error of records) {
-        if (error.uaStyle && !scripted.has(error.document) && unstyled.has(error.documentURL) && !styled.has(error.documentURL)) continue;
+        if (error.styleCheck === "") continue;
         const origin = new URL(error.documentURL).origin;
         const index = remaining.findIndex(failure => cancelledWatchedHLS({...error, origin, browser, action, failures: [failure], navigations}));
-        const cause = scripted.get(error.document);
-        if (index < 0) unexpected.push(`${error.message} (${new URL(error.documentURL).pathname})${cause ? ` [script style: ${cause}]` : ""}`);
+        if (index < 0) unexpected.push(`${error.message} (${new URL(error.documentURL).pathname})${error.styleCheck ? ` [${error.styleCheck}]` : ""}`);
         else {
           const [failure] = remaining.splice(index, 1);
           accepted.push({resource: new URL(failure.url).pathname, document: failure.document, time: failure.time});
@@ -149,7 +140,7 @@ export function captureHappyPathErrors(page: Page, browser: string) {
       return unexpected;
     },
     cancellations: () => accepted,
-    settled: async () => {await ready; await Promise.all([...markup, ...checks]); return true;},
+    settled: async () => {await Promise.all(checks); return true;},
     evidence: () => records.map(error => ({...error, browser, action, origin: new URL(error.documentURL).origin, failures, navigations, pendingRequests: [...requests.values()]})),
   };
 }
