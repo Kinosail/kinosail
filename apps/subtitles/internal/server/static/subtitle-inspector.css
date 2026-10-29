@@ -36,3 +36,5 @@
 #draft-words { display: flex; flex-wrap: wrap; gap: .4rem; }
 #draft-words button { max-width: 100%; overflow-wrap: anywhere; }
 .subtitle-low-confidence { text-decoration: underline dotted; text-underline-offset: .25em; border-color: var(--signal); }
+.subtitle-inspector input[type=file]::file-selector-button { min-height:44px; margin-inline-end:.75rem; padding:.7rem 1rem; border:1px solid var(--line-strong); border-radius:9px; background:transparent; color:var(--text); font:inherit; font-size:.83rem; font-weight:600; cursor:pointer; }
+.subtitle-inspector input[type=file]::file-selector-button:hover { background:var(--surface-2); }

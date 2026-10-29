@@ -172,3 +172,9 @@ body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}
 .player-native-options>.player-settings{position:static;max-height:none;overflow:visible;margin-top:.5rem;background:var(--overlay);color:var(--text)}
 .player-page .media-stage.has-settings:has(+.player-native-options){margin-bottom:1rem}
 .player-shell .title-block h1{overflow-wrap:anywhere;min-width:0}
+.settings-shell:not(.onboarding-shell,:has([data-settings-organized]))>.settings-intro{border-bottom:0}
+.settings-shell:not(.onboarding-shell,:has([data-settings-organized]))>.settings-flow{max-width:none}
+.settings-shell:not(.onboarding-shell,:has([data-settings-organized]))>section,.settings-shell:not(.onboarding-shell,:has([data-settings-organized]))>.settings-flow>section{padding:1.5rem 0}
+.settings-shell:not(.onboarding-shell,:has([data-settings-organized])) :is(section p,section figcaption){max-width:65ch}
+body{font-size:.9375rem}
+@media(max-width:700px){body{font-size:.875rem}}

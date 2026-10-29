@@ -29,7 +29,7 @@ My List uses the current Profile. It does not grant access to an item that the O
 1. Open **Playlists**.
 2. Choose the control to create a playlist.
 3. Enter a unique name.
-4. Open a title and select **Add to playlist or collection**.
+4. Open a title and select **Add to playlist or Collection**.
 5. Choose the playlist.
 6. Open the playlist to review its order and play it.
 

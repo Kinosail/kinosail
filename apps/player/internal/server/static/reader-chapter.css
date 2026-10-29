@@ -1,0 +1,25 @@
+@font-face{font-family:Manrope;font-style:normal;font-weight:200 800;font-display:swap;src:url(/static/manrope.woff2?v=1) format("woff2")}
+:root{color-scheme:light dark;--reader-canvas:#fff;--reader-text:#171a13;--reader-muted:#626957;--reader-link:#365500;--reader-line:rgba(23,26,19,.14);--reader-code:#eef1e7}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--reader-canvas:#12140f;--reader-text:#f6f8ef;--reader-muted:#a5ac9a;--reader-link:#c8f169;--reader-line:rgba(246,248,239,.14);--reader-code:#1a1d16}}
+:root[data-theme=dark]{color-scheme:dark;--reader-canvas:#12140f;--reader-text:#f6f8ef;--reader-muted:#a5ac9a;--reader-link:#c8f169;--reader-line:rgba(246,248,239,.14);--reader-code:#1a1d16}
+:root[data-theme=light]{color-scheme:light}
+:where(html){background:var(--reader-canvas);color:var(--reader-text);font:400 17px/1.65 Manrope,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:where(body){box-sizing:content-box;max-width:36em;margin:0 auto;padding:clamp(1.25rem,5vw,3rem) clamp(1rem,5vw,2.5rem) 4rem;overflow-wrap:break-word}
+:where(h1,h2,h3,h4,h5,h6){margin:1.75em 0 .5em;font-weight:750;line-height:1.2;letter-spacing:-.02em;text-wrap:balance}
+:where(h1){margin-top:0;font-size:2em;letter-spacing:-.03em}
+:where(h2){font-size:1.4em}
+:where(h3){font-size:1.2em}
+:where(h4,h5,h6){font-size:1em}
+:where(p,ul,ol,dl,table,pre,blockquote,figure){margin:0 0 1em}
+:where(a){color:var(--reader-link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.18em}
+:where(img,svg,video,canvas){max-width:100%;height:auto}
+:where(figure){margin:1.5em 0;text-align:center}
+:where(figure img){display:block;margin:0 auto;border-radius:12px}
+:where(figcaption){margin-top:.6em;color:var(--reader-muted);font-size:.875em}
+:where(blockquote){margin-inline:0;padding-left:1em;border-left:3px solid var(--reader-line);color:var(--reader-muted)}
+:where(hr){margin:2em 0;border:0;border-top:1px solid var(--reader-line)}
+:where(code,kbd,samp,pre){font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+:where(pre){overflow-x:auto;padding:.85em 1em;border-radius:10px;background:var(--reader-code)}
+:where(table){border-collapse:collapse}
+:where(th,td){padding:.4em .6em;border-bottom:1px solid var(--reader-line);text-align:start}
+::selection{background:color-mix(in srgb,var(--reader-link) 30%,transparent)}

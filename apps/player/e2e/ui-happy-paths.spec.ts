@@ -111,10 +111,10 @@ test("Owner can create, fill, empty, and delete a playlist and Collection", asyn
 	await page.goto("/?view=movies");
 	await page.getByRole("link", { name: /Example Movie/ }).click();
 	await expect(page.locator("video")).toBeVisible();
-	await page.getByText("Add to playlist or collection", { exact: true }).click();
+	await page.getByText("Add to playlist or Collection", { exact: true }).click();
 	await expect(page.getByRole("heading", { name: "Playlists", exact: true })).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Collections", exact: true })).toBeVisible();
-	const destinationSearch = page.getByLabel("Search playlists and collections");
+	const destinationSearch = page.getByLabel("Search playlists and Collections");
 	await destinationSearch.fill(playlistName);
 	await expect(page.getByRole("button", { name: `Add to playlist · ${playlistName}` })).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Collections", exact: true })).toBeHidden();
@@ -122,10 +122,10 @@ test("Owner can create, fill, empty, and delete a playlist and Collection", asyn
 	await expect(page.getByRole("button", { name: `Add to Collection · ${collectionName}` })).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Playlists", exact: true })).toBeHidden();
 	await destinationSearch.fill("No matching destination");
-	await expect(page.getByText("No playlists or collections found.", { exact: true })).toBeVisible();
+	await expect(page.getByText("No playlists or Collections found.", { exact: true })).toBeVisible();
 	await destinationSearch.fill(playlistName);
 	await page.getByRole("button", { name: `Add to playlist · ${playlistName}` }).click();
-	await page.getByText("Add to playlist or collection", { exact: true }).click();
+	await page.getByText("Add to playlist or Collection", { exact: true }).click();
 	await page.getByRole("button", { name: `Add to Collection · ${collectionName}` }).click();
 
 	await page.goto(`/playlist/${encodeURIComponent(playlistName)}`);
