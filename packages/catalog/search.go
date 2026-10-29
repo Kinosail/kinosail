@@ -54,10 +54,6 @@ func Sort(items []library.Item, order string) []library.Item {
 	return items
 }
 
-func searchRank(item library.Item, query string) int {
-	return searchRankNormalized(item, searchText(query))
-}
-
 func searchRankNormalized(item library.Item, query string) int {
 	title := searchText(item.Title)
 	switch {

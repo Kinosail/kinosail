@@ -117,10 +117,6 @@ func ParseBrowse(values url.Values, locale string) (Browse, error) {
 	return Browse{values: cloneValues(values), query: query, view: view, order: order, letter: letter, locale: locale, offset: offset, limit: limit}, nil
 }
 
-func BrowseLibrary(ctx context.Context, values url.Values, locale string, load func() ([]*library.Item, error), access func() BrowseAccess) (Result, error) {
-	return browseLibrary(ctx, values, locale, func(Browse) (browseSource, error) { items, err := load(); return browseSource{items: items}, err }, access)
-}
-
 func browseLibrary(ctx context.Context, values url.Values, locale string, load func(Browse) (browseSource, error), access func() BrowseAccess) (Result, error) {
 	browse, err := ParseBrowse(values, locale)
 	if err != nil {

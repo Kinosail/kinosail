@@ -37,17 +37,6 @@ func (fixture AssetsFixture) PagesShareOneContentDerivedAssetVersion(t *testing.
 	}
 }
 
-func CurrentAssetURL(t *testing.T, handler http.Handler, path string) string {
-	t.Helper()
-	asset := httptest.NewRecorder()
-	handler.ServeHTTP(asset, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
-	if asset.Code != http.StatusOK {
-		t.Fatalf("%s = %d", path, asset.Code)
-	}
-	sum := sha256.Sum256(asset.Body.Bytes())
-	return path + "?v=" + hex.EncodeToString(sum[:])
-}
-
 func assertVersionedAsset(t *testing.T, handler http.Handler, cookie *http.Cookie, name, version string) {
 	t.Helper()
 	signed := func(target string) *http.Request {

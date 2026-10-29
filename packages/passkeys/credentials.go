@@ -69,24 +69,6 @@ func validAttestation(attestation webauthn.CredentialAttestation) bool {
 	return len(attestation.ClientDataJSON) <= maxAttestation && len(attestation.ClientDataHash) <= 64 && len(attestation.AuthenticatorData) <= maxAttestation && len(attestation.Object) <= maxAttestation
 }
 
-func ValidateCredentials(credentials []webauthn.Credential) error {
-	if len(credentials) > MaxCredentials {
-		return ErrLimit
-	}
-	seen := make(map[string]struct{}, len(credentials))
-	for index := range credentials {
-		if err := ValidateCredential(&credentials[index]); err != nil {
-			return err
-		}
-		key := string(credentials[index].ID)
-		if _, found := seen[key]; found {
-			return ErrDuplicate
-		}
-		seen[key] = struct{}{}
-	}
-	return nil
-}
-
 func ValidateLookup(rawID, userHandle []byte) error {
 	if len(rawID) == 0 || len(rawID) > maxCredentialID || len(userHandle) == 0 || len(userHandle) > maxUserHandle {
 		return ErrInvalidCredential

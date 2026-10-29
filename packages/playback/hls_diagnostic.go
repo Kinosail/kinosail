@@ -64,10 +64,6 @@ func (buffer *HLSDiagnosticBuffer) Write(data []byte) (int, error) {
 
 func (buffer *HLSDiagnosticBuffer) Bytes() []byte { return append([]byte(nil), buffer.data...) }
 
-func RunHLSCommand(command *exec.Cmd, private ...string) error {
-	return RunHLSCommandObserved(command, nil, private...)
-}
-
 func RunHLSCommandObserved(command *exec.Cmd, started func(), private ...string) error {
 	if command == nil {
 		return NewHLSDiagnosticError(errors.New("transcoder command is missing"), "")

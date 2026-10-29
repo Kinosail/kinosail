@@ -45,7 +45,7 @@ func assertCopiedHLSFinalCount(t *testing.T, cached, projected string, expected 
 	t.Helper()
 	ctx, cancel := context.WithTimeout(t.Context(), 45*time.Second)
 	defer cancel()
-	if !playback.WaitHLSReady(ctx, func() error {
+	if !playback.WaitHLSChange(ctx, nil, nil, func() error {
 		if playback.FinalizedVariant(filepath.Dir(cached)) {
 			return nil
 		}

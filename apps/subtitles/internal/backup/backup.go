@@ -26,10 +26,6 @@ func Write(writer io.Writer, dataDir string) error {
 	return service.Write(writer, dataDir, ApplicationVersion)
 }
 
-func WriteEncrypted(writer io.Writer, dataDir, passphrase string) error {
-	return service.WriteEncrypted(writer, dataDir, passphrase, ApplicationVersion)
-}
-
 func LiveWriteEncrypted(store *database.Store) func(io.Writer, string, string) error {
 	live := service
 	if store != nil {

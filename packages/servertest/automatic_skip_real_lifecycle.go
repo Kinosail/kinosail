@@ -19,7 +19,7 @@ func realHLSLifecycle(t *testing.T, cache string) context.Context {
 		defer cancel()
 		ctx, stop := context.WithTimeout(lifecycle, 45*time.Second)
 		defer stop()
-		if !playback.WaitHLSReady(ctx, func() error { return finalizedRealHLSCache(cache) }) {
+		if !playback.WaitHLSChange(ctx, nil, nil, func() error { return finalizedRealHLSCache(cache) }) {
 			t.Error("real HLS encoder did not finalize its cached variants before cleanup")
 		}
 	})

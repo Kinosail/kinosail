@@ -94,8 +94,6 @@ func (analyzer *Analyzer) creditFrames(ctx context.Context, item library.Item, s
 	return workload.BackgroundOutput(command)
 }
 
-func creditFrameLikely(frame []byte) bool { return creditFrameProfile(frame).likely }
-
 func creditFrameProfile(frame []byte) creditProfile {
 	if len(frame) != creditFrameWidth*creditFrameHeight {
 		return creditProfile{}

@@ -21,7 +21,7 @@ func observeRealHLSEncoder(t *testing.T) {
 		defer restore()
 		ctx, cancel := context.WithTimeout(context.WithoutCancel(t.Context()), 45*time.Second)
 		defer cancel()
-		if !playback.WaitHLSReady(ctx, state.ready) {
+		if !playback.WaitHLSChange(ctx, nil, nil, state.ready) {
 			t.Errorf("real HLS encoder did not complete successfully: %v", state.ready())
 		}
 	})

@@ -54,7 +54,7 @@ var (
 	//go:embed static/cinema-backdrop.jpg
 	cinemaBackdrop []byte
 	//go:embed static/service-worker.js
-	serviceWorker []byte
+	serviceWorkerApp []byte
 	//go:embed static/offline.html
 	offlineHTML []byte
 )
@@ -77,9 +77,10 @@ var (
 	pwaNavigationJS  = webassets.PWANavigation
 	pwaSettingsJS    = webassets.PWASettings
 	shortcutsJS      = webassets.Shortcuts
-	themeJS          = joinScripts(subtitleDockInitialJS, webassets.Theme)
+	themeJS          = joinScripts(webassets.DockFocus, subtitleDockInitialJS, webassets.Theme)
 	supporterJS      = joinScripts(webassets.Supporter, supporterAppJS)
 	pwaJS            = joinScripts(pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
+	serviceWorker    = joinScripts(webassets.ShellAssets, serviceWorkerApp)
 	mainBundle       = joinScripts(pwaJS, shortcutsJS)
 	applicationStyle = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, subtitleDashboardCSS}, nil)
 )

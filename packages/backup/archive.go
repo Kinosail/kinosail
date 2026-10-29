@@ -100,10 +100,6 @@ func (service *Service) readDocuments(dataDir string) (map[string][]byte, error)
 	return documents, errors.Join(exportErr, store.Close())
 }
 
-func writeArchive(writer io.Writer, version string, contents map[string][]byte, written []string) error {
-	return writeArchiveLimit(writer, version, contents, written, maxArchiveSize, func(string) bool { return false })
-}
-
 func writeArchiveLimit(writer io.Writer, version string, contents map[string][]byte, written []string, maximum int, entry func(string) bool) error {
 	manifestData := archiveManifest(version, written)
 	if err := validateArchiveSize(contents, written, manifestData, entry); err != nil {
@@ -126,10 +122,6 @@ func writeArchiveLimit(writer io.Writer, version string, contents map[string][]b
 		return err
 	}
 	return publishArchive(writer, output)
-}
-
-func writeArchiveManifest(writer *tar.Writer, version string, written []string) error {
-	return writeManifestData(writer, archiveManifest(version, written))
 }
 
 func archiveManifest(version string, written []string) []byte {

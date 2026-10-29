@@ -25,10 +25,6 @@ type subtitleSpeechChunk struct {
 	pcm    []byte
 }
 
-func processSubtitleAudioReference(reader io.Reader) (subtitleAudioReference, error) {
-	return processSubtitleAudio(reader, subtitleWorkerCount(), nil)
-}
-
 func processSubtitleAudio(reader io.Reader, workers int, slots chan struct{}) (subtitleAudioReference, error) {
 	jobs := make(chan subtitleSpeechChunk, 1)
 	results := make(map[int]subtitleAudioReference)

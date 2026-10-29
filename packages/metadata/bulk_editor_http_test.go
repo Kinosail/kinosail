@@ -196,7 +196,4 @@ func TestBulkMetadataHTMLUsesProductProfile(t *testing.T) {
 			t.Errorf("output missing %q", fragment)
 		}
 	}
-	if page := SubtitlesBulkPage(); page.Product != "Kinosail Subtitles" || page.ThemeScript != "/static/theme.js?v=cinema-1" || page.Stylesheet != "/static/app.css?v=cinema-1" {
-		t.Fatalf("SubtitlesBulkPage() = %#v", page)
-	}
 }

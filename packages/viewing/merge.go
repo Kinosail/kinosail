@@ -53,11 +53,6 @@ func (storage ProgressStorage) Import(changes []ProgressChange, now time.Time) (
 	return applied, conflicts, nil
 }
 
-func MergeProgress(values map[string]catalog.PlaybackState, profileID string, owner bool, changes []ProgressChange, now time.Time) (map[string]catalog.PlaybackState, int, int) {
-	updates, applied, conflicts := progressUpdates(values, profileID, owner, changes, now)
-	return mergedProgress(values, updates), applied, conflicts
-}
-
 func progressUpdates(values map[string]catalog.PlaybackState, profileID string, owner bool, changes []ProgressChange, now time.Time) (map[string]catalog.PlaybackState, int, int) {
 	updates, applied, conflicts := make(map[string]catalog.PlaybackState), 0, 0
 	for _, change := range changes {

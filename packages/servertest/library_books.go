@@ -41,28 +41,6 @@ func (fixture LibraryAPIFixture) ViewerCanBrowseAndDownloadEbooks(t *testing.T) 
 	}
 }
 
-func (fixture LibraryAPIFixture) ReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb(t *testing.T) {
-	media := t.TempDir()
-	if err := os.WriteFile(filepath.Join(media, "Manual.pdf"), []byte("%PDF-1.4"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	archivetest.WriteZIP(t, filepath.Join(media, "Novel.epub"), map[string]string{
-		"META-INF/container.xml": `<?xml version="1.0"?><container><rootfiles><rootfile full-path="OEBPS/content.opf"/></rootfiles></container>`,
-		"OEBPS/content.opf":      `<package><manifest><item id="one" href="one.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="one"/></spine></package>`,
-		"OEBPS/one.xhtml":        `<html><body><h1>Chapter One</h1></body></html>`,
-	})
-	archivetest.WriteZIP(t, filepath.Join(media, "Comic.cbz"), map[string]string{"001.jpg": "one", "002.jpg": "two"})
-	handler := fixture.NewHandler(media, "", false)
-	libraryResponse := APICall(t, handler, "", http.MethodGet, "/api/v1/library", nil)
-	for _, title := range []string{"Manual", "Novel", "Comic"} {
-		id := regexp.MustCompile(`"id":"([a-f0-9]+)","kind":"book","title":"` + title + `"`).FindStringSubmatch(libraryResponse.Body.String())[1]
-		manifest := APICall(t, handler, "", http.MethodGet, "/api/v1/books/"+id+"/reader", nil)
-		AssertAPIBody(t, manifest, http.StatusOK, `"type":`, `/read/`+id)
-		reader := APICall(t, handler, "", http.MethodGet, "/read/"+id, nil)
-		AssertAPIBody(t, reader, http.StatusOK, title)
-	}
-}
-
 func (fixture LibraryAPIFixture) ReaderServesMainstreamComicArchivesThroughAPIAndWeb(t *testing.T, itemsByTitle func(*testing.T, http.Handler) map[string]string) {
 	if _, err := exec.LookPath("bsdtar"); err != nil {
 		t.Fatalf("bsdtar runtime is required for CB7 and CBT reader coverage: %v", err)

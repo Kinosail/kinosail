@@ -70,6 +70,6 @@ func (probe *securityFuzzConstructorProbe) bind(broker *quickconnect.Broker, pro
 	if broker != probe.broker || profile != probe.profile {
 		probe.t.Fatal("application binding received another broker or profile store")
 	}
-	probe.application = quickconnect.NewApplication(broker, quickconnect.Limiters{}, quickconnect.Adapter{})
+	probe.application = quickconnect.NewApplicationFor(broker, quickconnect.Limiters{}, quickconnect.Adapter{}, quickconnect.PlayerPage())
 	return RemoteAuthorizationFuzzFixture{Broker: broker, Application: probe.application}
 }

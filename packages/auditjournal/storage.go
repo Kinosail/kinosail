@@ -1,16 +1,10 @@
 package auditjournal
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
 	"os"
 )
-
-func appendAuditEvent(path string, event Event) error {
-	line, _ := json.Marshal(event)
-	return appendAuditLine(path, line)
-}
 
 func appendAuditLine(path string, line []byte) error {
 	if len(line) > maxAuditEventBytes {

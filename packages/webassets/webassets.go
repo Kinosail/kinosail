@@ -15,9 +15,12 @@ var (
 	ArtworkPalette []byte
 	//go:embed static/offline-profile.js
 	offlineProfile []byte
+	//go:embed static/shell-assets.js
+	ShellAssets []byte
 	//go:embed static/offline-shell.js
-	offlineShell []byte
-	OfflineShell = append(append([]byte(nil), offlineProfile...), offlineShell...)
+	offlineShellLifecycle []byte
+	offlineShell          = append(append([]byte(nil), ShellAssets...), offlineShellLifecycle...)
+	OfflineShell          = append(append([]byte(nil), offlineProfile...), offlineShell...)
 
 	//go:embed static/offline-runtime.js
 	OfflineRuntime []byte
@@ -59,8 +62,11 @@ var (
 	//go:embed static/pwa-library.js
 	pwaLibrary []byte
 	PWA        = append(append([]byte(nil), pwaLibrary...), pwaCore...)
+	//go:embed static/dock-focus.js
+	DockFocus []byte
 	//go:embed static/mobile-tabs.js
-	MobileTabs []byte
+	mobileTabs []byte
+	MobileTabs = append(append([]byte(nil), DockFocus...), mobileTabs...)
 	//go:embed static/pwa-navigation.js
 	pwaNavigation []byte
 	//go:embed static/pwa-browse-return.js

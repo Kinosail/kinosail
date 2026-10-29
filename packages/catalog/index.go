@@ -58,10 +58,6 @@ type Index struct {
 	pending           refreshRequest
 }
 
-func NewIndex(ctx context.Context, roots []ScanRoot, cache string, interval time.Duration, acquire func(context.Context) (func(), error)) *Index {
-	return NewDecoratedIndex(ctx, roots, cache, interval, acquire, Decoration{})
-}
-
 func NewDecoratedIndex(ctx context.Context, roots []ScanRoot, cache string, interval time.Duration, acquire func(context.Context) (func(), error), decoration Decoration) *Index {
 	if acquire == nil {
 		acquire = func(context.Context) (func(), error) { return func() {}, nil }

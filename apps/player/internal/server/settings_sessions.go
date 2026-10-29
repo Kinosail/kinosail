@@ -1,12 +1,13 @@
 package server
 
 import (
-	"errors"
 	"log/slog"
 	"math"
 	"net/http"
 	"strconv"
 	"time"
+
+	settingsops "github.com/MikeO7/kinosail/packages/settings"
 )
 
 func (store *settingsStore) sessionTimeouts() (time.Duration, time.Duration) {
@@ -25,10 +26,6 @@ func sessionTimeoutHours(settings installationSettings) (float64, float64) {
 		absolute = float64(defaultSessionAbsolute) / float64(time.Hour)
 	}
 	return inactive, absolute
-}
-
-func (store *settingsStore) setSessionTimeouts(inactive, absolute float64) error {
-	return store.changeSessionTimeouts(inactive, absolute, false)
 }
 
 func validSessionTimeouts(inactive, absolute float64) bool {
@@ -58,23 +55,9 @@ func saveSessionTimeouts(settings *settingsStore, public ...bool) http.HandlerFu
 }
 
 func apiSessionTimeouts(settings *settingsStore, public ...bool) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		var input struct{ InactiveHours, AbsoluteHours float64 }
-		if !readJSON(writer, request, &input) {
-			return
-		}
-		if err := settings.changeSessionTimeouts(input.InactiveHours, input.AbsoluteHours, len(public) > 0 && public[0]); err != nil {
-			status := http.StatusBadRequest
-			if !errors.Is(err, errSessionTimeoutsInvalid) {
-				timeoutSettingsFailure(request)
-				err = errors.New("could not save session timeouts")
-				status = http.StatusInternalServerError
-			}
-			apiError(writer, err, status)
-			return
-		}
-		writeJSON(writer, map[string]string{"status": "saved"}, http.StatusOK)
-	}
+	return settingsops.SaveSessionTimeoutsAPI(func(inactive, absolute float64) error {
+		return settings.changeSessionTimeouts(inactive, absolute, len(public) > 0 && public[0])
+	}, errSessionTimeoutsInvalid, timeoutSettingsFailure, readJSON, writeJSON, apiError)
 }
 
 func timeoutSettingsFailure(request *http.Request) {

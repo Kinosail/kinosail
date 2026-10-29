@@ -15,9 +15,9 @@ func memoryLibraryIndex(items []library.Item, ready bool) *libraryIndex {
 }
 
 func newLibraryIndex(ctx context.Context, roots []libraryRoot, cache string, interval time.Duration, workloads *workload.Governor) *libraryIndex {
-	return &libraryIndex{Index: catalog.NewIndex(ctx, roots, cache, interval, func(ctx context.Context) (func(), error) {
+	return &libraryIndex{Index: catalog.NewDecoratedIndex(ctx, roots, cache, interval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
-	})}
+	}, catalog.Decoration{})}
 }
 
 func sidecarTestIndex(item library.Item) *libraryIndex {

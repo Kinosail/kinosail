@@ -11,7 +11,3 @@ const HTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta n
 func PlayerPage() Page {
 	return Page{Product: "Kinosail Player", ThemeScript: "/static/theme.js?v=cinema-1", Stylesheet: "/static/app.css?v=qr-scan-1", Icon: "/static/icon.svg?v=6", AutoSubmit: true}
 }
-
-func SubtitlesPage() Page {
-	return Page{Product: "Kinosail Subtitles", ThemeScript: "/static/theme.js?v=cinema-1", Stylesheet: "/static/app.css?v=cinema-1", Icon: "/static/icon.svg?v=9"}
-}

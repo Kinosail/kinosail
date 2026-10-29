@@ -26,7 +26,7 @@ func TestBindingOwnsRegistrationAndTaskWiring(t *testing.T) {
 	var ownerCalls, scanCalls, metadataCalls, cacheCalls, maintainCalls int
 	config := testBindingConfig(t, runtimeSnapshot{})
 	config.Version, config.Started, config.Now = "v7", time.Unix(100, 0), func() time.Time { return time.Unix(110, 0) }
-	config.Index = catalog.NewIndex(t.Context(), nil, "", time.Hour, func(context.Context) (func(), error) { scanCalls++; return func() {}, nil })
+	config.Index = catalog.NewDecoratedIndex(t.Context(), nil, "", time.Hour, func(context.Context) (func(), error) { scanCalls++; return func() {}, nil }, catalog.Decoration{})
 	config.Metadata = func() MetadataRefresh {
 		metadataCalls++
 		return completeEmptyMetadataRefresh()
@@ -70,7 +70,7 @@ func TestBindingPreservesTaskErrorsWithoutLaterSideEffects(t *testing.T) {
 	t.Parallel()
 	want := errors.New("failed")
 	var scanCalls, metadataCalls, cacheCalls, maintainCalls int
-	index := catalog.NewIndex(t.Context(), nil, "", time.Hour, func(context.Context) (func(), error) { scanCalls++; return nil, want })
+	index := catalog.NewDecoratedIndex(t.Context(), nil, "", time.Hour, func(context.Context) (func(), error) { scanCalls++; return nil, want }, catalog.Decoration{})
 	binding := NewBinding(BindingConfig{
 		Index:    index,
 		Metadata: func() MetadataRefresh { metadataCalls++; return MetadataRefresh{} },

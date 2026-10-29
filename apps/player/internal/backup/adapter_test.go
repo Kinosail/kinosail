@@ -7,5 +7,5 @@ import (
 )
 
 func TestBackupAdapterContract(t *testing.T) {
-	servertest.BackupAdapterContract(t, WriteEncrypted, VerifyAuto, Command)
+	servertest.BackupAdapterContract(t, LiveWriteEncrypted(nil), VerifyAuto, Command)
 }

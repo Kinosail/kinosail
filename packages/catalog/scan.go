@@ -15,14 +15,6 @@ type ScanRoot struct {
 	Path, Namespace string
 }
 
-func ScanRoots[T any](values []T, fields func(T) (string, string)) []ScanRoot {
-	roots := make([]ScanRoot, len(values))
-	for position, value := range values {
-		roots[position].Path, roots[position].Namespace = fields(value)
-	}
-	return roots
-}
-
 func RefreshWork(ctx context.Context, mutex *sync.Mutex, acquire func(context.Context) (func(), error), refresh func(context.Context) error) error {
 	mutex.Lock()
 	defer mutex.Unlock()
@@ -54,21 +46,6 @@ func WaitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan 
 		request()
 		return true
 	}
-}
-
-func Scan(ctx context.Context, roots []ScanRoot, decorate func([]library.Item) []library.Item) ([]library.Item, error) {
-	scanners := make([]*library.Scanner, len(roots))
-	for position, root := range roots {
-		scanners[position] = library.NewScanner(root.Path, root.Namespace)
-	}
-	items, err := scanRoots(ctx, scanners, func(scanner *library.Scanner) ([]library.Item, error) { return scanner.Scan(ctx) })
-	if err != nil {
-		return items, err
-	}
-	if decorate != nil {
-		items = decorate(items)
-	}
-	return items, nil
 }
 
 func scanRoots(ctx context.Context, scanners []*library.Scanner, scan func(*library.Scanner) ([]library.Item, error)) ([]library.Item, error) {

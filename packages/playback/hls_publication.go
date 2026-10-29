@@ -8,10 +8,6 @@ import (
 
 type AtomicWriter func(string, []byte) error
 
-func PublishVariants(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter) error {
-	return PublishVariantsObserved(ctx, source, directory, transcoder, qualities, results, expected, independent, write, nil)
-}
-
 func PublishVariantsObserved(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter, ready func()) error {
 	if expected <= 0 || expected > 64 || write == nil {
 		return errors.New("HLS publication configuration is invalid")

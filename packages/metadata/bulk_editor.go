@@ -42,10 +42,6 @@ type BulkEditor struct {
 	fail     BulkFailure
 }
 
-func NewBulkEditor(index BulkIndex, recordMu sync.Locker, records *map[string]Record, save func(map[string]Record) error, render BulkRender, fail BulkFailure) *BulkEditor {
-	return NewBulkEditorFor(index, recordMu, records, save, PlayerBulkPage(), render, fail)
-}
-
 func NewBulkEditorFor(index BulkIndex, recordMu sync.Locker, records *map[string]Record, save func(map[string]Record) error, page BulkPage, render BulkRender, fail BulkFailure) *BulkEditor {
 	return &BulkEditor{index: index, recordMu: recordMu, records: records, save: save, page: page, render: render, fail: fail}
 }

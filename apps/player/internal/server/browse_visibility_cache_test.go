@@ -68,14 +68,7 @@ func TestLibraryBrowseMatchesUncachedVisibilityForEveryPolicy(t *testing.T) {
 		if err != nil {
 			return catalog.Result{}, err
 		}
-		return catalog.BrowseLibrary(request.Context(), request.URL.Query(), preferredLanguage(request), func() ([]*library.Item, error) {
-			items := snapshot.Items()
-			references := make([]*library.Item, len(items))
-			for position := range items {
-				references[position] = &items[position]
-			}
-			return references, nil
-		}, func() catalog.BrowseAccess {
+		return catalog.NewMemoryIndex(snapshot.Items(), true).BrowseLibrary(request.Context(), request.URL.Query(), preferredLanguage(request), func() catalog.BrowseAccess {
 			return progress.BrowseAccess(&lists.mu, &lists.values, request, viewerPolicy(currentViewer(request)).Allows)
 		})
 	}

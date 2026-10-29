@@ -73,7 +73,7 @@ func BenchmarkScanRoots(b *testing.B) {
 				if mode == "serial" {
 					for _, root := range roots {
 						var scanned []library.Item
-						scanned, err = library.ScanContext(b.Context(), root.Path, root.Namespace)
+						scanned, err = library.NewScanner(root.Path, root.Namespace).Scan(b.Context())
 						items = append(items, scanned...)
 						if err != nil {
 							break

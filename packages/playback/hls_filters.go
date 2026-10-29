@@ -39,14 +39,6 @@ func ApplyBurnIn(video []string, itemPath string, recipe HLSRecipe, policy HLSRe
 	return []string{"-map", "0:v:0", "-vf", joinFilters(beforeBurn, before, "subtitles=filename="+path+":si="+strconv.Itoa(recipe.SubtitleOrdinal), after, timeline, filter)}, remaining
 }
 
-func AutomaticSkipAudioArguments(recipe HLSRecipe, policy HLSRecipePolicy) []string {
-	filter := automaticSkipAudioFilter(recipe, policy)
-	if filter == "" {
-		return nil
-	}
-	return []string{"-af", filter}
-}
-
 func AudioFilterArguments(recipe HLSRecipe, policy HLSRecipePolicy) []string {
 	filters := []string{automaticSkipAudioFilter(recipe, policy)}
 	if recipe.DialogueBoost {
