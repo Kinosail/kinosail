@@ -28,6 +28,14 @@ extension XCTestCase {
         for _ in 0..<3 where !tab.isHittable { app.swipeDown() }
     }
 
+    @MainActor func tourBack(_ app: XCUIApplication) {
+        let buttons = app.navigationBars.buttons.matching(identifier: "BackButton")
+        _ = buttons.firstMatch.waitForExistence(timeout: 5)
+        if let back = buttons.allElementsBoundByIndex.first(where: \.isHittable) { back.tap(); return }
+        let edge = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5)).withOffset(CGVector(dx: 2, dy: 0))
+        edge.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)))
+    }
+
     func tourApprove(_ code: String, server: String, token: String) async throws {
         XCTAssertEqual(code.count, 6)
         var request = URLRequest(url: try XCTUnwrap(URL(string: "\(server)/api/v1/quick-connect/\(code)")))

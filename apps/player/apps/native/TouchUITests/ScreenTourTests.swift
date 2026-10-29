@@ -24,8 +24,9 @@ final class ScreenTourTests: XCTestCase {
             app.swipeUp()
             sleep(1)
             tourRecord("c2 show lower", app)
-            app.navigationBars.buttons.firstMatch.tap()
+            tourBack(app)
         }
+        tourReveal(home, in: app)
         let movies = tourTab("Movies", in: app)
         if movies.exists {
             movies.tap()
@@ -34,7 +35,7 @@ final class ScreenTourTests: XCTestCase {
             movie.tap()
             sleep(4)
             tourRecord("c3 movie", app)
-            app.navigationBars.buttons.firstMatch.tap()
+            tourBack(app)
         }
         for (index, (name, item)) in [("Collections", "Example Collection"), ("Music", "Example Album")].enumerated() {
             tourReveal(home, in: app)

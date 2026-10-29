@@ -118,10 +118,7 @@ struct AudioPlayerScreen: View {
         .toolbar { ToolbarItem(placement: .primaryAction) {
             #if os(tvOS)
             if session.player.player != nil {
-            Button { showsTools = true } label: {
-                Image(systemName: "ellipsis.circle.fill").font(.title2).foregroundStyle(KinoTheme.text)
-            }
-                .accessibilityLabel("Playback options")
+            Button("Options") { showsTools = true }
             }
             #else
             NavigationLink { PlaybackToolsScreen() } label: { Label("Playback options", systemImage: "ellipsis.circle") }

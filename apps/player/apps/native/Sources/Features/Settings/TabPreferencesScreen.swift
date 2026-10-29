@@ -61,7 +61,7 @@ private struct TabPreferencesEditor: View {
                     }
                 }
             }
-            Section { Button("Reset to default tabs") { save(mode.defaultTabs) } }
+            Section { Button("Reset to default tabs") { save(mode.defaultTabs) }.disabled(pinned == mode.defaultTabs) }
         }
         #if os(iOS)
         .scrollContentBackground(.hidden)

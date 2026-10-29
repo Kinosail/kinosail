@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
@@ -64,7 +63,7 @@ func NewAutomaticManager(ctx context.Context, dataDir, directory, key string, in
 }
 
 func (manager *Manager) schedule(ctx context.Context) {
-	delay := min(manager.interval, 250*time.Millisecond)
+	delay, failure := min(manager.interval, 250*time.Millisecond), ""
 	for {
 		timer := time.NewTimer(delay)
 		select {
@@ -73,26 +72,23 @@ func (manager *Manager) schedule(ctx context.Context) {
 			return
 		case <-timer.C:
 		}
-		if err := manager.Write(ctx); err != nil {
-			slog.Warn("automatic backup failed", "error", err)
-			delay = manager.retryDelay()
-		} else {
-			slog.Info("automatic backup completed", "encrypted", manager.key != "", "retention", manager.retention)
-			delay = manager.interval
-		}
+		failure, delay = manager.reportScheduled(ctx, manager.Write(ctx), failure, delay)
 	}
 }
 
-func (manager *Manager) retryDelay() time.Duration {
+func (manager *Manager) retryDelay(previous time.Duration, repeated bool) time.Duration {
 	if manager.validate() != nil {
 		return manager.interval
+	}
+	if repeated {
+		return min(manager.interval, max(time.Minute, 2*previous))
 	}
 	return min(manager.interval, time.Minute)
 }
 
 func (manager *Manager) recordError(err error) {
 	manager.mu.Lock()
-	manager.lastError = err.Error()
+	manager.lastError = backupFailureMessage(err)
 	manager.mu.Unlock()
 }
 
@@ -172,7 +168,7 @@ func (manager *Manager) Status() Status {
 	files, err := manager.Files()
 	status := Status{Enabled: manager.directory != "" && manager.dataDir != "" && manager.key != "", Encrypted: manager.key != "", Directory: manager.directory, Retention: manager.retention, Interval: manager.interval.String(), LastError: manager.lastError}
 	if err != nil {
-		status.LastError = err.Error()
+		status.LastError = backupFailureMessage(err)
 	}
 	if len(files) > 0 {
 		status.Latest = filepath.Base(files[len(files)-1])
@@ -191,7 +187,7 @@ func (manager *Manager) Verify() error {
 	defer manager.mu.Unlock()
 	err := manager.verifyLocked()
 	if err != nil {
-		manager.lastError = err.Error()
+		manager.lastError = backupFailureMessage(err)
 	}
 	return err
 }

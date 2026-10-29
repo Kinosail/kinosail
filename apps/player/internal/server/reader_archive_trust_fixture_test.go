@@ -139,7 +139,19 @@ func readerTrustAssetRejected(t *testing.T, handler http.Handler, id, asset stri
 func readerTrustAssetEquals(t *testing.T, handler http.Handler, id, asset string, expected []byte) {
 	t.Helper()
 	response := apiCall(t, handler, "", http.MethodGet, "/read/"+id+"/asset/"+asset, nil)
-	if response.Code != http.StatusOK || !bytes.Equal(response.Body.Bytes(), expected) {
+	body := response.Body.Bytes()
+	if strings.HasSuffix(asset, ".xhtml") || strings.HasSuffix(asset, ".html") {
+		css, err := os.ReadFile(filepath.Join("static", "reader-chapter.css"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		style := append(append([]byte("<style>"), css...), "</style>"...)
+		if bytes.Count(body, style) != 1 {
+			t.Errorf("chapter %q does not carry the reader style once", asset)
+		}
+		body = bytes.Replace(body, style, nil, 1)
+	}
+	if response.Code != http.StatusOK || !bytes.Equal(body, expected) {
 		t.Errorf("asset %q = %d %q, want exact resource bytes", asset, response.Code, response.Body.String())
 	}
 	if response.Header().Get("X-Content-Type-Options") != "nosniff" || !strings.Contains(response.Header().Get("Content-Security-Policy"), "script-src 'none'") {

@@ -33,14 +33,14 @@ struct LibraryHubScreen: View {
             } }
             if mode == nil { Section("Explore") {
                 #if os(iOS)
-                LibraryDestinationLink("Ebooks & comics", "books.vertical", .library(.books))
+                LibraryDestinationLink("Ebooks & comics", PlayerTab.books.symbol, .library(.books))
                 #endif
                 LibraryDestinationLink("Photos", "photo.on.rectangle", .library(.photos))
                 LibraryDestinationLink("All media", "square.grid.2x2", .library(.all))
             } }
             Section("Your library") {
-                LibraryDestinationLink("My List", "star", .library(.list))
-                LibraryDestinationLink("Collections", "rectangle.stack", .collections)
+                LibraryDestinationLink("My List", PlayerTab.list.symbol, .library(.list))
+                LibraryDestinationLink("Collections", PlayerTab.collections.symbol, .collections)
                 LibraryDestinationLink("History", "clock", .library(.history))
             }
         }

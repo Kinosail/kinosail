@@ -206,10 +206,11 @@ final class RemoteMovementTests: RemoteTestCase {
         XCTAssertTrue(bookmarks.waitForExistence(timeout: 10), app.debugDescription)
         record("before playback", app)
         remote.press(.select)
-        XCTAssertTrue(bookmarks.waitForNonExistence(timeout: 15), "Select should open full-screen playback")
-        XCTAssertTrue(app.cells["Playback options"].waitForExistence(timeout: 20), "Video controls should load")
+        let options = app.cells["Playback options"]
+        XCTAssertTrue(options.waitForExistence(timeout: 20), "Select should open full-screen playback with its controls")
         record("playback loaded", app)
         remote.press(.menu)
+        XCTAssertTrue(options.waitForNonExistence(timeout: 15), "Back must close the player")
         XCTAssertTrue(bookmarks.waitForExistence(timeout: 10), "Back should return to the movie detail")
         record("back from playback", app)
     }

@@ -42,6 +42,15 @@ for n in range(4):
     ITEMS.append(dict(id=f'episode-{n}',kind='video',title=['First Light','The Long Way Home','A Quiet Evening','The Last Horizon'][n],show='Into the Wild',showId='0123456789abcdef',season=1 if n<2 else 2,episode=n%2+1,rating='PG',artwork=f'/episode-art/episode-{n}',backdrop='/backdrop/show',stream=f'/media/episode-{n}',container='mp4',progress=PROGRESS))
 for kind,title in [('music','Evening Light'),('audiobook','The Geometry of Sound'),('photo','Color Study'),('book','Field Notes')]:
     ITEMS.append(dict(id=kind,kind=kind,title=title,artwork='/art/'+kind,stream='/media/'+kind,artist='Signal Lab' if kind=='music' else '',container='mp4',progress=PROGRESS))
+CAPTIONS = b'WEBVTT\n\n00:00:01.000 --> 00:00:06.000\nThe river bends toward the mountains.\n\n00:00:12.000 --> 00:00:18.000\nWe should reach the ridge by nightfall.\n'
+def extras_enabled(): return os.environ.get('KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE') == '1'
+def playback_extras(ident):
+    episode = re.fullmatch(r'episode-([0-3])',ident)
+    if not extras_enabled() or not episode: return dict(chapters=[],markers=[],subtitles=[],next='')
+    n = int(episode.group(1))
+    return dict(chapters=[dict(title='Opening',start=0,end=10),dict(title='Journey',start=10,end=24),dict(title='Credits',start=24,end=30)],
+                markers=[dict(type='intro',label='',start=2,end=12),dict(type='credits',label='',start=24,end=30)],
+                subtitles=[dict(label='English',language='en',source=f'/subtitle/{ident}/en.vtt',default=False)],next=f'episode-{n+1}' if n < 3 else '')
 ART = {}
 def artwork(path):
     if path not in ART:
@@ -138,10 +147,13 @@ class Handler(BaseHTTPRequestHandler):
             ident,suffix=match.groups(); item=next((i for i in ITEMS if i['id']==ident),None)
             if not item: return self.send(404,{'error':'missing title'})
             if not suffix: return self.send(200,dict(item={**item,'backdrop':''} if active and mode=='empty' else item,listed=False,profileId='qa'))
-            if suffix=='/playback': return self.send(200,dict(media=dict(kind=item['kind'],duration=30),plan=dict(allowed=True,mode='direct',reason='compatible'),directAllowed=True,direct='/media/'+ident,directType='video/mp4',duration=30,start=item['progress']['seconds'],chapters=[],subtitles=[]))
+            if suffix=='/playback': return self.send(200,dict(media=dict(kind=item['kind'],duration=30),plan=dict(allowed=True,mode='direct',reason='compatible'),directAllowed=True,direct='/media/'+ident,directType='video/mp4',duration=30,start=item['progress']['seconds'],**playback_extras(ident)))
             if suffix=='/playback-preferences': return self.send(200,dict(playback=TITLE_PREFS.get(ident,PLAY),overridden=ident in TITLE_PREFS))
             if suffix=='/watch-progress': return self.send(200,dict(seconds=item['progress']['seconds'],duration=30))
             if suffix=='/bookmarks': return self.send(200,{'bookmarks':[]})
+        if path.startswith('/subtitle/'):
+            if not extras_enabled() or not re.fullmatch(r'/subtitle/episode-[0-3]/en\.vtt',path): return self.send(404,{'error':'missing subtitle'})
+            return self.send(200,CAPTIONS,'text/vtt')
         if path.startswith('/media/'):
             if STATE['target']=='media': time.sleep(STATE['delay'])
             if path.endswith('photo'): return self.send(200,artwork('/backdrop/photo'),'image/jpeg')
@@ -193,7 +205,7 @@ class Handler(BaseHTTPRequestHandler):
             TITLE_PREFS[ident]=body
             print('PREFERENCES_FIXTURE_SAVED',json.dumps(dict(item=ident,rate=body['rate'])),flush=True)
             return self.send(200,dict(playback=body,overridden=True))
-        if not re.fullmatch(r'/api/v1/items/movie-[0-9]{3}/progress/sync',self.path): return self.send(404,{'error':'unsupported fixture operation'})
+        if not re.fullmatch(r'/api/v1/items/(?:movie-[0-9]{3}|episode-[0-3])/progress/sync',self.path): return self.send(404,{'error':'unsupported fixture operation'})
         if self.headers.get_all('Authorization',[])!=['Bearer tv-polish-fixture-token']: return self.send(401,{'error':'fixture token required'})
         try:
             body=self.read_body()

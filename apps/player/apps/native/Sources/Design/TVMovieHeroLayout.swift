@@ -13,6 +13,12 @@ struct TVMovieHeroLayout<Content: View>: View {
     }
 }
 
+private struct TVHeroForegroundClip: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path(CGRect(x: rect.minX - rect.width, y: rect.minY, width: rect.width * 3, height: rect.height * 2))
+    }
+}
+
 private struct TVMovieHeroAnchor {
     let bounds: Anchor<CGRect>
     let path: String?
@@ -99,7 +105,7 @@ extension View {
     }
 
     func tvMovieHeroViewport() -> some View {
-        clipped()
+        clipShape(TVHeroForegroundClip())
             .backgroundPreferenceValue(TVMovieHeroAnchorKey.self) { anchor in
                 TVMovieHeroBackdrop(anchor: anchor)
             }

@@ -90,14 +90,14 @@ func TestManagerRetentionAndDiscoveryIgnoreNonFiles(t *testing.T) {
 func TestManagerVerificationFailuresAndRetryPolicy(t *testing.T) {
 	t.Parallel()
 	manager := NewManager(ManagerConfig{DataDir: t.TempDir(), Directory: t.TempDir(), Interval: 24 * time.Hour})
-	if manager.retryDelay() != 24*time.Hour {
-		t.Fatalf("invalid retry = %v", manager.retryDelay())
+	if manager.retryDelay(0, false) != 24*time.Hour {
+		t.Fatalf("invalid retry = %v", manager.retryDelay(0, false))
 	}
 	manager.key = "configured-key"
 	manager.writeEncrypted = func(io.Writer, string, string) error { return nil }
 	manager.verifyAuto = func(io.Reader, string) error { return errors.New("corrupt") }
-	if manager.retryDelay() != time.Minute {
-		t.Fatalf("transient retry = %v", manager.retryDelay())
+	if manager.retryDelay(0, false) != time.Minute {
+		t.Fatalf("transient retry = %v", manager.retryDelay(0, false))
 	}
 	if err := manager.Verify(); err == nil || !strings.Contains(err.Error(), "no backup") {
 		t.Fatalf("empty verification = %v", err)

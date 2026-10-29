@@ -111,17 +111,17 @@ struct ReaderScreen: View {
         .sheet(isPresented: $showsContents) {
             NavigationStack {
                 List(book?.pages ?? []) { page in Button(page.title.isEmpty ? "Page \(page.number)" : page.title) { turn(to: page.number); showsContents = false } }
-                    .navigationTitle("Contents").toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { showsContents = false } } }
+                    .navigationTitle("Contents").toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showsContents = false } } }
             }
         }
         .sheet(isPresented: $showsBookmarks) {
             NavigationStack {
                 BookmarksScreen(itemID: itemID, readingPosition: position) { newPosition in position = newPosition; jump = UUID(); save() }
-                    .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { showsBookmarks = false } } }
+                    .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showsBookmarks = false } } }
             }
         }
         .sheet(isPresented: $showsPreferences, onDismiss: { Task { await reloadPreferences() } }) {
-            NavigationStack { ReaderPreferencesScreen().toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { showsPreferences = false } } } }
+            NavigationStack { ReaderPreferencesScreen().toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showsPreferences = false } } } }
         }
         .task(id: "\(session.profileKey ?? ""):\(itemID):\(loadRevision)") { await load() }
         .onAppear { session.reading = true }

@@ -1,5 +1,113 @@
 # Swift Apple verification
 
+## iPhone and iPad screen review — 2026-10-28
+
+A review of every iPhone and iPad screen against `DESIGN.md` found these defects. Each fix has a test that failed on the baseline and passes now.
+
+| Surface and state | Defect | Covering test |
+| --- | --- | --- |
+| Scrub preview, two Servers | The frame cache was keyed only by the preview template, so another Server's frame could show for the same template. Two frame tests also failed on every run because cached frames leaked between tests. | `PlaybackFramePreviewTests` (unit): `doesNotReuseFramesFromAnotherServer`, `loadsAuthenticatedFrame`, `rejectsInvalidFrameData` |
+| Connection banner, iPhone and iPad | The banner covered the navigation bar and the top of each screen, including the screen title and the library filters. | `DownloadJourneyTests/testConnectionBannerKeepsScreenTitleVisible` |
+| Connection banner, largest text | The banner filled the whole iPhone screen and pushed the screen off the bottom. It now scrolls inside a fixed height. | `DownloadJourneyTests/testConnectionBannerLeavesRoomAtLargestTextSize` |
+| Ebooks & comics, largest text | The fixed-width category menu was wider than the screen, so the filters, count and grid were cut off on both sides. | `ScreenPolishTests/testLibraryFiltersStayOnScreenAtLargestTextSize` |
+| Ebook reader, largest text | Long words in the chapter heading ran past the right edge. The reader now breaks long words. | `ScreenPolishTests/testEbookTextWrapsInsideScreenAtLargestTextSize` |
+| Library hub | My List and Collections used different symbols from More and the tabs. | `ScreenPolishTests/testLibraryUsesTheSameSymbolsAsMore` |
+| Customize tabs | Reset to default tabs was available when the default tabs were already in use. | `ScreenPolishTests/testResetTabsIsAvailableOnlyAfterTabsChange` |
+| Playback options and other sheets | Done was at the leading edge, while Audio & subtitles and Playback speed put it at the trailing edge. Done now uses the trailing confirmation position in every sheet. | `ScreenPolishTests/testPlaybackOptionsDoneSitsWithOtherSheetConfirmations` |
+| Consistency tour | The tour tapped the first navigation bar button, which is not always Back, and skipped Movies when the tab bar was collapsed. | `ScreenTourTests/testCaptureConsistencyTour` |
+
+**Revision.** Baseline: `365c4bc3` (main). New: the task commits on `mikeo/qa-ios-polish`. Xcode 27.1. iPhone 18 Pro and iPad simulators with the iOS 27 runtime.
+
+**Test data.** A local Kinosail Server built from this checkout, with media from `scripts/generate-test-media.sh` plus generated movies (one with a very long title) and a second season of Example Show. A local static TMDB fixture supplied metadata. The app reached the Server through `scripts/download-fixture/fault_proxy.py` on `127.0.0.1:38492` (control `38493`), which can drop connections. The playback suite used `scripts/ios-playback-fixture.py` with a generated 60-second MP4 (SHA-256 `849526cd78903b5c1521930f792a3b502df55a0503c307a3333b93bee20a19f0`).
+
+**Commands.**
+
+1. `xcodebuild -scheme Kinosail-iOS test` on the iPhone simulator: 355 tests in 78 suites passed.
+2. `xcodebuild -scheme Kinosail-iOS-Touch test` with `-only-testing` for `ScreenPolishTests`, the two banner tests and `ScreenTourTests/testCaptureConsistencyTour`. Set `TEST_RUNNER_KINOSAIL_DESIGN_TOUR_SERVER` and `TEST_RUNNER_KINOSAIL_DOWNLOAD_SERVER` to the proxy, `TEST_RUNNER_KINOSAIL_DOWNLOAD_CONTROL` to the proxy control port, and both token variables to a test owner session. Run on iPhone and iPad.
+3. `xcodebuild -scheme Kinosail-iOS-Touch -only-testing:Kinosail-iOSTouchUITests/TouchPlaybackInteractionTests test` with the playback fixture, after signing out: 6 of 6 passed on iPhone.
+
+The largest-text tests pass `-UIPreferredContentSizeCategoryName UICTContentSizeCategoryAccessibilityXXXL` at launch, so the simulator setting does not matter.
+
+| Run | Baseline | New |
+| --- | --- | --- |
+| Frame preview tests | Failed with 4 issues | 4 passed |
+| Banner over title, iPhone | Banner `y 75–198` overlaps navigation bar `y 62–168` | Passed on iPhone and iPad |
+| Banner at largest text | Navigation bar pushed below the screen | Passed on iPhone and iPad |
+| Library filters at largest text | Filter frame `x −35 to 437` on a 402-point screen | Passed on iPhone and iPad |
+| Ebook at largest text | Heading frame ends at `x 440` | Passed on iPhone and iPad |
+| Library hub symbols | `star` and `rectangle.stack` | Passed |
+| Reset to default tabs | Enabled with default tabs | Passed |
+| Playback options Done | Done centered at `x 58` of 402 | Passed |
+
+Also checked with no defect found: pending and loaded Home, Movies, Shows, show, episode and movie details, Search (empty, results, no matches), More, Library, My List (empty), Collections, Music, Audiobooks, Books, Photos, Settings and its sub-screens, the player with its sheets, and the comic and EPUB readers, at the default and largest text sizes. With the Server unreachable, the banner offers Try again and Downloads, Settings still offers Change Server, and Try again clears the banner when the Server returns. The app is dark only, so there is no light mode to check.
+
+Not run: Apple Watch screens (watchOS build only), iPad Split View and Slide Over widths, iPad landscape tour, Picture in Picture (not available in the simulator), VoiceOver with a screen reader, physical iPhone or iPad, and the Nox Server.
+
+| File | SHA-256 |
+| --- | --- |
+| banner baseline log | `3b3fd72b8e3848538a5ba36b15e4164287ca24179a64f4f5f7012015dd3dd5a6` |
+| banner baseline screenshot | `fc3dc43c90044f9c53e294a90faffff6cf78a4f6d989d09608c94c20266f6602` |
+| banner at largest text, baseline log | `c83666ede8a3378248412b77f58611ad7f7b6aed9c001621c7e82abd39c0d82d` |
+| polish tests baseline log | `8520b96383368b5a133e3147ceb96428084f785a3b3e0919f60612a54f87e2ec` |
+| library filters baseline log | `28686e6c97e65aa676f0948eb9d26a5f32d2f1a77b4f4ed11f21c82b3418b25e` |
+| ebook and symbols baseline log | `3ace0d915b26e4731c9c13bb59d55f9bfa1edc5423d37ffce0f11ed5a04befd0` |
+| iPad new log | `ae576cd82897a4dde4c0270a4c77de3ac5f968602314e57d1e02f7cd4b0e6e2f` |
+| iPad ebook at largest text | `da14a6805aef30307030a2fcaf7447f9be29ad1245b249136e4dba97a3c61db9` |
+| iPhone playback suite log | `1bedd658beeb72058aeaeabd147ba810c41f842a4d42580521159cad8e3789d1` |
+| iPhone unit suite log | `d5f8e391d724d86b06858c54536ddede8e03e087c56e8e56437be32fff7242cf` |
+| iPhone new log, part 1 | `97b0b9b8f3dee70e619c985de52788f2393035e74c8b8685ff4ca59814d7c7fe` |
+| iPhone new log, part 2 | `738fb62b5eba52a86812f41e89e78b98fc645a000772d7f031228d6f6e21cfd3` |
+
+## Apple TV focus, layout and loading-state pass — 2026-10-28
+
+A remote-only walk of every Apple TV screen against the navigation fixture found these defects. Each one has a failing UI test first, then the fix.
+
+- Home opened pending or empty with nothing focused. `LaunchReveal` started the content at opacity 0, which the focus engine treats as unfocusable, and it never looked again. The reveal now starts at 0.02.
+- The Continue watching rail jumped up or down when focus moved between a long and a short spotlight title. The spotlight title line now has a fixed height.
+- Shelves under the fixed top bar ended in a hard cut line. The Home scroll area now fades out over 32 pt at its top edge.
+- The Home skeleton rails stopped at the content edge, while loaded rails run past the screen edge. The skeleton rails are no longer clipped.
+- Show pages: season pills started 24 pt left of the Episodes heading and had no visible focus. They now use the Apple TV capsule (white when focused) and align with the heading. The Episodes shelf was cut at the safe area; it now runs to the bottom of the screen.
+- Browse tiles had almost no visible focus. A focused tile now shows a 4 pt off-white outline.
+- Settings explanations were list rows. They are now muted section footers.
+- The Now playing options button was a tiny icon that VoiceOver read as "More". The top bar now shows a text **Options** button.
+- `RemoteMovementTests/testPlaybackMenuReturnsToMovieDetail` failed on baseline because the movie page stays in the tree under the player. It now checks that the player closes.
+
+**Revision.** Baseline: `365c4bc3` (main). New: the task commit on `mikeo/qa-tvos-polish`. Xcode 27.1, tvOS 26 simulator **Kinosail QA TV** (Apple TV 4K, 3rd generation, 4K output).
+
+**Test data.** `scripts/tvos-navigation-fixture.py` with a generated 30-second MP4 (SHA-256 `71771b8981828d2663d8ecf3d2b69f6ae8b6492c6f45a90cc855799e0c9323ea`). With `KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE=1`, the four fixture episodes also get chapters, an intro marker (2–12 s), a credits marker (24–30 s), an English WebVTT track and a next episode. Without it, episode playback is unchanged (`scripts/test-tvos-navigation-fixture.py`, 9 tests).
+
+**Commands.** `scripts/run-tvos-navigation-qa.py --device <QA TV> --media <mp4> --evidence <dir> --mode <mode>` for `loaded`, `pending`, `empty` and `failed`. For `loaded`, export `KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE=1` and `TEST_RUNNER_KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE=1`. The loaded list now includes `RemoteLayoutPolishTests` and `RemotePlaybackExtrasTests`. Unit tests: `xcodebuild -scheme Kinosail-tvOS test` on the same simulator, without `TVQualitySessionSeed`.
+
+| Check | Baseline `365c4bc3` | New |
+| --- | --- | --- |
+| Loaded suite (`RemoteQualityBaselineTests` … `RemotePlaybackCrashTests`) | 26 passed, 1 failed (stale playback check) | 35 passed (with the two new classes) |
+| Pending Home: Search focused, skeleton covers where loaded cards land | Fails (no focus) | Passes |
+| Empty Home and failed Home | Empty fails (no focus); failed not run | Both pass |
+| Rail stays still across long and short spotlight titles | Fails | Passes |
+| Top-bar edge: 10%→90% brightness ramp at least 16 pt | Fails (0 pt) | Passes |
+| Season pills align with Episodes, visible focus, Episodes shelf to the bottom | Fails | Passes |
+| Browse focus outline; Settings footers; Options button legible and labeled | Fails | Passes |
+| Skip Intro, Next Episode, captions and chapters on an episode | Not covered | Passes: Skip Intro shows at the bottom-trailing corner, Select skips, Next Episode shows at the credits and starts S1 E2 with its own Skip Intro; Subtitles Off → English; Chapters lists 3 |
+| Unit tests (`Kinosail-tvOS`, includes `TopShelfTests`) | — | 334 passed, 2 failed, 7 skipped. `PlaybackFramePreviewTests` (`loadsAuthenticatedFrame`, `rejectsInvalidFrameData`) fail on this simulator; this change does not touch trickplay. |
+
+AVKit contextual actions (Skip Intro, Next Episode) are not in the accessibility tree while the transport bar is hidden, and accessibility queries during playback are slow. The playback test therefore finds the prompt by screen pixels and uses only screen captures while video plays. The Settings session note under Sign out is visible but is not exposed to the accessibility tree, so the test checks it by pixels.
+
+Not run: physical Apple TV, a 1080p simulator (the layout is in points and matches 1080p), Top Shelf on the system home screen (only `TopShelfTests`), VoiceOver, the Nox Server.
+
+| File | SHA-256 |
+| --- | --- |
+| loaded `remote.log` | `c44ef814bf1e99eb4b0c4fc52f85572167c9f4072585c665faf7c831b559952e` |
+| loaded `fixture.log` | `fc5405816c9caf31a1f8b01ca53fc01e54eb880025e4546e4e9b2cef5597f81d` |
+| album focus rerun `remote.log` | `c558672d6556e394b7a16b44fc76af61aebc504c9738cde5f35ac229ebf2cc77` |
+| pending `remote.log` | `05aee1fef2876fa99f058262429d8417c854aea32893db8b60cd25b931879e7e` |
+| empty `remote.log` | `25687905b735733d68930139f61d27e576b02c46d7fab84f8e31ac8c3efb623e` |
+| failed `remote.log` | `b48221b2b7d4534514fb3034e71fa0197b23fcea42d6058220176f05a98f089a` |
+| unit test log | `b1b1ffdfec907bc4925a5f134956f436fd2c630fdd37a0967a52eb88b38f241d` |
+| top-bar fade screenshot | `6fadb8162fdc264fcb4e9b665ac0ea5ecca2f635df54fa3d077c034bece44efa` |
+| pending Home screenshot | `933e504f0728df75d6885d423fce7b149876c2b56d37c02e31c2e28977befd27` |
+| Skip Intro screenshot | `55f931b948e4b15890be18ee3162b0b3f615212a8a169fdbece6af484a2e44c6` |
+| Next Episode screenshot | `9b709a587d56fb030fdb252157fd986ecb2e3192b942bb6be05328a3760a1692` |
+
 ## Posters return after a failed load — 2026-10-26
 
 A poster that failed to load stayed a film icon until the app went to the background. The card retried four times in about 32 seconds, then stopped. It retried again only when the app returned to the foreground or the Server came back after being marked unreachable. A 404, a loader cancellation, or a timeout while other requests succeeded left the icon on screen. A Server log showed `/art/{id}` 404s from the iPhone app while the poster files were present. Now a card keeps retrying every 30 seconds while it is on screen. A loader cancellation that the card did not cause also counts as a failure to retry. The Android app had the same four-retry limit and gets the same change.

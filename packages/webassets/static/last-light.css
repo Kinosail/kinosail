@@ -15,6 +15,7 @@
   --text:#162011;--muted:#5b6852;--line:#d4ddcc;--line-strong:#78866e;
   --signal:#3c6100;--signal-ink:#fff;--focus:#304e00;
   --danger:#a62337;--success:#23674b;--warning:#805418;--info:#305d94;
+  --shell:var(--bg);--dock:var(--surface);--overlay:var(--surface);--rail:transparent;--page-wash:none;
   --shadow:0 24px 80px rgb(38 27 26 / 16%);
 }
 html{scroll-padding-block:9rem 6rem;scrollbar-color:var(--line-strong) var(--bg)}
@@ -40,7 +41,7 @@ body .app-header nav a.active{border-radius:0;color:var(--signal);background:tra
 body :is(.nav-more-panel,.command-menu,.sheet-dialog,.header-compact-panel){background:var(--overlay)}
 body .eyebrow{display:none}
 body .library-shell{max-width:100rem}
-body .library-masthead,body .library-masthead.browse-masthead{min-height:0;margin:0 0 2rem;padding:1.5rem 0 0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
+body .library-masthead,body .library-masthead.browse-masthead{min-height:0;color:var(--text);margin:0 0 2rem;padding:1.5rem 0 0;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
 body .library-masthead::before,body .library-masthead::after{display:none}
 body .library-masthead h2,body .library-masthead.browse-masthead h2{max-width:none;margin:0;font-size:clamp(2rem,3.6vw,3.5rem);font-weight:800;line-height:1.12;letter-spacing:-.035em;text-shadow:none}
 body .library-masthead p{max-width:65ch;margin-top:.75rem;color:var(--muted);text-shadow:none}
@@ -64,7 +65,7 @@ body :is(.poster.art,.card>.poster:not(img),.card .art){background:var(--surface
 body :is(.shelf>h2,.home-shelf>header h2)::before{display:none}
 body :is(.home-shelf,.detail-section)>header h2,body .destination-browser>header h2{font-size:clamp(1.35rem,1.7vw,1.75rem);font-weight:800;letter-spacing:-.025em}
 body :is(.panel,.settings-section,.detail-panel,.grant-card){background:transparent;border-radius:16px;box-shadow:none;backdrop-filter:none}
-body :is(.settings-intro,.settings-section,.detail-panel,.grant-card,.empty){overflow-wrap:anywhere}
+body :is(.settings-intro,.settings-section,.settings-shell>section,.detail-panel,.grant-card,.empty){overflow-wrap:anywhere}
 body .settings-intro h1{font-size:clamp(2rem,4vw,3.5rem);line-height:1.1;letter-spacing:-.035em}
 body .settings-hero{min-height:0;padding-block:1.5rem;background:none}
 body .settings-section,body .settings-flow>section{border-color:var(--line);padding:clamp(1.25rem,2.5vw,2rem)}
@@ -124,6 +125,7 @@ body :is(.subtitle-inline-count,.subtitle-page-position,.health-line){font-varia
   body :is(.wizard-steps,.setup-steps) li{flex:0 0 auto;min-width:8rem}
   body :is(.wizard-steps,.setup-steps) small{display:none}
   body.auth .wizard-form,body .setup-stage .auth-form{padding:1.25rem}
+  body.auth>main.grant-card{width:calc(100% - 2rem)}
   body :is(.wizard-header,.auth-heading) h1{font-size:2rem}
   body .media-hero.has-media-backdrop{grid-template-columns:1fr;gap:1.5rem;padding:0 0 2rem}
   body .media-hero.has-media-backdrop>.media-hero-copy{padding:0}
@@ -140,9 +142,9 @@ body :is(.subtitle-inline-count,.subtitle-page-position,.health-line){font-varia
 }
 
 body.player-page.has-media-backdrop::before{
-  background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 88%,transparent),color-mix(in srgb,var(--bg) 94%,transparent) 48rem,var(--bg));
+  background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 88%,transparent),var(--bg));
 }
-:root[data-theme=light] :is(.card:nth-child(n),.poster:nth-child(n)) :is(.poster,.art){background:var(--surface-2)}
+:is(.card:nth-child(n),.poster:nth-child(n)) :is(.poster,.art){background:var(--surface-2)}
 :root[data-theme=light] body.player-page.has-media-backdrop::before{
   background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 96%,transparent),var(--bg) 48rem);
 }
@@ -170,3 +172,9 @@ body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}
 .player-native-options>.player-settings{position:static;max-height:none;overflow:visible;margin-top:.5rem;background:var(--overlay);color:var(--text)}
 .player-page .media-stage.has-settings:has(+.player-native-options){margin-bottom:1rem}
 .player-shell .title-block h1{overflow-wrap:anywhere;min-width:0}
+.settings-shell:not(.onboarding-shell,:has([data-settings-organized]))>.settings-intro{border-bottom:0}
+.settings-shell:not(.onboarding-shell,:has([data-settings-organized]))>.settings-flow{max-width:none}
+.settings-shell:not(.onboarding-shell,:has([data-settings-organized]))>section,.settings-shell:not(.onboarding-shell,:has([data-settings-organized]))>.settings-flow>section{padding:1.5rem 0}
+.settings-shell:not(.onboarding-shell,:has([data-settings-organized])) :is(section p,section figcaption){max-width:65ch}
+body{font-size:.9375rem}
+@media(max-width:700px){body{font-size:.875rem}}

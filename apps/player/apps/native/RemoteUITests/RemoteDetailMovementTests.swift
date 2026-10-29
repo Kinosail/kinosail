@@ -58,8 +58,8 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         remote.press(.up)
         XCTAssertTrue(app.buttons["Forward 30 seconds"].hasFocus)
         remote.press(.up)
-        record("audio Up to Playback options", app)
-        let options = app.buttons.matching(NSPredicate(format: "label == 'Playback options' OR label == 'More'")).firstMatch
+        record("audio Up to Options", app)
+        let options = app.buttons["Options"]
         XCTAssertTrue(options.hasFocus)
         remote.press(.select)
         XCTAssertTrue(app.cells["This title’s preferences"].waitForExistence(timeout: 10))

@@ -14,7 +14,7 @@ import SwiftUI
 
     static func load(template: String?, client: ServerClient?, asset: AVAsset?, second: Int) async throws -> UIImage {
         guard (0...43200).contains(second), second.isMultiple(of: 10),
-              let source = source(template: template, asset: asset) else { throw ClientError.invalidResponse }
+              let source = source(template: template, client: client, asset: asset) else { throw ClientError.invalidResponse }
         let step = (lastSecond[source].map { second < $0 ? -10 : 10 }) ?? 10
         lastSecond[source] = second
         let key = source + "@" + String(second)
@@ -33,8 +33,8 @@ import SwiftUI
         return try await task.value
     }
 
-    private static func source(template: String?, asset: AVAsset?) -> String? {
-        if let template { return template }
+    private static func source(template: String?, client: ServerClient?, asset: AVAsset?) -> String? {
+        if let template, let client { return client.identity.uuidString + template }
         guard let file = (asset as? AVURLAsset)?.url, file.isFileURL else { return nil }
         return file.path
     }
