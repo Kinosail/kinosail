@@ -233,7 +233,7 @@ struct PlaybackToolsScreen: View {
         #if os(tvOS)
         .focusScope(playbackToolsFocus)
         #else
-        .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
+        .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         #endif
         .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
     }
