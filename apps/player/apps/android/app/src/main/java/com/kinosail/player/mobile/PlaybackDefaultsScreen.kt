@@ -126,7 +126,7 @@ private fun rateLabel(rate: Double) = if (rate % 1.0 == 0.0) "${rate.toInt()}×"
 private fun languageLabel(code: String) = when (code) {
     "auto" -> interfaceText("Automatic")
     "off" -> interfaceText("Off")
-    else -> Locale.forLanguageTag(code).getDisplayLanguage(Locale.getDefault()).ifEmpty { code }
+    else -> Locale.forLanguageTag(code).getDisplayLanguage(Locale.forLanguageTag(androidx.compose.ui.text.intl.Locale.current.toLanguageTag())).ifEmpty { code }
 }
 
 @Composable
