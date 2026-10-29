@@ -117,6 +117,7 @@ func subtitleOperationDeadline(action string) time.Duration {
 
 func (operations *subtitleOperations) rejected(writer http.ResponseWriter, request *http.Request, action string, status int) {
 	slog.Warn("subtitle operation rejected", "request_id", activityRequestID(request), "action", subtitleOperationLogAction(action), "status", status, "outcome", "not-started")
+	limitRequestLog(request, slog.LevelInfo)
 	writeSubtitleOperationJSON(writer, map[string]string{"error": "subtitle operation is unavailable or cannot be started; review its status and current subtitle"}, status)
 }
 

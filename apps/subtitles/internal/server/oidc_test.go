@@ -13,6 +13,10 @@ func TestOIDCContract(t *testing.T) {
 	servertest.OIDCContract(t, oidcFixture())
 }
 
+func TestUnconfiguredSSOLogsWarnAndProviderOutageLogsError(t *testing.T) {
+	servertest.AssertUnconfiguredSSOLogsWarnAndProviderOutageLogsError(t, oidcFixture())
+}
+
 func oidcFixture() servertest.OIDCFixture {
 	return servertest.OIDCFixture{
 		NewHandler: func(dataDir string, oidc server.OIDCConfig, _ scim.Config) http.Handler {

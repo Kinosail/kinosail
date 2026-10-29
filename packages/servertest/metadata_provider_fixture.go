@@ -15,6 +15,7 @@ func RunMetadataProvider(t *testing.T, newServer func(*testing.T, string, string
 	suite := metadataProviderContract{newServer, idFirst}
 	t.Run("OwnerCanRefreshProviderMetadataAndArtwork", suite.OwnerCanRefreshProviderMetadataAndArtwork)
 	t.Run("ProviderUsesShowPosterWhenEpisodeStillIsMissing", suite.ProviderUsesShowPosterWhenEpisodeStillIsMissing)
+	t.Run("ProviderKeepsFilenameEpisodeTitleWhenEpisodeIsMissing", suite.ProviderKeepsFilenameEpisodeTitleWhenEpisodeIsMissing)
 	t.Run("RefreshMissingRepairsExistingShowArtwork", suite.RefreshMissingRepairsExistingShowArtwork)
 	t.Run("ProviderUsesFilenameIMDbIDBeforeTitleSearch", suite.ProviderUsesFilenameIMDbIDBeforeTitleSearch)
 	t.Run("ProviderFallsBackToCleanTitleAndYearForMalformedIMDbID", suite.ProviderFallsBackToCleanTitleAndYearForMalformedIMDbID)

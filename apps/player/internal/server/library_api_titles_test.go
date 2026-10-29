@@ -13,3 +13,11 @@ func TestExplicitSortTitleControlsBrowseWithoutChangingDisplayTitle(t *testing.T
 func TestReleaseFilenameUsesHumanTitleInAPIAndWeb(t *testing.T) {
 	libraryAPIFixture.ReleaseFilenameUsesHumanTitleInAPIAndWeb(t)
 }
+
+func TestEpisodeFilenamesKeepEpisodeTitlesInAPI(t *testing.T) {
+	libraryAPIFixture.EpisodeFilenamesKeepEpisodeTitlesInAPI(t)
+}
+
+func TestShortSearchMatchesTitlesAndMetadataWordStarts(t *testing.T) {
+	libraryAPIFixture.ShortSearchMatchesTitlesAndMetadataWordStarts(t)
+}
