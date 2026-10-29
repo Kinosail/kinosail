@@ -21,7 +21,7 @@ changing Android screens. Translate controls into Android conventions.
 | Collections | Collections | Named collections open a title grid; returning from details preserves the collection |
 | EPUB reader | Phone and tablet reader | Chapter contents, readable text width, appearance controls, and recoverable saved position |
 | Apple Watch Remote | Wear OS Remote | Current player, title, playback position, seek, and playback controls |
-| Apple Watch Heart | Wear OS Heart | Explicit opt-in, local readings, movie-time graph, and gaps for missing readings |
+| Apple Watch Heart | Wear OS Heart | Explicit opt-in, local readings, movie-time graph, gaps for missing readings, and a reading count, range, and peak below the graph |
 
 ## Presentation
 
