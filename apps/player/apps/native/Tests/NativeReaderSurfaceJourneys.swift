@@ -194,8 +194,9 @@ extension NativePreferencesUXTests {
         window.layoutIfNeeded()
     }
 
-    func readerUntil(_ reason: String = "The held reader operation must reach its expected visible state", _ condition: () -> Bool) async throws {
-        let deadline = ContinuousClock.now.advanced(by: .seconds(10))
+    func readerUntil(_ reason: String = "The held reader operation must reach its expected visible state", timeout: Duration = .seconds(10),
+                     _ condition: () -> Bool) async throws {
+        let deadline = ContinuousClock.now.advanced(by: timeout)
         while !condition() && ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(20)) }
         try #require(condition(), Comment(rawValue: reason))
     }

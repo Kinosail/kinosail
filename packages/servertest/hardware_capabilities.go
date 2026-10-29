@@ -15,7 +15,7 @@ import (
 func (fixture HardwareTranscodeFixture[S]) HardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback(t *testing.T) {
 	t.Parallel()
 
-	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()
+	media, data, cache, tools := t.TempDir(), t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

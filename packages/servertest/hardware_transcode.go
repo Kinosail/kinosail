@@ -33,7 +33,7 @@ type HardwareTranscodeFixture[S any] struct {
 
 func (fixture HardwareTranscodeFixture[S]) OwnerCanSelectHardwareTranscodingAndToneMapping(t *testing.T) {
 	t.Parallel()
-	mediaDir, cacheDir := t.TempDir(), t.TempDir()
+	mediaDir, cacheDir := t.TempDir(), CacheDir(t)
 	if err := os.WriteFile(filepath.Join(mediaDir, "Brazil.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

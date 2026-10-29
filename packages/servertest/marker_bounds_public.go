@@ -88,7 +88,7 @@ func (fixture PlaybackAPIFixture) markerBoundsPublicCase(t *testing.T, ctx conte
 	defer slog.SetDefault(previous)
 	workers, stop := context.WithCancel(ctx)
 	defer stop()
-	handler := fixture.New(PlaybackAPIConfig{Lifecycle: workers, MediaDir: media, DataDir: data, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe, RequireAuth: true})
+	handler := fixture.New(PlaybackAPIConfig{Lifecycle: workers, MediaDir: media, DataDir: data, CacheDir: CacheDir(t), FFmpeg: ffmpeg, FFprobe: ffprobe, RequireAuth: true})
 	cookie := fixture.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")
 	endpoint := httptest.NewServer(handler)
 	defer endpoint.Close()

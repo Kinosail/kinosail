@@ -12,7 +12,7 @@ import (
 
 func (fixture TranscodeFixture) AdaptiveHLSDoesNotAdvertiseOrEncodeAbsentAudio(t *testing.T) {
 	t.Helper()
-	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
+	media, cache, tools := t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Silent.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

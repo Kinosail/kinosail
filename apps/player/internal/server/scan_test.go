@@ -83,12 +83,14 @@ func TestLibraryWaitsForCopyToSettle(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer file.Close()
-	if _, err := file.WriteString("first chunk"); err != nil {
-		t.Fatal(err)
-	}
-	time.Sleep(2500 * time.Millisecond)
-	if response := libraryPage(t, handler); strings.Contains(response.Body.String(), "Arrival") {
-		t.Fatalf("growing file was published: %s", response.Body.String())
+	for chunk := range 10 {
+		if _, err := file.WriteString("copy chunk"); err != nil {
+			t.Fatal(err)
+		}
+		time.Sleep(400 * time.Millisecond)
+		if chunk >= 6 && strings.Contains(libraryPage(t, handler).Body.String(), "Arrival") {
+			t.Fatalf("growing file was published after %d chunks", chunk+1)
+		}
 	}
 	if _, err := file.WriteString("final chunk"); err != nil {
 		t.Fatal(err)

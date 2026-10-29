@@ -87,7 +87,7 @@ func (fixture TranscodeFixture) ViewerCanRequestSeekableCompatiblePlaylist(t *te
 	fixture.WriteExecutable(t, ffprobe, `#!/bin/sh
 printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,"height":1080},{"codec_type":"audio","codec_name":"aac"}],"format":{"duration":"120"}}'
 `)
-	cacheDir := t.TempDir()
+	cacheDir := CacheDir(t)
 	handler := fixture.New(TranscodeConfig{MediaDir: mediaDir, CacheDir: cacheDir, FFmpeg: ffmpeg, FFprobe: ffprobe})
 	home := httptest.NewRecorder()
 	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
