@@ -8,6 +8,7 @@ const scenarios: Record<string, {body: string; reported: boolean}> = {
   "select control": {body: select, reported: false},
   "select control with script-set styles": {body: `${select}<p>Styled</p><script src="/cssom.js"></script>`, reported: false},
   "range control with script-set styles": {body: `${select}<input type="range" aria-label="Seek"><script src="/range.js"></script>`, reported: false},
+  "select control with in-page URL updates": {body: `${select}<script src="/history.js"></script>`, reported: false},
   "select with inline style attribute": {body: '<label>Language <select name="language" style="color:red"><option>English</option></select></label>', reported: true},
   "inline style element": {body: `${select}<style>p{color:red}</style><p>Inline</p>`, reported: true},
   "inline style attribute": {body: `${select}<p style="color:red">Inline</p>`, reported: true},
@@ -31,6 +32,11 @@ for (const [scenario, {body, reported}] of Object.entries(scenarios)) {
       if (request.url === "/range.js") {
         response.writeHead(200, {"Content-Type": "text/javascript", "Content-Security-Policy": policy});
         response.end("const seek=document.querySelector('input[type=range]');let n=0;const tick=()=>{seek.style.setProperty('--player-buffered',`linear-gradient(90deg,transparent ${n}%,white ${n}%)`);if(++n<20)setTimeout(tick,10);};tick();");
+        return;
+      }
+      if (request.url === "/history.js") {
+        response.writeHead(200, {"Content-Type": "text/javascript", "Content-Security-Policy": policy});
+        response.end("let n=0;const step=()=>{history.replaceState(null,'',`/?view=all&step=${n}`);if(++n<20)setTimeout(step,5);};step();");
         return;
       }
       if (request.url === "/cssom.js") {
