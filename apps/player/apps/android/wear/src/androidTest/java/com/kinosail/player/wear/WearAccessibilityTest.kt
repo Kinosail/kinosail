@@ -15,6 +15,10 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.performClick
+import com.kinosail.player.watchcore.HeartTimeline
+import com.kinosail.player.watchcore.WatchPlayer
 import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.tryPerformAccessibilityChecks
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -46,6 +50,19 @@ class WearAccessibilityTest {
         compose.waitUntil(10_000) { compose.onAllNodesWithText("Connect phone").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Connect phone")
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
+    }
+
+    @Test fun heartPageSummarizesReadingsLikeAppleWatch() = retainingEvidence("heart-summary") {
+        val remote = WearRemoteSession(InstrumentationRegistry.getInstrumentation().targetContext)
+        val start = System.currentTimeMillis() - 60_000
+        val movie = WatchPlayer("phone", "This phone", "Example Movie", "", "movie-1", "playing", 30.0, 120.0, false)
+        var timeline = HeartTimeline.start(movie, start).addReading(start + 5_000, 110.0, start + 5_000)
+        timeline = timeline.note(movie.copy(position = 60.0), start + 20_000).addReading(start + 23_000, 150.0, start + 23_000)
+        compose.setContent { WatchApp(remote, timeline, null, {}, {}, {}) }
+        compose.onNodeWithText("Heart graph").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("2 readings · 110–150 bpm").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("2 readings · 110–150 bpm").assertIsDisplayed()
+        compose.onNodeWithText("Peak 150 bpm at 1:03").assertIsDisplayed()
     }
 
     private fun retainingEvidence(name: String, action: () -> Unit) {

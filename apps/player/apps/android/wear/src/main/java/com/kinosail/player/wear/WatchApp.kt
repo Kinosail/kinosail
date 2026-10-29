@@ -192,7 +192,11 @@ private fun HeartLink(timeline: HeartTimeline, onClick: () -> Unit) {
 private fun Control(label: String, description: String, enabled: Boolean, primary: Boolean = false,
                     command: suspend () -> Unit) {
     val scope = rememberCoroutineScope()
-    Button(onClick = { scope.launch { command() } }, enabled = enabled,
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
+    Button(onClick = {
+        if (primary) haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.Confirm)
+        scope.launch { command() }
+    }, enabled = enabled,
         colors = ButtonDefaults.buttonColors(containerColor = if (primary) signal else raised,
             contentColor = if (primary) ink else text),
         modifier = Modifier.size(48.dp).semantics { contentDescription = description },
@@ -213,16 +217,19 @@ private fun HeartPage(timeline: HeartTimeline, message: String?, onStop: () -> U
             Text(interfaceText("No readings yet"), fontWeight = FontWeight.Bold)
             Text(interfaceText("Readings appear at their movie time as you watch."), color = muted, fontSize = 12.sp)
         } else {
-            timeline.peak?.let {
-                Text("♥ ${it.bpm.toInt()} bpm · ${clock(it.position)}", color = signal, fontSize = 11.sp,
-                    modifier = Modifier.semantics {
-                        contentDescription = "Peak ${it.bpm.toInt()} beats per minute at ${clock(it.position)}"
-                    })
-            }
             HeartPlot(timeline.points, timeline.duration)
             Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("0:00", color = muted, fontSize = 11.sp)
                 Text(clock(timeline.duration), color = muted, fontSize = 11.sp)
+            }
+            val low = timeline.points.minOf(HeartPoint::bpm).toInt()
+            val high = timeline.points.maxOf(HeartPoint::bpm).toInt()
+            Text("${timeline.points.size} readings · $low–$high bpm", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+            timeline.peak?.let {
+                Text("Peak ${it.bpm.toInt()} bpm at ${clock(it.position)}", color = signal, fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp, modifier = Modifier.semantics {
+                        contentDescription = "Peak ${it.bpm.toInt()} beats per minute at ${clock(it.position)}"
+                    })
             }
         }
         Text(interfaceText("Gaps mean no reading or movie position was available."), color = muted, fontSize = 11.sp)
