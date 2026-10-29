@@ -132,22 +132,17 @@ struct ShowScreen: View {
             HStack(spacing: 16) {
                 ForEach(groups) { group in
                     let isSelected = group.number == selected
-                    Button { selectedSeason = group.number } label: {
-                        Text(group.title)
-                            .font(.headline)
-                            .foregroundStyle(isSelected ? KinoTheme.signalInk : KinoTheme.text)
-                            .padding(.horizontal, 20).padding(.vertical, 12)
-                            .background(isSelected ? KinoTheme.signal : KinoTheme.raised, in: Capsule())
-                    }
-                    .buttonStyle(.card)
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
-                    .accessibilityIdentifier("show.season-\(group.number)")
+                    Button(group.title) { selectedSeason = group.number }
+                        .tvCapsule(prominent: isSelected)
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
+                        .accessibilityIdentifier("show.season-\(group.number)")
                 }
             }
             .padding(.horizontal, 24).padding(.vertical, 18)
         }
         .scrollIndicators(.hidden)
         .scrollClipDisabled()
+        .padding(.horizontal, -24)
         .focusSection()
     }
     #endif

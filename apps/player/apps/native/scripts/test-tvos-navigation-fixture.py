@@ -164,6 +164,31 @@ class NavigationFixtureTests(unittest.TestCase):
                 else:
                     self.assertEqual(output.getvalue(), "")
 
+    def test_episode_extras_stay_off_unless_requested(self):
+        status, plain = self.request("GET", "/api/v1/items/episode-0/playback", authorized=True)[0]
+        self.assertEqual(status, 200)
+        self.assertEqual((plain["markers"], plain["chapters"], plain["subtitles"], plain["next"]), ([], [], [], ""))
+        self.assertEqual(self.request("GET", "/subtitle/episode-0/en.vtt", authorized=True)[0][0], 404)
+        with patch.dict(self.fixture.os.environ, {"KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE": "1"}):
+            status, extra = self.request("GET", "/api/v1/items/episode-0/playback", authorized=True)[0]
+            self.assertEqual(status, 200)
+            self.assertEqual([m["type"] for m in extra["markers"]], ["intro", "credits"])
+            self.assertTrue(all(0 <= m["start"] < m["end"] <= 30 for m in extra["markers"]))
+            self.assertEqual(extra["next"], "episode-1")
+            self.assertEqual([c["title"] for c in extra["chapters"]], ["Opening", "Journey", "Credits"])
+            self.assertEqual(extra["subtitles"], [dict(label="English", language="en", source="/subtitle/episode-0/en.vtt", default=False)])
+            self.assertEqual(self.request("GET", "/api/v1/items/episode-3/playback", authorized=True)[0][1]["next"], "")
+            self.assertEqual(self.request("GET", "/api/v1/items/movie-000/playback", authorized=True)[0][1]["markers"], [])
+            self.assertEqual(self.request("GET", "/subtitle/episode-0/en.vtt")[0][0], 401)
+            status, captions = self.request("GET", "/subtitle/episode-0/en.vtt", authorized=True)[0]
+            self.assertEqual(status, 200)
+            self.assertTrue(captions.startswith(b"WEBVTT\n\n"))
+            for path in ["/subtitle/movie-000/en.vtt", "/subtitle/episode-0/fr.vtt", "/subtitle/episode-9/en.vtt", "/subtitle/../en.vtt"]:
+                with self.subTest(path=path):
+                    self.assertEqual(self.request("GET", path, authorized=True)[0][0], 404)
+        (status, _), handler = self.request("PUT", "/api/v1/items/episode-0/progress/sync", b"{}", authorized=True)
+        self.assertEqual(status, 400)
+
     def test_invalid_ranges_never_return_media(self):
         for value in ["bytes=99999999999999999999-", "bytes=5-2", "bytes=--", "bytes=-0"]:
             handler = object.__new__(self.fixture.Handler)

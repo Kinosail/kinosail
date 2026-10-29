@@ -21,6 +21,7 @@ final class RemoteHomeStateTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.descendants(matching: .any)["Loading your library…"].waitForExistence(timeout: 5))
         record("quality-home-pending", app)
+        let pending = app.screenshot().image
         let searchFrame = app.buttons["Search"].frame
         XCUIRemote.shared.press(.right)
         XCTAssertTrue(app.buttons["Settings"].hasFocus)
@@ -31,6 +32,21 @@ final class RemoteHomeStateTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Search"].hasFocus, "Loaded titles must not steal focus from a viewer already using the top bar")
         XCTAssertEqual(app.buttons["Search"].frame, searchFrame)
         record("quality-home-pending-loaded", app)
+        let heading = app.staticTexts["Continue watching"].frame
+        let frames: [CGRect] = app.buttons.allElementsBoundByIndex.map(\.frame)
+        let cards = frames.filter { (frame: CGRect) -> Bool in
+            frame.width > 360 && frame.width < 420 && frame.minY > heading.maxY && frame.minY < heading.maxY + 160
+        }.sorted { $0.minX < $1.minX }
+        XCTAssertGreaterThanOrEqual(cards.count, 4)
+        let fill = pendingColor(pending, app, cards[0].midX, cards[0].midY)
+        for card in cards.prefix(4) {
+            for x in [card.minX + 12, card.maxX - 12] {
+                let color = pendingColor(pending, app, x, card.midY)
+                let close = zip(color, fill).allSatisfy { (pair: (UInt8, UInt8)) -> Bool in abs(Int(pair.0) - Int(pair.1)) <= 4 }
+                XCTAssertTrue(close,
+                              "The skeleton should cover \(Int(x)),\(Int(card.midY)) where a loaded card appears: \(color) vs \(fill)")
+            }
+        }
     }
 
     @MainActor func testEmptyHomeBackReachesNavigation() async throws {
@@ -93,5 +109,10 @@ final class RemoteHomeStateTests: RemoteTestCase {
         let url = URL(string: "http://127.0.0.1:38359/qa/state?mode=\(mode)&delay=\(delay)&target=library&identity=\(identity)")!
         let (_, response) = try await URLSession.shared.data(from: url)
         XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
+    }
+
+    @MainActor
+    private func pendingColor(_ image: UIImage, _ app: XCUIApplication, _ x: CGFloat, _ y: CGFloat) -> [UInt8] {
+        Array(samplePixel(image, x: x / app.frame.width, y: y / app.frame.height).prefix(3))
     }
 }

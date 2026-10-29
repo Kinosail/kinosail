@@ -1,5 +1,55 @@
 # Swift Apple verification
 
+## Apple TV focus, layout and loading-state pass — 2026-10-28
+
+A remote-only walk of every Apple TV screen against the navigation fixture found these defects. Each one has a failing UI test first, then the fix.
+
+- Home opened pending or empty with nothing focused. `LaunchReveal` started the content at opacity 0, which the focus engine treats as unfocusable, and it never looked again. The reveal now starts at 0.02.
+- The Continue watching rail jumped up or down when focus moved between a long and a short spotlight title. The spotlight title line now has a fixed height.
+- Shelves under the fixed top bar ended in a hard cut line. The Home scroll area now fades out over 32 pt at its top edge.
+- The Home skeleton rails stopped at the content edge, while loaded rails run past the screen edge. The skeleton rails are no longer clipped.
+- Show pages: season pills started 24 pt left of the Episodes heading and had no visible focus. They now use the Apple TV capsule (white when focused) and align with the heading. The Episodes shelf was cut at the safe area; it now runs to the bottom of the screen.
+- Browse tiles had almost no visible focus. A focused tile now shows a 4 pt off-white outline.
+- Settings explanations were list rows. They are now muted section footers.
+- The Now playing options button was a tiny icon that VoiceOver read as "More". The top bar now shows a text **Options** button.
+- `RemoteMovementTests/testPlaybackMenuReturnsToMovieDetail` failed on baseline because the movie page stays in the tree under the player. It now checks that the player closes.
+
+**Revision.** Baseline: `365c4bc3` (main). New: the task commit on `mikeo/qa-tvos-polish`. Xcode 27.1, tvOS 26 simulator **Kinosail QA TV** (Apple TV 4K, 3rd generation, 4K output).
+
+**Test data.** `scripts/tvos-navigation-fixture.py` with a generated 30-second MP4 (SHA-256 `71771b8981828d2663d8ecf3d2b69f6ae8b6492c6f45a90cc855799e0c9323ea`). With `KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE=1`, the four fixture episodes also get chapters, an intro marker (2–12 s), a credits marker (24–30 s), an English WebVTT track and a next episode. Without it, episode playback is unchanged (`scripts/test-tvos-navigation-fixture.py`, 9 tests).
+
+**Commands.** `scripts/run-tvos-navigation-qa.py --device <QA TV> --media <mp4> --evidence <dir> --mode <mode>` for `loaded`, `pending`, `empty` and `failed`. For `loaded`, export `KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE=1` and `TEST_RUNNER_KINOSAIL_TV_PLAYBACK_EXTRAS_FIXTURE=1`. The loaded list now includes `RemoteLayoutPolishTests` and `RemotePlaybackExtrasTests`. Unit tests: `xcodebuild -scheme Kinosail-tvOS test` on the same simulator, without `TVQualitySessionSeed`.
+
+| Check | Baseline `365c4bc3` | New |
+| --- | --- | --- |
+| Loaded suite (`RemoteQualityBaselineTests` … `RemotePlaybackCrashTests`) | 26 passed, 1 failed (stale playback check) | 35 passed (with the two new classes) |
+| Pending Home: Search focused, skeleton covers where loaded cards land | Fails (no focus) | Passes |
+| Empty Home and failed Home | Empty fails (no focus); failed not run | Both pass |
+| Rail stays still across long and short spotlight titles | Fails | Passes |
+| Top-bar edge: 10%→90% brightness ramp at least 16 pt | Fails (0 pt) | Passes |
+| Season pills align with Episodes, visible focus, Episodes shelf to the bottom | Fails | Passes |
+| Browse focus outline; Settings footers; Options button legible and labeled | Fails | Passes |
+| Skip Intro, Next Episode, captions and chapters on an episode | Not covered | Passes: Skip Intro shows at the bottom-trailing corner, Select skips, Next Episode shows at the credits and starts S1 E2 with its own Skip Intro; Subtitles Off → English; Chapters lists 3 |
+| Unit tests (`Kinosail-tvOS`, includes `TopShelfTests`) | — | 334 passed, 2 failed, 7 skipped. `PlaybackFramePreviewTests` (`loadsAuthenticatedFrame`, `rejectsInvalidFrameData`) fail on this simulator; this change does not touch trickplay. |
+
+AVKit contextual actions (Skip Intro, Next Episode) are not in the accessibility tree while the transport bar is hidden, and accessibility queries during playback are slow. The playback test therefore finds the prompt by screen pixels and uses only screen captures while video plays. The Settings session note under Sign out is visible but is not exposed to the accessibility tree, so the test checks it by pixels.
+
+Not run: physical Apple TV, a 1080p simulator (the layout is in points and matches 1080p), Top Shelf on the system home screen (only `TopShelfTests`), VoiceOver, the Nox Server.
+
+| File | SHA-256 |
+| --- | --- |
+| loaded `remote.log` | `c44ef814bf1e99eb4b0c4fc52f85572167c9f4072585c665faf7c831b559952e` |
+| loaded `fixture.log` | `fc5405816c9caf31a1f8b01ca53fc01e54eb880025e4546e4e9b2cef5597f81d` |
+| album focus rerun `remote.log` | `c558672d6556e394b7a16b44fc76af61aebc504c9738cde5f35ac229ebf2cc77` |
+| pending `remote.log` | `05aee1fef2876fa99f058262429d8417c854aea32893db8b60cd25b931879e7e` |
+| empty `remote.log` | `25687905b735733d68930139f61d27e576b02c46d7fab84f8e31ac8c3efb623e` |
+| failed `remote.log` | `b48221b2b7d4534514fb3034e71fa0197b23fcea42d6058220176f05a98f089a` |
+| unit test log | `b1b1ffdfec907bc4925a5f134956f436fd2c630fdd37a0967a52eb88b38f241d` |
+| top-bar fade screenshot | `6fadb8162fdc264fcb4e9b665ac0ea5ecca2f635df54fa3d077c034bece44efa` |
+| pending Home screenshot | `933e504f0728df75d6885d423fce7b149876c2b56d37c02e31c2e28977befd27` |
+| Skip Intro screenshot | `55f931b948e4b15890be18ee3162b0b3f615212a8a169fdbece6af484a2e44c6` |
+| Next Episode screenshot | `9b709a587d56fb030fdb252157fd986ecb2e3192b942bb6be05328a3760a1692` |
+
 ## Posters return after a failed load — 2026-10-26
 
 A poster that failed to load stayed a film icon until the app went to the background. The card retried four times in about 32 seconds, then stopped. It retried again only when the app returned to the foreground or the Server came back after being marked unreachable. A 404, a loader cancellation, or a timeout while other requests succeeded left the icon on screen. A Server log showed `/art/{id}` 404s from the iPhone app while the poster files were present. Now a card keeps retrying every 30 seconds while it is on screen. A loader cancellation that the card did not cause also counts as a failure to retry. The Android app had the same four-retry limit and gets the same change.

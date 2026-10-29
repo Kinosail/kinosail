@@ -127,6 +127,13 @@ struct HomeScreen: View {
         }
         #if os(tvOS)
         .focusSection()
+        .mask {
+            VStack(spacing: 0) {
+                LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom).frame(height: 32)
+                Color.black
+            }
+            .ignoresSafeArea(edges: [.bottom, .horizontal])
+        }
         .onExitCommand { focusTopBar?() }
         .navigationTitle("")
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }

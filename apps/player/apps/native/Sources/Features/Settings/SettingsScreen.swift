@@ -10,7 +10,7 @@ struct SettingsScreen: View {
     var body: some View {
         Form {
             if session.usesDeviceLibrary { LibrariesSection() } else {
-            Section("Server & Viewer Profile") {
+            Section {
                 if let viewer = session.viewer {
                     Label {
                         VStack(alignment: .leading, spacing: 4) {
@@ -25,10 +25,6 @@ struct SettingsScreen: View {
                     .accessibilityLabel("Viewer Profile: \(viewer.name). Server: \(viewer.serverName)")
                 }
                 Button("Change Server", systemImage: "network") { session.showsSetup = true }
-                #if os(tvOS)
-                Text("Everyone using this Apple TV shares the connected Viewer Profile, including its library access and watch history.")
-                    .font(.footnote).foregroundStyle(.secondary)
-                #endif
                 NavigationLink(value: ScreenDestination.approval) { Label("Connect a TV", systemImage: "tv") }
                 if let client = session.client {
                     Text(client.server.url.absoluteString).font(.caption).foregroundStyle(KinoTheme.muted)
@@ -37,6 +33,13 @@ struct SettingsScreen: View {
                         .textSelection(.enabled)
                         #endif
                 }
+            } header: {
+                Text("Server & Viewer Profile")
+            } footer: {
+                #if os(tvOS)
+                Text("Everyone using this Apple TV shares the connected Viewer Profile, including its library access and watch history.")
+                    .font(.footnote).foregroundStyle(KinoTheme.muted)
+                #endif
             }
             }
             Section("Playback & library") {
@@ -48,30 +51,44 @@ struct SettingsScreen: View {
                 }
                 #endif
             }
-            Section("Personalize") {
+            #if os(tvOS)
+            Section {
+                Toggle("Show titles on Apple TV Home", isOn: $topShelf)
+            } header: {
+                Text("Personalize")
+            } footer: {
+                Text("Show Continue watching, My List and recent titles when Kinosail is selected in the top row. Titles and artwork are visible to anyone using this Apple TV.")
+                    .font(.footnote).foregroundStyle(KinoTheme.muted)
+            }
+            #endif
+            Section {
                 #if os(iOS)
                 NavigationLink(value: ScreenDestination.tabPreferences) { Label("Customize tabs", systemImage: "rectangle.3.group") }
-                #endif
-                #if os(tvOS)
-                Toggle("Show titles on Apple TV Home", isOn: $topShelf)
-                Text("Show Continue watching, My List and recent titles when Kinosail is selected in the top row. Titles and artwork are visible to anyone using this Apple TV.")
-                    .font(.footnote).foregroundStyle(.secondary)
                 #endif
                 if !session.usesDeviceLibrary {
                     NavigationLink { SupporterScreen() } label: { Label("Supporter collection", systemImage: "sparkles") }
                 }
+            } header: {
+                #if os(iOS)
+                Text("Personalize")
+                #endif
             }
             Section("About") {
                 NavigationLink { ThanksScreen() } label: { Label("Made possible by", systemImage: "heart") }
                 PrivacyPolicyLink()
             }
             Section {
-                Text(session.usesDeviceLibrary ? "Kinosail plays directly from your servers. Sign-ins are stored securely on this device."
-                     : "Kinosail plays directly from your Server. Your session is stored securely on this device.")
-                    .font(.footnote).foregroundStyle(.secondary)
+                #if os(iOS)
+                Text(sessionNote).font(.footnote).foregroundStyle(.secondary)
+                #endif
                 Button(signingOut ? "Signing out…" : "Sign out", role: .destructive) {
                     confirmsSignOut = true
                 }.disabled(signingOut)
+            } footer: {
+                #if os(tvOS)
+                Text(sessionNote)
+                    .font(.footnote).foregroundStyle(KinoTheme.muted)
+                #endif
             }
         }
         #if os(iOS)
@@ -89,6 +106,11 @@ struct SettingsScreen: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: { Text(session.usesDeviceLibrary ? "This removes every library from this device." : "You’ll need to connect this device to your Server again.") }
+    }
+
+    private var sessionNote: String {
+        session.usesDeviceLibrary ? "Kinosail plays directly from your servers. Sign-ins are stored securely on this device."
+            : "Kinosail plays directly from your Server. Your session is stored securely on this device."
     }
 }
 

@@ -130,7 +130,8 @@ with (output / 'fixture.log').open('w') as log:
                     'RemoteQualityBaselineTests', 'RemoteHomeScrollingTests',
                     'RemoteDetailMovementTests', 'RemoteMovementTests',
                     'RemotePolishTests', 'RemoteLibraryNavigationTests', 'RemoteSearchNavigationTests',
-                    'RemoteSettingsNavigationTests', 'RemotePlaybackOptionsTests', 'RemotePlaybackCrashTests']]
+                    'RemoteSettingsNavigationTests', 'RemotePlaybackOptionsTests', 'RemotePlaybackCrashTests',
+                    'RemoteLayoutPolishTests', 'RemotePlaybackExtrasTests']]
             else:
                 method = {'empty': 'testEmptyHomeBackReachesNavigation',
                           'failed': 'testFailedHomeBackAndRetryRemainUsable',
