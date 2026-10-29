@@ -166,7 +166,7 @@ func sourceQuality(facts MediaFacts, maximum int64) PlaybackQuality {
 	return PlaybackQuality{Label: qualityLabel(width, height), Width: width, Height: height, Bitrate: max(1, bitrate), FrameRate: facts.Video.FrameRate}
 }
 
-func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, startNumber int) error { //nolint:cyclop,gocognit // One FFmpeg command is assembled from the validated playback recipe.
+func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, startNumber int) error {
 	release, err := manager.acquireHLSEncode(ctx, 0, "", start, startNumber)
 	if err != nil {
 		return err
@@ -177,50 +177,16 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	defer output.close()
-	timeline, timelineErr := manager.readCopiedHLSTimelineContext(ctx, root, options.Cache)
-	if timelineErr != nil && (copiedHLSIndexRequired(ctx) || manager.copiedHLSTimelinePresent(root) || startNumber == 0 && manager.coldCopiedHLSNeedsIndex(ctx, item, sourceRecipe)) {
-		return errCopiedHLSIndex
-	}
-	if timeline != nil {
-		if startNumber < 0 || startNumber >= len(timeline.Keys) {
-			return errCopiedHLSIndex
-		}
-		start = timeline.point(startNumber)
-		if copiedHLSAudioFromOrigin(timeline, startNumber, recipe.mode) {
-			start = timeline.point(0)
-		} else if copiedHLSWarmAudio(timeline, startNumber, recipe.mode) {
-			start = copiedHLSWarmStart(timeline, startNumber)
-		}
+	timeline, start, err := manager.copiedHLSVariantStart(ctx, item, root, options.Cache, sourceRecipe, recipe.mode, start, startNumber)
+	if err != nil {
+		return err
 	}
 	var refill *remainingAudioOrigin
 	if timeline == nil && startNumber > 0 && item.Kind == "audio" {
 		refill = remainingAudioOriginRefill(mediaFactsFor(item, manager.probe.facts(ctx, item)), sourceRecipe, recipe, start, startNumber, audioRate)
 	}
 	input, video := videoArguments(options, width)
-	arguments := startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-y"})
-	if startNumber > 0 {
-		arguments = append(arguments, "-avoid_negative_ts", "disabled", "-max_delay", "5000000")
-	}
-	if recipe.mode == "transcode" {
-		arguments = append(arguments, input...)
-	}
-	if start > 0 || timeline != nil {
-		seek := ffmpegSeconds(start)
-		if timeline != nil {
-			seek = copiedHLSInputTime(start)
-			arguments = append(arguments, "-seek_timestamp", "1")
-		} else if refill != nil {
-			seek = "0.000"
-		}
-		arguments = append(arguments, "-ss", seek)
-	}
-	if timeline != nil && recipe.mode == "audio-transcode" && (timeline.AudioSource != nil && timeline.AudioSource.Quantum > 0 ||
-		startNumber > 0 && !copiedHLSAudioFromOrigin(timeline, startNumber, recipe.mode) && !copiedHLSWarmAudio(timeline, startNumber, recipe.mode)) {
-		arguments = append(arguments, "-noaccurate_seek")
-	}
-	if timeline == nil && refill == nil {
-		arguments = hlsSkippedTailInput(arguments, duration, start, recipe)
-	}
+	arguments := copiedHLSVariantInputArguments(startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-y"}), input, timeline, refill, recipe, duration, start, startNumber)
 	arguments = append(arguments, "-i", item.Path)
 	copyInput := "0"
 	if recipe.mode != "transcode" && len(sourceRecipe.omitted) > 0 {
@@ -233,16 +199,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if err != nil {
 		return err
 	}
-	if timeline == nil && startNumber > 0 {
-		if refill != nil {
-			arguments = append(arguments, "-output_ts_offset", refill.output, "-bsf:a", refill.drop)
-		} else {
-			if recipe.mode == "remux" || recipe.mode == "audio-transcode" {
-				arguments = append(arguments, "-copypriorss", "0")
-			}
-			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
-		}
-	}
+	arguments = copiedHLSVariantOutputOffset(arguments, timeline, refill, recipe, startNumber)
 	arguments = copiedHLSSourceAudioArguments(arguments, timeline, start, recipe.mode)
 	arguments, err = copiedHLSSeekArguments(arguments, timeline, startNumber, recipe.mode)
 	if err != nil {

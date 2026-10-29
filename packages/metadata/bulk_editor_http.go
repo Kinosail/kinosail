@@ -28,10 +28,6 @@ func PlayerBulkPage() BulkPage {
 	return BulkPage{Product: "Kinosail Player", ThemeScript: "/static/theme.js?v=cinema-1", Stylesheet: "/static/app.css?v=cinema-1"}
 }
 
-func SubtitlesBulkPage() BulkPage {
-	return BulkPage{Product: "Kinosail Subtitles", ThemeScript: "/static/theme.js?v=cinema-1", Stylesheet: "/static/app.css?v=cinema-1"}
-}
-
 func (editor *BulkEditor) Register(mux *http.ServeMux, owner func(http.Handler) http.Handler) {
 	mux.Handle("GET /metadata/bulk", owner(http.HandlerFunc(editor.Page)))
 	mux.Handle("POST /metadata/bulk", owner(http.HandlerFunc(editor.Edit)))

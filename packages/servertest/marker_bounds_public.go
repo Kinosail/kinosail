@@ -45,7 +45,7 @@ func (fixture PlaybackAPIFixture) PlaybackMarkerBoundsPublicRealMedia(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
-	items, err := library.ScanContext(ctx, media, ".")
+	items, err := library.NewScanner(media, ".").Scan(ctx)
 	if err != nil || len(items) != 1 {
 		t.Fatalf("fixture scan: items=%d err=%v", len(items), err)
 	}

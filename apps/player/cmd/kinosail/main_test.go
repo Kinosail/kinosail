@@ -12,7 +12,7 @@ import (
 
 func TestCLIContract(t *testing.T) {
 	commandtest.RunCLI(t, commandtest.CLI{
-		Command: command, WriteEncrypted: backup.WriteEncrypted,
+		Command: command, WriteEncrypted: backup.LiveWriteEncrypted(nil),
 		ConfigureRuntime: configureMCPStdioRuntime,
 		LogLevel:         configuredLogLevel, SecureProxy: secureProxyConfiguration,
 		Listen: "127.0.0.1:38127",

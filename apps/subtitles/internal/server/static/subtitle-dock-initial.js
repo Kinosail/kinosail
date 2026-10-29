@@ -9,19 +9,7 @@
     const headerHeight = `${nav.closest("header").getBoundingClientRect().height}px`;
     if (root.style.getPropertyValue("--subtitle-header-height") !== headerHeight) root.style.setProperty("--subtitle-header-height", headerHeight);
   };
-  const revealFocus = event => {
-    if (!mobile.matches || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) return;
-    const previous = document.activeElement;
-    requestAnimationFrame(() => {
-      const target = document.activeElement;
-      if (event.defaultPrevented || target === previous || !target?.closest(".subtitle-dashboard main")) return;
-      const rect = target.getBoundingClientRect();
-      const top = nav.closest("header").getBoundingClientRect().bottom + 8;
-      const bottom = nav.getBoundingClientRect().top - 8;
-      const delta = rect.top < top ? rect.top - top : rect.bottom > bottom ? (rect.height <= bottom - top ? rect.bottom - bottom : rect.top - top) : 0;
-      if (delta) scrollBy({top: delta, behavior: "instant"});
-    });
-  };
+  const revealFocus = event => revealDockFocus(event, nav, mobile, ".subtitle-dashboard main");
   const initialize = () => {
     const candidate = document.querySelector("[data-subtitle-dock]");
     if (nav || !candidate || !(candidate.nextElementSibling || candidate.closest("header")?.nextElementSibling || document.readyState !== "loading")) return;

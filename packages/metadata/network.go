@@ -2,7 +2,6 @@ package metadata
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"math"
 	"net"
@@ -13,7 +12,6 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
-	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
 func hardenedHTTPClient(timeout time.Duration) *http.Client {
@@ -80,14 +78,6 @@ func decodeExternalJSONStrict(reader interface{ Read([]byte) (int, error) }, max
 
 func decodeExternalJSON(reader interface{ Read([]byte) (int, error) }, maximum int64, target any) error {
 	return httpguard.DecodeJSON(reader, maximum, target, false)
-}
-
-func saveJSON(path string, value any) error {
-	data, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-	return privatefile.WriteCache(path, data)
 }
 
 func validMetadataYear(value string) bool {

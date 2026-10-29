@@ -29,10 +29,6 @@ func NewScanner(root, namespace string) *Scanner {
 
 func (scanner *Scanner) Root() string { return scanner.root }
 
-func ScanContext(ctx context.Context, root, namespace string) ([]Item, error) {
-	return NewScanner(root, namespace).Scan(ctx)
-}
-
 func (scanner *Scanner) Scan(ctx context.Context) ([]Item, error) {
 	scanner.mu.Lock()
 	defer scanner.mu.Unlock()

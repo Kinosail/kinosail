@@ -157,10 +157,6 @@ type plexViewingPage struct {
 	}
 }
 
-func fetchPlexSection(ctx context.Context, client *http.Client, input Input, key, kind string, result []Activity) ([]Activity, error) { //nolint:unparam // Direct source validation retains the section kind boundary.
-	return fetchPlexSectionReserved(ctx, client, input, key, kind, result, nil)
-}
-
 func fetchPlexSectionReserved(ctx context.Context, client *http.Client, input Input, key, kind string, activities []Activity, reserve func(int) bool) ([]Activity, error) {
 	typeID, err := plexSectionType(key, kind)
 	if err != nil {

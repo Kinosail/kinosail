@@ -147,7 +147,7 @@ func settlePreparationFacts(t *testing.T, handler http.Handler, ids []string, ca
 	}
 	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
-	if !playback.WaitHLSReady(ctx, func() error { return preparationFactsPublished(cache, len(ids)) }) {
+	if !playback.WaitHLSChange(ctx, nil, nil, func() error { return preparationFactsPublished(cache, len(ids)) }) {
 		t.Fatal("owned source facts were not published before preparation fixture returned")
 	}
 }

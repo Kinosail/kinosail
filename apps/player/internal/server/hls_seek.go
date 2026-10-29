@@ -104,7 +104,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	return err
 }
 
-func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.Item, recipe hlsRecipe, name string) (*hlsJob, error) { //nolint:gocognit // Segment validation precedes the keyed join or seek restart.
+func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.Item, recipe hlsRecipe, name string) (*hlsJob, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -131,24 +131,9 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 	if err != nil {
 		return nil, err
 	}
-	if saved, found := readCopiedProjection(directory, filepath.Dir(name), options.Cache); found {
-		manifest = saved
-	}
-	offset, valid := hlsSegmentOffset(manifest, filepath.Base(name), duration)
-	playable := hlsPlaybackDuration(recipe, duration)
-	indexed := false
-	if timeline, mapErr := manager.readCopiedHLSTimeline(directory, options.Cache); mapErr == nil {
-		indexed = true
-		valid = timeline.Clock != nil && segment < len(timeline.Keys)
-		if valid {
-			offset = timeline.point(segment) - timeline.point(0)
-			playable = timeline.End - timeline.point(0)
-		}
-	} else if manager.copiedHLSTimelinePresent(directory) || manager.coldCopiedHLSNeedsIndex(ctx, item, recipe) {
-		return nil, errCopiedHLSIndex
-	}
-	if !valid || offset >= playable {
-		return nil, errors.New("HLS segment is outside the playable duration")
+	offset, indexed, err := manager.hlsSegmentSeekOffset(ctx, item, recipe, directory, name, manifest, duration, options.Cache, segment)
+	if err != nil {
+		return nil, err
 	}
 	seekRecipe := recipe
 	seekRecipe.offset += offset
@@ -176,6 +161,29 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 			return nil, err
 		}
 	}
+}
+
+func (manager *hlsManager) hlsSegmentSeekOffset(ctx context.Context, item library.Item, recipe hlsRecipe, directory, name string, manifest []byte, duration float64, policy string, segment int) (float64, bool, error) {
+	if saved, found := readCopiedProjection(directory, filepath.Dir(name), policy); found {
+		manifest = saved
+	}
+	offset, valid := hlsSegmentOffset(manifest, filepath.Base(name), duration)
+	playable := hlsPlaybackDuration(recipe, duration)
+	indexed := false
+	if timeline, mapErr := manager.readCopiedHLSTimeline(directory, policy); mapErr == nil {
+		indexed = true
+		valid = timeline.Clock != nil && segment < len(timeline.Keys)
+		if valid {
+			offset = timeline.point(segment) - timeline.point(0)
+			playable = timeline.End - timeline.point(0)
+		}
+	} else if manager.copiedHLSTimelinePresent(directory) || manager.coldCopiedHLSNeedsIndex(ctx, item, recipe) {
+		return 0, false, errCopiedHLSIndex
+	}
+	if !valid || offset >= playable {
+		return 0, false, errors.New("HLS segment is outside the playable duration")
+	}
+	return offset, indexed, nil
 }
 
 func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, directory string) (transcodeSettings, error) {

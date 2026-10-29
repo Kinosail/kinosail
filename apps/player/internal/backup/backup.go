@@ -21,14 +21,6 @@ var service = sharedbackup.MustNew(sharedbackup.Config{
 
 var Command = sharedbackup.BindCommand(service, func() string { return ApplicationVersion })
 
-func Write(writer io.Writer, dataDir string) error {
-	return service.Write(writer, dataDir, ApplicationVersion)
-}
-
-func WriteEncrypted(writer io.Writer, dataDir, passphrase string) error {
-	return service.WriteEncrypted(writer, dataDir, passphrase, ApplicationVersion)
-}
-
 func LiveWrite(store *database.Store) func(io.Writer, string) error {
 	live := liveService(store)
 	return func(writer io.Writer, dataDir string) error { return live.Write(writer, dataDir, ApplicationVersion) }

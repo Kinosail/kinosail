@@ -96,37 +96,47 @@ func (ledger *subtitleLedger) history() ([]subtitleHistoryEvent, error) {
 	return append([]subtitleHistoryEvent(nil), ledger.state.History...), ledger.err
 }
 
-func validSubtitleHistoryEvidence(event subtitleHistoryEvent) bool { //nolint:cyclop // Persisted explanations must agree with their action and score snapshots.
+var firstSubtitleHistoryEvidence = map[string]func(subtitleHistoryEvent) bool{
+	"":       func(event subtitleHistoryEvent) bool { return event.Score == nil },
+	"legacy": func(event subtitleHistoryEvent) bool { return event.Action == "recorded" },
+	"missing": func(event subtitleHistoryEvent) bool {
+		return event.Action == "added" && remoteSubtitleHistorySource(event.Source) && event.Score != nil
+	},
+	"embedded": func(event subtitleHistoryEvent) bool {
+		return event.Action == "added" && event.Source == "embedded" && event.Score != nil && *event.Score == 100 && *event.ReleaseMatch == 1
+	},
+	"image": func(event subtitleHistoryEvent) bool {
+		return event.Action == "added" && event.Source == "ocr" && event.Score != nil && *event.ReleaseMatch == 1
+	},
+	"exact-hash": func(event subtitleHistoryEvent) bool {
+		return event.Action == "updated" && remoteSubtitleHistorySource(event.Source) && event.Score != nil && *event.Score == 100 && *event.ReleaseMatch == 1
+	},
+	"manual": func(event subtitleHistoryEvent) bool {
+		return oneOf(event.Action, "added", "updated") && event.Score == nil
+	},
+	"restore": func(event subtitleHistoryEvent) bool { return event.Action == "restored" && event.Score == nil },
+}
+
+func validSubtitleHistoryEvidence(event subtitleHistoryEvent) bool {
 	if !validSubtitleHistoryMatch(event.Score, event.ReleaseMatch) || !validSubtitleHistoryMatch(event.PreviousScore, event.PreviousReleaseMatch) {
 		return false
 	}
-	previous := event.PreviousSource != "" || event.PreviousScore != nil
 	if event.Reason == "higher-score" {
-		return event.Action == "updated" && oneOf(event.Source, "subdl", "opensubtitles", "subsource") && subtitleHistorySource(event.PreviousSource) && event.Score != nil && event.PreviousScore != nil && *event.Score >= *event.PreviousScore+subtitleUpgradeGain
+		return validSubtitleUpgradeEvidence(event)
 	}
-	if previous {
+	if event.PreviousSource != "" || event.PreviousScore != nil {
 		return false
 	}
-	switch event.Reason {
-	case "":
-		return event.Score == nil
-	case "legacy":
-		return event.Action == "recorded"
-	case "missing":
-		return event.Action == "added" && oneOf(event.Source, "subdl", "opensubtitles", "subsource") && event.Score != nil
-	case "embedded":
-		return event.Action == "added" && event.Source == "embedded" && event.Score != nil && *event.Score == 100 && *event.ReleaseMatch == 1
-	case "image":
-		return event.Action == "added" && event.Source == "ocr" && event.Score != nil && *event.ReleaseMatch == 1
-	case "exact-hash":
-		return event.Action == "updated" && oneOf(event.Source, "subdl", "opensubtitles", "subsource") && event.Score != nil && *event.Score == 100 && *event.ReleaseMatch == 1
-	case "manual":
-		return oneOf(event.Action, "added", "updated") && event.Score == nil
-	case "restore":
-		return event.Action == "restored" && event.Score == nil
-	default:
-		return false
-	}
+	valid, known := firstSubtitleHistoryEvidence[event.Reason]
+	return known && valid(event)
+}
+
+func validSubtitleUpgradeEvidence(event subtitleHistoryEvent) bool {
+	return event.Action == "updated" && remoteSubtitleHistorySource(event.Source) && subtitleHistorySource(event.PreviousSource) && event.Score != nil && event.PreviousScore != nil && *event.Score >= *event.PreviousScore+subtitleUpgradeGain
+}
+
+func remoteSubtitleHistorySource(source string) bool {
+	return oneOf(source, "subdl", "opensubtitles", "subsource")
 }
 
 func validSubtitleHistoryMatch(score *int, release *float64) bool {

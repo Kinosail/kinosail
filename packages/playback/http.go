@@ -29,13 +29,6 @@ func requestedCodecs(request *http.Request, kind string, allowed []string) ([]st
 	return parseRequestedCodecs(values[0], allowed, invalid)
 }
 
-func SubtitleRoleLabel(role string) string {
-	if role == "" {
-		return "Subtitles"
-	}
-	return strings.ToUpper(role[:1]) + role[1:]
-}
-
 func parseRequestedCodecs(raw string, allowed []string, invalid error) ([]string, error) {
 	codecs, seen := strings.Split(raw, ","), map[string]bool{}
 	if len(codecs) > len(allowed) {

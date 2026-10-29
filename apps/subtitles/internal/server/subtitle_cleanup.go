@@ -161,17 +161,8 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 	previous := settings.subtitleLanguages()
 	previousLimited := settings.subtitlePickerLimited()
 	previousForced := settings.subtitlePickerKeepForced()
-	keepForced := forced == "keep"
-	changed := !slices.Equal(previous, plan.Languages)
-	if changed {
-		limited := true
-		if err := settings.saveSubtitleLanguages(plan.Languages, &limited, &keepForced); err != nil {
-			return 0, err
-		}
-	} else if !previousLimited || previousForced != keepForced {
-		if err := settings.setSubtitlePickerChoices(true, keepForced); err != nil {
-			return 0, err
-		}
+	if err := saveCleanupLanguages(settings, previous, plan.Languages, previousLimited, previousForced, forced == "keep"); err != nil {
+		return 0, err
 	}
 	hidden := 0
 	defer func() {
@@ -189,6 +180,17 @@ func applySubtitleCleanup(index *libraryIndex, settings *settingsStore, language
 		hidden++
 	}
 	return hidden, nil
+}
+
+func saveCleanupLanguages(settings *settingsStore, previous, languages []string, previousLimited, previousForced, keepForced bool) error {
+	if !slices.Equal(previous, languages) {
+		limited := true
+		return settings.saveSubtitleLanguages(languages, &limited, &keepForced)
+	}
+	if !previousLimited || previousForced != keepForced {
+		return settings.setSubtitlePickerChoices(true, keepForced)
+	}
+	return nil
 }
 
 func restoreCleanupLanguages(settings *settingsStore, previous []string, previousLimited, previousForced bool, languages []string, cause error) error {

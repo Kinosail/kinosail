@@ -39,10 +39,6 @@ type Application struct {
 	page     Page
 }
 
-func NewApplication(broker *Broker, limiters Limiters, adapter Adapter) *Application {
-	return NewApplicationFor(broker, limiters, adapter, PlayerPage())
-}
-
 func NewApplicationFor(broker *Broker, limiters Limiters, adapter Adapter, page Page) *Application {
 	return &Application{broker: broker, limiters: limiters, adapter: adapter, page: page}
 }

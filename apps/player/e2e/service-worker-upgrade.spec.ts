@@ -45,7 +45,7 @@ const contentVersion = (source: string) => createHash("sha256").update(source).d
 const controller = (page: import("@playwright/test").Page) => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL || "");
 
 test("player refreshes its immutable script and removes browser downloads when upgrading its offline worker", async ({ page }) => {
-  const workerSource = await readStaticSource(["../../../packages/webassets/static/offline-runtime.js", "../../../packages/webassets/static/offline-profile.js", "../../../packages/webassets/static/offline-shell.js", "../internal/server/static/service-worker.js"]);
+  const workerSource = await readStaticSource(["../../../packages/webassets/static/offline-runtime.js", "../../../packages/webassets/static/offline-profile.js", "../../../packages/webassets/static/shell-assets.js", "../../../packages/webassets/static/offline-shell.js", "../internal/server/static/service-worker.js"]);
   const navigationPath = `/static/main.kinosail.bundle.js?v=${contentVersion(currentPWA)}`;
   const oldNavigationPath = "/static/main.kinosail.bundle.js?v=20";
   const errors: string[] = [];

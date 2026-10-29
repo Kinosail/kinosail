@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
 )
 
-func (manager *hlsManager) encodePresentation(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, audioBitrate int64, start float64, startNumber int) error { //nolint:gocognit // One decode feeds the complete switchable presentation.
+func (manager *hlsManager) encodePresentation(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, audioBitrate int64, start float64, startNumber int) error {
 	device, cost := transcodehardware.DeviceKey(options), len(qualities)
 	if device == "" {
 		cost = manager.workloads.LadderCost(ladderRungs(qualities))
@@ -53,52 +53,11 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	if audioGraph != "" {
 		arguments = append(arguments, "-filter_complex", audioGraph)
 	}
+	encoding := presentationEncoding{options: options, recipe: recipe, refill: refill, path: item.Path, root: root, graph: graph, audioGraph: audioGraph, audioBitrate: audioBitrate, encoderThreads: encoderThreads, startNumber: startNumber}
 	for index, quality := range qualities {
-		layoutNumber := startNumber
-		if refill != nil {
-			layoutNumber = 0
-		}
-		directory, playlistDirectory, err := preparePresentationDirectories(root, quality.Label, layoutNumber)
-		if err != nil {
+		if arguments, err = encoding.renditionArguments(arguments, index, quality); err != nil {
 			return err
 		}
-		_, video := videoArguments(options, strconv.Itoa(quality.Width))
-		mapping, encoded := applyBurnIn(video, item.Path, recipe)
-		label := "[v" + strconv.Itoa(index) + "]"
-		mapping = presentationVideoMapping(mapping, label)
-		if graph != "" {
-			mapping, encoded = []string{"-map", label}, video[2:]
-		}
-		arguments = append(arguments, mapping...)
-		if audioBitrate > 0 {
-			switch {
-			case refill != nil:
-				arguments = refill.audio(arguments, recipe.audio, quality.Label)
-			case audioGraph != "":
-				arguments = append(arguments, "-map", "[a"+strconv.Itoa(index)+"]")
-			default:
-				arguments = append(arguments, "-map", "0:a:"+strconv.Itoa(recipe.audio)+"?")
-				arguments = append(arguments, playback.AudioFilterArguments(sharedHLSRecipe(recipe), hlsPolicy())...)
-			}
-		}
-		arguments = append(arguments, "-sn")
-		arguments = append(arguments, encoded...)
-		arguments = append(arguments, "-threads:v", strconv.Itoa(encoderThreads))
-		videoRate := strconv.FormatInt(max(1, (quality.Bitrate-audioBitrate)/1000), 10) + "k"
-		arguments = append(arguments, videoCompatibilityArguments(options.Codec)...)
-		arguments = append(arguments, "-maxrate", videoRate, "-bufsize", videoRate)
-		if audioBitrate > 0 {
-			arguments = append(arguments, "-c:a", "aac", "-ac", "2", "-b:a", strconv.FormatInt(audioBitrate/1000, 10)+"k")
-		}
-		arguments = append(arguments, "-flags", "+cgop", "-force_key_frames", "expr:gte(t,n_forced*2)")
-		arguments = append(arguments, "-avoid_negative_ts", "disabled")
-		if startNumber > 0 {
-			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
-		}
-		if refill != nil {
-			arguments = append(arguments, "-t", copiedHLSTime(refill.duration))
-		}
-		arguments = append(arguments, hlsSegmentArguments("transcode", directory, filepath.Join(playlistDirectory, "index.m3u8"), startNumber)...)
 	}
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
 	if err := runHLSCommand(ctx, exec.CommandContext(ctx, manager.ffmpeg, arguments...), item.Path, root); err != nil {

@@ -50,36 +50,44 @@ func uniqueValue(d *json.Decoder, depth int) bool {
 	}
 	switch token {
 	case json.Delim('{'):
-		keys := map[string]bool{}
-		for d.More() {
-			token, err = d.Token()
-			key, ok := token.(string)
-			if err != nil || !ok {
-				return false
-			}
-			key = foldJSONKey(key)
-			if keys[key] {
-				return false
-			}
-			keys[key] = true
-			if !uniqueValue(d, depth+1) {
-				return false
-			}
-		}
-		token, err = d.Token()
-		return err == nil && token == json.Delim('}')
+		return uniqueObject(d, depth)
 	case json.Delim('['):
-		for d.More() {
-			if !uniqueValue(d, depth+1) {
-				return false
-			}
-		}
-		token, err = d.Token()
-		return err == nil && token == json.Delim(']')
+		return uniqueArray(d, depth)
 	default:
 		_, delimiter := token.(json.Delim)
 		return !delimiter
 	}
+}
+
+func uniqueObject(d *json.Decoder, depth int) bool {
+	keys := map[string]bool{}
+	for d.More() {
+		token, err := d.Token()
+		key, ok := token.(string)
+		if err != nil || !ok {
+			return false
+		}
+		key = foldJSONKey(key)
+		if keys[key] {
+			return false
+		}
+		keys[key] = true
+		if !uniqueValue(d, depth+1) {
+			return false
+		}
+	}
+	token, err := d.Token()
+	return err == nil && token == json.Delim('}')
+}
+
+func uniqueArray(d *json.Decoder, depth int) bool {
+	for d.More() {
+		if !uniqueValue(d, depth+1) {
+			return false
+		}
+	}
+	token, err := d.Token()
+	return err == nil && token == json.Delim(']')
 }
 
 func foldJSONKey(key string) string {

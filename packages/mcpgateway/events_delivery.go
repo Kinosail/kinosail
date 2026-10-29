@@ -89,89 +89,110 @@ func (adapter *Gateway) PublishEvent(ctx context.Context, profile, name, resourc
 	}
 }
 
-func (adapter *Gateway) deliverEvents(ctx context.Context, id string, delivery *eventDeliveryState) { //nolint:gocognit // Queue state, refresh generations, and teardown stay in one worker loop.
+func (adapter *Gateway) deliverEvents(ctx context.Context, id string, delivery *eventDeliveryState) {
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
-	defer func() {
-		adapter.eventMu.Lock()
-		if adapter.eventRuntime[id] == delivery {
-			delete(adapter.eventRuntime, id)
-		}
-		adapter.eventMu.Unlock()
-		delivery.cancel()
-	}()
+	defer adapter.endEventDelivery(id, delivery)
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			adapter.connections.mu.Lock()
-			subscription, found := adapter.connections.events[id]
-			adapter.connections.mu.Unlock()
-			if !found || !adapter.eventAllowed(ctx, subscription) {
+			if _, active := adapter.activeEventSubscription(ctx, id); !active {
 				return
 			}
 		case event := <-delivery.queue:
-			adapter.eventMu.Lock()
-			suspended, generation := delivery.suspended, delivery.generation
-			adapter.eventMu.Unlock()
-			if suspended {
-				continue
-			}
-			if failure := adapter.deliverEvent(ctx, id, event); failure != "" {
-				adapter.eventMu.Lock()
-				delivery.truncated = true
-				if delivery.generation == generation {
-					delivery.suspended = true
-				}
-				adapter.eventMu.Unlock()
-				if ctx.Err() == nil {
-					slog.Warn("MCP event delivery failed", "operation", "events/deliver", "subscription_id", id, "event_id", event.ID, "failure", failure)
-				}
-			}
+			adapter.deliverQueuedEvent(ctx, id, delivery, event)
 		}
 	}
 }
 
-func (adapter *Gateway) deliverEvent(ctx context.Context, id string, event eventOccurrence) string { //nolint:gocognit // Backoff, authority rechecks, and concurrency slots form one bounded delivery lifecycle.
+func (adapter *Gateway) endEventDelivery(id string, delivery *eventDeliveryState) {
+	adapter.eventMu.Lock()
+	if adapter.eventRuntime[id] == delivery {
+		delete(adapter.eventRuntime, id)
+	}
+	adapter.eventMu.Unlock()
+	delivery.cancel()
+}
+
+func (adapter *Gateway) activeEventSubscription(ctx context.Context, id string) (eventSubscription, bool) {
+	adapter.connections.mu.Lock()
+	subscription, found := adapter.connections.events[id]
+	adapter.connections.mu.Unlock()
+	return subscription, found && adapter.eventAllowed(ctx, subscription)
+}
+
+func (adapter *Gateway) deliverQueuedEvent(ctx context.Context, id string, delivery *eventDeliveryState, event eventOccurrence) {
+	adapter.eventMu.Lock()
+	suspended, generation := delivery.suspended, delivery.generation
+	adapter.eventMu.Unlock()
+	if suspended {
+		return
+	}
+	failure := adapter.deliverEvent(ctx, id, event)
+	if failure == "" {
+		return
+	}
+	adapter.eventMu.Lock()
+	delivery.truncated = true
+	if delivery.generation == generation {
+		delivery.suspended = true
+	}
+	adapter.eventMu.Unlock()
+	if ctx.Err() == nil {
+		slog.Warn("MCP event delivery failed", "operation", "events/deliver", "subscription_id", id, "event_id", event.ID, "failure", failure)
+	}
+}
+
+func (adapter *Gateway) deliverEvent(ctx context.Context, id string, event eventOccurrence) string {
 	body, _ := json.Marshal(event)
 	failure := "connection_refused"
 	for attempt := 0; attempt < 3; attempt++ {
-		if attempt > 0 {
-			timer := time.NewTimer(time.Duration(1<<attempt) * time.Second)
-			select {
-			case <-ctx.Done():
-				timer.Stop()
-				return "canceled"
-			case <-timer.C:
-			}
+		if !waitEventAttempt(ctx, attempt) {
+			return "canceled"
 		}
 		select {
 		case adapter.eventSlots <- struct{}{}:
 		case <-ctx.Done():
 			return "canceled"
 		}
-		adapter.connections.mu.Lock()
-		subscription, found := adapter.connections.events[id]
-		adapter.connections.mu.Unlock()
-		if !found || !adapter.eventAllowed(ctx, subscription) {
+		subscription, active := adapter.activeEventSubscription(ctx, id)
+		if !active {
 			<-adapter.eventSlots
 			return "access_unavailable"
 		}
 		response, err := adapter.sendEventWebhook(ctx, subscription, event.ID, body)
 		<-adapter.eventSlots
-		if err == nil {
-			_ = response.Body.Close()
-			if response.StatusCode >= 200 && response.StatusCode < 300 {
-				return ""
-			}
-			failure = eventResponseError(response.StatusCode)
-			if response.StatusCode == http.StatusGone || response.StatusCode == http.StatusRequestEntityTooLarge {
-				return failure
-			}
-		} else {
-			failure = eventCallbackError(err)
+		var final bool
+		if failure, final = eventAttemptOutcome(response, err); final {
+			return failure
 		}
 	}
 	return failure
+}
+
+func waitEventAttempt(ctx context.Context, attempt int) bool {
+	if attempt == 0 {
+		return true
+	}
+	timer := time.NewTimer(time.Duration(1<<attempt) * time.Second)
+	select {
+	case <-ctx.Done():
+		timer.Stop()
+		return false
+	case <-timer.C:
+		return true
+	}
+}
+
+func eventAttemptOutcome(response *http.Response, err error) (string, bool) {
+	if err != nil {
+		return eventCallbackError(err), false
+	}
+	_ = response.Body.Close()
+	if response.StatusCode >= 200 && response.StatusCode < 300 {
+		return "", true
+	}
+	return eventResponseError(response.StatusCode), response.StatusCode == http.StatusGone || response.StatusCode == http.StatusRequestEntityTooLarge
 }

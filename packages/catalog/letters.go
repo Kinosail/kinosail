@@ -138,10 +138,6 @@ func sortKey(item library.Item) string {
 	return strings.TrimLeftFunc(title, func(value rune) bool { return !unicode.IsLetter(value) && !unicode.IsDigit(value) })
 }
 
-func titleLetter(title, locale string) string {
-	return titleLetterWithCaser(title, cases.Upper(language.Make(locale)))
-}
-
 func titleLetterWithCaser(title string, upper cases.Caser) string {
 	for _, value := range strings.TrimSpace(title) {
 		if value >= 'a' && value <= 'z' {

@@ -21,7 +21,7 @@ root = Path(__file__).resolve().parents[2]
 assets = {name: (args.fixtures / name).read_bytes() for name in ["subtitle-inspector.html",
           "subtitle-inspector.json", "app.css", "subtitle-inspector.css", "subtitle-inspector.js",
           "manrope.woff2", "icon.svg", "cinema-backdrop.jpg"]}
-dock = (root / "apps/subtitles/internal/server/static/subtitle-dock-initial.js").read_text()
+dock = (root / "packages/webassets/static/dock-focus.js").read_text() + (root / "apps/subtitles/internal/server/static/subtitle-dock-initial.js").read_text()
 args.output.mkdir(parents=True, exist_ok=False)
 revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
 receipt = {"revision": revision, "command": ["python3", str(Path(__file__).relative_to(root)),
@@ -31,7 +31,7 @@ receipt = {"revision": revision, "command": ["python3", str(Path(__file__).relat
     "boundaries": "Login and unrelated bundle are fixture placeholders; no live authentication, media or provider proof",
     "sources": {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in [
         "scripts/testing/layout-stability-local.mjs", "scripts/testing/auth-form-navigation.ts", "scripts/testing/test-layout-initial-sample.py",
-        "apps/subtitles/internal/server/static/subtitle-dock-initial.js"]},
+        "packages/webassets/static/dock-focus.js", "apps/subtitles/internal/server/static/subtitle-dock-initial.js"]},
     "assets": {name: hashlib.sha256(content).hexdigest() for name, content in assets.items()}, "results": []}
 
 class Peer(BaseHTTPRequestHandler):

@@ -103,19 +103,13 @@ func (service *Service) decodeCurrentCertificate(record []byte, certificate *Cer
 	return validCurrentExpiry(*certificate, object["expiresAt"]) && validCertificateTimes(*certificate, service.now().UTC(), version >= 3)
 }
 
-func parseCurrentCertificate(record []byte, certificate *Certificate) (map[string]json.RawMessage, int, bool) { //nolint:cyclop // Strict certificate validation remains below the repository complexity ceiling.
+func parseCurrentCertificate(record []byte, certificate *Certificate) (map[string]json.RawMessage, int, bool) {
 	object, err := jsonObject(record)
-	required := []string{"version", "audience", "appId", "tier", "supporterId", "supportedSince", "issuedAt", "expiresAt", "sustaining", "founding", "installationKey"}
 	var version int
 	if json.Unmarshal(object["version"], &version) != nil || version < 3 || version > 5 {
 		return nil, 0, false
 	}
-	if version >= 4 {
-		required = append(required, "family", "level")
-	}
-	if version == 5 {
-		required = append(required, "edition")
-	}
+	required := currentCertificateFields(version)
 	sustaining, sustainingOK := jsonBool(object["sustaining"])
 	founding, foundingOK := jsonBool(object["founding"])
 	if err != nil || !exactFields(object, required, []string{"recognitionName", "collection"}) || json.Unmarshal(record, certificate) != nil ||
@@ -125,13 +119,28 @@ func parseCurrentCertificate(record []byte, certificate *Certificate) (map[strin
 	if raw, found := object["collection"]; found && string(raw) == "null" {
 		return nil, 0, false
 	}
-	if version >= 4 && (certificate.Level != Rank(certificate.Tier) || certificate.Family != map[bool]string{false: FamilyPatron, true: FamilyLiving}[certificate.Sustaining]) {
-		return nil, 0, false
-	}
-	if version == 5 && (!validEdition(certificate.Edition) || (certificate.Edition != EditionOnce) != certificate.Sustaining) {
+	if !validCertificateVersionFields(*certificate, version) {
 		return nil, 0, false
 	}
 	return object, version, true
+}
+
+func currentCertificateFields(version int) []string {
+	required := []string{"version", "audience", "appId", "tier", "supporterId", "supportedSince", "issuedAt", "expiresAt", "sustaining", "founding", "installationKey"}
+	if version >= 4 {
+		required = append(required, "family", "level")
+	}
+	if version == 5 {
+		required = append(required, "edition")
+	}
+	return required
+}
+
+func validCertificateVersionFields(certificate Certificate, version int) bool {
+	if version >= 4 && (certificate.Level != Rank(certificate.Tier) || certificate.Family != map[bool]string{false: FamilyPatron, true: FamilyLiving}[certificate.Sustaining]) {
+		return false
+	}
+	return version != 5 || validEdition(certificate.Edition) && (certificate.Edition != EditionOnce) == certificate.Sustaining
 }
 
 func validCurrentExpiry(certificate Certificate, raw json.RawMessage) bool {

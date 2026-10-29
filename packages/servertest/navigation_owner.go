@@ -29,14 +29,3 @@ func AssertOwnerCanReachNavigationEditorFromMainBar(t *testing.T, fixture Naviga
 		t.Fatalf("Viewer can edit main navigation: %q", MainNavigationMarkup(viewerHome))
 	}
 }
-
-func AssertMobileMoreMenuPlacesLibraryAfterSecondaryActions(t *testing.T, fixture NavigationFixture) {
-	handler, token := fixture.Library.Server(t)
-	markup := MainNavigationMarkup(APICall(t, handler, token, http.MethodGet, "/", nil).Body.String())
-	actions := strings.Index(markup, `class="nav-more-section nav-more-actions"`)
-	account := strings.Index(markup, `class="nav-more-section nav-more-account"`)
-	library := strings.Index(markup, `class="nav-more-section nav-more-library"`)
-	if actions < 0 || account < 0 || library < 0 || account >= actions || actions >= library {
-		t.Fatalf("mobile More menu order = account %d, actions %d, library %d", account, actions, library)
-	}
-}

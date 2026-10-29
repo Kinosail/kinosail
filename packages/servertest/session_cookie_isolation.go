@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-//nolint:cyclop,gocognit // The complete real-handler browser journey preserves its cookie and security assertions together.
 func AssertBrowserSessionCookieIsolation(t *testing.T, handler http.Handler, origin, ownName, siblingName string) {
 	t.Helper()
 	base, err := url.Parse(origin)
@@ -50,7 +49,7 @@ func AssertBrowserSessionCookieIsolation(t *testing.T, handler http.Handler, ori
 		t.Fatalf("session cookie name = %v, want %s", cookieNames(cookies), ownName)
 	}
 	own := cookies[0]
-	if !own.Secure || !own.HttpOnly || own.SameSite != http.SameSiteStrictMode || own.Path != "/" || own.Domain != "" || own.MaxAge <= 0 || own.Expires.IsZero() {
+	if !securePersistentSessionCookie(own) || own.MaxAge <= 0 {
 		t.Fatal("session cookie lost its security or persistence attributes")
 	}
 	assertScopedBrowserCSRF(t, handler, origin, own)
@@ -62,24 +61,29 @@ func AssertBrowserSessionCookieIsolation(t *testing.T, handler http.Handler, ori
 	if response := call(http.MethodPost, "/logout", ""); response.Code != http.StatusSeeOther {
 		t.Fatalf("logout status = %d", response.Code)
 	}
-	found := false
-	for _, cookie := range jar.Cookies(base) {
-		if cookie.Name == ownName {
-			t.Error("logout retained own cookie")
-		}
-		if cookie.Name == siblingName && cookie.Value == sibling.Value {
-			found = true
-		}
-	}
-	if !found {
-		t.Fatal("logout removed sibling cookie")
-	}
+	assertLogoutKeptSiblingCookie(t, jar.Cookies(base), ownName, sibling)
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, origin+"/account", nil)
 	request.AddCookie(own)
 	response = httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	if response.Code != http.StatusSeeOther || response.Header().Get("Location") != "/login" {
 		t.Fatalf("logged-out credential accepted: %d", response.Code)
+	}
+}
+
+func assertLogoutKeptSiblingCookie(t *testing.T, cookies []*http.Cookie, ownName string, sibling *http.Cookie) {
+	t.Helper()
+	found := false
+	for _, cookie := range cookies {
+		if cookie.Name == ownName {
+			t.Error("logout retained own cookie")
+		}
+		if cookie.Name == sibling.Name && cookie.Value == sibling.Value {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatal("logout removed sibling cookie")
 	}
 }
 

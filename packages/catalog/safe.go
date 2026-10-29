@@ -10,10 +10,6 @@ type allowedRoots struct {
 	complete bool
 }
 
-func SafePath(path string, allowed []string) bool {
-	return resolveAllowed(allowed).contains(path)
-}
-
 func resolveAllowed(candidates []string) *allowedRoots {
 	allowed := &allowedRoots{resolved: make([]string, 0, len(candidates)), complete: true}
 	for _, candidate := range candidates {

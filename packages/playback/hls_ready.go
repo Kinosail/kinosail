@@ -6,10 +6,6 @@ import (
 	"os"
 )
 
-func WaitHLSReady(ctx context.Context, probe func() error) bool {
-	return WaitHLSChange(ctx, nil, nil, probe)
-}
-
 func WaitHLSChange(ctx context.Context, directories []string, done <-chan struct{}, probe func() error) bool {
 	if ready, final := probeHLSReady(probe); final {
 		return ready

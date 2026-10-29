@@ -4,7 +4,7 @@ import { expect, test, type Page } from "@playwright/test";
 const asset = (name: string) => readFileSync(new URL(`../../../packages/webassets/static/${name}`, import.meta.url), "utf8");
 const css = asset("player-app.css") + asset("player-stage.css") + asset("last-light.css") + readFileSync(new URL("../internal/server/static/home.css", import.meta.url), "utf8");
 const navigation = asset("pwa-navigation.js");
-const tabs = asset("mobile-tabs.js");
+const tabs = asset("dock-focus.js") + asset("mobile-tabs.js");
 const origin = "http://menu.test";
 
 async function loadMenu(page: Page) {

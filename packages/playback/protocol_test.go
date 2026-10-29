@@ -28,9 +28,6 @@ func TestHTTPPlaybackInputsAreStrictAndSideEffectFree(t *testing.T) {
 			t.Errorf("accepted %q", query)
 		}
 	}
-	if SubtitleRoleLabel("") != "Subtitles" || SubtitleRoleLabel("captions") != "Captions" {
-		t.Fatal("subtitle role labels changed")
-	}
 }
 
 func TestTraceReaderRejectsBeforeCallerSideEffects(t *testing.T) {
