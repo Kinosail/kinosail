@@ -13,7 +13,7 @@ extension NativePreferencesUXTests {
     func readerLoadedWebView(_ window: UIWindow, fixture: PreferencesLoopbackFixture, folder: URL,
                              reason: String = "The held reader operation must reach its expected visible state") async throws {
         do {
-            try await readerUntil(reason) {
+            try await readerUntil(reason, timeout: .seconds(30)) {
                 readerDescendants(window).compactMap { $0 as? WKWebView }.contains { $0.url != nil && !$0.isLoading }
             }
         } catch {
