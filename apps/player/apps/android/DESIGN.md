@@ -10,6 +10,9 @@ changing Android screens. Translate controls into Android conventions.
 | iPad navigation | Tablet navigation | Use available window space; Android uses a navigation rail |
 | Apple TV Home | Android TV Home | Fixed Search and Settings, landscape continuation, Browse, recent shelves |
 | Personal tabs | Phone and tablet tabs | Home, TV Shows, Movies, Search, and persistent More; save choices per Viewer Profile |
+| iPhone Settings | Phone and tablet Settings | Server & Viewer Profile, Playback & library, Personalize, and About sections; Sign out asks first |
+| Playback preferences | Playback preferences | Speed, Audio language, Subtitles, Boost Dialog, and Normalize Loudness save automatically |
+| Connect a TV | Connect a TV | Enter the six-digit code, review the device, then approve it |
 | CinemaSpotlight and CinemaHero | MediaSpotlight and MediaHero | Full-bleed backdrop on compact phones, contained artwork on wider windows |
 | MediaCard | HomeShelf | Separate title and metadata, truthful saved position |
 | LoadingState | LibraryLoading | Pending placeholders follow the loaded artwork sizes, spacing, and shelf structure |
@@ -64,7 +67,15 @@ them beside each other. Large text restores the stacked arrangement.
 Keep TV Search and Settings above the scrolling Home content. Both remain
 reachable after scrolling; Android Back returns from each destination to Home.
 Use bottom navigation on compact windows and a rail on wider, taller windows.
-More keeps unpinned destinations and Customize tabs available.
+More keeps unpinned destinations and Customize tabs available. Settings is a
+destination like the others, so a Viewer can pin it as a tab. Back from a
+destination opened in More returns to More.
+
+Phone title details use a filled Play action and a tonal My List button that reads
+My List or In My List. A started or watched video offers Remove from Continue
+watching. Phone Home ends with Browse library links for the current mode: Movies
+and TV Shows, or Music and Audiobooks. Genre shelves have no extra heading. An empty
+phone Home shows Your library is ready, or Nothing to listen to yet.
 
 Show placeholders only while initial content is pending. Empty and failed
 responses remove them. Failure exposes Try again; a later-page failure retains
@@ -79,5 +90,5 @@ HTTP journeys verify Android presentation and transport together. They do not
 prove compatibility with a populated Go Server, physical input, or codecs.
 
 This design mapping does not establish complete feature parity. Offline downloads,
-playback bookmarks, and some advanced Settings capabilities still need Android
-implementation. Wear Health Services and Apple Health remain separate platform integrations.
+playback bookmarks, the Library hub, long-press card menus, Reader and Downloads
+Settings, and Play on another device still need Android implementation. Wear Health Services and Apple Health remain separate platform integrations.
