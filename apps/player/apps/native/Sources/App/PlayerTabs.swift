@@ -5,6 +5,7 @@ struct PlayerTabs: View {
     @AppStorage private var listenStored: String
     @AppStorage private var modeStored: String
     @Environment(AppSession.self) private var session
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var selection = PlayerTab.home
     @State private var paths: [PlayerTab: NavigationPath] = [:]
     #if os(iOS)
@@ -73,7 +74,11 @@ struct PlayerTabs: View {
             }
             #else
             VStack(spacing: 0) {
-                connectionBanner.fixedSize(horizontal: false, vertical: true)
+                if dynamicTypeSize.isAccessibilitySize && session.connection.unavailable {
+                    ScrollView { connectionBanner }.frame(maxHeight: 220).scrollBounceBehavior(.basedOnSize)
+                } else {
+                    connectionBanner.fixedSize(horizontal: false, vertical: true)
+                }
                 tabs
             }
             .onChange(of: DownloadNotifications.shared.openRequested, initial: true) { _, requested in

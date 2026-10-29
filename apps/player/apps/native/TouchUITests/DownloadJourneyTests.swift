@@ -84,8 +84,22 @@ final class DownloadJourneyTests: XCTestCase {
     }
 
     @MainActor func testConnectionBannerKeepsScreenTitleVisible() async throws {
+        let (app, title, bar) = try await showConnectionBanner(textSize: "UICTContentSizeCategoryL")
+        let banner = title.frame.union(app.buttons["Downloads"].firstMatch.frame)
+        XCTAssertFalse(banner.intersects(bar.frame), "Banner \(banner) covers navigation bar \(bar.frame)")
+    }
+
+    @MainActor func testConnectionBannerLeavesRoomAtLargestTextSize() async throws {
+        let (app, title, bar) = try await showConnectionBanner(textSize: "UICTContentSizeCategoryAccessibilityXXXL")
+        let screen = app.windows.firstMatch.frame
+        XCTAssertFalse(title.frame.intersects(bar.frame), "Banner \(title.frame) covers navigation bar \(bar.frame)")
+        XCTAssertLessThanOrEqual(bar.frame.maxY, screen.midY, "Banner leaves no room for the screen: \(bar.frame)")
+    }
+
+    @MainActor private func showConnectionBanner(textSize: String) async throws -> (XCUIApplication, XCUIElement, XCUIElement) {
         let fixture = try fixture()
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        app.launchArguments += ["-UIPreferredContentSizeCategoryName", textSize]
         _ = try await proxy(fixture, "rate/0")
         _ = try await proxy(fixture, "mode/pass")
         let restore = try XCTUnwrap(URL(string: "\(fixture.control)/mode/pass"))
@@ -100,14 +114,12 @@ final class DownloadJourneyTests: XCTestCase {
         XCTAssertTrue(movies.waitForExistence(timeout: 30), app.debugDescription)
         movies.tap()
         let title = app.staticTexts["Can’t reach your Server"]
-        let downloads = app.buttons["Downloads"].firstMatch
         XCTAssertTrue(title.waitForExistence(timeout: 60), app.debugDescription)
-        XCTAssertTrue(downloads.waitForExistence(timeout: 5), app.debugDescription)
+        XCTAssertTrue(app.buttons["Downloads"].firstMatch.waitForExistence(timeout: 5), app.debugDescription)
         let bar = app.navigationBars["Movies"]
         XCTAssertTrue(bar.waitForExistence(timeout: 10), app.debugDescription)
         tourRecord("c1 connection banner", app)
-        let banner = title.frame.union(downloads.frame)
-        XCTAssertFalse(banner.intersects(bar.frame), "Banner \(banner) covers navigation bar \(bar.frame)")
+        return (app, title, bar)
     }
 
     @MainActor private func rowElement(_ title: String, in app: XCUIApplication) -> XCUIElement {
