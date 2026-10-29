@@ -49,7 +49,8 @@ The Media3 settings gear stays hidden because it would repeat Speed and Audio. T
 Cast button appears only when Cast is ready; a failed Cast setup hides it and logs a
 warning instead of showing a message.
 
-Server markers drive one white prompt at the trailing edge, above the timeline. During
+Server markers drive one white prompt at the trailing edge, above the timeline. It has a
+skip or next icon and a shadow, and phones give haptic feedback when it is tapped. During
 an intro, recap, or commercial it reads Skip Intro, Skip Recap, or Skip. From the credits,
 or the last 30 seconds without markers, it reads Next Episode. On TV the prompt takes
 focus. Marker types in the Viewer's automatic skip list skip without a prompt. When an
@@ -69,7 +70,7 @@ seconds, then every minute, and again when the app returns to the foreground.
 Use the same card widths in pending and loaded Home shelves. Keep an 18dp shelf
 gap and enough padding for TV focus. Large text can wrap card titles. Compact
 Home and title details stack artwork above information; wider windows place
-them beside each other. Large text restores the stacked arrangement.
+them beside each other. Large text restores the stacked arrangement. At large text, phone and tablet library and collection grids use one column, like iPhone, and each card keeps its title as its label.
 
 ## Navigation and state
 
@@ -79,12 +80,20 @@ TV Home opens with focus on the first Continue watching card. Back on Home moves
 focus to Search, and Back on Search leaves the app. Back from details, a show, a
 grid, Search, or Settings returns focus to the card or button that opened it.
 TV library grids show only the title, title count, and Sort above the cards.
-TV cards mark unwatched titles with an Electric dot at the top-trailing corner.
+Cards mark unwatched titles with an Electric dot at the top-trailing corner. A show
+item without a `showId` opens its show page. The TV Home hero names the show for an
+episode, then shows the season, episode, and episode title.
 
 TV details and show pages use a full-bleed backdrop that fades to the canvas, with
 the title, metadata, plot, and actions at the bottom-leading edge. They have no Back
 button; Android Back closes them. Focus starts on Play or Resume. A show page adds a
-row of Season buttons and an Episodes shelf of landscape cards.
+row of Season buttons and an Episodes shelf of landscape cards. A failed show page puts
+focus on Try again. TV details use My List or In My List with a plus or check icon.
+
+TV Search shows results as the Viewer types. Back first closes the keyboard, then returns to Home with focus on Search.
+TV Settings follows Apple TV: a settings icon and title on the left, and grouped
+Server & Viewer Profile, Playback & library, and About lists on the right. Sign out
+asks first.
 Use bottom navigation on compact windows and a rail on wider, taller windows.
 More keeps unpinned destinations and Customize tabs available. Settings is a
 destination like the others, so a Viewer can pin it as a tab. Back from a
@@ -96,7 +105,9 @@ Phone title details use a filled Play action and a tonal My List button that rea
 My List or In My List. A started or watched video offers Remove from Continue
 watching. Phone Home ends with Browse library links for the current mode: Movies
 and TV Shows, or Music and Audiobooks. Genre shelves have no extra heading. An empty
-phone Home shows Your library is ready, or Nothing to listen to yet.
+Home shows Your library is ready, or Nothing to listen to yet, on phones and TV.
+Removing a title from Continue watching also removes it from the saved Home, so Home
+does not show it again while it reloads.
 
 Show placeholders only while initial content is pending. Empty and failed
 responses remove them. Failure exposes Try again; a later-page failure retains

@@ -113,7 +113,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                 if (!state.loading && state.notice == null && state.featured == null) item {
                     val message = interfaceText(if (listening) "Add music or audiobooks to your Server to see them here."
                         else "Media added to your Server will appear here.")
-                    if (tv) Text(message, color = KinoColor.muted) else HomePlaceholder(listening, message)
+                    HomePlaceholder(listening, message)
                 }
                 if (!tv) item { BrowseLinks(browse, tv, listening) }
             }

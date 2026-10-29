@@ -8,11 +8,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Search
+import kotlinx.coroutines.delay
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onInterceptKeyBeforeSoftKeyboard
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -31,6 +41,7 @@ import com.kinosail.player.design.SailBackdrop
 import com.kinosail.player.mobile.TitleCount
 import kotlinx.coroutines.launch
 
+@OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val catalog: CatalogModel = viewModel()
@@ -68,11 +79,16 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     }
     DisposableEffect(Unit) { onDispose { catalog.reset() } }
     BackHandler(state.selected != null && playingItem == null && photoItem == null) { catalog.closeDetail() }
-    BackHandler(destination != "home" && state.selected == null && playingItem == null && photoItem == null) { destination = "home" }
+    val goHome = {
+        TvFocusMemory.id = if (destination in setOf("search", "settings")) destination else "browse:$destination"
+        destination = "home"
+    }
+    BackHandler(destination != "home" && state.selected == null && playingItem == null && photoItem == null) { goHome() }
     if (playingItem != null) {
         PlaybackScreen(requireNotNull(playingItem), viewer, true, close = { playingItem = null }, onNext = { playingItem = it }); return
     }
     if (photoItem != null) { PhotoScreen(requireNotNull(photoItem), catalog, true) { photoItem = null }; return }
+    if (destination == "settings" && state.selected == null) { TvSettings(viewer, catalog, connection::signOut); return }
     if (destination == "collections" && state.selected == null) {
         CollectionsScreen(viewer, catalog, true) { navigate("home") }; return
     }
@@ -90,26 +106,34 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
         SailBackdrop()
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(48.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(if (destination == "settings") interfaceText("Settings")
-                    else interfaceText(if (destination == "search") "Search" else LIBRARY_VIEWS.first { it.first == destination }.second),
+                Text(interfaceText(if (destination == "search") "Search" else LIBRARY_VIEWS.first { it.first == destination }.second),
                     style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
                     modifier = Modifier.semantics { heading() })
                 Spacer(Modifier.weight(1f))
-                if (destination !in setOf("search", "settings") && state.items.isNotEmpty()) TitleCount(state.total)
+                if (destination != "search" && state.items.isNotEmpty()) TitleCount(state.total)
             }
-            if (destination == "settings") {
-                TvSettings(viewer, connection::signOut)
-            } else {
+            run {
                 if (destination == "search") {
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    val imeVisible = WindowInsets.isImeVisible
+                    LaunchedEffect(catalog.searchInput) {
+                        if (catalog.searchInput.trim() == catalog.activeSearch) return@LaunchedEffect
+                        delay(250)
+                        catalog.search()
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         OutlinedTextField(catalog.searchInput, onValueChange = { if (it.length <= 512) catalog.searchInput = it },
                             label = { androidx.compose.material3.Text(interfaceText("Search library")) }, singleLine = true,
+                            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = { catalog.search(); keyboard?.hide() }),
                             colors = OutlinedTextFieldDefaults.colors(focusedTextColor = KinoColor.text, unfocusedTextColor = KinoColor.text,
                                 focusedLabelColor = KinoColor.signal, unfocusedLabelColor = KinoColor.muted,
-                                focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted), modifier = Modifier.weight(1f))
-                        Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
+                                focusedBorderColor = KinoColor.signal, unfocusedBorderColor = KinoColor.muted,
+                                focusedLeadingIconColor = KinoColor.signal, unfocusedLeadingIconColor = KinoColor.muted),
+                            modifier = Modifier.weight(1f).onInterceptKeyBeforeSoftKeyboard {
+                                if (it.key != Key.Back || imeVisible) false
+                                else { if (it.type == KeyEventType.KeyUp) goHome(); true }
+                            })
                         Button(onClick = { catalog.clearSearch(); keyboard?.hide() }) { Text(interfaceText("Clear search")) }
                     }
                     state.resultQuery?.let { query ->
@@ -169,8 +193,12 @@ internal fun TvDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit
                     Text(interfaceText("View photo"))
                 }
                 catalog.state.listed?.let { listed ->
-                    Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy) {
-                        Text(interfaceText(if (listed) "Remove from My List" else "Add to My List"))
+                    Button(onClick = { catalog.setListed(!listed) }, enabled = !catalog.state.listBusy,
+                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding) {
+                        Icon(if (listed) Icons.Filled.Check else Icons.Filled.Add, contentDescription = null,
+                            modifier = Modifier.size(ButtonDefaults.IconSize))
+                        Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+                        Text(interfaceText(if (listed) "In My List" else "My List"))
                     }
                 }
             }
@@ -183,25 +211,5 @@ internal fun TvDetail(item: CatalogItem, catalog: CatalogModel, play: () -> Unit
             if (catalog.state.listed == null) Button(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
         }
     }
-    }
-}
-
-@Composable
-private fun TvSettings(viewer: Viewer, signOut: () -> Unit) {
-    var thanks by remember { mutableStateOf(false) }
-    var notices by remember { mutableStateOf(false) }
-    val context = androidx.compose.ui.platform.LocalContext.current
-    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text(viewer.name, style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
-        Text(viewer.server, color = KinoColor.muted)
-        Button(onClick = { thanks = !thanks }) { Text("Made possible by") }
-        if (thanks) {
-            Text("Thank you to the people behind Jetpack Compose, Media3, and the Android libraries that bring Kinosail to this device. FFmpeg and Jellyfin FFmpeg power media tools on your Server.", color = KinoColor.text)
-            Text("This product uses the TMDB API but is not endorsed or certified by TMDB.", color = KinoColor.muted)
-            Button(onClick = { notices = !notices }) { Text("Third-party notices") }
-            if (notices) Text(remember { runCatching { context.assets.open("THIRD_PARTY_NOTICES.md").bufferedReader().use { it.readText() } }
-                .getOrDefault("Notices could not be opened. Reinstall Kinosail and try again.") }, color = KinoColor.text)
-        }
-        Button(onClick = signOut) { Text(interfaceText("Sign out")) }
     }
 }
