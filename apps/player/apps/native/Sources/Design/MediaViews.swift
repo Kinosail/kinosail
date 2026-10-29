@@ -13,6 +13,7 @@ struct MediaCard: View {
     var onFocus: ((MediaItem) -> Void)?
     var onQuickPlay: ((ScreenDestination) -> Void)?
     var opensShow = false
+    var reservesSubtitle = false
     #if os(tvOS)
     var playsOnSelect = false
     var takesFocus = false
@@ -74,6 +75,8 @@ struct MediaCard: View {
                     if !subtitle.isEmpty {
                         Text(subtitle).font(.caption).foregroundStyle(KinoTheme.muted)
                             .mediaLineLimit(1, accessibility: dynamicTypeSize.isAccessibilitySize)
+                    } else if reservesSubtitle {
+                        Text(" ").font(.caption).accessibilityHidden(true)
                     }
                     #if os(tvOS)
                     if resumesPlayback && item.kind == .video && item.progress.seconds > 0 && !item.progress.watched {
@@ -123,7 +126,9 @@ struct MediaCard: View {
 }
 
 extension MediaCard {
-    var cardSubtitle: String {
+    var cardSubtitle: String { Self.subtitle(for: item, resumesPlayback: resumesPlayback, opensShow: opensShow) }
+
+    static func subtitle(for item: MediaItem, resumesPlayback: Bool, opensShow: Bool) -> String {
         guard item.kind == .video || item.kind == .show else { return item.subtitle }
         guard !item.show.isEmpty, item.season > 0 || item.episode > 0 else { return item.subtitleWithoutYear }
         let code = "S\(item.season) E\(item.episode)"
@@ -221,12 +226,13 @@ struct MediaShelf: View {
                     ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                         #if os(tvOS)
                         MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
-                                  onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows, playsOnSelect: playsOnSelect,
+                                  onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows,
+                                  reservesSubtitle: reservesSubtitle, playsOnSelect: playsOnSelect,
                                   takesFocus: takesFocus && index == 0, onTookFocus: onTookFocus).frame(width: width)
                             .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
                         #else
-                        MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
-                                  onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows).frame(width: width)
+                        MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback, onFocus: onFocus,
+                                  onQuickPlay: onQuickPlay, opensShow: opensShows, reservesSubtitle: reservesSubtitle).frame(width: width)
                             .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
                         #endif
                     }
@@ -253,48 +259,19 @@ struct MediaShelf: View {
         #endif
         .prefetchArtwork(items, landscape: landscape)
     }
+    private var reservesSubtitle: Bool {
+        Self.reservesSubtitle(for: items, resumesPlayback: resumesPlayback, opensShows: opensShows)
+    }
+
+    static func reservesSubtitle(for items: [MediaItem], resumesPlayback: Bool, opensShows: Bool) -> Bool {
+        items.contains { !MediaCard.subtitle(for: $0, resumesPlayback: resumesPlayback, opensShow: opensShows).isEmpty }
+    }
+
     private var width: CGFloat {
         #if os(tvOS)
         landscape ? 390 : 230
         #else
         landscape ? min(landscapeWidth, 300) : min(posterWidth, 260)
         #endif
-    }
-}
-
-extension MediaItem {
-    func destination(inShows: Bool) -> ScreenDestination {
-        #if os(tvOS)
-        if kind == .photo { return .photos(id) }
-        #endif
-        return inShows && !showID.isEmpty ? .show(showID) : destination
-    }
-    var destination: ScreenDestination {
-        kind == .show ? .show(showID.isEmpty ? id : showID) : .detail(id)
-    }
-    var playingDestination: ScreenDestination {
-        switch kind {
-        case .photo: .photos(id)
-        case .book: .reader(id)
-        case .show: .show(showID.isEmpty ? id : showID)
-        case .music, .audiobook: .audio(id)
-        case .video: .playback(id)
-        }
-    }
-}
-
-extension Double {
-    var clock: String {
-        guard isFinite, self >= 0, self <= 31_536_000 else { return "0:00" }
-        let seconds = Int(self)
-        return seconds >= 3600 ? String(format: "%d:%02d:%02d", seconds / 3600, seconds / 60 % 60, seconds % 60)
-            : String(format: "%d:%02d", seconds / 60, seconds % 60)
-    }
-}
-
-extension View {
-    @ViewBuilder func mediaLineLimit(_ lines: Int, accessibility: Bool) -> some View {
-        if accessibility { lineLimit(nil) }
-        else { lineLimit(lines, reservesSpace: true) }
     }
 }
