@@ -16,14 +16,14 @@ struct HeartGraphView: View {
                         Label("No readings yet", systemImage: "heart")
                             .font(.caption.weight(.semibold))
                         Text("Readings appear at their movie time as you watch.")
-                            .font(.caption2).foregroundStyle(.secondary)
+                            .font(.caption2).foregroundStyle(.muted)
                     } else {
                         HeartPlot(points: heart.points, duration: timeline.duration, color: signal)
                             .frame(height: 104)
                             .accessibilityLabel("Heart rate across the movie")
                             .accessibilityValue("\(heart.points.count) samples, \(Int(heart.points.map(\.bpm).min() ?? 0)) to \(Int(heart.points.map(\.bpm).max() ?? 0)) beats per minute")
                         HStack { Text("0:00"); Spacer(); Text(clock(timeline.duration)) }
-                            .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+                            .font(.caption2.monospacedDigit()).foregroundStyle(.muted)
                         Text("\(heart.points.count) readings · \(Int(heart.points.map(\.bpm).min() ?? 0))–\(Int(heart.points.map(\.bpm).max() ?? 0)) bpm")
                             .font(.caption.weight(.semibold))
                         if let peak = heart.points.max(by: { $0.bpm < $1.bpm }) {
@@ -32,9 +32,9 @@ struct HeartGraphView: View {
                         }
                     }
                     Text("Gaps mean no reading or movie position was available.")
-                        .font(.caption2).foregroundStyle(.secondary)
+                        .font(.caption2).foregroundStyle(.muted)
                     if let message = heart.message {
-                        Text(message).font(.caption2).foregroundStyle(.secondary)
+                        Text(message).font(.caption2).foregroundStyle(.muted)
                     }
                     if heart.isTracking {
                         Button("Stop tracking") { Task { await heart.stop() } }.buttonStyle(.bordered)

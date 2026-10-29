@@ -2,6 +2,16 @@ import SwiftUI
 
 private let electric = Color(red: 0.77, green: 1, blue: 0.28)
 
+struct MutedStyle: ShapeStyle {
+    func resolve(in environment: EnvironmentValues) -> Color {
+        environment.colorSchemeContrast == .increased ? Color(red: 0.855, green: 0.886, blue: 0.827) : Color(red: 0.627, green: 0.655, blue: 0.612)
+    }
+}
+
+extension ShapeStyle where Self == MutedStyle {
+    static var muted: MutedStyle { MutedStyle() }
+}
+
 struct RemoteView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(WatchRemoteSession.self) private var remote
@@ -49,9 +59,11 @@ struct RemoteView: View {
                 }
 
                 if remote.availability == .connecting {
-                    ProgressView("Connecting to iPhone")
-                        .tint(electric)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    HStack(spacing: 8) {
+                        ProgressView().tint(electric).fixedSize()
+                        Text("Connecting to iPhone").font(.headline)
+                    }
+                    .accessibilityElement(children: .combine)
                 } else if remote.availability == .unavailable {
                     Label("iPhone unavailable", systemImage: "iphone.slash")
                         .font(.headline)
@@ -59,7 +71,7 @@ struct RemoteView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(player.title).font(.system(.title3, design: .rounded).bold()).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                             .fixedSize(horizontal: false, vertical: true)
-                        if !player.subtitle.isEmpty { Text(player.subtitle).font(.caption).foregroundStyle(.secondary)
+                        if !player.subtitle.isEmpty { Text(player.subtitle).font(.caption).foregroundStyle(.muted)
                             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2) }
                     }
                     if player.duration > 0 {
@@ -69,7 +81,7 @@ struct RemoteView: View {
                             Text(clock(player.position))
                             Spacer()
                             Text(clock(player.duration))
-                        }.font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+                        }.font(.caption2.monospacedDigit()).foregroundStyle(.muted)
                     }
                     HStack(spacing: 8) {
                         Button {
@@ -112,12 +124,12 @@ struct RemoteView: View {
                     }
                 } else if remote.selected == nil && remote.selectedID != nil {
                     Label("Selected player unavailable", systemImage: "tv.slash")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(.muted)
                 } else {
                     Label("Nothing playing", systemImage: "play.rectangle")
                         .font(.headline)
                     Text("Start a title on your iPhone or Apple TV.")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(.muted)
                 }
                 if heart.timeline != nil {
                     Button { page = 1 } label: {
@@ -133,7 +145,7 @@ struct RemoteView: View {
                     .accessibilityHint("Swipe up to open the Heart page")
                 }
                 if let message = heart.message ?? remote.message {
-                    Text(message).font(.caption2).foregroundStyle(.secondary)
+                    Text(message).font(.caption2).foregroundStyle(.muted)
                 }
                 NavigationLink("Made possible by") {
                     ScrollView {
@@ -143,9 +155,9 @@ struct RemoteView: View {
                                 .accessibilityLabel("TMDB")
                             Text("This product uses the TMDB API but is not endorsed or certified by TMDB.")
                             Text("TMDB logo by Travis Bell · CC BY-SA 4.0.")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.muted)
                             Text("Read third-party notices in the iPhone app under Settings → Made possible by.")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.muted)
                         }
                         .font(.caption)
                     }
@@ -171,7 +183,7 @@ private struct DevicePickerView: View {
             } label: {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(player.device).font(.headline)
-                    Text(player.active ? player.title : "Nothing playing").font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                    Text(player.active ? player.title : "Nothing playing").font(.caption).foregroundStyle(.muted).lineLimit(1)
                 }
             }
         }
