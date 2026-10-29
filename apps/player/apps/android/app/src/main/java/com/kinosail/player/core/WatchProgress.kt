@@ -1,5 +1,6 @@
 package com.kinosail.player.core
 
+import kotlin.math.ceil
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -61,6 +62,28 @@ data class WatchProgress(val seconds: Double = 0.0, val watched: Boolean = false
                     primitive.content.matches(Regex("\\d{4}-\\d{2}-\\d{2}T[^\\s]{1,30}"))) { "Invalid watch progress." }
             }
             return WatchProgress(number("seconds"), flag("watched"), session, revision, flag("dismissed")).validated()
+        }
+    }
+}
+
+data class WatchSummary(val seconds: Double, val duration: Double) {
+    val fraction get() = if (duration > 0) (seconds / duration).toFloat() else null
+    val remainingMinutes get() = ceil((duration - seconds) / 60).toInt()
+
+    companion object {
+        fun parse(raw: JsonElement): WatchSummary {
+            val value = raw as? JsonObject
+            require(value != null && value.keys == setOf("seconds", "duration")) { "Invalid watch summary." }
+            fun number(key: String): Double {
+                val primitive = value.getValue(key) as? JsonPrimitive
+                val number = primitive?.takeUnless { it.isString }?.doubleOrNull
+                require(number != null && number.isFinite() && number in 0.0..315_360_000.0) { "Invalid watch summary." }
+                return number
+            }
+            val seconds = number("seconds")
+            val duration = number("duration")
+            require(duration == 0.0 || seconds <= duration) { "Invalid watch summary." }
+            return WatchSummary(seconds, duration)
         }
     }
 }
