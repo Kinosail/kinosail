@@ -11,6 +11,7 @@ const scenarios: Record<string, {body: string; reported: boolean}> = {
   "inline style element": {body: `${select}<style>p{color:red}</style><p>Inline</p>`, reported: true},
   "inline style attribute": {body: `${select}<p style="color:red">Inline</p>`, reported: true},
   "script style injection": {body: `${select}<script src="/inject.js"></script>`, reported: true},
+  "script style attribute": {body: `${select}<p>Styled</p><script src="/attribute.js"></script>`, reported: true},
 };
 
 for (const [scenario, {body, reported}] of Object.entries(scenarios)) {
@@ -19,6 +20,11 @@ for (const [scenario, {body, reported}] of Object.entries(scenarios)) {
       if (request.url === "/inject.js") {
         response.writeHead(200, {"Content-Type": "text/javascript", "Content-Security-Policy": policy});
         response.end("const style=document.createElement('style');style.textContent='p{color:red}';document.head.append(style);");
+        return;
+      }
+      if (request.url === "/attribute.js") {
+        response.writeHead(200, {"Content-Type": "text/javascript", "Content-Security-Policy": policy});
+        response.end("document.querySelector('p').setAttribute('style', 'color:red');");
         return;
       }
       if (request.url === "/cssom.js") {
