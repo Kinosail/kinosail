@@ -53,7 +53,7 @@ internal fun MediaCardBody(item: CatalogItem, catalog: CatalogModel, tv: Boolean
         }.then(if (focused) Modifier.border(2.dp, KinoColor.text, RoundedCornerShape(12.dp)) else Modifier)) {
             MediaArtwork(item, catalog, Modifier.fillMaxWidth(), landscape, progress = progressOverlay && !resumable)
             summary?.let { WatchBar(it, Modifier.align(Alignment.BottomCenter).padding(start = 12.dp, end = 12.dp, bottom = 8.dp)) }
-            if (tv && item.unwatched) UnwatchedMark(Modifier.align(Alignment.TopEnd))
+            if (item.unwatched) UnwatchedMark(Modifier.align(Alignment.TopEnd))
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val enlarged = LocalDensity.current.fontScale >= 1.5f

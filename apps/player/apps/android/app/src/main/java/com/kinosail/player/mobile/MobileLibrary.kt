@@ -211,6 +211,7 @@ private fun ContinueWatchingRemoval(item: CatalogItem, catalog: CatalogModel) {
     if (item.kind != "video" || item.progress.seconds <= 0 && !item.progress.watched) return
     var state by remember(item.id) { mutableStateOf("ready") }
     val scope = rememberCoroutineScope()
+    val store = SessionStore(androidx.compose.ui.platform.LocalContext.current)
     val removed = interfaceText("Removed from Continue watching.")
     val failed = interfaceText("Could not remove this title from Continue watching. Try again.")
     if (state != "removed") TextButton(enabled = state != "busy", onClick = {
@@ -218,7 +219,10 @@ private fun ContinueWatchingRemoval(item: CatalogItem, catalog: CatalogModel) {
         state = "busy"
         scope.launch {
             state = try {
-                withContext(Dispatchers.IO) { AccountApi(saved.server).dismissContinueWatching(item.id, saved.token, viewerId) }
+                withContext(Dispatchers.IO) {
+                    AccountApi(saved.server).dismissContinueWatching(item.id, saved.token, viewerId)
+                    saved.viewer?.let { runCatching { store.forgetContinuation(saved.server, it, item.id) } }
+                }
                 "removed"
             } catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled } catch (_: Exception) { "failed" }
         }

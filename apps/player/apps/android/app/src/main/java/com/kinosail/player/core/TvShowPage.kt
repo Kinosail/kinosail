@@ -42,7 +42,7 @@ internal fun TvShowPage(state: ShowState, catalog: CatalogModel, season: Int?, c
             if (state.loading && detail == null) item { TvShowLoading() }
             state.notice?.let { notice -> item {
                 Text(notice, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                RetryAction(true, onClick = retry)
+                RetryAction(true, modifier = Modifier.initialTvFocus(notice), onClick = retry)
             } }
             if (featured != null && hero != null) {
                 item {

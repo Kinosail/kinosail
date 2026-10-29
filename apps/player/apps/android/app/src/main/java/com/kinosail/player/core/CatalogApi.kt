@@ -28,6 +28,7 @@ data class CatalogItem(
     val backdrop: String = "",
     val rating: String = "",
     val genres: String = "",
+    val show: String = "",
 )
 
 data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int,
@@ -101,6 +102,7 @@ class CatalogApi(
         private val ID = Regex("[A-Za-z0-9_-]{1,128}")
         internal val ARTWORK = Regex("/(?:art/[A-Za-z0-9_-]{1,128}(\\?variant=episode)?|episode-art/[A-Za-z0-9_-]{1,128})")
         internal val BACKDROP = Regex("/backdrop/[A-Za-z0-9_-]{1,128}")
+        private val SHOW_ID = Regex("[a-f0-9]{16}")
         private val KINDS = setOf("video", "show", "music", "audiobook", "book", "photo")
         private val PAGE_KEYS = setOf("items", "view", "sort", "query", "letter", "total", "offset", "limit", "letters")
         private val ITEM_KEYS = setOf("id", "kind", "title", "sortTitle", "year", "plot", "rating", "tagline",
@@ -137,14 +139,14 @@ class CatalogApi(
             require(backdrop.isEmpty() || backdrop.matches(BACKDROP)) { INVALID_RESPONSE }
             val stream = item.text("stream", 256, empty = true)
             require(stream.isEmpty() || stream == "/media/$id") { INVALID_RESPONSE }
-            val showId = item.text("showId", 16, empty = true)
-            require(showId.isEmpty() || showId.matches(Regex("[a-f0-9]{16}"))) { INVALID_RESPONSE }
+            val showId = item.text("showId", 16, empty = true).ifEmpty { if (kind == "show" && id.matches(SHOW_ID)) id else "" }
+            require(showId.isEmpty() || showId.matches(SHOW_ID)) { INVALID_RESPONSE }
             return CatalogItem(id, kind, item.text("title", 512), item.text("year", 16, empty = true),
                 item.text("plot", 10_000, empty = true).replace("\u200B", ""), artwork,
                 item["progress"]?.let(WatchProgress::parse) ?: WatchProgress(), showId,
                 item.optionalNumber("season", 0..100_000), item.optionalNumber("episode", 0..100_000), stream,
                 item.text("artist", 512, empty = true), item.text("album", 512, empty = true), backdrop,
-                item.text("rating", 128, empty = true), item.text("genres", 2048, empty = true))
+                item.text("rating", 128, empty = true), item.text("genres", 2048, empty = true), item.text("show", 256, empty = true))
         }
 
         private fun JsonObject.optionalNumber(key: String, range: IntRange): Int =

@@ -6,13 +6,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -27,6 +30,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -69,12 +75,27 @@ internal fun PlaybackPromptButton(prompt: PlaybackPrompt, tv: Boolean, controlsV
         .padding(end = if (tv) 48.dp else 24.dp, bottom = (if (controlsVisible) PlaybackControllerHeight else 0.dp) + 24.dp),
         contentAlignment = Alignment.BottomEnd) {
         val label = interfaceText(prompt.title)
+        val haptics = LocalHapticFeedback.current
+        val icon: @Composable () -> Unit = {
+            val next = prompt is PlaybackPrompt.Next
+            Icon(painterResource(if (next) R.drawable.prompt_next else R.drawable.prompt_skip), contentDescription = null,
+                tint = Color.Black, modifier = Modifier.size(20.dp).testTag(if (next) "playback-prompt-next" else "playback-prompt-skip"))
+            Spacer(Modifier.width(8.dp))
+        }
         if (tv) androidx.tv.material3.Button(onClick = onClick, modifier = Modifier.focusRequester(focus),
-            colors = androidx.tv.material3.ButtonDefaults.colors(containerColor = Color.White, contentColor = Color.Black)) {
+            contentPadding = PaddingValues(horizontal = 22.dp, vertical = 12.dp),
+            colors = androidx.tv.material3.ButtonDefaults.colors(containerColor = Color.White, contentColor = Color.Black,
+                focusedContainerColor = Color.White, focusedContentColor = Color.Black),
+            glow = androidx.tv.material3.ButtonDefaults.glow(androidx.tv.material3.Glow(Color.Black.copy(alpha = 0.35f), 8.dp),
+                androidx.tv.material3.Glow(Color.Black.copy(alpha = 0.5f), 16.dp))) {
+            icon()
             androidx.tv.material3.Text(label, fontWeight = FontWeight.SemiBold)
-        } else androidx.compose.material3.Button(onClick = onClick, modifier = Modifier.focusRequester(focus),
+        } else androidx.compose.material3.Button(onClick = { haptics.performHapticFeedback(HapticFeedbackType.VirtualKey); onClick() },
+            modifier = Modifier.focusRequester(focus), contentPadding = PaddingValues(horizontal = 18.dp, vertical = 12.dp),
+            elevation = androidx.compose.material3.ButtonDefaults.buttonElevation(defaultElevation = 8.dp, pressedElevation = 2.dp),
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)) {
-            Text(label, fontWeight = FontWeight.SemiBold)
+            icon()
+            Text(label, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
         }
     }
 }
