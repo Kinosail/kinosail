@@ -2,7 +2,8 @@ import type {Page, Request} from "@playwright/test";
 
 type Failure = {url: string; document: number; time: number; method: string; resource: string; failure: string; status: number | null; redirected: boolean};
 type Navigation = {document: number; time: number; committed: number; from: string; to: string; method: string; redirectMethod: string; status: number; redirectStatus: number; newDocument: boolean; timeOrigin?: number};
-type PageError = {document: number; documentURL: string; time: number; name: string; message: string; stack: string; selectStyle?: boolean};
+type PageError = {document: number; documentURL: string; time: number; name: string; message: string; stack: string};
+const styleMarker = "kinosail-csp-style ";
 const webkitSelectStyle = "Refused to apply a stylesheet because its hash, its nonce, or 'unsafe-inline' does not appear in the style-src directive of the Content Security Policy.";
 type WatchedAction = {document: number; time: number; item: string; timeOrigin: number};
 export type PlaybackErrorEvidence = PageError & {browser: string; origin: string; action?: WatchedAction; failures: Failure[]; navigations: Navigation[]};
@@ -31,7 +32,14 @@ export function cancelledWatchedHLS(value: PlaybackErrorEvidence): boolean {
 }
 
 export function captureHappyPathErrors(page: Page, browser: string) {
-  let enabled = true, document = 0, overflow = false, checks = 0;
+  let enabled = true, document = 0, overflow = false;
+  const styleViolations: {document: number; select: boolean}[] = [];
+  const ready = page.addInitScript(marker => addEventListener("securitypolicyviolation", event => {
+    if (!event.violatedDirective.startsWith("style-src")) return;
+    const target = event.target instanceof Element ? event.target : null;
+    console.debug(marker + JSON.stringify({select: event.violatedDirective === "style-src-attr" && target?.localName === "select" &&
+      !target.hasAttribute("style") && !event.sourceFile && target.getRootNode() === target.ownerDocument}));
+  }, true), styleMarker);
   let action: WatchedAction | undefined;
   const records: PageError[] = [], failures: Failure[] = [], navigations: Navigation[] = [];
   const requests = new Map<Request, Failure>(), posts = new Map<Request, {document: number; time: number; status: number}>();
@@ -45,6 +53,13 @@ export function captureHappyPathErrors(page: Page, browser: string) {
     return entry;
   };
   page.on("console", message => {
+    if (enabled && message.type() === "debug" && message.text().startsWith(styleMarker)) {
+      let select = false;
+      try { select = JSON.parse(message.text().slice(styleMarker.length)).select === true; } catch {   }
+      if (styleViolations.length < 1024) styleViolations.push({document, select});
+      else overflow = true;
+      return;
+    }
     if (!enabled || message.type() !== "error") return;
     try {
       const source = new URL(message.location().url), current = new URL(page.url());
@@ -54,12 +69,7 @@ export function captureHappyPathErrors(page: Page, browser: string) {
     const location = message.location();
     let source = "";
     try { source = location.url ? ` at ${new URL(location.url).pathname}:${location.lineNumber}:${location.columnNumber}` : ""; } catch {   }
-    const entry = record(message.text() + source);
-    if (!entry || browser !== "webkit" || message.text() !== webkitSelectStyle || location.url !== entry.documentURL) return;
-    checks++;
-    page.evaluate(() => Boolean(window.document.querySelector("select")) && !window.document.querySelector("style, [style]"))
-      .then(selectOnly => {entry.selectStyle = selectOnly && document === entry.document && page.url() === entry.documentURL;})
-      .catch(() => {}).finally(() => {checks--;});
+    record(message.text() + source);
   });
   page.on("pageerror", error => record(error.message, error.name, error.stack ?? ""));
   page.on("request", request => {
@@ -122,8 +132,13 @@ export function captureHappyPathErrors(page: Page, browser: string) {
     errors: () => {
       const remaining = [...failures], unexpected: string[] = [];
       accepted = [];
+      const selectOnly = (current: number) => {
+        const violations = styleViolations.filter(violation => violation.document === current);
+        const logged = records.filter(error => error.document === current && error.message.startsWith(webkitSelectStyle)).length;
+        return browser === "webkit" && violations.every(violation => violation.select) && violations.length >= logged;
+      };
       for (const error of records) {
-        if (error.selectStyle) continue;
+        if (error.message.startsWith(webkitSelectStyle) && selectOnly(error.document)) continue;
         const origin = new URL(error.documentURL).origin;
         const index = remaining.findIndex(failure => cancelledWatchedHLS({...error, origin, browser, action, failures: [failure], navigations}));
         if (index < 0) unexpected.push(`${error.message} (${new URL(error.documentURL).pathname})`);
@@ -136,7 +151,7 @@ export function captureHappyPathErrors(page: Page, browser: string) {
       return unexpected;
     },
     cancellations: () => accepted,
-    settled: () => checks === 0,
+    settled: async () => {await ready; return true;},
     evidence: () => records.map(error => ({...error, browser, action, origin: new URL(error.documentURL).origin, failures, navigations, pendingRequests: [...requests.values()]})),
   };
 }

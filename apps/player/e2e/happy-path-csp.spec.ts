@@ -6,6 +6,8 @@ const policy = "default-src 'self'; script-src 'self'; style-src 'self'; object-
 const select = '<label>Language <select name="language"><option>English</option><option>Deutsch</option></select></label>';
 const scenarios: Record<string, {body: string; reported: boolean}> = {
   "select control": {body: select, reported: false},
+  "select control with script-set styles": {body: `${select}<p>Styled</p><script src="/cssom.js"></script>`, reported: false},
+  "select with inline style attribute": {body: '<label>Language <select name="language" style="color:red"><option>English</option></select></label>', reported: true},
   "inline style element": {body: `${select}<style>p{color:red}</style><p>Inline</p>`, reported: true},
   "inline style attribute": {body: `${select}<p style="color:red">Inline</p>`, reported: true},
   "script style injection": {body: `${select}<script src="/inject.js"></script>`, reported: true},
@@ -17,6 +19,11 @@ for (const [scenario, {body, reported}] of Object.entries(scenarios)) {
       if (request.url === "/inject.js") {
         response.writeHead(200, {"Content-Type": "text/javascript", "Content-Security-Policy": policy});
         response.end("const style=document.createElement('style');style.textContent='p{color:red}';document.head.append(style);");
+        return;
+      }
+      if (request.url === "/cssom.js") {
+        response.writeHead(200, {"Content-Type": "text/javascript", "Content-Security-Policy": policy});
+        response.end("for (const element of document.querySelectorAll('p, select')) element.style.setProperty('--accent', 'red');");
         return;
       }
       if (request.url === "/favicon.ico") {
