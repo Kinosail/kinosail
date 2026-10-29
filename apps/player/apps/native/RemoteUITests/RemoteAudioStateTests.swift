@@ -26,6 +26,7 @@ final class RemoteAudioStateTests: RemoteTestCase {
         let pendingImage = app.screenshot().image
         XCTAssertFalse(app.buttons["More"].exists)
         XCTAssertFalse(app.buttons["Playback options"].exists)
+        XCTAssertFalse(app.buttons["Options"].exists)
         try await state("loaded")
         XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 25))
         XCTAssertTrue(app.buttons["Pause"].hasFocus)

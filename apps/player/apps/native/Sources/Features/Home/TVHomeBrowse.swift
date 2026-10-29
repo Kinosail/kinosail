@@ -42,6 +42,7 @@ struct TVHomeBrowse: View {
             .frame(minHeight: 120)
             .background(LinearGradient(colors: [KinoTheme.raised, KinoTheme.surface],
                                        startPoint: .topLeading, endPoint: .bottomTrailing))
+            .overlay { TVBrowseFocusOutline() }
         }
         .buttonStyle(.card)
         .accessibilityLabel(title)
@@ -59,5 +60,17 @@ struct TVHomeBrowse: View {
         }
     }
 
+}
+
+private struct TVBrowseFocusOutline: View {
+    @Environment(\.isFocused) private var focused
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .strokeBorder(KinoTheme.text, lineWidth: 4)
+            .opacity(focused ? 1 : 0)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+    }
 }
 #endif
