@@ -114,7 +114,7 @@ internal fun PlaybackAction(label: String, tv: Boolean, onClick: () -> Unit, ena
         androidx.tv.material3.Text(label)
     } else TextButton(onClick = onClick, enabled = enabled, modifier = modifier,
         colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
-            containerColor = Color.White.copy(alpha = 0.16f), contentColor = Color.White)) {
+            containerColor = Color.Black.copy(alpha = 0.6f), contentColor = Color.White)) {
         Text(label, fontWeight = FontWeight.Medium)
     }
 }

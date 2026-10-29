@@ -25,7 +25,7 @@ archive, revision = Path(sys.argv[1]), sys.argv[2]
 check(re.fullmatch(r"[0-9a-f]{40}", revision), "revision_invalid")
 stages = ("heart-permission", "unpaired", "launch-unpaired", "recreated-unpaired")
 expected_tests = {"changingRemoteStatusCanBeAnnounced", "disconnectedStateCanBeAnnounced",
-                  "unpairedWatchLaunchesAndSurvivesRecreation"}
+                  "heartPageSummarizesReadingsLikeAppleWatch", "unpairedWatchLaunchesAndSurvivesRecreation"}
 with zipfile.ZipFile(archive) as bundle:
     entries = [item for item in bundle.infolist() if not item.is_dir()]
     check(len(entries) <= 9 and all(0 < item.file_size <= 2 << 20 for item in entries), "artifact_size")
@@ -98,5 +98,5 @@ with zipfile.ZipFile(archive) as bundle:
                                                     "timeoutCleanupFailure")), "incomplete_case")
 print(json.dumps({"revision": revision, "archiveSHA256": sha(archive.read_bytes()), "sourcePinsVerified": len(pins),
                   "artifactHashesVerified": len(files), "pngDecoded": len(dimensions), "pngDimensions": dimensions,
-                  "profile": profile, "casesPassed": 1, "testExecutions": 3,
+                  "profile": profile, "casesPassed": 1, "testExecutions": 4,
                   "boundary": "Artifact verification; inspect images visually before accepting UI. APK digests are recorded by the runner; APK bytes are not uploaded or independently rehashed. No physical watch, pairing, sensor or battery proof."}, indent=2))

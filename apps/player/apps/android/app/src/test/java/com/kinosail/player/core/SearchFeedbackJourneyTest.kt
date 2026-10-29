@@ -53,6 +53,19 @@ class SearchFeedbackJourneyTest {
         assertFalse(fixture.catalogQueries.contains("Fic"))
     }
 
+    @Test fun phoneSubmittedSearchIsNotRepeatedAfterThePause() = screen { fixture, catalog, field ->
+        val requests = firstPages(fixture)
+        compose.mainClock.autoAdvance = false
+        field.performTextInput("Fictional")
+        compose.mainClock.advanceTimeBy(50)
+        field.performImeAction()
+        compose.mainClock.autoAdvance = true
+        compose.mainClock.advanceTimeBy(1_000)
+        await { !catalog.state.loading && catalog.hasActiveSearch }
+        compose.waitForIdle()
+        assertEquals("A submitted search must not run again after the typing pause", requests + 1, firstPages(fixture))
+    }
+
     @Test fun phoneHasOneInlineClearActionAndNoSearchButton() = screen { fixture, catalog, field ->
         compose.onAllNodesWithContentDescription("Clear search").assertCountEquals(0)
         field.performTextInput("Fictional")

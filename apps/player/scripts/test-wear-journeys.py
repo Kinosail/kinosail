@@ -18,7 +18,7 @@ SERIAL = "emulator-5554"
 IMAGE = "system-images;android-36;android-wear-signed;x86_64"
 CLASSES = "com.kinosail.player.wear.WearLaunchJourneyTest,com.kinosail.player.wear.WearAccessibilityTest"
 EXPECTED_TESTS = {"changingRemoteStatusCanBeAnnounced", "disconnectedStateCanBeAnnounced",
-                  "unpairedWatchLaunchesAndSurvivesRecreation"}
+                  "heartPageSummarizesReadingsLikeAppleWatch", "unpairedWatchLaunchesAndSurvivesRecreation"}
 STAGES = ("heart-permission", "unpaired", "launch-unpaired", "recreated-unpaired")
 
 
@@ -82,7 +82,7 @@ def collect(safe, label, size):
 
 
 def run_case(safe, run, label, size, density, home):
-    case = {"name": label, "result": "failed", "stage": "configure", "expectedTests": 3}
+    case = {"name": label, "result": "failed", "stage": "configure", "expectedTests": 4}
     try:
         check(adb("shell", "pm", "clear", APP).strip() == b"Success", "wear_clear_failed")
         check(adb("shell", "wm", "size").decode().strip() == f"Physical size: {size}x{size}", "wear_physical_size")
@@ -124,8 +124,8 @@ def run_case(safe, run, label, size, density, home):
             rb"(?m)^INSTRUMENTATION_STATUS: test=([A-Za-z0-9_]+)\r?$", log) if m.decode() in EXPECTED_TESTS]
         case["testStatusSequence"], case["testStatusSequenceTruncated"] = sequence[:12], len(sequence) > 12
         case["selectedExpectedCount"] = set(re.findall(
-            rb"(?m)^INSTRUMENTATION_STATUS: numtests=(\d+)\r?$", log)) == {b"3"}
-        case["junitPassed"] = b"OK (3 tests)" in log and b"FAILURES!!!" not in log
+            rb"(?m)^INSTRUMENTATION_STATUS: numtests=(\d+)\r?$", log)) == {b"4"}
+        case["junitPassed"] = b"OK (4 tests)" in log and b"FAILURES!!!" not in log
         case["skipped"] = b"INSTRUMENTATION_STATUS_CODE: -3" in log or b"INSTRUMENTATION_STATUS_CODE: -4" in log
         case["stage"] = "collect"
         case["screenshots"], case["artifactFailures"] = collect(safe, label, size)

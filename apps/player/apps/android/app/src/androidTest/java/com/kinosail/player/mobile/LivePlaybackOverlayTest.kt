@@ -14,6 +14,8 @@ import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -474,9 +476,9 @@ class LivePlaybackOverlayTest {
                 try {
                     waitForText("Search")
                     compose.onNodeWithText("Search").performClick()
-                    waitForText("Search library")
-                    compose.onNodeWithText("Search library").performTextInput(title)
-                    compose.onNodeWithText("Search library").performImeAction()
+                    waitForText("Search your library")
+                    compose.onNode(hasSetTextAction()).performTextInput(title)
+                    compose.onNode(hasSetTextAction()).performImeAction()
                     compose.waitUntil(10_000) {
                         var hidden = false
                         scenario.onActivity {
@@ -485,7 +487,7 @@ class LivePlaybackOverlayTest {
                         }
                         hidden
                     }
-                    waitForText("Results: 1 · “$title”")
+                    waitForText("1 title")
                     compose.waitUntil(30_000) {
                         compose.onAllNodesWithContentDescription(title).fetchSemanticsNodes().isNotEmpty()
                     }
@@ -568,7 +570,7 @@ class LivePlaybackOverlayTest {
             if (compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isEmpty()) null else speedLabel(),
             if (compose.onAllNodesWithText("Captions ", substring = true).fetchSemanticsNodes().isEmpty()) null else captionsLabel())
         for (label in actions) {
-            val node = compose.onNodeWithText(label).assertIsDisplayed()
+            val node = compose.onNodeWithText(label, useUnmergedTree = true).assertIsDisplayed()
             val bounds = node.fetchSemanticsNode().boundsInWindow
             assertTrue("$label fits the captured screen", bounds.left >= 0 && bounds.top >= 0 &&
                 bounds.right <= pixels.width && bounds.bottom <= pixels.height)
@@ -595,7 +597,7 @@ class LivePlaybackOverlayTest {
         val pixels = screenPixels()
         val root = File(instrumentation.targetContext.filesDir, "video-overlay").apply { mkdirs() }
         File(root, "$name.png").outputStream().use { pixels.compress(Bitmap.CompressFormat.PNG, 100, it) }
-        File(root, "$name-semantics.txt").writeText(compose.onRoot().printToString())
+        File(root, "$name-semantics.txt").writeText(compose.onAllNodes(isRoot()).printToString())
         return pixels
     }
 

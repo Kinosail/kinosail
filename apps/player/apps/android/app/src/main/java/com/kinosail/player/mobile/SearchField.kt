@@ -32,7 +32,7 @@ internal fun SearchField(catalog: CatalogModel, hideKeyboard: () -> Unit) {
     LaunchedEffect(catalog.searchInput) {
         if (catalog.searchInput.trim() == catalog.activeSearch) return@LaunchedEffect
         delay(250)
-        catalog.search()
+        if (catalog.searchInput.trim() != catalog.activeSearch) catalog.search()
     }
     OutlinedTextField(catalog.searchInput, onValueChange = { if (it.length <= 512) catalog.searchInput = it },
         placeholder = { Text(interfaceText("Search your library")) }, singleLine = true,

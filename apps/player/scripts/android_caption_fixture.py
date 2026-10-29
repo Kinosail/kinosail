@@ -155,7 +155,7 @@ def fixture(root, run, receipt):
     env = dict(os.environ, KINOSAIL_LISTEN="127.0.0.1:39227", KINOSAIL_AUTH_URL="http://127.0.0.1:39227",
         KINOSAIL_TLS_ENABLED="false", KINOSAIL_DATA_DIR=str(run / "data"), KINOSAIL_MEDIA_DIR=str(run / "media"),
         KINOSAIL_CACHE_DIR=str(run / "cache"), KINOSAIL_BACKUP_DIR=str(run / "backups"),
-        KINOSAIL_BACKUP_KEY="synthetic-android-caption-key")
+        KINOSAIL_BACKUP_KEY="synthetic-android-caption-key", KINOSAIL_SUBTITLES="on")
     bridge = thread = log = server = None
     receipt["fixtureCleanupFailures"] = []
     try:

@@ -118,7 +118,7 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                     LaunchedEffect(catalog.searchInput) {
                         if (catalog.searchInput.trim() == catalog.activeSearch) return@LaunchedEffect
                         delay(250)
-                        catalog.search()
+                        if (catalog.searchInput.trim() != catalog.activeSearch) catalog.search()
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         OutlinedTextField(catalog.searchInput, onValueChange = { if (it.length <= 512) catalog.searchInput = it },
