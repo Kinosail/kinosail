@@ -149,21 +149,9 @@ func (manager *subtitleManager) previewSubtitleEdit(request *http.Request, id st
 		return review, cleanedSubtitle{}, http.StatusConflict, errors.New("the subtitle changed; reload its preview")
 	}
 	item, _, _ := manager.subtitleItem(request, id)
-	data := input.Data
-	if input.DraftID != "" {
-		data, _, err = manager.subtitleDraftData(item, input.Language, input.DraftID)
-		if err != nil {
-			return review, cleanedSubtitle{}, http.StatusConflict, err
-		}
-	}
-	if len(data) == 0 {
-		if review.Source == "subsource" {
-			return review, cleanedSubtitle{}, http.StatusConflict, errors.New("this provider requires its subtitle to remain unchanged")
-		}
-		_, data, err = subtitleReviewSource(item, input.Language)
-		if err != nil {
-			return review, cleanedSubtitle{}, http.StatusNotFound, errors.New("choose a subtitle file to import")
-		}
+	data, status, err := manager.subtitleEditSource(item, input, review.Source)
+	if err != nil {
+		return review, cleanedSubtitle{}, status, err
 	}
 	options := subtitleConversionOptions{Encoding: input.Encoding, RemoveCredits: input.RemoveCredits, MergeRepeated: input.MergeRepeated}
 	options.TrackSources = subtitleEditUsesCurrentCues(input, review, data)
@@ -181,14 +169,7 @@ func (manager *subtitleManager) previewSubtitleEdit(request *http.Request, id st
 		edited.Cleanup = append(edited.Cleanup, "Reviewed cue text")
 		document = edited
 	}
-	document, err = editSubtitleTiming(document, input)
-	if err == nil && input.AutomaticSync {
-		var probabilities []float64
-		probabilities, err = manager.provider.sync.speechForLanguage(request.Context(), item, input.Language)
-		if err == nil {
-			document, _, err = synchronizeSubtitle(probabilities, document)
-		}
-	}
+	document, err = manager.timeSubtitleEdit(request.Context(), item, document, input)
 	if err != nil {
 		return review, cleanedSubtitle{}, http.StatusConflict, errors.New("timing could not be validated; review the text and timing anchors")
 	}

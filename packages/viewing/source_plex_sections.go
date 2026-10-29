@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 )
 
-func fetchPlexSections(ctx context.Context, client *http.Client, input Input, sections []plexViewingSection) ([]Activity, error) { //nolint:gocognit // Validation, bounded fetches, and ordered collection share one source boundary.
+func fetchPlexSections(ctx context.Context, client *http.Client, input Input, sections []plexViewingSection) ([]Activity, error) {
 	for _, section := range sections {
 		if _, err := plexSectionType(section.Key, section.Type); err != nil {
 			return nil, err
@@ -50,35 +50,19 @@ func fetchPlexSections(ctx context.Context, client *http.Client, input Input, se
 			}
 		}()
 	}
-	go func() {
-	dispatch:
-		for position := range sections {
-			select {
-			case jobs <- position:
-			case <-workCtx.Done():
-				break dispatch
-			}
-		}
-		close(jobs)
-	}()
+	go dispatchPlexSections(workCtx, jobs, len(sections))
 	activities := make([]Activity, 0)
 	for position := range sections {
 		select {
 		case <-done[position]:
 		case <-workCtx.Done():
 			workers.Wait()
-			if overBudget.Load() {
-				return nil, errors.New("Plex source returned too many items")
-			}
-			return nil, ctx.Err()
+			return nil, plexSectionsFailure(&overBudget, ctx.Err())
 		}
 		if results[position].err != nil {
 			cancel()
 			workers.Wait()
-			if overBudget.Load() {
-				return nil, errors.New("Plex source returned too many items")
-			}
-			return nil, results[position].err
+			return nil, plexSectionsFailure(&overBudget, results[position].err)
 		}
 		activities = append(activities, results[position].items...)
 	}
@@ -87,4 +71,22 @@ func fetchPlexSections(ctx context.Context, client *http.Client, input Input, se
 		return nil, err
 	}
 	return activities, nil
+}
+
+func dispatchPlexSections(ctx context.Context, jobs chan<- int, count int) {
+	defer close(jobs)
+	for position := range count {
+		select {
+		case jobs <- position:
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+func plexSectionsFailure(overBudget *atomic.Bool, err error) error {
+	if overBudget.Load() {
+		return errors.New("Plex source returned too many items")
+	}
+	return err
 }

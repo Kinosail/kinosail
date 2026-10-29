@@ -84,7 +84,7 @@ func (recipe HLSRecipe) Token() string {
 	return token
 }
 
-func ParseHLSRecipe(value string, policy HLSRecipePolicy) (HLSRecipe, error) { //nolint:cyclop // Every bounded token field is validated before use.
+func ParseHLSRecipe(value string, policy HLSRecipePolicy) (HLSRecipe, error) {
 	if policy.MaxBitrate <= 0 || policy.OffsetStepMilliseconds <= 0 {
 		return HLSRecipe{}, errors.New("playback recipe policy is invalid")
 	}
@@ -122,13 +122,20 @@ func ParseHLSRecipe(value string, policy HLSRecipePolicy) (HLSRecipe, error) { /
 	recipe.Omitted, recipe.Offset = omitted, float64(offset)/1000
 	recipe.Width, recipe.Height = width, height
 	recipe.DialogueBoost, recipe.NormalizeLoudness = dialogueBoost, normalizeLoudness
-	if recipe.Mode != "transcode" && (recipe.Burn != "" || recipe.ToneMap || width != 0) {
-		return HLSRecipe{}, errors.New("conversion fields require video conversion")
-	}
-	if (dialogueBoost || normalizeLoudness) && recipe.Mode == "remux" {
-		return HLSRecipe{}, errors.New("audio effects require audio conversion")
+	if err := validateRecipeConversion(recipe); err != nil {
+		return HLSRecipe{}, err
 	}
 	return recipe, nil
+}
+
+func validateRecipeConversion(recipe HLSRecipe) error {
+	if recipe.Mode != "transcode" && (recipe.Burn != "" || recipe.ToneMap || recipe.Width != 0) {
+		return errors.New("conversion fields require video conversion")
+	}
+	if (recipe.DialogueBoost || recipe.NormalizeLoudness) && recipe.Mode == "remux" {
+		return errors.New("audio effects require audio conversion")
+	}
+	return nil
 }
 
 func parseRecipeOffset(parts []string, step int64) ([]string, int64, error) {

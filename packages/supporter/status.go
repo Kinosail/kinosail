@@ -2,32 +2,16 @@ package supporter
 
 import "time"
 
-func (service *Service) Status(state State) Status { //nolint:gocognit // One projection preserves cross-version badge precedence.
+func (service *Service) Status(state State) Status {
 	state = service.migrateLegacy(cloneState(state))
-	patron := service.badge(service.decodeGrant(state, state.PatronOrder, FamilyPatron, true))
-	living := service.badge(service.decodeGrant(state, state.LivingStandard, FamilyLiving, true))
-	if legacy := legacyGrant(state); legacy != nil {
-		if patron == nil {
-			patron = service.badge(service.decodeGrant(state, legacy, FamilyPatron, true))
-		}
-		if living == nil {
-			living = service.badge(service.decodeGrant(state, legacy, FamilyLiving, true))
-		}
-	}
+	patron, living := service.familyBadges(state)
 	status := Status{Tier: "free", Name: "Free", PatronOrder: patron, LivingStandard: living, SupportURL: service.supportURL, ActivationAvailable: service.app.ExposeActivationAvailable && service.ActivationAvailable()}
 	if service.app.NestedApp {
 		status.App = &AppStatus{ID: service.app.ID, Name: service.app.Name}
 	} else {
 		status.AppID = service.app.ID
 	}
-	if service.app.EmptyBadges {
-		if status.PatronOrder == nil {
-			status.PatronOrder = service.emptyBadge(FamilyPatron)
-		}
-		if status.LivingStandard == nil {
-			status.LivingStandard = service.emptyBadge(FamilyLiving)
-		}
-	}
+	service.fillEmptyBadges(&status)
 	status.Monthly = service.badge(service.decodeGrant(state, state.Monthly, EditionMonthly, true))
 	status.Yearly = service.badge(service.decodeGrant(state, state.Yearly, EditionYearly, true))
 	status.BadgeCase = service.badgeCase(state, patron, living)
@@ -55,6 +39,34 @@ func (service *Service) Status(state State) Status { //nolint:gocognit // One pr
 	}
 	status.SubscriptionActive = living != nil && living.Active || status.Monthly != nil && status.Monthly.Active || status.Yearly != nil && status.Yearly.Active
 	return status
+}
+
+func (service *Service) familyBadges(state State) (*Badge, *Badge) {
+	patron := service.badge(service.decodeGrant(state, state.PatronOrder, FamilyPatron, true))
+	living := service.badge(service.decodeGrant(state, state.LivingStandard, FamilyLiving, true))
+	legacy := legacyGrant(state)
+	if legacy == nil {
+		return patron, living
+	}
+	if patron == nil {
+		patron = service.badge(service.decodeGrant(state, legacy, FamilyPatron, true))
+	}
+	if living == nil {
+		living = service.badge(service.decodeGrant(state, legacy, FamilyLiving, true))
+	}
+	return patron, living
+}
+
+func (service *Service) fillEmptyBadges(status *Status) {
+	if !service.app.EmptyBadges {
+		return
+	}
+	if status.PatronOrder == nil {
+		status.PatronOrder = service.emptyBadge(FamilyPatron)
+	}
+	if status.LivingStandard == nil {
+		status.LivingStandard = service.emptyBadge(FamilyLiving)
+	}
 }
 
 func (service *Service) badge(decoded decodedGrant) *Badge {

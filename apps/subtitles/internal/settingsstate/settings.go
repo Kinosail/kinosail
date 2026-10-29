@@ -94,7 +94,7 @@ func Parse(data []byte) (Preferences, error) {
 	return parseLanguages(fields)
 }
 
-func validateDocument(data []byte) (map[string]json.RawMessage, error) { //nolint:cyclop // The persisted document is fully validated before decoding preferences.
+func validateDocument(data []byte) (map[string]json.RawMessage, error) {
 	if len(data) > MaximumDocumentSize || !utf8.Valid(data) {
 		return nil, errors.New("invalid installation settings")
 	}
@@ -102,30 +102,42 @@ func validateDocument(data []byte) (map[string]json.RawMessage, error) { //nolin
 	if err != nil {
 		return nil, err
 	}
-	for name := range fields {
-		if !allowedFields[name] {
-			return nil, errors.New("invalid installation settings")
-		}
-	}
-	if value, present := fields["subtitlepickerlimited"]; present && bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
-		return nil, errors.New("invalid installation settings")
-	}
-	if value, present := fields["subtitlepickerkeepforced"]; present && bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+	if !documentFieldsAllowed(fields) {
 		return nil, errors.New("invalid installation settings")
 	}
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
 	var settings document
-	if decoder.Decode(&settings) != nil || settings.Supporter != nil && (settings.Supporter.PatronLevel < 0 || settings.Supporter.PatronLevel > 10 || settings.Supporter.LivingLevel < 0 || settings.Supporter.LivingLevel > 10) {
+	if decoder.Decode(&settings) != nil || supporterLevelsInvalid(settings) {
 		return nil, errors.New("invalid installation settings")
 	}
-	if fields["publicsessioninactivehours"] != nil || fields["publicsessionabsolutehours"] != nil {
-		inactive, absolute := settings.PublicSessionInactiveHours, settings.PublicSessionAbsoluteHours
-		if inactive < .25 || inactive > 8760 || absolute < 4 || absolute > 8760 || inactive > absolute {
-			return nil, errors.New("invalid public session timeouts")
-		}
+	if (fields["publicsessioninactivehours"] != nil || fields["publicsessionabsolutehours"] != nil) && publicSessionTimeoutsInvalid(settings) {
+		return nil, errors.New("invalid public session timeouts")
 	}
 	return fields, nil
+}
+
+func documentFieldsAllowed(fields map[string]json.RawMessage) bool {
+	for name := range fields {
+		if !allowedFields[name] {
+			return false
+		}
+	}
+	for _, name := range []string{"subtitlepickerlimited", "subtitlepickerkeepforced"} {
+		if value, present := fields[name]; present && bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+			return false
+		}
+	}
+	return true
+}
+
+func supporterLevelsInvalid(settings document) bool {
+	return settings.Supporter != nil && (settings.Supporter.PatronLevel < 0 || settings.Supporter.PatronLevel > 10 || settings.Supporter.LivingLevel < 0 || settings.Supporter.LivingLevel > 10)
+}
+
+func publicSessionTimeoutsInvalid(settings document) bool {
+	inactive, absolute := settings.PublicSessionInactiveHours, settings.PublicSessionAbsoluteHours
+	return inactive < .25 || inactive > 8760 || absolute < 4 || absolute > 8760 || inactive > absolute
 }
 
 func validatePreference(fields map[string]json.RawMessage) error {

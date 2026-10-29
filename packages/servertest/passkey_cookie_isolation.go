@@ -14,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-//nolint:cyclop // The complete real-handler browser journey preserves its cookie and security assertions together.
 func AssertPasskeyCookieIsolation(t *testing.T, handler http.Handler, origin, sessionName, ceremonyName, siblingCeremony string) {
 	t.Helper()
 	base, err := url.Parse(origin)
@@ -65,19 +64,7 @@ func AssertPasskeyCookieIsolation(t *testing.T, handler http.Handler, origin, se
 	if signedIn.Code != http.StatusNoContent {
 		t.Fatalf("signed passkey login after sibling ceremony = %d", signedIn.Code)
 	}
-	found := false
-	for _, cookie := range signedIn.Result().Cookies() {
-		expires, remaining := cookie.Expires.Unix(), int64(cookie.MaxAge)
-		if cookie.Name == sessionName {
-			t.Logf("session cookie attributes: secure=%t httpOnly=%t sameSite=%d path=%q domain=%q maxAge=%d expires=%d loginInterval=%d..%d", cookie.Secure, cookie.HttpOnly, cookie.SameSite, cookie.Path, cookie.Domain, cookie.MaxAge, cookie.Expires.Unix(), loginStarted, loginFinished)
-		}
-		if cookie.Name == sessionName && cookie.Secure && cookie.HttpOnly && cookie.SameSite == http.SameSiteStrictMode && cookie.Path == "/" && cookie.Domain == "" && !cookie.Expires.IsZero() &&
-			remaining > 0 && remaining <= 8*60*60 && expires >= loginStarted+8*60*60 && expires <= loginFinished+8*60*60 &&
-			remaining >= expires-loginFinished && remaining <= expires-loginStarted {
-			found = true
-		}
-	}
-	if !found {
+	if !persistentPasskeySessionIssued(t, signedIn.Result().Cookies(), sessionName, loginStarted, loginFinished) {
 		t.Fatal("passkey login did not issue the persistent app-specific session")
 	}
 
@@ -91,6 +78,31 @@ func AssertPasskeyCookieIsolation(t *testing.T, handler http.Handler, origin, se
 	if response.Code != http.StatusSeeOther || response.Header().Get("Location") != "/login" {
 		t.Fatal("logout resurrected the old legacy sign-in")
 	}
+}
+
+func persistentPasskeySessionIssued(t *testing.T, cookies []*http.Cookie, sessionName string, loginStarted, loginFinished int64) bool {
+	t.Helper()
+	found := false
+	for _, cookie := range cookies {
+		if cookie.Name != sessionName {
+			continue
+		}
+		t.Logf("session cookie attributes: secure=%t httpOnly=%t sameSite=%d path=%q domain=%q maxAge=%d expires=%d loginInterval=%d..%d", cookie.Secure, cookie.HttpOnly, cookie.SameSite, cookie.Path, cookie.Domain, cookie.MaxAge, cookie.Expires.Unix(), loginStarted, loginFinished)
+		if securePersistentSessionCookie(cookie) && persistentSessionLifetime(cookie, loginStarted, loginFinished) {
+			found = true
+		}
+	}
+	return found
+}
+
+func securePersistentSessionCookie(cookie *http.Cookie) bool {
+	return cookie.Secure && cookie.HttpOnly && cookie.SameSite == http.SameSiteStrictMode && cookie.Path == "/" && cookie.Domain == "" && !cookie.Expires.IsZero()
+}
+
+func persistentSessionLifetime(cookie *http.Cookie, loginStarted, loginFinished int64) bool {
+	expires, remaining := cookie.Expires.Unix(), int64(cookie.MaxAge)
+	return remaining > 0 && remaining <= 8*60*60 && expires >= loginStarted+8*60*60 && expires <= loginFinished+8*60*60 &&
+		remaining >= expires-loginFinished && remaining <= expires-loginStarted
 }
 
 func passkeyOptions(t *testing.T, response *httptest.ResponseRecorder, cookieName string) (string, string) {

@@ -96,8 +96,8 @@ func newSubtitleLedger(dataDir string, databases ...*database.Store) *subtitleLe
 	return ledger
 }
 
-func validSubtitleLedgerState(state subtitleLedgerState) bool { //nolint:cyclop // Persisted state requires explicit validation of every map key and record.
-	if state.Version < 1 || state.Version > subtitleLedgerVersion || len(state.Records) > subtitleLedgerLimit || len(state.Searches) > subtitleLedgerLimit || len(state.History) > subtitleHistoryLimit || state.Version < 3 && len(state.History) > 0 || state.SubDLDownloads < 0 || state.SubDLDownloads > subDLAutomaticDownloadLimit {
+func validSubtitleLedgerState(state subtitleLedgerState) bool {
+	if !validSubtitleLedgerBounds(state) {
 		return false
 	}
 	for _, event := range state.History {
@@ -106,18 +106,30 @@ func validSubtitleLedgerState(state subtitleLedgerState) bool { //nolint:cyclop 
 		}
 	}
 	for key, search := range state.Searches {
-		parts := strings.Split(key, ":")
-		if len(parts) != 3 || !validSubtitleItemID(parts[0]) || !validLanguage(parts[1]) || !oneOf(parts[2], "standard", "sdh", "forced") || !validSubtitleSearchRecord(search) {
+		if !validSubtitleSearchKey(key) || !validSubtitleSearchRecord(search) {
 			return false
 		}
 	}
 	for key, record := range state.Records {
-		parts := strings.Split(key, ":")
-		if len(parts) != 2 || !validSubtitleItemID(parts[0]) || !validLanguage(parts[1]) || !validSubtitleRecord(record) {
+		if !validSubtitleRecordKey(key) || !validSubtitleRecord(record) {
 			return false
 		}
 	}
 	return state.SubDLDay == "" && state.SubDLDownloads == 0 || validSubtitleDay(state.SubDLDay)
+}
+
+func validSubtitleLedgerBounds(state subtitleLedgerState) bool {
+	return state.Version >= 1 && state.Version <= subtitleLedgerVersion && len(state.Records) <= subtitleLedgerLimit && len(state.Searches) <= subtitleLedgerLimit && len(state.History) <= subtitleHistoryLimit && (state.Version >= 3 || len(state.History) == 0) && state.SubDLDownloads >= 0 && state.SubDLDownloads <= subDLAutomaticDownloadLimit
+}
+
+func validSubtitleSearchKey(key string) bool {
+	parts := strings.Split(key, ":")
+	return len(parts) == 3 && validSubtitleItemID(parts[0]) && validLanguage(parts[1]) && oneOf(parts[2], "standard", "sdh", "forced")
+}
+
+func validSubtitleRecordKey(key string) bool {
+	parts := strings.Split(key, ":")
+	return len(parts) == 2 && validSubtitleItemID(parts[0]) && validLanguage(parts[1])
 }
 
 func validSubtitleRecord(record subtitleRecord) bool {

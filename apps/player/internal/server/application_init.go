@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/MikeO7/kinosail-player/internal/database"
+	"github.com/MikeO7/kinosail/packages/serverdiscovery"
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
 )
 
@@ -116,5 +117,20 @@ func startApplicationMCPHost(config Config, managed bool, adapter *mcpAdapter, p
 func disableInternetForBrokenProfiles(config Config, auth *authentication) {
 	if auth.profiles.err != nil && config.InternetAccess != nil {
 		_ = config.InternetAccess.Kill()
+	}
+}
+
+func disablePasskeyRedirectsForHTTPS(config Config, auth *authentication) {
+	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
+		auth.passkeys.redirectPages = false
+	}
+}
+
+func startLocalDiscovery(config Config, managed bool, settings *settingsStore) {
+	if !managed {
+		return
+	}
+	if err := serverdiscovery.Start(config.Lifecycle, settings.serverName(), config.AuthURL); err != nil {
+		slog.Warn("Player local discovery unavailable", "error", err)
 	}
 }

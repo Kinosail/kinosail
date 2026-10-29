@@ -24,38 +24,49 @@ func Schedule(ctx context.Context, available bool, observe func(func([]library.I
 		}
 	}
 	observe(func([]library.Item) { trigger() })
-	go func() {
-		ticker := time.NewTicker(healInterval)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				trigger()
-			}
-		}
-	}()
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-jobs:
-				timer := time.NewTimer(scheduleDelay + time.Duration(rand.Int64N(int64(scheduleDelay)))) //nolint:gosec // Refresh jitter only spreads provider load.
-				select {
-				case <-ctx.Done():
-					timer.Stop()
-					return
-				case <-timer.C:
-				}
-				select {
-				case <-jobs:
-				default:
-				}
-				_ = refresh(ctx)
-			}
-		}
-	}()
+	go healPeriodically(ctx, trigger)
+	go refreshScheduled(ctx, jobs, refresh)
 	return trigger
+}
+
+func healPeriodically(ctx context.Context, trigger func()) {
+	ticker := time.NewTicker(healInterval)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			trigger()
+		}
+	}
+}
+
+func refreshScheduled(ctx context.Context, jobs chan struct{}, refresh func(context.Context) error) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-jobs:
+			if !waitRefreshJitter(ctx) {
+				return
+			}
+			select {
+			case <-jobs:
+			default:
+			}
+			_ = refresh(ctx)
+		}
+	}
+}
+
+func waitRefreshJitter(ctx context.Context) bool {
+	timer := time.NewTimer(scheduleDelay + time.Duration(rand.Int64N(int64(scheduleDelay)))) //nolint:gosec // Refresh jitter only spreads provider load.
+	select {
+	case <-ctx.Done():
+		timer.Stop()
+		return false
+	case <-timer.C:
+		return true
+	}
 }

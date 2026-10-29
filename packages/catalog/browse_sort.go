@@ -14,7 +14,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-func sortReferences(ctx context.Context, items []*library.Item, order, query, locale string) error { //nolint:gocognit // All sort precedence stays explicit and deterministic.
+func sortReferences(ctx context.Context, items []*library.Item, order, query, locale string) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -25,15 +25,9 @@ func sortReferences(ctx context.Context, items []*library.Item, order, query, lo
 	}
 	var ranks map[*library.Item]int
 	if query != "" {
-		normalized := searchText(query)
-		ranks = make(map[*library.Item]int, len(items))
-		for position, item := range items {
-			if position%64 == 0 {
-				if err := ctx.Err(); err != nil {
-					return err
-				}
-			}
-			ranks[item] = searchRankNormalized(*item, normalized)
+		var err error
+		if ranks, err = searchRanks(ctx, items, query); err != nil {
+			return err
 		}
 	}
 	if err := ctx.Err(); err != nil {
@@ -46,16 +40,35 @@ func sortReferences(ctx context.Context, items []*library.Item, order, query, lo
 				return leftRank < rightRank
 			}
 		}
-		if order == "added" {
-			return items[left].Added.After(items[right].Added) || items[left].Added.Equal(items[right].Added) && items[left].ID < items[right].ID
-		}
-		if order == "year" {
-			return items[left].Year > items[right].Year || items[left].Year == items[right].Year && items[left].ID < items[right].ID
-		}
-		comparison := titles.CompareString(sortTitle(*items[left]), sortTitle(*items[right]))
-		return comparison < 0 || comparison == 0 && items[left].ID < items[right].ID
+		return referenceBefore(items[left], items[right], order, titles)
 	})
 	return ctx.Err()
+}
+
+func searchRanks(ctx context.Context, items []*library.Item, query string) (map[*library.Item]int, error) {
+	normalized := searchText(query)
+	ranks := make(map[*library.Item]int, len(items))
+	for position, item := range items {
+		if position%64 == 0 {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
+		ranks[item] = searchRankNormalized(*item, normalized)
+	}
+	return ranks, nil
+}
+
+func referenceBefore(left, right *library.Item, order string, titles *collate.Collator) bool {
+	switch order {
+	case "added":
+		return left.Added.After(right.Added) || left.Added.Equal(right.Added) && left.ID < right.ID
+	case "year":
+		return left.Year > right.Year || left.Year == right.Year && left.ID < right.ID
+	default:
+		comparison := titles.CompareString(sortTitle(*left), sortTitle(*right))
+		return comparison < 0 || comparison == 0 && left.ID < right.ID
+	}
 }
 
 func sortTitles(ctx context.Context, items []*library.Item, titles *collate.Collator) error {

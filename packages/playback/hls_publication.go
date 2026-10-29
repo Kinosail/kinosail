@@ -12,7 +12,7 @@ func PublishVariants(ctx context.Context, source, directory, transcoder string, 
 	return PublishVariantsObserved(ctx, source, directory, transcoder, qualities, results, expected, independent, write, nil)
 }
 
-func PublishVariantsObserved(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter, ready func()) error { //nolint:gocognit // Readiness and worker completion are one bounded coordination loop.
+func PublishVariantsObserved(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter, ready func()) error {
 	if expected <= 0 || expected > 64 || write == nil {
 		return errors.New("HLS publication configuration is invalid")
 	}
@@ -30,18 +30,12 @@ func PublishVariantsObserved(ctx context.Context, source, directory, transcoder 
 				ready()
 			}
 		}
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case err, open := <-results:
-			if !open {
-				return errors.New("HLS publication ended early")
-			}
+		finished, err := awaitPublicationEvent(ctx, results, wake)
+		if finished {
 			completed++
-			if err != nil {
-				return err
-			}
-		case <-wake:
+		}
+		if err != nil {
+			return err
 		}
 	}
 	if !VariantsReady(source, directory, qualities) {
@@ -54,6 +48,20 @@ func PublishVariantsObserved(ctx context.Context, source, directory, transcoder 
 		ready()
 	}
 	return nil
+}
+
+func awaitPublicationEvent(ctx context.Context, results <-chan error, wake <-chan struct{}) (bool, error) {
+	select {
+	case <-ctx.Done():
+		return false, ctx.Err()
+	case err, open := <-results:
+		if !open {
+			return false, errors.New("HLS publication ended early")
+		}
+		return true, err
+	case <-wake:
+		return false, nil
+	}
 }
 
 func publicationDirectories(directory string, qualities []PlaybackQuality) []string {

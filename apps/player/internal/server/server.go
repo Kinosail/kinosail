@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"crypto/rand"
-	"log/slog"
 	"net/http"
 	"runtime"
 	"sync"
@@ -18,7 +17,6 @@ import (
 	markerlogic "github.com/MikeO7/kinosail/packages/markers"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
-	"github.com/MikeO7/kinosail/packages/serverdiscovery"
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 	"github.com/MikeO7/kinosail/packages/workload"
@@ -112,7 +110,7 @@ func New(config Config) http.Handler {
 	return newApplication(config)
 }
 
-func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocognit // The composition root validates defaults and wires every adapter to shared application services.
+func newApplication(config Config) http.Handler { //nolint:funlen // The composition root validates defaults and wires every adapter to shared application services.
 	lifecycle, managedLifecycle := prepareApplicationConfig(&config)
 	startupReady := false
 	if managedLifecycle {
@@ -165,9 +163,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	startProgressCoalescing(progress, shutdown, managedLifecycle)
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
 	startAccessFlush(config.Lifecycle, managedLifecycle, auth.profiles, shutdown.beforeClose)
-	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
-		auth.passkeys.redirectPages = false
-	}
+	disablePasskeyRedirectsForHTTPS(config, auth)
 	if !auth.audit.Healthy() {
 		return unavailableApplication(config, "activity journal is unavailable")
 	}
@@ -255,11 +251,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mcpAdapter := registerMCPWithConnections(mux, config.MCP, auth, apiRouting(mux), agentConnections)
 	mcpAdapter.ObserveEvents(config.Lifecycle, events)
 	startApplicationMCPHost(config, managedLifecycle, mcpAdapter, auth.profiles)
-	if managedLifecycle {
-		if err := serverdiscovery.Start(config.Lifecycle, settings.serverName(), config.AuthURL); err != nil {
-			slog.Warn("Player local discovery unavailable", "error", err)
-		}
-	}
+	startLocalDiscovery(config, managedLifecycle, settings)
 	registerJellyfin(mux, settings, index, progress, lists, auth, quickConnect, probe, hls, downloads)
 	registerBrowsers(mux, index, progress, lists)
 	registerFiles(mux, index, probe, workloads, hls.startup)
