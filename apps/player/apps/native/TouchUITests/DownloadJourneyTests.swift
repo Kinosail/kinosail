@@ -83,6 +83,33 @@ final class DownloadJourneyTests: XCTestCase {
         tourRecord("d8 ready", app)
     }
 
+    @MainActor func testConnectionBannerKeepsScreenTitleVisible() async throws {
+        let fixture = try fixture()
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        _ = try await proxy(fixture, "rate/0")
+        _ = try await proxy(fixture, "mode/pass")
+        let restore = try XCTUnwrap(URL(string: "\(fixture.control)/mode/pass"))
+        addTeardownBlock { _ = try? await URLSession.shared.data(from: restore) }
+        app.launch()
+        try await tourConnect(app, server: fixture.server, token: fixture.token, records: false)
+        XCTAssertTrue(tourTab("Home", in: app).waitForExistence(timeout: 90), app.debugDescription)
+        app.terminate()
+        _ = try await proxy(fixture, "mode/drop")
+        app.launch()
+        let movies = tourTab("Movies", in: app)
+        XCTAssertTrue(movies.waitForExistence(timeout: 30), app.debugDescription)
+        movies.tap()
+        let title = app.staticTexts["Can’t reach your Server"]
+        let downloads = app.buttons["Downloads"].firstMatch
+        XCTAssertTrue(title.waitForExistence(timeout: 60), app.debugDescription)
+        XCTAssertTrue(downloads.waitForExistence(timeout: 5), app.debugDescription)
+        let bar = app.navigationBars["Movies"]
+        XCTAssertTrue(bar.waitForExistence(timeout: 10), app.debugDescription)
+        tourRecord("c1 connection banner", app)
+        let banner = title.frame.union(downloads.frame)
+        XCTAssertFalse(banner.intersects(bar.frame), "Banner \(banner) covers navigation bar \(bar.frame)")
+    }
+
     @MainActor private func rowElement(_ title: String, in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", title + ", ")).firstMatch
     }

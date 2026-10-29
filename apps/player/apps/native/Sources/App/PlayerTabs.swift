@@ -72,13 +72,15 @@ struct PlayerTabs: View {
                 }
             }
             #else
-            tabs
-                .safeAreaInset(edge: .top, spacing: 0) { connectionBanner }
-                .onChange(of: DownloadNotifications.shared.openRequested, initial: true) { _, requested in
-                    guard requested else { return }
-                    DownloadNotifications.shared.openRequested = false
-                    showDownloads()
-                }
+            VStack(spacing: 0) {
+                connectionBanner.fixedSize(horizontal: false, vertical: true)
+                tabs
+            }
+            .onChange(of: DownloadNotifications.shared.openRequested, initial: true) { _, requested in
+                guard requested else { return }
+                DownloadNotifications.shared.openRequested = false
+                showDownloads()
+            }
             #endif
         }
         .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
