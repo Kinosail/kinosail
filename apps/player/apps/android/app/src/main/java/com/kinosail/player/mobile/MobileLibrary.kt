@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -129,7 +130,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                     val letters = jumpLetters(state, destination == "search")
                     Box(Modifier.weight(1f)) {
-                    LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 240.dp else 96.dp),
+                    LazyVerticalGrid(if (state.view != "photos" && LocalDensity.current.fontScale >= 1.5f) GridCells.Fixed(1)
+                        else GridCells.Adaptive(if (state.view == "photos") 240.dp else 96.dp),
                         modifier = Modifier.fillMaxSize(), state = grid,
                         horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(28.dp),
                         contentPadding = PaddingValues(end = if (letters.isEmpty()) 0.dp else 32.dp, bottom = 24.dp)) {

@@ -70,7 +70,7 @@ seconds, then every minute, and again when the app returns to the foreground.
 Use the same card widths in pending and loaded Home shelves. Keep an 18dp shelf
 gap and enough padding for TV focus. Large text can wrap card titles. Compact
 Home and title details stack artwork above information; wider windows place
-them beside each other. Large text restores the stacked arrangement.
+them beside each other. Large text restores the stacked arrangement. At large text, phone and tablet library and collection grids use one column, like iPhone, and each card keeps its title as its label.
 
 ## Navigation and state
 

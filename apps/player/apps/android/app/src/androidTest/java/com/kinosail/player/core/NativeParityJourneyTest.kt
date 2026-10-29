@@ -640,10 +640,15 @@ class NativeParityJourneyTest {
         waitText("New Film")
         if (!tv) {
             val first = compose.onNodeWithContentDescription("New Film").fetchSemanticsNode().boundsInRoot
-            val second = compose.onNodeWithContentDescription("Continuing Film").fetchSemanticsNode().boundsInRoot
-            assertEquals("Grid cards must share a row", first.top, second.top, 1f)
-            assertTrue("Phone grids must use three iPhone-sized columns: $first",
-                first.width < 130 * context.resources.displayMetrics.density)
+            if (context.resources.configuration.fontScale >= 1.5f) {
+                val root = compose.onRoot().fetchSemanticsNode().boundsInRoot
+                assertTrue("Large text must use one iPhone-style grid column: $first", first.width > root.width * 0.6f)
+            } else {
+                val second = compose.onNodeWithContentDescription("Continuing Film").fetchSemanticsNode().boundsInRoot
+                assertEquals("Grid cards must share a row", first.top, second.top, 1f)
+                assertTrue("Phone grids must use three iPhone-sized columns: $first",
+                    first.width < 130 * context.resources.displayMetrics.density)
+            }
             compose.onAllNodes(hasTestTag("unwatched") and hasAnyAncestor(hasContentDescription("New Film")), true).assertCountEquals(1)
             compose.onAllNodes(hasTestTag("unwatched") and hasAnyAncestor(hasContentDescription("Continuing Film")), true).assertCountEquals(0)
         }
