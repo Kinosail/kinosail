@@ -3,3 +3,4 @@
   body.library-page.auth main:has(.quick-connect-code)>form{gap:.5rem;padding-block:1rem}
 }
 [data-qr-video]{display:block;width:100%;max-height:45dvh;object-fit:contain;background:var(--surface-2);border-radius:var(--radius,12px);margin-bottom:.75rem}
+.quick-connect-code{grid-template-columns:repeat(auto-fit,minmax(1.75rem,1fr))}
