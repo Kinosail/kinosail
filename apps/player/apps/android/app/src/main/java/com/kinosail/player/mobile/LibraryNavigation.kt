@@ -16,6 +16,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.kinosail.player.R
 import com.kinosail.player.core.PersonalTabs
@@ -31,7 +34,7 @@ internal fun LibraryNavigation(tabs: List<String>, selected: String, navigate: (
             NavigationRail {
                 destinations.forEach { destination ->
                     NavigationRailItem(selected = selected == destination, onClick = { navigate(destination) },
-                        icon = { DestinationIcon(destination) }, label = { Text(tabTitle(destination)) })
+                        icon = { DestinationIcon(destination) }, label = { TabLabel(destination) })
                 }
             }
             Box(Modifier.weight(1f)) { content() }
@@ -40,10 +43,18 @@ internal fun LibraryNavigation(tabs: List<String>, selected: String, navigate: (
             NavigationBar(windowInsets = WindowInsets(0, 0, 0, 0)) {
                 destinations.forEach { destination ->
                     NavigationBarItem(selected = selected == destination, onClick = { navigate(destination) },
-                        icon = { DestinationIcon(destination) }, label = { Text(tabTitle(destination)) })
+                        icon = { DestinationIcon(destination) }, label = { TabLabel(destination) })
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TabLabel(destination: String) {
+    val density = LocalDensity.current
+    CompositionLocalProvider(LocalDensity provides Density(density.density, minOf(density.fontScale, 1.15f))) {
+        Text(tabTitle(destination), maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 

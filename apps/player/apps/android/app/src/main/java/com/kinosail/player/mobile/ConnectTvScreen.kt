@@ -69,7 +69,7 @@ internal fun ConnectTvScreen(viewer: Viewer, catalog: CatalogModel, close: () ->
                 }
                 Text(interfaceText("Approve only if this code matches the device you want to connect."), color = KinoColor.text,
                     modifier = Modifier.padding(horizontal = 18.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = {
                         submit(approveFailed) { api, token, id ->
                             val accepted = withContext(Dispatchers.IO) { api.approve(pending.code, token, id) }

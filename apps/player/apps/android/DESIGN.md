@@ -69,7 +69,9 @@ reachable after scrolling; Android Back returns from each destination to Home.
 Use bottom navigation on compact windows and a rail on wider, taller windows.
 More keeps unpinned destinations and Customize tabs available. Settings is a
 destination like the others, so a Viewer can pin it as a tab. Back from a
-destination opened in More returns to More.
+destination opened in More returns to More. Like iPhone tab labels, Android tab
+labels stay on one line and grow only a little with large text. Settings rows move
+the current value below the row title at large text sizes.
 
 Phone title details use a filled Play action and a tonal My List button that reads
 My List or In My List. A started or watched video offers Remove from Continue

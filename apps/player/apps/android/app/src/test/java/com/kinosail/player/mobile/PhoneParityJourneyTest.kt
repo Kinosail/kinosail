@@ -137,6 +137,36 @@ class PhoneParityJourneyTest {
         capture("home-empty")
     }
 
+    @Test fun largeTextKeepsTabsSettingsAndActionsReadable() {
+        org.robolectric.RuntimeEnvironment.setFontScale(2f)
+        try {
+            phone { _ ->
+                for (label in listOf("TV Shows", "Movies", "Search")) assertSingleLine(label)
+                openSettings()
+                compose.onNode(hasText("Playback") and hasClickAction()).performScrollTo().performClick()
+                await { compose.onAllNodesWithText("Boost Dialog").fetchSemanticsNodes().isNotEmpty() }
+                assertSingleLine("Audio language")
+                compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+                compose.onNode(hasText("Connect a TV") and hasClickAction()).performScrollTo().performClick()
+                compose.onNode(hasSetTextAction()).performTextInput("482913")
+                compose.onNode(hasText("Review device") and hasClickAction()).performClick()
+                await { compose.onAllNodesWithText("Living room TV").fetchSemanticsNodes().isNotEmpty() }
+                assertSingleLine("Not now")
+                capture("connect-tv-large-text")
+            }
+        } finally { org.robolectric.RuntimeEnvironment.setFontScale(1f) }
+    }
+
+    private fun assertSingleLine(label: String) {
+        val nodes = compose.onAllNodesWithText(label, useUnmergedTree = true).fetchSemanticsNodes()
+        assertTrue(label, nodes.isNotEmpty())
+        nodes.forEach { node ->
+            val layouts = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+            node.config[androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult].action?.invoke(layouts)
+            assertEquals(label, 1, layouts.single().lineCount)
+        }
+    }
+
     private fun openSettings() {
         compose.onNode(hasText("More") and hasClickAction()).performClick()
         compose.onNode(hasText("Settings") and hasClickAction()).performScrollTo().performClick()
