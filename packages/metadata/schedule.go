@@ -24,8 +24,9 @@ func Schedule(ctx context.Context, available bool, observe func(func([]library.I
 		}
 	}
 	observe(func([]library.Item) { trigger() })
+	interval := healInterval
 	go func() {
-		ticker := time.NewTicker(healInterval)
+		ticker := time.NewTicker(interval)
 		defer ticker.Stop()
 		for {
 			select {

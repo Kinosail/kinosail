@@ -52,7 +52,7 @@ func TestScheduleRejectsUnavailableOrMissingAdapters(t *testing.T) {
 
 func waitForRefreshCalls(t *testing.T, calls *atomic.Int32, want int32) {
 	t.Helper()
-	deadline := time.Now().Add(time.Second)
+	deadline := time.Now().Add(time.Duration(want+1) * 2 * scheduleDelay * 2)
 	for time.Now().Before(deadline) {
 		if calls.Load() >= want {
 			return
