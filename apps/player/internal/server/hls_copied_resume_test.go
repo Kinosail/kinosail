@@ -65,7 +65,9 @@ func assertCopiedResume(t *testing.T, ffmpeg, ffprobe string, fixture resumeFixt
 			t.Logf("RESUME_LOGS %s", logs.snapshot())
 		}
 	}()
-	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe})
+	cache := t.TempDir()
+	t.Cleanup(func() { cancel(); settleDirectory(t, cache) })
+	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: ffprobe})
 	var info struct {
 		Compatible     string
 		CompatiblePlan playback.PlaybackPlan
