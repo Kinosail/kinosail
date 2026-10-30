@@ -6,13 +6,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/mcpgateway"
 )
 
-const (
-	mcpProtocolVersion = mcpgateway.ProtocolVersion
-	mcpReadScope       = mcpgateway.ReadScope
-	mcpWriteScope      = mcpgateway.WriteScope
-	mcpManageScope     = mcpgateway.ManageScope
-)
-
 type (
 	MCPConfig  = mcpgateway.OAuthConfig
 	mcpAdapter = mcpgateway.Gateway

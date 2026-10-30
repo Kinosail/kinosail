@@ -81,8 +81,6 @@ func loadLocalization() (*i18n.Bundle, []catalogMessage) {
 	return bundle, messages
 }
 
-type localizedTemplate = *localization.TemplateSet
-
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
 	return newLazyLocalizedTemplate(name, func() string { return source })
 }
