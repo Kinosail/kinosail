@@ -113,8 +113,8 @@ func rankOpenSubtitlesCandidates(item library.Item, language string, response op
 		}
 		return candidates[left].Score > candidates[right].Score
 	})
-	if len(candidates) > maximumDownloadTries {
-		candidates = candidates[:maximumDownloadTries]
+	if len(candidates) > maximumProviderCandidates {
+		candidates = candidates[:maximumProviderCandidates]
 	}
 	return candidates
 }

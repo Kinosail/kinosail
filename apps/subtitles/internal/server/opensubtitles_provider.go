@@ -157,7 +157,7 @@ func (provider *openSubtitlesProvider) download(ctx context.Context, fileID int6
 	}
 	defer download.Body.Close()
 	data, err := readSubtitle(download)
-	provider.health.observe("OpenSubtitles", download, err)
+	provider.health.observeFile("OpenSubtitles", download, err)
 	return data, err
 }
 
@@ -251,6 +251,10 @@ func (provider *openSubtitlesProvider) requestJSON(ctx context.Context, method, 
 		return err
 	}
 	defer response.Body.Close()
+	if response.StatusCode == http.StatusUnauthorized && token != "" && provider.forgetToken(token) {
+		provider.health.observe("OpenSubtitles", nil, errors.New("session expired"))
+		return errors.New("OpenSubtitles session expired")
+	}
 	if response.StatusCode < 200 || response.StatusCode > 299 {
 		provider.health.observe("OpenSubtitles", response, errors.New("request failed"))
 		return errors.New("OpenSubtitles rejected request")
@@ -283,4 +287,14 @@ func (provider *openSubtitlesProvider) allowed(link string) bool {
 	}
 	host := strings.ToLower(target.Hostname())
 	return target.Scheme == "https" && (host == "opensubtitles.com" || strings.HasSuffix(host, ".opensubtitles.com"))
+}
+
+func (provider *openSubtitlesProvider) forgetToken(token string) bool {
+	provider.mu.Lock()
+	defer provider.mu.Unlock()
+	if provider.token != token {
+		return false
+	}
+	provider.token, provider.tokenExpires = "", time.Time{}
+	return true
 }

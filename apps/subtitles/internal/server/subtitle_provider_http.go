@@ -75,21 +75,16 @@ func (provider *subtitleProvider) download(ctx context.Context, link string) ([]
 	defer response.Body.Close()
 	data, err := readSubtitle(response)
 	if err != nil {
-		provider.health.observe("SubDL", response, err)
+		provider.health.observeFile("SubDL", response, err)
 		return nil, err
 	}
+	provider.health.observeFile("SubDL", response, nil)
 	if archive, zipErr := zip.NewReader(bytes.NewReader(data), int64(len(data))); zipErr == nil {
-		data, err = readArchivedSubtitle(ctx, archive)
-		if err != nil {
-			provider.health.observe("SubDL", response, err)
-			return nil, err
-		}
-	} else if !validSubtitlePayload(data) {
-		err = errors.New("subtitle download is invalid")
-		provider.health.observe("SubDL", response, err)
-		return nil, err
+		return readArchivedSubtitle(ctx, archive)
 	}
-	provider.health.observe("SubDL", response, nil)
+	if !validSubtitlePayload(data) {
+		return nil, errors.New("subtitle download is invalid")
+	}
 	return data, nil
 }
 

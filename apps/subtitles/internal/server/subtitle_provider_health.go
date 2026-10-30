@@ -42,6 +42,8 @@ type subtitleProviderHealthRegistry struct {
 
 const subtitleProviderHealthRefresh = 5 * time.Minute
 
+const subtitleDailyLimitError = "Daily download limit reached"
+
 type subtitleProviderHealthDiskState struct {
 	Version   int                                    `json:"version"`
 	Providers map[string]subtitleProviderHealthEntry `json:"providers"`
@@ -104,6 +106,12 @@ func (registry *subtitleProviderHealthRegistry) observe(name string, response *h
 	switch status {
 	case http.StatusUnauthorized, http.StatusForbidden:
 		state.nextRetry = now.Add(24 * time.Hour)
+	case http.StatusNotAcceptable:
+		state.lastError = subtitleDailyLimitError
+		state.nextRetry = state.reset
+		if !state.nextRetry.After(now) {
+			state.nextRetry = now.UTC().Truncate(24 * time.Hour).Add(24 * time.Hour)
+		}
 	case http.StatusTooManyRequests:
 		state.nextRetry = subtitleRetryTime(response.Header, now)
 		if state.nextRetry.IsZero() {
@@ -140,7 +148,7 @@ func (registry *subtitleProviderHealthRegistry) views(configured map[string]bool
 			view.State = "not configured"
 		case !state.nextRetry.IsZero() && now.Before(state.nextRetry):
 			view.State = "unavailable"
-			if state.lastError == "Rate limit reached" {
+			if state.lastError == "Rate limit reached" || state.lastError == subtitleDailyLimitError {
 				view.State = "limited"
 			}
 			view.NextRetry = state.nextRetry.UTC().Format(time.RFC3339)
@@ -248,4 +256,18 @@ func (provider *subtitleProvider) testCredentials(ctx context.Context) (int, int
 		}
 	}
 	return attempted, connected
+}
+
+func (registry *subtitleProviderHealthRegistry) observeFile(name string, response *http.Response, requestErr error) {
+	if response == nil || response.StatusCode != http.StatusNotFound && response.StatusCode != http.StatusGone {
+		registry.observe(name, response, requestErr)
+		return
+	}
+	registry.mu.Lock()
+	defer registry.mu.Unlock()
+	now, state := registry.now(), registry.states[name]
+	state.remaining, state.reset = subtitleQuota(response.Header, now, state.remaining, state.reset)
+	state.lastSuccess, state.lastError, state.nextRetry, state.failures = now, "", time.Time{}, 0
+	registry.states[name] = state
+	registry.saveLocked()
 }

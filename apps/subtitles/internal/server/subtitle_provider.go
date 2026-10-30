@@ -180,7 +180,7 @@ func (provider *subtitleProvider) acquire(ctx context.Context, item library.Item
 		return cleanedSubtitle{}, subtitleRecord{}, errors.New("subtitle provider is not configured")
 	}
 	candidates, configured, failed := provider.subtitleCandidates(ctx, item, language)
-	if len(candidates) == 0 && configured > 0 && failed == configured {
+	if len(candidates) == 0 && configured > 0 && failed > 0 {
 		return cleanedSubtitle{}, subtitleRecord{}, errSubtitleProviderUnavailable
 	}
 	candidates = provider.preferredSubtitleCandidates(candidates)
@@ -189,7 +189,7 @@ func (provider *subtitleProvider) acquire(ctx context.Context, item library.Item
 
 func (provider *subtitleProvider) subtitleCandidates(ctx context.Context, item library.Item, language string) ([]subtitleDownloadCandidate, int, int) {
 	provider = provider.active()
-	candidates := make([]subtitleDownloadCandidate, 0, maximumDownloadTries*3)
+	candidates := make([]subtitleDownloadCandidate, 0, maximumProviderCandidates*3)
 	configured, failed := 0, 0
 	searchContext, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
@@ -224,9 +224,6 @@ func (provider *subtitleProvider) preferredSubtitleCandidates(candidates []subti
 		}
 		return leftScore > rightScore
 	})
-	if len(candidates) > maximumDownloadTries {
-		candidates = candidates[:maximumDownloadTries]
-	}
 	return candidates
 }
 

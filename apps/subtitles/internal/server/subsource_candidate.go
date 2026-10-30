@@ -156,7 +156,7 @@ func rankSubSourceCandidates(item library.Item, movie subSourceMovie, language s
 	sort.SliceStable(candidates, func(left, right int) bool {
 		return candidates[left].Score > candidates[right].Score || candidates[left].Score == candidates[right].Score && candidates[left].ReleaseMatch > candidates[right].ReleaseMatch
 	})
-	return candidates[:min(len(candidates), maximumDownloadTries)]
+	return candidates[:min(len(candidates), maximumProviderCandidates)]
 }
 
 func validSubSourceResponse(response subSourceSubtitleResponse) bool {
