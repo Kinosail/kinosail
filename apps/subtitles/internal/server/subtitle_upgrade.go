@@ -33,13 +33,10 @@ func (provider *subtitleProvider) upgradeEligible(item library.Item, language st
 		return false
 	}
 	unchanged := found && record.Size == info.Size() && record.Modified == info.ModTime().UnixNano()
-	if unchanged && record.Frozen {
+	if !unchanged || !record.Managed || record.Frozen || record.Score == 100 {
 		return false
 	}
-	if unchanged && record.Managed && record.Score == 100 || unchanged && now.Sub(time.Unix(record.CheckedAt, 0)) < subtitleUpgradeInterval {
-		return false
-	}
-	return true
+	return now.Sub(time.Unix(record.CheckedAt, 0)) >= subtitleUpgradeInterval
 }
 
 func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item library.Item, language string) (bool, error) {
@@ -66,11 +63,11 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 	key, fingerprint := subtitleRecordKey(item.ID, language), subtitleFingerprint(current)
 	previous, found, ledgerErr := provider.ledger.record(key)
 	managed := ledgerErr == nil && found && previous.Fingerprint == fingerprint && previous.Managed
-	if ledgerErr != nil || found && previous.Fingerprint == fingerprint && previous.Frozen || managed && previous.Score == 100 {
+	if ledgerErr != nil || !managed || previous.Frozen || previous.Score == 100 {
 		return false, ledgerErr
 	}
 	accept := func(candidate subtitleDownloadCandidate) bool {
-		return subtitleUpgradeImproves(candidate, previous, managed)
+		return subtitleUpgradeImproves(candidate, previous)
 	}
 	cleaned, next, err := provider.acquire(ctx, item, language, accept)
 	provider.sidecar.Lock()
@@ -79,7 +76,7 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		return false, nil
 	}
 	if err != nil {
-		provider.recordUpgradeCheck(target, key, current, previous, managed)
+		provider.recordUpgradeCheck(target, key, current, previous) //nolint:contextcheck // Ledger commits must finish after client cancellation.
 		return false, err
 	}
 	if err = provider.retainSubtitleOriginal(cleaned.Original, &next); err != nil {
@@ -95,11 +92,8 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 	return provider.installSubtitleUpgrade(target, key, current, cleaned.Data, previous, next, managed)
 }
 
-func (provider *subtitleProvider) recordUpgradeCheck(target *subtitleSidecar, key string, current []byte, previous subtitleRecord, managed bool) {
-	observed := subtitleRecord{Source: "external"}
-	if managed {
-		observed = previous
-	}
+func (provider *subtitleProvider) recordUpgradeCheck(target *subtitleSidecar, key string, current []byte, previous subtitleRecord) {
+	observed := previous
 	observed.CheckedAt = time.Now().Unix()
 	_ = provider.ledger.store(key, target.record(current, observed))
 }
@@ -113,11 +107,8 @@ func (provider *subtitleProvider) sidecarUnchanged(target *subtitleSidecar, key,
 	return err == nil && recorded == found && record.Fingerprint == previous.Fingerprint && record.CheckedAt == previous.CheckedAt && record.Frozen == previous.Frozen && record.InstalledAt == previous.InstalledAt
 }
 
-func subtitleUpgradeImproves(candidate subtitleDownloadCandidate, previous subtitleRecord, managed bool) bool {
-	if managed {
-		return candidate.Score >= previous.Score+subtitleUpgradeGain
-	}
-	return candidate.ExactHash && candidate.Score == 100 && candidate.ReleaseMatch >= 1
+func subtitleUpgradeImproves(candidate subtitleDownloadCandidate, previous subtitleRecord) bool {
+	return candidate.Score >= previous.Score+subtitleUpgradeGain
 }
 
 func (provider *subtitleProvider) installSubtitleUpgrade(target *subtitleSidecar, key string, current, data []byte, previous, next subtitleRecord, managed bool) (bool, error) {

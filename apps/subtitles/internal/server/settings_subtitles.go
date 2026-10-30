@@ -264,3 +264,11 @@ func (store *settingsStore) applySubtitleLanguages(input subtitleLanguagesInput)
 	}
 	return store.setSubtitleLanguages(languages)
 }
+
+func (store *settingsStore) addInterfaceSubtitleLanguage(interfaceLanguage string) error {
+	language, ok := subtitlelanguage.NormalizeTag(interfaceLanguage)
+	if !ok || language == "en" || !slices.Equal(store.subtitleLanguages(), []string{"en"}) {
+		return nil
+	}
+	return store.setSubtitleLanguages([]string{"en", language})
+}

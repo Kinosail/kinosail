@@ -26,7 +26,7 @@ In **Settings → Languages**, choose the languages and their order. **Playback 
 
 After scans, maintenance fills missing subtitles and considers safer upgrades, with a minimum of 15 minutes between bounded automatic cycles. Existing embedded text and sidecars are considered before a provider search. If the video has only image subtitles (PGS or VobSub) in a selected language, Kinosail reads them with text recognition (OCR) and saves a clean SRT sidecar. This works without a provider account. Provider requests still depend on account quotas and network availability.
 
-Managed sidecars require a score improvement of at least ten points for the conservative automatic upgrade. Unknown sidecars require an exact OpenSubtitles file-hash match; the replaced original is kept as a `.kinosail.bak` recovery copy. Keep that original until the replacement is checked. SubSource sidecars are preserved unchanged under its terms.
+Automatic upgrades apply only to sidecars that Kinosail wrote and that nobody changed since. A candidate must score at least ten points higher, and the replaced file is kept as a `.kinosail.bak` recovery copy. Kinosail never replaces a sidecar that you or another app created. SubSource sidecars are preserved unchanged under its terms.
 
 ## Review uncertain results
 
