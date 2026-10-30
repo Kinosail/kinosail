@@ -86,7 +86,7 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertIn(['https://github.com/Kinosail/kinosail', 'View source on GitHub'], hero_links)
                     self.assertIn([f'{prefix}/docs/', 'Read the docs'], hero_links)
                     self.assertIn([f'{prefix}/quickstart/', 'Get started with Docker'], hero_links)
-                    self.assertIn(['#inside', 'See the Player'], hero_links)
+                    self.assertIn(['#inside', 'See screenshots'], hero_links)
                     for app_name in ('player', 'subtitles'):
                         self.assertEqual(
                             (args.output / f'assets/install/{app_name}.yaml').read_bytes(),
