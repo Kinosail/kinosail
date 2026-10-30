@@ -1,41 +1,38 @@
 #!/usr/bin/env node
 import './gates-pause.mjs';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
+import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
+import { createScanner, forEachSourceFile, is, lineOf, SyntaxKind } from './typescript-source.mjs';
 
 const limit = 80;
 const repo = resolve(new URL('../..', import.meta.url).pathname);
-const manifest = resolve(repo, 'scripts/quality/package.json');
-const require = createRequire(manifest);
-const ts = require('typescript');
 const operands = new Set([
-  ts.SyntaxKind.Identifier,
-  ts.SyntaxKind.PrivateIdentifier,
-  ts.SyntaxKind.NumericLiteral,
-  ts.SyntaxKind.BigIntLiteral,
-  ts.SyntaxKind.StringLiteral,
-  ts.SyntaxKind.NoSubstitutionTemplateLiteral,
-  ts.SyntaxKind.RegularExpressionLiteral,
-  ts.SyntaxKind.TrueKeyword,
-  ts.SyntaxKind.FalseKeyword,
-  ts.SyntaxKind.NullKeyword,
-  ts.SyntaxKind.ThisKeyword,
-  ts.SyntaxKind.SuperKeyword,
+  SyntaxKind.Identifier,
+  SyntaxKind.PrivateIdentifier,
+  SyntaxKind.NumericLiteral,
+  SyntaxKind.BigIntLiteral,
+  SyntaxKind.StringLiteral,
+  SyntaxKind.NoSubstitutionTemplateLiteral,
+  SyntaxKind.RegularExpressionLiteral,
+  SyntaxKind.TrueKeyword,
+  SyntaxKind.FalseKeyword,
+  SyntaxKind.NullKeyword,
+  SyntaxKind.ThisKeyword,
+  SyntaxKind.SuperKeyword,
 ]);
 const structure = new Set([
-  ts.SyntaxKind.OpenBraceToken,
-  ts.SyntaxKind.CloseBraceToken,
-  ts.SyntaxKind.OpenParenToken,
-  ts.SyntaxKind.CloseParenToken,
-  ts.SyntaxKind.OpenBracketToken,
-  ts.SyntaxKind.CloseBracketToken,
-  ts.SyntaxKind.CommaToken,
-  ts.SyntaxKind.SemicolonToken,
-  ts.SyntaxKind.ColonToken,
-  ts.SyntaxKind.EndOfFileToken,
+  SyntaxKind.OpenBraceToken,
+  SyntaxKind.CloseBraceToken,
+  SyntaxKind.OpenParenToken,
+  SyntaxKind.CloseParenToken,
+  SyntaxKind.OpenBracketToken,
+  SyntaxKind.CloseBracketToken,
+  SyntaxKind.CommaToken,
+  SyntaxKind.SemicolonToken,
+  SyntaxKind.ColonToken,
+  SyntaxKind.EndOfFile,
 ]);
 const productionFile = (file) =>
   !file.includes('/third_party/') &&
@@ -65,28 +62,28 @@ const files = execFileSync(
 const failures = [];
 
 const isFunction = (node) =>
-  ts.isFunctionDeclaration(node) ||
-  ts.isFunctionExpression(node) ||
-  ts.isArrowFunction(node) ||
-  ts.isMethodDeclaration(node) ||
-  ts.isConstructorDeclaration(node) ||
-  ts.isGetAccessorDeclaration(node) ||
-  ts.isSetAccessorDeclaration(node);
+  is.isFunctionDeclaration(node) ||
+  is.isFunctionExpression(node) ||
+  is.isArrowFunction(node) ||
+  is.isMethodDeclaration(node) ||
+  is.isConstructorDeclaration(node) ||
+  is.isGetAccessorDeclaration(node) ||
+  is.isSetAccessorDeclaration(node);
 
-const functionName = (node, source) => {
-  if (node.name) return node.name.getText(source);
-  if (ts.isVariableDeclaration(node.parent) && node.parent.name) {
-    return node.parent.name.getText(source);
+const functionName = (node) => {
+  if (node.name) return node.name.getText();
+  if (is.isVariableDeclaration(node.parent) && node.parent.name) {
+    return node.parent.name.getText();
   }
   return '<anonymous>';
 };
 
-const difficulty = (text, kind) => {
-  const scanner = ts.createScanner(ts.ScriptTarget.Latest, true, kind, text);
+const difficulty = (text, variant) => {
+  const scanner = createScanner(true, variant, text);
   const distinctOperators = new Set();
   const distinctOperands = new Set();
   let totalOperands = 0;
-  for (let token = scanner.scan(); token !== ts.SyntaxKind.EndOfFileToken; token = scanner.scan()) {
+  for (let token = scanner.scan(); token !== SyntaxKind.EndOfFile; token = scanner.scan()) {
     if (operands.has(token)) {
       distinctOperands.add(`${token}:${scanner.getTokenText()}`);
       totalOperands += 1;
@@ -100,32 +97,20 @@ const difficulty = (text, kind) => {
   );
 };
 
-for (const file of files) {
-  const source = ts.createSourceFile(
-    file,
-    readFileSync(resolve(repo, file), 'utf8'),
-    ts.ScriptTarget.Latest,
-    true,
-    file.endsWith('.tsx')
-      ? ts.ScriptKind.TSX
-      : file.endsWith('.ts')
-        ? ts.ScriptKind.TS
-        : ts.ScriptKind.JS,
-  );
+await forEachSourceFile(repo, files, (file, source) => {
   const visit = (node) => {
     if (isFunction(node) && node.body) {
-      const value = difficulty(node.body.getText(source), source.languageVariant);
+      const value = difficulty(node.body.getText(), source.languageVariant);
       if (value >= limit) {
-        const position = source.getLineAndCharacterOfPosition(node.getStart(source));
         failures.push(
-          `${file}:${position.line + 1}: ${functionName(node, source)} has Halstead difficulty ${value.toFixed(2)}; maximum is less than ${limit}`,
+          `${file}:${lineOf(source, node)}: ${functionName(node)} has Halstead difficulty ${value.toFixed(2)}; maximum is less than ${limit}`,
         );
       }
     }
-    ts.forEachChild(node, visit);
+    node.forEachChild(visit);
   };
   visit(source);
-}
+});
 
 if (failures.length > 0) {
   console.error(failures.join('\n'));

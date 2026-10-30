@@ -13,7 +13,7 @@ function check(t, script, file, source) {
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const tools = join(root, 'scripts/quality');
   mkdirSync(tools, { recursive: true });
-  for (const name of [script, 'gates-pause.mjs', 'package.json']) {
+  for (const name of [script, 'gates-pause.mjs', 'package.json', 'typescript-source.mjs']) {
     copyFileSync(join(quality, name), join(tools, name));
   }
   symlinkSync(join(quality, 'node_modules'), join(tools, 'node_modules'), 'dir');
