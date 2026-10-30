@@ -3,8 +3,9 @@ package server
 import "html/template"
 
 var uiIconNames = map[string]bool{
-	"audiobook": true, "back": true, "book": true, "cast": true, "check": true, "collection": true, "music": true, "pip": true,
-	"photo": true, "play": true, "playlist": true, "plus": true, "shows": true, "star": true,
+	"audiobook": true, "back": true, "book": true, "bookmark": true, "cast": true, "check": true, "collection": true, "film": true,
+	"history": true, "home": true, "music": true, "photo": true, "pip": true, "play": true, "playlist": true, "plus": true,
+	"shows": true, "star": true, "unwatched": true,
 }
 
 func uiIcon(name string) template.HTML {
