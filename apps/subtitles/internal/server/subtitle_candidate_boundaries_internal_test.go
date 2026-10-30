@@ -43,7 +43,7 @@ func TestOpenSubtitlesCandidateBoundariesAndOrdering(t *testing.T) {
 		response.Data = append(response.Data, openSubtitlesSearchItem{Type: "subtitle", Attributes: attributes[index]})
 	}
 	candidates := rankOpenSubtitlesCandidates(item, "en", response)
-	if len(candidates) != maximumDownloadTries || candidates[0].FileID != 3 || candidates[2].FileID != 1 {
+	if len(candidates) != len(attributes) || candidates[0].FileID != 3 || candidates[2].FileID != 1 || candidates[3].FileID != 2 {
 		t.Fatalf("ordered OpenSubtitles candidates = %#v", candidates)
 	}
 	equalHigh, equalLow := valid, valid

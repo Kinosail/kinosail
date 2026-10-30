@@ -122,7 +122,7 @@ func (provider *subSourceProvider) download(ctx context.Context, candidate subSo
 	if response.StatusCode == http.StatusOK && errors.Is(err, errSubtitleDownloadTooLarge) {
 		availabilityErr = nil
 	}
-	provider.health.observe("SubSource", response, availabilityErr)
+	provider.health.observeFile("SubSource", response, availabilityErr)
 	if err != nil {
 		return nil, err
 	}

@@ -30,8 +30,9 @@ func (provider *subtitleProvider) subDLCandidateSearch(ctx context.Context, item
 }
 
 const (
-	minimumSubtitleScore = 60
-	maximumDownloadTries = 3
+	minimumSubtitleScore      = 60
+	maximumDownloadTries      = 3
+	maximumProviderCandidates = 10
 )
 
 type subDLResult struct {
@@ -99,7 +100,7 @@ func rankSubDLCandidates(item library.Item, language string, response subDLRespo
 		return nil
 	}
 	sortSubDLCandidates(candidates)
-	return candidates[:min(len(candidates), maximumDownloadTries)]
+	return candidates[:min(len(candidates), maximumProviderCandidates)]
 }
 
 func subDLCandidates(item library.Item, subtitle subDLSubtitle) ([]subtitleCandidate, bool) {

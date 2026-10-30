@@ -56,8 +56,16 @@ func subtitleTimeDigits(value string) (int, bool) {
 
 func (provider *subtitleProvider) downloadSubtitleCandidates(ctx context.Context, item library.Item, candidates []subtitleDownloadCandidate, accept func(subtitleDownloadCandidate) bool) (cleanedSubtitle, subtitleRecord, error) {
 	attempt := subtitleCandidateAttempt{provider: provider, ctx: ctx, item: item}
+	tries := 0
 	for _, candidate := range candidates {
-		if cleaned, record, ok := attempt.download(candidate, accept); ok {
+		if tries >= maximumDownloadTries {
+			break
+		}
+		if !attempt.acceptCandidate(candidate, accept) { //nolint:contextcheck // Ledger commits must finish after client cancellation.
+			continue
+		}
+		tries++
+		if cleaned, record, ok := attempt.download(candidate); ok {
 			return cleaned, record, nil
 		}
 	}
@@ -72,10 +80,7 @@ type subtitleCandidateAttempt struct {
 	audioErr error
 }
 
-func (attempt *subtitleCandidateAttempt) download(candidate subtitleDownloadCandidate, accept func(subtitleDownloadCandidate) bool) (cleanedSubtitle, subtitleRecord, bool) {
-	if !attempt.acceptCandidate(candidate, accept) {
-		return cleanedSubtitle{}, subtitleRecord{}, false
-	}
+func (attempt *subtitleCandidateAttempt) download(candidate subtitleDownloadCandidate) (cleanedSubtitle, subtitleRecord, bool) {
 	cleaned, ok := attempt.prepareCandidate(candidate)
 	if !ok {
 		return cleanedSubtitle{}, subtitleRecord{}, false

@@ -25,25 +25,25 @@ func (provider *subtitleProvider) searchSubDL(ctx context.Context, item library.
 	query.Set("api_key", provider.config.APIKey)
 	query.Set("client", "kinosail-subtitles")
 	query.Set("file_name", filepath.Base(item.Path))
+	query.Set("type", "movie")
 	title, year := subtitleSearchIdentity(item)
+	ids := item.ProviderIDs
+	if item.Show != "" {
+		title, year, ids = item.Show, item.ShowYear, item.ShowProviderIDs
+		query.Set("type", "tv")
+		query.Set("season_number", strconv.Itoa(item.Season))
+		query.Set("episode_number", strconv.Itoa(item.Episode))
+	}
 	query.Set("film_name", title)
 	query.Set("hi", "1")
 	query.Set("languages", providerLanguage)
 	query.Set("releases", "1")
 	query.Set("subs_per_page", "30")
-	query.Set("type", "movie")
 	query.Set("unpack", "1")
 	if year != "" {
 		query.Set("year", year)
 	}
-	setSubDLIDs(query, item.ProviderIDs)
-	if item.Show != "" {
-		query.Set("film_name", item.Show)
-		query.Set("season_number", strconv.Itoa(item.Season))
-		query.Set("episode_number", strconv.Itoa(item.Episode))
-		query.Set("type", "tv")
-		setSubDLIDs(query, item.ShowProviderIDs)
-	}
+	setSubDLIDs(query, ids)
 	endpoint.RawQuery = query.Encode()
 	var found subDLResponse
 	if err := provider.json(ctx, endpoint.String(), &found); err != nil {
