@@ -34,7 +34,7 @@ func (manager *Manager) Trim(limit int64, now time.Time) (Trim, error) {
 			continue
 		}
 		result.Bytes += info.Size()
-		if job.State == "ready" {
+		if job.State == "ready" || job.State == "failed" {
 			candidates = append(candidates, trimCandidate{job, info.Size(), lastUse(job)})
 		}
 	}
