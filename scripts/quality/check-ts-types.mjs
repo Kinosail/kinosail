@@ -1,39 +1,28 @@
 #!/usr/bin/env node
 import './gates-pause.mjs';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
+import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
+import { forEachSourceFile, lineOf, SyntaxKind } from './typescript-source.mjs';
 
 const repo = resolve(new URL('../..', import.meta.url).pathname);
-const manifest = resolve(repo, 'scripts/quality/package.json');
-const require = createRequire(manifest);
-const ts = require('typescript');
 const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '*.ts', '*.tsx'], {
   cwd: repo,
   encoding: 'utf8',
 }).trim().split('\n').filter(Boolean).filter((file) => !file.includes('/.codex/') && existsSync(resolve(repo, file)));
 const failures = [];
 
-for (const file of files) {
-  const source = ts.createSourceFile(
-    file,
-    readFileSync(resolve(repo, file), 'utf8'),
-    ts.ScriptTarget.Latest,
-    true,
-    file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
-  );
+forEachSourceFile(repo, files, (file, source) => {
   function visit(node) {
-    if (node.kind === ts.SyntaxKind.AnyKeyword || node.kind === ts.SyntaxKind.UnknownKeyword) {
-      const position = source.getLineAndCharacterOfPosition(node.getStart(source));
-      const type = node.kind === ts.SyntaxKind.AnyKeyword ? 'any' : 'unknown';
-      failures.push(`${file}:${position.line + 1}: forbidden TypeScript type ${type}`);
+    if (node.kind === SyntaxKind.AnyKeyword || node.kind === SyntaxKind.UnknownKeyword) {
+      const type = node.kind === SyntaxKind.AnyKeyword ? 'any' : 'unknown';
+      failures.push(`${file}:${lineOf(source, node)}: forbidden TypeScript type ${type}`);
     }
-    ts.forEachChild(node, visit);
+    node.forEachChild(visit);
   }
   visit(source);
-}
+});
 
 if (failures.length) {
   console.error(failures.join('\n'));

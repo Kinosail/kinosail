@@ -2,7 +2,7 @@
   "name": "@kinosail/e2e",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@12.15.0",
+  "packageManager": "pnpm@12.16.1",
   "scripts": {
     "test": "../../../scripts/tooling/gate-shell.sh -c 'exec playwright test \"$@\"' --"
   },
