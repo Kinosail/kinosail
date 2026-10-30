@@ -12,6 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/httpguard"
+	sharedmaintenance "github.com/MikeO7/kinosail/packages/maintenance"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
@@ -42,6 +43,7 @@ type Config struct {
 	BackupInterval      time.Duration
 	BackupRetention     int
 	MaintenanceInterval time.Duration
+	SubtitleCacheLimit  int64
 	Configuration       configuration.Snapshot
 	InternetAccess      *remoteaccess.Manager
 	TrustedHTTPS        *trustedhttps.Manager
@@ -122,6 +124,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 		subtitleManager.schedule(config.Lifecycle)
 	}
 	maintenance := newMaintenanceManager(lifecycle, backups, metadata, config.MaintenanceInterval)
+	maintenance.SetTrim(sharedmaintenance.CacheTrim{CacheDir: config.CacheDir, SubtitleLimit: config.SubtitleCacheLimit}.Run)
 	events := wireLiveEvents(index)
 	subtitles.ledger.setPublisher(func() { events.Publish("", "subtitles.updated", "/api/v1/subtitle-library") })
 	mux := http.NewServeMux()

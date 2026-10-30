@@ -21,6 +21,7 @@ type ServerValues struct {
 	BackupDir, BackupKey        string
 	BackupInterval              time.Duration
 	BackupRetention             int
+	SubtitleCacheLimit          int64
 	FFmpeg, FFprobe, FPCalc     string
 	AuthURL, ProxyToken         string
 	ScanInterval                time.Duration
@@ -45,6 +46,7 @@ func BuildServerValues(config ServerSettings, authURL string) ServerValues {
 		BackupKey:              config.String("backup.key"),
 		BackupInterval:         config.Duration("backup.interval"),
 		BackupRetention:        config.Int("backup.retention"),
+		SubtitleCacheLimit:     int64(config.Int("cache.subtitles_limit_gb")) << 30,
 		FFmpeg:                 config.String("binaries.ffmpeg"),
 		FFprobe:                config.String("binaries.ffprobe"),
 		FPCalc:                 config.String("binaries.fpcalc"),

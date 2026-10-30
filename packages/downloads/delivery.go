@@ -86,6 +86,7 @@ func (manager *Manager) remove(profileID, id string, files deliveryFiles) error 
 	delete(manager.restoring, id)
 	delete(manager.jobs, id)
 	_ = os.Remove(job.File + ".manifest")
+	_ = os.Remove(useMarker(job))
 	manager.mu.Unlock()
 	_ = os.Remove(mediaTrash)
 	_ = os.Remove(stateTrash)
@@ -146,6 +147,7 @@ func serve(writer http.ResponseWriter, request *http.Request, job Job, files del
 	if !info.Mode().IsRegular() || info.Size() != job.Size {
 		return errors.New("prepared download size changed")
 	}
+	markUse(job, time.Now())
 	writer.Header().Set("ETag", `"`+job.SHA256+`"`)
 	if digest, err := hex.DecodeString(job.SHA256); err == nil {
 		writer.Header().Set("Repr-Digest", "sha-256=:"+base64.StdEncoding.EncodeToString(digest)+":")

@@ -117,9 +117,11 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 	path := embeddedSubtitlePath(options.CacheDir, item, stream)
 	if options.Timeline == nil || len(options.Timeline.Omitted) == 0 {
 		if privatefile.Exists(path, embeddedSubtitleLimit) {
+			markEmbeddedUse(path, time.Now())
 			return EmbeddedSubtitle{Path: path}, nil
 		}
 	} else if data, err := readEmbeddedSubtitle(path); err == nil {
+		markEmbeddedUse(path, time.Now())
 		return presentEmbeddedSubtitle(path, data, options.Timeline), nil
 	}
 	if convertedSubtitle(facts, stream) {

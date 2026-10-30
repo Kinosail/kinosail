@@ -33,7 +33,8 @@ const (
 )
 
 var specs = append(applicationSpecs(configurationcore.CommonApplicationFields("127.0.0.1:38127", DefaultSupportURL)),
-	Spec{"integrations.google_cast.app_id", "KINOSAIL_GOOGLE_CAST_APP_ID", "", text, false, true})
+	Spec{"integrations.google_cast.app_id", "KINOSAIL_GOOGLE_CAST_APP_ID", "", text, false, true},
+	Spec{"cache.downloads_limit_gb", "KINOSAIL_DOWNLOAD_CACHE_LIMIT_GB", "10", number, false, true})
 
 func applicationSpecs(fields []configurationcore.ApplicationField) []Spec {
 	result := make([]Spec, len(fields))

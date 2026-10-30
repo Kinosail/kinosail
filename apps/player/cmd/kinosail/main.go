@@ -86,12 +86,13 @@ func configuredServerConfig(ctx context.Context, configured configuration.Snapsh
 	values := appcli.BuildServerValues(configured, configuredAuthURL(configured))
 	config := server.Config{
 		Lifecycle: ctx, MediaDir: values.MediaDir, DataDir: values.DataDir, CacheDir: values.CacheDir,
-		BackupDir: values.BackupDir, BackupKey: values.BackupKey, BackupInterval: values.BackupInterval, BackupRetention: values.BackupRetention,
+		BackupDir: values.BackupDir, BackupKey: values.BackupKey, BackupInterval: values.BackupInterval, BackupRetention: values.BackupRetention, SubtitleCacheLimit: values.SubtitleCacheLimit,
 		FFmpeg: values.FFmpeg, FFprobe: values.FFprobe, ProbeHardware: true, FPCalc: values.FPCalc, RequireAuth: true,
 		AuthURL: values.AuthURL, ProxyToken: values.ProxyToken, ScanInterval: values.ScanInterval, DLNAURL: values.DLNAURL,
 		Configuration: configured, Supporter: server.SupporterConfig{ActivationURL: values.SupporterActivationURL, SupportURL: values.SupportURL},
 		Metadata: values.Metadata, OIDC: values.OIDC, SAML: values.SAML, SCIM: values.SCIM, MCP: values.MCP, Notifications: values.Notifications,
 	}
+	config.DownloadCacheLimit = int64(configured.Int("cache.downloads_limit_gb")) << 30
 	config.InternetAccess, config.TrustedHTTPS = internet, trusted
 	return config
 }

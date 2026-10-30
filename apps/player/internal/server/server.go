@@ -14,6 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/httpguard"
+	sharedmaintenance "github.com/MikeO7/kinosail/packages/maintenance"
 	markerlogic "github.com/MikeO7/kinosail/packages/markers"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
@@ -97,6 +98,8 @@ type Config struct {
 	BackupInterval      time.Duration
 	BackupRetention     int
 	MaintenanceInterval time.Duration
+	SubtitleCacheLimit  int64
+	DownloadCacheLimit  int64
 	TranscodeCacheLimit int64
 	Configuration       configuration.Snapshot
 	SCIM                SCIMConfig
@@ -193,6 +196,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 		markers.Schedule(config.Lifecycle, index.AddAnalyzer, markerProbe(probe))
 	}
 	downloads := newDownloadManager(config.Lifecycle, config.CacheDir, config.FFmpeg, settings, workloads, probe)
+	maintenance.SetTrim(sharedmaintenance.CacheTrim{CacheDir: config.CacheDir, SubtitleLimit: config.SubtitleCacheLimit, DownloadLimit: config.DownloadCacheLimit, Downloads: downloads.Manager}.Run)
 	events := wireLiveEvents(index, downloads, homeAssistant)
 	if downloads.Err() != nil {
 		return unavailableApplication(config, "download cache is unavailable")
