@@ -82,20 +82,7 @@ func (provider *subtitleProvider) restorePrevious(item library.Item, language st
 	if err = provider.retainSubtitleOriginal(original, &record); err != nil {
 		return err
 	}
-	if err = target.write("", previous, false); err != nil {
-		return err
-	}
-	if err = target.write(".kinosail.bak", current, false); err != nil {
-		_ = target.write("", current, false)
-		return err
-	}
-	record = target.record(previous, record)
-	if err = provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "restored", "restore"); err != nil {
-		_ = target.write("", current, false)
-		_ = target.write(".kinosail.bak", previous, false)
-		return err
-	}
-	return nil
+	return provider.installSidecar(target, sidecarInstall{Key: key, Data: previous, Current: current, Backup: true, PreviousBackup: previous, Record: record, Action: "restored", Reason: "restore"})
 }
 
 func subtitleBackupAvailable(item library.Item, language string) bool {

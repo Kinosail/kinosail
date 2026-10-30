@@ -162,12 +162,7 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 	if err = provider.retainSubtitleOriginal(cleaned.Original, &record); err != nil {
 		return err
 	}
-	if err = target.write("", cleaned.Data, true); err != nil {
-		return err
-	}
-	record = target.record(cleaned.Data, record)
-	if err = provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "added", "missing"); err != nil {
-		_ = target.remove()
+	if err = provider.installSidecar(target, sidecarInstall{Key: subtitleRecordKey(item.ID, language), Data: cleaned.Data, Record: record, Action: "added", Reason: "missing"}); err != nil { //nolint:contextcheck // Ledger commits must finish after client cancellation.
 		return err
 	}
 	provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, provider.preference()), "installed", "", item, time.Now())

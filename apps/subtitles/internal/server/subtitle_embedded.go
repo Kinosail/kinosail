@@ -43,21 +43,17 @@ func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.I
 	if err != nil {
 		return manager.provider.fetchSidecar(ctx, item, language)
 	}
-	if err = target.write("", cleaned.Data, true); err != nil {
+	now := time.Now().Unix()
+	record := subtitleRecord{Source: source, Score: score, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true, Role: role}
+	if err = manager.provider.retainSubtitleOriginal(cleaned.Original, &record); err != nil {
 		return err
 	}
-	now := time.Now().Unix()
-	record := target.record(cleaned.Data, subtitleRecord{Source: source, Score: score, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true, Role: role})
-	err = manager.provider.retainSubtitleOriginal(cleaned.Original, &record)
-	if err == nil {
-		err = manager.provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "added", map[string]string{"embedded": "embedded", "ocr": "image"}[source]) //nolint:contextcheck // Ledger commits must finish after client cancellation.
+	install := sidecarInstall{Key: subtitleRecordKey(item.ID, language), Data: cleaned.Data, Record: record, Action: "added", Reason: map[string]string{"embedded": "embedded", "ocr": "image"}[source]}
+	if err = manager.provider.installSidecar(target, install); err != nil { //nolint:contextcheck // Ledger commits must finish after client cancellation.
+		return err
 	}
-	if err != nil {
-		_ = target.remove()
-	} else {
-		manager.provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, manager.settings.subtitlePreference()), "installed", "", item, time.Now())
-	}
-	return err
+	manager.provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, manager.settings.subtitlePreference()), "installed", "", item, time.Now()) //nolint:contextcheck // Ledger commits must finish after client cancellation.
+	return nil
 }
 
 func (manager *subtitleManager) embeddedSubtitle(ctx context.Context, item library.Item, language string) ([]byte, bool) {

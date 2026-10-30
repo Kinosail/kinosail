@@ -124,19 +124,12 @@ func (provider *subtitleProvider) installSubtitleUpgrade(target *subtitleSidecar
 	if err := provider.retainSubtitleRecoveryOriginal(current, previous, &next); err != nil {
 		return false, err
 	}
-	if backupErr := target.write(".kinosail.bak", current, false); backupErr != nil {
-		return false, backupErr
-	}
-	if err := target.write("", data, false); err != nil {
-		return false, err
-	}
 	next.Backup = true
 	reason := "exact-hash"
 	if managed {
 		reason = "higher-score"
 	}
-	if err := provider.ledger.storeHistory(key, target.record(data, next), "updated", reason); err != nil {
-		_ = target.write("", current, false)
+	if err := provider.installSidecar(target, sidecarInstall{Key: key, Data: data, Current: current, Backup: true, Record: next, Action: "updated", Reason: reason}); err != nil {
 		return false, err
 	}
 	return true, nil
