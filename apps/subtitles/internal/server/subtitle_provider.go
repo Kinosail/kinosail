@@ -145,6 +145,7 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 	}
 	defer target.close()
 	if _, err := target.root.Lstat(target.name); err == nil {
+		provider.ledger.noteSearch(subtitleSearchKey(item.ID, language, provider.preference()), "exists", "A subtitle file for this language already exists", item, time.Now()) //nolint:contextcheck // Ledger commits must finish after client cancellation.
 		return os.ErrExist
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return err

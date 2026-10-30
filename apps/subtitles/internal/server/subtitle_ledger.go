@@ -158,7 +158,7 @@ func validSubtitleRecordTimes(record subtitleRecord) bool {
 }
 
 func validSubtitleSearchRecord(record subtitleSearchRecord) bool {
-	return oneOf(record.Outcome, "installed", "no-result", "provider-error") && record.Attempts >= 0 && record.Attempts <= 1000 && record.CheckedAt >= 0 && record.CheckedAt <= time.Now().Add(24*time.Hour).Unix() && record.NextAt >= record.CheckedAt && record.NextAt <= time.Now().Add(8*24*time.Hour).Unix() && len(record.SafeError) <= 256 && record.MediaSize >= 0 && record.MediaModified >= 0
+	return oneOf(record.Outcome, "installed", "no-result", "provider-error", "exists") && record.Attempts >= 0 && record.Attempts <= 1000 && record.CheckedAt >= 0 && record.CheckedAt <= time.Now().Add(24*time.Hour).Unix() && record.NextAt >= record.CheckedAt && record.NextAt <= time.Now().Add(8*24*time.Hour).Unix() && len(record.SafeError) <= 256 && record.MediaSize >= 0 && record.MediaModified >= 0
 }
 
 func validSubtitleDay(value string) bool {

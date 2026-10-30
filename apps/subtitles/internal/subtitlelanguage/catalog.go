@@ -211,3 +211,23 @@ func supports(tag string, provider Provider) bool {
 	_, ok := Code(tag, provider)
 	return ok
 }
+
+func NormalizeFileName(value string) (string, bool) {
+	if tag, ok := NormalizeLocal(value); ok {
+		return tag, true
+	}
+	return languageByName(value)
+}
+
+func languageByName(value string) (string, bool) {
+	if len(value) < 4 || len(value) > 32 {
+		return "", false
+	}
+	once.Do(initCatalog)
+	for _, choice := range choices {
+		if !strings.Contains(choice.Tag, "-") && strings.EqualFold(choice.Name, value) {
+			return choice.Tag, true
+		}
+	}
+	return "", false
+}

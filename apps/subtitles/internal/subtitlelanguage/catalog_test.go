@@ -178,3 +178,16 @@ func TestProviderMappingSnapshotsHaveReviewedDigestsAndCounts(t *testing.T) {
 		}
 	}
 }
+
+func TestNormalizeFileNameAcceptsEnglishLanguageNamesOnlyForFileNames(t *testing.T) {
+	for input, expected := range map[string]string{"English": "en", "english": "en", "Spanish": "es", "pt-br": "pt-BR", "en": "en"} {
+		if actual, ok := NormalizeFileName(input); !ok || actual != expected {
+			t.Errorf("NormalizeFileName(%q) = %q, %v; want %q, true", input, actual, ok, expected)
+		}
+	}
+	for _, input := range []string{"forced", "sdh", "Default", "Brazillian Portuguese", "eng1", "x"} {
+		if actual, ok := NormalizeFileName(input); ok {
+			t.Errorf("NormalizeFileName(%q) = %q, true; want rejection", input, actual)
+		}
+	}
+}

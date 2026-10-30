@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"os"
+	"slices"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
@@ -41,7 +42,9 @@ func (manager *subtitleManager) embeddedPlanCoverage(language string, media prob
 }
 
 func (manager *subtitleManager) sidecarPlanCoverage(item library.Item, language string) (bool, []string) {
-	ready, tracks := subtitleCoverage(item, language)
+	language = canonicalSubtitleLanguage(language)
+	_, tracks, missing := subtitleCoverageAll(item, manager.coverageLanguages(language))
+	ready := !slices.Contains(missing, language)
 	preference := manager.preference()
 	if preference != "sdh" {
 		return ready, tracks
@@ -74,4 +77,15 @@ func recordedSidecarUnchanged(path string, record subtitleRecord) bool {
 	}
 	data, err := readUpgradeSidecar(path)
 	return err == nil && record.Fingerprint == subtitleFingerprint(data)
+}
+
+func (manager *subtitleManager) coverageLanguages(language string) []string {
+	languages := []string{language}
+	if manager.settings != nil {
+		languages = manager.settings.subtitleLanguages()
+	}
+	if !slices.Contains(languages, language) {
+		languages = append(slices.Clone(languages), language)
+	}
+	return languages
 }

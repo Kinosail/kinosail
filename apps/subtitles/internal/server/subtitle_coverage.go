@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -57,11 +58,6 @@ func (manager *subtitleManager) planCoverageAllFacts(item library.Item, language
 	return len(missing) == 0, tracks, missing
 }
 
-func subtitleCoverage(item library.Item, language string) (bool, []string) {
-	ready, labels, _ := subtitleCoverageAll(item, []string{canonicalSubtitleLanguage(language)})
-	return ready, labels
-}
-
 func subtitleCoverageAll(item library.Item, languages []string) (bool, []string, []string) {
 	mediaBase := strings.TrimSuffix(item.Path, filepath.Ext(item.Path))
 	labels := make([]string, 0, len(item.Subtitles))
@@ -89,7 +85,7 @@ func subtitleTrackLanguage(path, mediaBase string, languages []string) (string, 
 		return "Default", ""
 	}
 	for _, part := range strings.Split(strings.TrimPrefix(suffix, "."), ".") {
-		if canonical := canonicalSubtitleLanguage(part); canonical != "" {
+		if canonical, ok := subtitlelanguage.NormalizeFileName(part); ok {
 			return canonical, canonical
 		}
 	}
