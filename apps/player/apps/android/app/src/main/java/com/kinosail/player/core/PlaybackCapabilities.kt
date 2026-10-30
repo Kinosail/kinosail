@@ -2,7 +2,6 @@ package com.kinosail.player.core
 
 import android.content.Context
 import android.media.MediaCodecList
-import android.os.Build
 import android.view.Display
 import android.view.WindowManager
 
@@ -41,7 +40,7 @@ data class PlaybackCapabilities(
                 "eac3" to "audio/eac3").filterValues(types::contains).keys.toList()
                 .ifEmpty { listOf("aac", "mp3") }
             val hdr = mutableListOf("sdr")
-            if (Build.VERSION.SDK_INT >= 24 && video.any { it == "hevc" || it == "av1" }) {
+            if (video.any { it == "hevc" || it == "av1" }) {
                 val display = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
                 val supported = display.hdrCapabilities?.supportedHdrTypes?.toSet().orEmpty()
                 if (Display.HdrCapabilities.HDR_TYPE_HDR10 in supported) hdr += "hdr10"
