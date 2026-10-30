@@ -58,7 +58,7 @@ dependencies {
     implementation("androidx.media3:media3-datasource-okhttp:1.11.1")
     implementation("androidx.exifinterface:exifinterface:1.4.2")
     implementation("androidx.mediarouter:mediarouter:1.8.1")
-    implementation("com.google.android.gms:play-services-cast-framework:23.0.0")
+    implementation("com.google.android.gms:play-services-cast-framework:22.3.1")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.17")
     testImplementation(platform("androidx.compose:compose-bom:2026.09.00"))

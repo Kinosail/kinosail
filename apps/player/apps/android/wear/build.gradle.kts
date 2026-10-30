@@ -41,7 +41,7 @@ dependencies {
     implementation("androidx.health:health-services-client:1.1.0")
     implementation("androidx.core:core-ktx:1.19.1")
     implementation("com.google.android.gms:play-services-wearable:20.0.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.17")

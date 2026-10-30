@@ -40,6 +40,9 @@ updates:
     groups:
       dependencies:
         patterns: ["*"]
+    ignore:
+      - dependency-name: com.google.android.gms:play-services-cast-framework
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: docker
     directory: /apps/player
     schedule:
