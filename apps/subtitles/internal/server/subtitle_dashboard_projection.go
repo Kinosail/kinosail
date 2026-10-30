@@ -23,7 +23,7 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 		return manager.subtitleHistoryProjection(options, items)
 	}
 	languages := manager.settings.subtitleLanguages()
-	data := subtitleDashboardData{subtitleDashboardOptions: options, ServerName: manager.settings.serverName(), Language: languages[0], Languages: languages, LanguageSummary: strings.Join(languages, ", "), ProviderConfigured: manager.provider.configured(), Preference: manager.settings.subtitlePreference(), PageSize: subtitleLibraryPageSize, Items: []subtitleDashboardItem{}}
+	data := subtitleDashboardData{subtitleDashboardOptions: options, ServerName: manager.settings.serverName(), Language: languages[0], Languages: languages, LanguageSummary: strings.Join(languages, ", "), ProviderConfigured: manager.provider.configured(), Preference: manager.settings.subtitlePreference(), PageSize: subtitleLibraryPageSize, Items: []subtitleDashboardItem{}, Automation: manager.automationStatus()}
 	for _, language := range languages {
 		data.ProviderReady = data.ProviderReady || manager.provider.supports(language)
 		data.ProviderAvailable = data.ProviderAvailable || subtitleProviderAvailable(language)

@@ -56,6 +56,7 @@ func (manager *subtitleManager) runAutomation(ctx context.Context, trigger <-cha
 			}
 		}
 		result := manager.automate(ctx, subtitleAutomationLimit)
+		manager.noteAutomation(result, time.Now())
 		next = time.Now().Add(subtitleAutomationInterval)
 		if result.Attempted > 0 {
 			slog.Info("automatic subtitle maintenance completed", "attempted", result.Attempted, "added", result.Added, "upgraded", result.Upgraded)

@@ -91,6 +91,7 @@ type subtitleDashboardData struct {
 	Providers          []subtitleProviderHealth `json:"providers"`
 	Items              []subtitleDashboardItem  `json:"items"`
 	History            []subtitleHistoryView    `json:"history,omitempty"`
+	Automation         subtitleAutomationStatus `json:"automation"`
 }
 
 type subtitleManager struct {
@@ -103,6 +104,7 @@ type subtitleManager struct {
 	drafts           subtitleDraftStore
 	operations       *subtitleOperations
 	automationCursor int
+	automation       subtitleAutomationClock
 	ocrOnce          sync.Once
 	ocr              *ocrLanguageStore
 }

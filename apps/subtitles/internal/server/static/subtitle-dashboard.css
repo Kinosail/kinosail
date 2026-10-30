@@ -48,10 +48,10 @@
 .subtitle-coverage-states>a{display:inline-flex;min-height:44px;align-items:center;gap:1rem;color:var(--muted);font-size:.8rem}
 .subtitle-coverage-states>a:hover .subtitle-state{text-decoration:underline;text-underline-offset:.3em}
 .subtitle-coverage-states strong{color:var(--text);font-size:1rem;font-weight:500;font-variant-numeric:tabular-nums}
-.subtitle-dashboard .subtitle-state{display:inline-flex;align-items:center;gap:.45rem;color:var(--text);font-size:.78rem;font-weight:500;white-space:normal}
+.subtitle-dashboard .subtitle-state{display:inline-flex;align-items:center;gap:.5rem;color:var(--text);font-size:.85rem;font-weight:600;white-space:normal}
 .subtitle-dashboard .subtitle-state:before{flex:0 0 5px;width:5px;height:5px;border-radius:50%;background:var(--muted);content:""}
-.subtitle-dashboard .subtitle-state.ready:before{background:var(--signal)}
-.subtitle-dashboard .subtitle-state.wanted:before{background:var(--text)}
+.subtitle-dashboard .subtitle-state.ready:before{background:var(--success)}
+.subtitle-dashboard .subtitle-state.wanted:before,.subtitle-dashboard .subtitle-state.limited:before{background:var(--warning)}
 .subtitle-dashboard .subtitle-state.unavailable:before{background:var(--danger)}
 .subtitle-dashboard .subtitle-state.pending:before{background:transparent;outline:1px solid var(--muted)}
 .subtitle-background-note,.subtitle-update-note{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;padding:.8rem 0;color:var(--muted);font-size:.78rem;line-height:1.6}
@@ -138,6 +138,7 @@
 .subtitle-system-intro p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.6}
 .subtitle-system-intro strong{color:var(--text);font-weight:500}
 .subtitle-system-intro .subtitle-system-correction{flex-basis:100%;color:var(--text)}
+.subtitle-system-intro .subtitle-system-schedule{flex-basis:100%}
 .subtitle-system-intro form{margin:0}
 .subtitle-system-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:2.5rem;padding-top:1.5rem}
 .subtitle-system-grid h3{margin:0 0 .7rem;font-size:.8rem;font-weight:550}
