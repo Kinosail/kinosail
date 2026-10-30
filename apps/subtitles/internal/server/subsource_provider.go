@@ -13,7 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
@@ -149,7 +148,7 @@ func readSubSourceArchive(archive *zip.Reader, item library.Item) ([]byte, error
 		}
 		data, readErr := io.ReadAll(io.LimitReader(reader, (4<<20)+1))
 		_ = reader.Close()
-		if readErr == nil && len(data) <= 4<<20 && utf8.Valid(data) && validSubtitlePayload(data) {
+		if readErr == nil && len(data) <= 4<<20 && validSubtitlePayload(data) {
 			if subtitle != nil {
 				return nil, errors.New("SubSource archive is ambiguous")
 			}

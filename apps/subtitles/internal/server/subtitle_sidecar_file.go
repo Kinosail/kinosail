@@ -5,13 +5,16 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
 type subtitleSidecar struct {
-	root *os.Root
-	name string
+	root  *os.Root
+	name  string
+	media string
 }
 
 func (provider *subtitleProvider) openSidecar(item library.Item, language string) (*subtitleSidecar, error) {
@@ -30,7 +33,7 @@ func (provider *subtitleProvider) openSidecar(item library.Item, language string
 		parent, err := root.OpenRoot(relative)
 		_ = root.Close()
 		if err == nil {
-			return &subtitleSidecar{parent, filepath.Base(subtitleSidecarPath(item, language))}, nil
+			return &subtitleSidecar{parent, filepath.Base(subtitleSidecarPath(item, language)), filepath.Base(item.Path)}, nil
 		}
 	}
 	return nil, errors.New("subtitle destination is outside the Library")
@@ -44,9 +47,15 @@ func (file *subtitleSidecar) read(suffix string) ([]byte, error) {
 
 func (file *subtitleSidecar) write(suffix string, data []byte, exclusive bool) error {
 	name := file.name + suffix
-	temporary := ".kinosail-subtitle-" + rand.Text()
+	file.removeStaleTemporaries(time.Now())
+	temporary := sidecarTemporaryPrefix + rand.Text()
 	output, err := file.root.OpenFile(temporary, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
 	if err != nil {
+		return err
+	}
+	if err = output.Chmod(file.mode(name)); err != nil {
+		_ = output.Close()
+		_ = file.root.Remove(temporary)
 		return err
 	}
 	defer func() { _ = output.Close(); _ = file.root.Remove(temporary) }()
@@ -86,3 +95,35 @@ func (file *subtitleSidecar) record(data []byte, record subtitleRecord) subtitle
 }
 
 func (file *subtitleSidecar) remove() error { return file.root.Remove(file.name) }
+
+const sidecarTemporaryPrefix = ".kinosail-subtitle-"
+
+func (file *subtitleSidecar) mode(name string) os.FileMode {
+	if info, err := file.root.Lstat(name); err == nil && info.Mode().IsRegular() {
+		return info.Mode().Perm()
+	}
+	if info, err := file.root.Stat(file.media); err == nil && info.Mode().IsRegular() {
+		return info.Mode().Perm() & 0o666
+	}
+	return 0o644
+}
+
+func (file *subtitleSidecar) removeStaleTemporaries(now time.Time) {
+	directory, err := file.root.Open(".")
+	if err != nil {
+		return
+	}
+	defer directory.Close()
+	entries, err := directory.ReadDir(-1)
+	if err != nil {
+		return
+	}
+	for _, entry := range entries {
+		if !strings.HasPrefix(entry.Name(), sidecarTemporaryPrefix) || !entry.Type().IsRegular() {
+			continue
+		}
+		if info, infoErr := entry.Info(); infoErr == nil && now.Sub(info.ModTime()) > time.Hour {
+			_ = file.root.Remove(entry.Name())
+		}
+	}
+}
