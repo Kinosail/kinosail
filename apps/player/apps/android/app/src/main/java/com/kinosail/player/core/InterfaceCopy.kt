@@ -1,7 +1,6 @@
 package com.kinosail.player.core
 
 import android.content.Context
-import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import java.util.Locale
@@ -18,7 +17,7 @@ internal object InterfaceCopy {
     fun translate(context: Context, english: String): String {
         val configuration = context.resources.configuration
         @Suppress("DEPRECATION")
-        val locale = if (Build.VERSION.SDK_INT >= 24 && !configuration.locales.isEmpty) configuration.locales[0]
+        val locale = if (!configuration.locales.isEmpty) configuration.locales[0]
             else configuration.locale ?: Locale.ENGLISH
         val tag = language(locale) ?: return english
         return catalogs.getOrPut(tag) { load(context, tag) }[english] ?: english
