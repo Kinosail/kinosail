@@ -50,7 +50,7 @@ func TestLibrarySearchUsesLocalizedAccessibleCopy(t *testing.T) {
 func TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport(t *testing.T) {
 	t.Parallel()
 	handler, token := libraryAPIFixture.Server(t)
-	response := apiCall(t, handler, token, http.MethodPut, "/api/v1/settings/navigation", map[string]any{"items": []string{"history", "books", "list", "movies"}})
+	response := apiCall(t, handler, token, http.MethodPut, "/api/v1/settings/navigation", map[string]any{"items": []string{"history", "books", "audiobooks", "list", "movies"}})
 	if response.Code != http.StatusOK {
 		t.Fatalf("save navigation = %d %q", response.Code, response.Body.String())
 	}
@@ -60,7 +60,7 @@ func TestDesktopSidebarGroupsConfiguredDestinationsAndKeepsTopSupport(t *testing
 		t.Fatalf("desktop sidebar missing: %q", markup)
 	}
 	sidebar := markup[start:end]
-	for _, expected := range []string{`id="sidebar-library">Library`, `href="/?view=books"`, `href="/?view=movies"`, `id="sidebar-personal">Your library`, `href="/?view=list"`, `id="sidebar-viewing">Library views`, `href="/?view=history"`} {
+	for _, expected := range []string{`id="sidebar-library">Library`, `href="/?view=books"><i class=i-book aria-hidden=true></i><span>Books`, `href="/?view=audiobooks"><i class=i-audiobook aria-hidden=true></i><span>Audiobooks`, `href="/?view=movies"><i class=i-film aria-hidden=true></i>`, `id="sidebar-personal">Your library`, `href="/?view=list"><i class=i-bookmark aria-hidden=true></i>`, `id="sidebar-viewing">Library views`, `href="/?view=history"><i class=i-history aria-hidden=true></i>`} {
 		position := strings.Index(sidebar, expected)
 		if position < 0 {
 			t.Fatalf("desktop sidebar lacks %q: %q", expected, sidebar)
