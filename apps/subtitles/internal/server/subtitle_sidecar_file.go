@@ -70,6 +70,9 @@ func (file *subtitleSidecar) write(suffix string, data []byte, exclusive bool) e
 	}
 	if exclusive {
 		err = file.root.Link(temporary, name)
+		if hardLinkUnsupported(err) {
+			return file.writeExclusiveDirect(name, data, file.mode(name))
+		}
 	} else {
 		err = file.root.Rename(temporary, name)
 	}

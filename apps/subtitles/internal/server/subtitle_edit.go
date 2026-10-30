@@ -227,31 +227,17 @@ func (manager *subtitleManager) writeSubtitleEdit(request *http.Request, id stri
 }
 
 func (provider *subtitleProvider) saveSubtitleEdit(target *subtitleSidecar, key string, current, data []byte, previous, record subtitleRecord, exists bool) (int, error) {
-	var err error
+	install := sidecarInstall{Key: key, Data: data, Record: record, Action: "added", Reason: "manual"}
 	if exists {
-		if err = provider.retainSubtitleRecoveryOriginal(current, previous, &record); err != nil {
+		if err := provider.retainSubtitleRecoveryOriginal(current, previous, &install.Record); err != nil {
 			return http.StatusInternalServerError, errors.New("subtitle recovery original could not be retained")
 		}
-		if err = target.write(".kinosail.bak", current, false); err == nil {
-			err = target.write("", data, false)
-		}
-	} else {
-		err = target.write("", data, true)
+		install.Current, install.Backup, install.Action = current, true, "updated"
 	}
-	if err != nil {
+	if err := provider.installSidecar(target, install); errors.Is(err, errSidecarHistory) {
+		return http.StatusInternalServerError, errSidecarHistory
+	} else if err != nil {
 		return http.StatusConflict, errors.New("subtitle could not be saved")
-	}
-	action := "added"
-	if exists {
-		action = "updated"
-	}
-	if err = provider.ledger.storeHistory(key, target.record(data, record), action, "manual"); err != nil {
-		if exists {
-			_ = target.write("", current, false)
-		} else {
-			_ = target.remove()
-		}
-		return http.StatusInternalServerError, errors.New("subtitle history could not be saved")
 	}
 	return http.StatusOK, nil
 }
