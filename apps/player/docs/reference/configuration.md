@@ -87,6 +87,8 @@ The following table describes typed application settings. Use the running config
 | `backup.key` | `KINOSAIL_BACKUP_KEY` | secret text | blank | yes |
 | `backup.interval` | `KINOSAIL_BACKUP_INTERVAL` | duration | `24h` | yes |
 | `backup.retention` | `KINOSAIL_BACKUP_RETENTION` | positive integer | `7` | yes |
+| `cache.subtitles_limit_gb` | `KINOSAIL_SUBTITLE_CACHE_LIMIT_GB` | positive integer (GiB) | `5` | yes |
+| `cache.downloads_limit_gb` | `KINOSAIL_DOWNLOAD_CACHE_LIMIT_GB` | positive integer (GiB) | `10` | yes |
 | `logging.level` | `KINOSAIL_LOG_LEVEL` | `debug`, `info`, `warn`, `error` | `info` | no for Owner changes |
 | `logging.audit_retention` | `KINOSAIL_AUDIT_RETENTION` | positive duration | `8760h` | yes |
 | `logging.playback_retention` | `KINOSAIL_PLAYBACK_RETENTION` | positive duration | `2160h` | yes |
@@ -148,6 +150,8 @@ A deployment-managed deSEC value is one secret JSON object:
 Kinosail still accepts the previous DuckDNS object without `provider`. It treats that object as `duckdns` and requires no Owner action.
 
 LAN trusted HTTPS requires TLS. It cannot run with public HTTPS remote mode. Follow [Connect devices]({{ '/getting-started/connect-devices/' | relative_url }}) for the Owner workflow and privacy effects.
+
+Cache limits apply while the Server is idle. Kinosail first removes subtitle and prepared download files that were not used for the longest time. It never removes files used in the last 24 hours or downloads that are still being prepared. Removed subtitles are extracted again when a viewer selects them. Downloads already saved on a device stay on that device. To get a removed download again, start a new download. Kinosail also removes image subtitle work folders that a stopped Server left behind.
 
 ## Owner-managed configuration API
 

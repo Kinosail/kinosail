@@ -38,6 +38,7 @@ type Manager struct {
 	quietUntil   atomic.Int64
 	signalMu     sync.Mutex
 	started      chan struct{}
+	trim         atomic.Pointer[func() error]
 }
 
 func New(ctx context.Context, interval time.Duration, limit int64, dependencies Dependencies) *Manager {
@@ -112,13 +113,21 @@ func (manager *Manager) Run() error {
 	}
 	_, cacheErr := manager.dependencies.PruneCache(manager.limit)
 	metadataErr := manager.dependencies.PruneMetadata()
-	err := errors.Join(cacheErr, metadataErr)
+	var trimErr error
+	if trim := manager.trim.Load(); trim != nil {
+		trimErr = (*trim)()
+	}
+	err := errors.Join(cacheErr, metadataErr, trimErr)
 	if err != nil {
 		slog.Warn("automatic maintenance failed", "error", err)
 	} else {
 		slog.Debug("automatic maintenance completed")
 	}
 	return err
+}
+
+func (manager *Manager) SetTrim(trim func() error) {
+	manager.trim.Store(&trim)
 }
 
 func (manager *Manager) Busy() bool {

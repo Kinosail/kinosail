@@ -86,7 +86,7 @@ func configuredServerConfig(ctx context.Context, configured configuration.Snapsh
 	values := appcli.BuildServerValues(configured, configuredAuthURL(configured))
 	config := server.Config{
 		SubtitleApp: true, Lifecycle: ctx, MediaDir: values.MediaDir, DataDir: values.DataDir, CacheDir: values.CacheDir,
-		BackupDir: values.BackupDir, BackupKey: values.BackupKey, BackupInterval: values.BackupInterval, BackupRetention: values.BackupRetention,
+		BackupDir: values.BackupDir, BackupKey: values.BackupKey, BackupInterval: values.BackupInterval, BackupRetention: values.BackupRetention, SubtitleCacheLimit: values.SubtitleCacheLimit,
 		FFmpeg: values.FFmpeg, FFprobe: values.FFprobe, FPCalc: values.FPCalc, RequireAuth: true,
 		AuthURL: values.AuthURL, ProxyToken: values.ProxyToken, ScanInterval: values.ScanInterval,
 		Configuration: configured, Supporter: server.SupporterConfig{ActivationURL: values.SupporterActivationURL, SupportURL: values.SupportURL},

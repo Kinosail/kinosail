@@ -75,7 +75,7 @@ var configurationLabels = map[string]string{ //nolint:gosec // These are display
 	"binaries.tesseract": "Tesseract OCR command", "binaries.whisper": "Whisper transcription command",
 	"integrations.subsource.api_key": "SubSource API key", "integrations.subsource.personal_use": "SubSource personal-use access", "integrations.subsource.url": "SubSource address",
 	"subtitles.transcription_architecture": "Transcription model architecture", "subtitles.transcription_model": "Transcription model file",
-	"auth.url": "Sign-in address", "backup.directory": "Backup folder", "backup.interval": "Backup frequency", "backup.key": "Backup encryption key", "backup.retention": "Backups to keep",
+	"auth.url": "Sign-in address", "backup.directory": "Backup folder", "backup.interval": "Backup frequency", "backup.key": "Backup encryption key", "backup.retention": "Backups to keep", "cache.subtitles_limit_gb": "Subtitle cache limit (GiB)",
 	"binaries.ffmpeg": "FFmpeg command", "binaries.ffprobe": "FFprobe command", "binaries.fpcalc": "Chromaprint command", "dlna.url": "DLNA address",
 	"integrations.mcp.authorization_server": "MCP authorization server", "integrations.mcp.client_id": "MCP client ID", "integrations.mcp.client_secret": "MCP client secret", "integrations.mcp.introspection_url": "MCP token check address", "integrations.mcp.resource_url": "MCP resource address",
 	"integrations.oidc.client_id": "Single sign-on client ID", "integrations.oidc.client_secret": "Single sign-on client secret", "integrations.oidc.issuer": "Single sign-on issuer", "integrations.oidc.redirect_url": "Single sign-on return address",

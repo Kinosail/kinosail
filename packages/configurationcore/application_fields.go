@@ -41,6 +41,7 @@ func CommonApplicationFields(listen, supportURL string) []ApplicationField {
 		{"backup.key", "KINOSAIL_BACKUP_KEY", "", "text", true, true},
 		{"backup.interval", "KINOSAIL_BACKUP_INTERVAL", "24h", "duration", false, true},
 		{"backup.retention", "KINOSAIL_BACKUP_RETENTION", "7", "number", false, true},
+		{"cache.subtitles_limit_gb", "KINOSAIL_SUBTITLE_CACHE_LIMIT_GB", "5", "number", false, true},
 		{"logging.level", "KINOSAIL_LOG_LEVEL", "info", "text", false, true},
 		{"logging.audit_retention", "KINOSAIL_AUDIT_RETENTION", "8760h", "duration", false, true},
 		{"logging.playback_retention", "KINOSAIL_PLAYBACK_RETENTION", "2160h", "duration", false, true},
