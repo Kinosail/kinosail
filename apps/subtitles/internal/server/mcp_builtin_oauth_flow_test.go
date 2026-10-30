@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/MikeO7/kinosail/packages/mcpgateway"
 	mcpauth "github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
@@ -51,7 +52,7 @@ func TestBuiltInMCPOAuthWorksWithOfficialClientAndDCR(t *testing.T) {
 			page, _ := io.ReadAll(response.Body)
 			_ = response.Body.Close()
 			pending := formValue(t, string(page), "request")
-			request, _ = http.NewRequestWithContext(ctx, http.MethodPost, issuer+"/oauth/authorize", strings.NewReader(url.Values{"request": {pending}, "decision": {"allow"}, "scopes": {mcpReadScope}}.Encode()))
+			request, _ = http.NewRequestWithContext(ctx, http.MethodPost, issuer+"/oauth/authorize", strings.NewReader(url.Values{"request": {pending}, "decision": {"allow"}, "scopes": {mcpgateway.ReadScope}}.Encode()))
 			request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 			response, err = client.Do(request)
 			if err != nil {

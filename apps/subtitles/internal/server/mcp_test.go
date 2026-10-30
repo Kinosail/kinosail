@@ -8,11 +8,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/mcpgateway"
 	"github.com/MikeO7/kinosail/packages/operations"
 )
 
 func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
-	scope, audience := mcpReadScope, "http://localhost/mcp"
+	scope, audience := mcpgateway.ReadScope, "http://localhost/mcp"
 	libraryCalls, playlistCalls, configurationCalls := 0, 0, 0
 	issuer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodPost || request.URL.Path != "/introspect" {
@@ -91,7 +92,7 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 	t.Run("metadata", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		mux.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/.well-known/oauth-protected-resource/mcp", nil))
-		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), issuer.URL) || !strings.Contains(response.Body.String(), mcpReadScope) || !strings.Contains(response.Body.String(), mcpWriteScope) || !strings.Contains(response.Body.String(), mcpManageScope) {
+		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), issuer.URL) || !strings.Contains(response.Body.String(), mcpgateway.ReadScope) || !strings.Contains(response.Body.String(), mcpgateway.WriteScope) || !strings.Contains(response.Body.String(), mcpgateway.ManageScope) {
 			t.Fatalf("metadata = %d %q", response.Code, response.Body.String())
 		}
 	})
@@ -165,7 +166,7 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 	})
 
 	t.Run("write scope", func(t *testing.T) {
-		scope = mcpReadScope + " " + mcpWriteScope
+		scope = mcpgateway.ReadScope + " " + mcpgateway.WriteScope
 		response := mcpRequest(t, mux, "tools/list", "access-token", nil)
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"write_api"`) || strings.Contains(response.Body.String(), `"name":"create_playlist"`) {
 			t.Fatalf("tools = %d %q", response.Code, response.Body.String())
@@ -177,7 +178,7 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 	})
 
 	t.Run("Owner management scope", func(t *testing.T) {
-		scope = mcpReadScope + " " + mcpManageScope
+		scope = mcpgateway.ReadScope + " " + mcpgateway.ManageScope
 		response := mcpRequest(t, mux, "tools/list", "access-token", nil)
 		if response.Code != http.StatusOK || strings.Contains(response.Body.String(), `"name":"manage_api"`) {
 			t.Fatalf("Viewer management tools = %d %q", response.Code, response.Body.String())
@@ -234,7 +235,7 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 	t.Run("origin validation", func(t *testing.T) {
 		audience = "http://localhost/mcp"
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/mcp", strings.NewReader("{}"))
-		request.Header.Set("MCP-Protocol-Version", mcpProtocolVersion)
+		request.Header.Set("MCP-Protocol-Version", mcpgateway.ProtocolVersion)
 		request.Header.Set("Origin", "https://attacker.example")
 		response := httptest.NewRecorder()
 		mux.ServeHTTP(response, request)
@@ -244,7 +245,7 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 	})
 
 	t.Run("bounded adapter input and output", func(t *testing.T) {
-		scope = mcpReadScope + " " + mcpWriteScope
+		scope = mcpgateway.ReadScope + " " + mcpgateway.WriteScope
 		profiles.profiles[0].Owner = false
 		profiles.profiles[0].TOTPSecret = ""
 		beforeReads := libraryCalls

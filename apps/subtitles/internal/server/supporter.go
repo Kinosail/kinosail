@@ -22,7 +22,6 @@ const (
 	supporterAudience             = "com.kinosail.subtitles"
 	patronOrderFamily             = supporterengine.FamilyPatron
 	livingStandardFamily          = supporterengine.FamilyLiving
-	completeFleetID               = "complete-fleet"
 )
 
 var supporterTiers = supporterengine.Tiers()

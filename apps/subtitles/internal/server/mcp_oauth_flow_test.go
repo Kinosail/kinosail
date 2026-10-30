@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/mcpgateway"
 	mcpauth "github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
@@ -62,7 +63,7 @@ func TestMCPOAuthAuthorizationCodeFlowWithOfficialClient(t *testing.T) {
 				http.Error(writer, "invalid token request", http.StatusBadRequest)
 				return
 			}
-			writeJSON(writer, map[string]any{"access_token": "oauth-access-token", "token_type": "Bearer", "expires_in": 3600, "scope": mcpReadScope}, http.StatusOK) //nolint:gosec // A non-secret fixture token is required for the flow.
+			writeJSON(writer, map[string]any{"access_token": "oauth-access-token", "token_type": "Bearer", "expires_in": 3600, "scope": mcpgateway.ReadScope}, http.StatusOK) //nolint:gosec // A non-secret fixture token is required for the flow.
 		case "/introspect":
 			if id, secret, ok := request.BasicAuth(); !ok || id != "resource" || secret != "secret" {
 				http.Error(writer, "invalid resource credentials", http.StatusUnauthorized)
@@ -73,7 +74,7 @@ func TestMCPOAuthAuthorizationCodeFlowWithOfficialClient(t *testing.T) {
 				writeJSON(writer, map[string]bool{"active": false}, http.StatusOK)
 				return
 			}
-			writeJSON(writer, map[string]any{"active": true, "scope": mcpReadScope, "exp": time.Now().Add(time.Hour).Unix(), "sub": "subject", "aud": resourceURL}, http.StatusOK)
+			writeJSON(writer, map[string]any{"active": true, "scope": mcpgateway.ReadScope, "exp": time.Now().Add(time.Hour).Unix(), "sub": "subject", "aud": resourceURL}, http.StatusOK)
 		default:
 			http.NotFound(writer, request)
 		}
@@ -124,7 +125,7 @@ func TestMCPOAuthAuthorizationCodeFlowWithOfficialClient(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer session.Close()
-	if got := session.InitializeResult().ProtocolVersion; got != mcpProtocolVersion {
+	if got := session.InitializeResult().ProtocolVersion; got != mcpgateway.ProtocolVersion {
 		t.Fatalf("protocol version = %q", got)
 	}
 	tools, err := session.ListTools(t.Context(), nil)

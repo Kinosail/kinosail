@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/MikeO7/kinosail/packages/mcpgateway"
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
@@ -18,5 +19,5 @@ func TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy(t *testing.T) {
 
 func mcpRequest(t *testing.T, handler http.Handler, method, token string, fields map[string]any) *httptest.ResponseRecorder {
 	t.Helper()
-	return servertest.MCPRequest(t, mcpProtocolVersion, handler, method, token, fields)
+	return servertest.MCPRequest(t, mcpgateway.ProtocolVersion, handler, method, token, fields)
 }

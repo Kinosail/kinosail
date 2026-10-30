@@ -8,10 +8,13 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/MikeO7/kinosail/packages/localization"
+	"github.com/MikeO7/kinosail/packages/mcpgateway"
 )
 
 func supporterUIFixture(archived bool) supporterPageData {
-	collection := &supporterCollectionStatus{ID: completeFleetID, Name: "Complete Fleet", Edition: "Living", AppIDs: []string{"kino-player", supporterAppID}}
+	collection := &supporterCollectionStatus{ID: "complete-fleet", Name: "Complete Fleet", Edition: "Living", AppIDs: []string{"kino-player", supporterAppID}}
 	living := supporterGrantStatus{
 		Family: livingStandardFamily, Title: "Living Standard", Tier: "legacy", Name: "Legacy", Rank: 10, Active: true,
 		SupportedSince: "2021-08-26T12:00:00Z", ExpiresAt: "2026-09-25T12:00:00Z", ServiceMonths: 60,
@@ -25,7 +28,7 @@ func supporterUIFixture(archived bool) supporterPageData {
 	patron := supporterGrantStatus{
 		Family: patronOrderFamily, Title: "Patron Order", Tier: "northstar", Name: "North Star", Rank: 9, Active: true,
 		SupportedSince: "2025-08-26T12:00:00Z", Founding: true,
-		Collection: &supporterCollectionStatus{ID: completeFleetID, Name: "Complete Fleet", Edition: "2026 Founders", AppIDs: []string{"kino-player", supporterAppID}},
+		Collection: &supporterCollectionStatus{ID: "complete-fleet", Name: "Complete Fleet", Edition: "2026 Founders", AppIDs: []string{"kino-player", supporterAppID}},
 	}
 	caseStatus := supporterBadgeCase{LivingLevel: living.Rank, PatronLevel: patron.Rank, MasterworkLevel: min(living.Rank, patron.Rank), Unlocked: living.Rank + patron.Rank, Total: 20, MasterworkName: "Perfect Sync", MasterworkEarned: true, MasterworkActive: living.Active}
 	masterwork := supporterBadge(livingStandardFamily, caseStatus.MasterworkLevel)
@@ -48,7 +51,7 @@ func TestWriteUIStateFixtures(t *testing.T) {
 	}
 	writeSubtitleHistoryUIFixtures(t, dir)
 	request := httptest.NewRequestWithContext(t.Context(), "GET", "https://kinosail.test/", nil)
-	localized := func(view localizedTemplate, data any) func(*bytes.Buffer) error {
+	localized := func(view *localization.TemplateSet, data any) func(*bytes.Buffer) error {
 		return func(output *bytes.Buffer) error {
 			response := httptest.NewRecorder()
 			if err := view.Execute(response, request, data); err != nil {
@@ -83,7 +86,7 @@ func TestWriteUIStateFixtures(t *testing.T) {
 		"passkey-prompt":               localized(passkeyPromptView, nil),
 		"mfa-required":                 localized(mfaRequiredView, nil),
 		"oidc-mfa":                     localized(oidcMFAView, "fixture-challenge"),
-		"mcp-approval":                 csrf(mcpApprovalView, mcpApprovalData{ClientName: "Living Room agent", ProfileName: "Owner", RequestID: "fixture-request", Write: true, Manage: true}),
+		"mcp-approval":                 csrf(mcpApprovalView, mcpgateway.Approval{ClientName: "Living Room agent", ProfileName: "Owner", RequestID: "fixture-request", Write: true, Manage: true}),
 		"supporter-populated-active":   localized(supporterView, supporterUIFixture(false)),
 		"supporter-populated-archived": localized(supporterView, supporterUIFixture(true)),
 		"state-contracts":              plain(template.Must(template.New("state-contracts").Parse(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UI state contracts · Kinosail</title><link rel="stylesheet" href="/static/app.css?v=impeccable-1"></head><body class="settings-page"><main class="settings-shell"><header class="settings-intro"><span class="eyebrow">State contract</span><h1>System feedback</h1><p>Every state remains readable, calm, and explicit.</p></header><section class="wide"><h2>Empty</h2><div class="empty"><h2>Nothing here yet.</h2><p>Add Library Content to begin.</p></div></section><section aria-busy="true"><h2>Loading</h2><p role="status" class="status">Scanning the Library…</p><button disabled>Scanning</button></section><section><h2>Error</h2><div role="alert">The Server could not finish this request.</div></section><section><h2>Unavailable</h2><fieldset disabled aria-disabled="true"><label>Managed value <input value="Set by deployment"></label><button>Save</button></fieldset><p class="managed-setting">This setting is managed by the deployment.</p></section></main></body></html>`)), nil),
