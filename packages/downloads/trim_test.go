@@ -104,3 +104,22 @@ func TestTrimWithoutCacheIsANoOp(t *testing.T) {
 		t.Fatalf("unconfigured trim = %#v, %v", result, err)
 	}
 }
+
+func TestTrimRemovesFailedDownloadsThatStillHoldMedia(t *testing.T) {
+	t.Parallel()
+	root, now := t.TempDir(), time.Now()
+	failed := trimJob(t, root, "aaaaaaaaaaaaaaaa", "failed", now.Add(-10*24*time.Hour))
+	failed.Error, failed.ReadyOffline, failed.SHA256 = "verification failed", false, ""
+	ready := trimJob(t, root, "bbbbbbbbbbbbbbbb", "ready", now.Add(-time.Hour))
+	manager := &Manager{
+		root: root, jobs: map[string]Job{failed.ID: failed, ready.ID: ready},
+		attempts: map[string]*attempt{}, restoring: map[string]Job{}, manifestWork: map[string]*manifestFlight{},
+	}
+	result, err := manager.Trim(1, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !gone(failed.File) || gone(ready.File) || result.Removed != 1 {
+		t.Fatalf("failed gone=%t ready gone=%t result=%#v", gone(failed.File), gone(ready.File), result)
+	}
+}
