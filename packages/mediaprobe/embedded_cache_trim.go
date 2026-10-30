@@ -87,8 +87,11 @@ func scanEmbeddedCache(root string) ([]cacheGroup, []cacheGroup, error) {
 			return nil
 		}
 		info, err := entry.Info()
-		if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
 			return nil
+		}
+		if err != nil {
+			return err
 		}
 		key := filepath.Join(root, parts[0], parts[1])
 		group := record(groups, key, 0, info.ModTime())

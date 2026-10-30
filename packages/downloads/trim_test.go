@@ -12,9 +12,11 @@ import (
 	"time"
 )
 
-func trimJob(t *testing.T, root, id, state string, size int, created time.Time) Job {
+const trimSize = 400
+
+func trimJob(t *testing.T, root, id, state string, created time.Time) Job {
 	t.Helper()
-	content := []byte(strings.Repeat("v", size))
+	content := []byte(strings.Repeat("v", trimSize))
 	path := filepath.Join(root, id+".mp4")
 	for name, data := range map[string][]byte{path: content, path + ".manifest": []byte("{}"), filepath.Join(root, id+".json"): []byte("{}")} {
 		if err := os.WriteFile(name, data, 0o600); err != nil {
@@ -25,7 +27,7 @@ func trimJob(t *testing.T, root, id, state string, size int, created time.Time) 
 		t.Fatal(err)
 	}
 	digest := sha256.Sum256(content)
-	return Job{ID: id, Profile: "viewer", State: state, File: path, Size: int64(size), SHA256: hex.EncodeToString(digest[:]), ReadyOffline: state == "ready", Created: created}
+	return Job{ID: id, Profile: "viewer", State: state, File: path, Size: trimSize, SHA256: hex.EncodeToString(digest[:]), ReadyOffline: state == "ready", Created: created}
 }
 
 func gone(paths ...string) bool {
@@ -40,13 +42,15 @@ func gone(paths ...string) bool {
 func TestTrimRemovesLeastRecentlyUsedReadyDownloadsUntilUnderLimit(t *testing.T) {
 	t.Parallel()
 	root, now := t.TempDir(), time.Now()
-	oldest := trimJob(t, root, "aaaaaaaaaaaaaaaa", "ready", 400, now.Add(-30*24*time.Hour))
-	older := trimJob(t, root, "bbbbbbbbbbbbbbbb", "ready", 400, now.Add(-10*24*time.Hour))
-	recent := trimJob(t, root, "cccccccccccccccc", "ready", 400, now.Add(-time.Hour))
+	oldest := trimJob(t, root, "aaaaaaaaaaaaaaaa", "ready", now.Add(-30*24*time.Hour))
+	older := trimJob(t, root, "bbbbbbbbbbbbbbbb", "ready", now.Add(-10*24*time.Hour))
+	recent := trimJob(t, root, "cccccccccccccccc", "ready", now.Add(-time.Hour))
 	var published []string
-	manager := &Manager{root: root, jobs: map[string]Job{oldest.ID: oldest, older.ID: older, recent.ID: recent},
+	manager := &Manager{
+		root: root, jobs: map[string]Job{oldest.ID: oldest, older.ID: older, recent.ID: recent},
 		attempts: map[string]*attempt{}, restoring: map[string]Job{}, manifestWork: map[string]*manifestFlight{},
-		publish: func(job Job) { published = append(published, job.ID) }}
+		publish: func(job Job) { published = append(published, job.ID) },
+	}
 
 	result, err := manager.Trim(900, now)
 	if err != nil {
@@ -66,11 +70,13 @@ func TestTrimRemovesLeastRecentlyUsedReadyDownloadsUntilUnderLimit(t *testing.T)
 func TestTrimKeepsPreparingAndRecentlyDeliveredDownloads(t *testing.T) {
 	t.Parallel()
 	root, now := t.TempDir(), time.Now()
-	preparing := trimJob(t, root, "aaaaaaaaaaaaaaaa", "preparing", 400, now.Add(-30*24*time.Hour))
-	delivered := trimJob(t, root, "bbbbbbbbbbbbbbbb", "ready", 400, now.Add(-30*24*time.Hour))
-	idle := trimJob(t, root, "cccccccccccccccc", "ready", 400, now.Add(-20*24*time.Hour))
-	manager := &Manager{root: root, jobs: map[string]Job{preparing.ID: preparing, delivered.ID: delivered, idle.ID: idle},
-		attempts: map[string]*attempt{}, restoring: map[string]Job{}, manifestWork: map[string]*manifestFlight{}}
+	preparing := trimJob(t, root, "aaaaaaaaaaaaaaaa", "preparing", now.Add(-30*24*time.Hour))
+	delivered := trimJob(t, root, "bbbbbbbbbbbbbbbb", "ready", now.Add(-30*24*time.Hour))
+	idle := trimJob(t, root, "cccccccccccccccc", "ready", now.Add(-20*24*time.Hour))
+	manager := &Manager{
+		root: root, jobs: map[string]Job{preparing.ID: preparing, delivered.ID: delivered, idle.ID: idle},
+		attempts: map[string]*attempt{}, restoring: map[string]Job{}, manifestWork: map[string]*manifestFlight{},
+	}
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/download", nil)
 	if err := Serve(httptest.NewRecorder(), request, delivered); err != nil {
 		t.Fatal(err)

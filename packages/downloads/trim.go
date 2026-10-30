@@ -70,12 +70,12 @@ func useMarker(job Job) string { return job.File + ".used" }
 
 func markUse(job Job, now time.Time) {
 	marker := useMarker(job)
-	info, err := os.Stat(marker)
+	info, err := os.Stat(marker) //nolint:gosec // The marker sits beside a prepared download that the manager created under its cache root.
 	if err == nil && now.Sub(info.ModTime()) < time.Hour {
 		return
 	}
 	if errors.Is(err, os.ErrNotExist) {
-		file, createErr := os.OpenFile(marker, os.O_CREATE|os.O_WRONLY|os.O_EXCL, 0o600)
+		file, createErr := os.OpenFile(marker, os.O_CREATE|os.O_WRONLY|os.O_EXCL, 0o600) //nolint:gosec // Same manager-created path as above.
 		if createErr != nil {
 			return
 		}
