@@ -13,7 +13,7 @@ const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclud
 }).trim().split('\n').filter(Boolean).filter((file) => !file.includes('/.codex/') && existsSync(resolve(repo, file)));
 const failures = [];
 
-forEachSourceFile(repo, files, (file, source) => {
+await forEachSourceFile(repo, files, (file, source) => {
   function visit(node) {
     if (node.kind === SyntaxKind.AnyKeyword || node.kind === SyntaxKind.UnknownKeyword) {
       const type = node.kind === SyntaxKind.AnyKeyword ? 'any' : 'unknown';

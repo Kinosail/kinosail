@@ -97,7 +97,7 @@ const difficulty = (text, variant) => {
   );
 };
 
-forEachSourceFile(repo, files, (file, source) => {
+await forEachSourceFile(repo, files, (file, source) => {
   const visit = (node) => {
     if (isFunction(node) && node.body) {
       const value = difficulty(node.body.getText(), source.languageVariant);

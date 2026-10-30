@@ -1,3 +1,4 @@
+import { once } from 'node:events';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
@@ -10,7 +11,20 @@ export const { SyntaxKind } = require('typescript/unstable/ast');
 export const is = require('typescript/unstable/ast/is');
 export const { createScanner } = require('typescript/unstable/ast/scanner');
 
-export function forEachSourceFile(repo, files, visit) {
+async function shutDown(api, snapshot) {
+  snapshot?.dispose();
+  const child = api.client?.channel?.child;
+  if (child?.stdin && child.exitCode === null) {
+    const exited = once(child, 'exit');
+    child.stdin.end();
+    let timer;
+    await Promise.race([exited, new Promise((done) => { timer = setTimeout(done, 5000); })]);
+    clearTimeout(timer);
+  }
+  api.close();
+}
+
+export async function forEachSourceFile(repo, files, visit) {
   if (files.length === 0) return;
   const directory = mkdtempSync(join(tmpdir(), 'kinosail-typescript-'));
   const config = join(directory, 'tsconfig.json');
@@ -20,11 +34,13 @@ export function forEachSourceFile(repo, files, visit) {
     files: paths,
   }));
   const api = new API({ cwd: repo });
+  let snapshot;
   try {
-    const program = api.updateSnapshot({ openProject: config }).getProjects()[0].program;
+    snapshot = api.updateSnapshot({ openProject: config });
+    const program = snapshot.getProjects()[0].program;
     files.forEach((file, index) => visit(file, program.getSourceFile(paths[index])));
   } finally {
-    api.close();
+    await shutDown(api, snapshot);
     rmSync(directory, { recursive: true, force: true });
   }
 }
