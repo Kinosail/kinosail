@@ -21,7 +21,7 @@ No. Providers receive bounded search metadata and, where used, a locally calcula
 
 ## Can it replace an existing sidecar?
 
-Yes, under conservative maintenance rules. Managed files need a meaningful score improvement; unknown sidecars require an exact OpenSubtitles hash match and retain a `.kinosail.bak` original. SubSource files stay unchanged under its terms.
+Only a sidecar that Kinosail wrote and that nobody changed since. Kinosail replaces it when a candidate scores at least ten points higher, and keeps the previous file as a `.kinosail.bak` recovery copy. Kinosail never replaces a sidecar that you or another app created, or a Kinosail file that someone edited. SubSource files stay unchanged under its terms.
 
 ## Can I keep fewer subtitle files or playback choices?
 

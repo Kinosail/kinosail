@@ -21,7 +21,7 @@ Deployment-managed settings are read-only. Change the corresponding environment 
 
 ## Confirm the result
 
-Run a scan, open a wanted video, and fetch a subtitle. Check that the file appears beside the video and that its language and timing fit your copy. The preferred language defaults to `en`; for example, `Film.en.srt` covers English for `Film.mkv`.
+Run a scan, open a wanted video, and fetch a subtitle. Check that the file appears beside the video and that its language and timing fit your copy. Preferred languages start as English plus your browser language at setup, for example English and German. `Film.en.srt` covers English for `Film.mkv`.
 
 No provider result, quota exhaustion, an invalid subtitle, or a write-permission failure can prevent a fetch. Read the reported result before retrying. See [troubleshooting]({{ '/troubleshooting/' | relative_url }}).
 

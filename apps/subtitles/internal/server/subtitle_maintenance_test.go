@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleMaintenanceAPIUpgradesExactUnknownSidecarAndKeepsBackup(t *testing.T) {
+func TestSubtitleMaintenanceAPIKeepsAHouseholdSidecarUnchanged(t *testing.T) {
 	t.Parallel()
 	var provider *httptest.Server
 	provider = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -40,7 +40,7 @@ func TestSubtitleMaintenanceAPIUpgradesExactUnknownSidecarAndKeepsBackup(t *test
 	response := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitle-library/maintain", `{"limit":1}`)
 	current, currentErr := os.ReadFile(filepath.Join(media, "Arrival.en.srt"))
 	backup, backupErr := os.ReadFile(filepath.Join(media, "Arrival.en.srt.kinosail.bak"))
-	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"upgraded":1`) || currentErr != nil || backupErr != nil || !strings.Contains(string(current), "Exact") || !strings.Contains(string(backup), "Unknown") {
+	if response.Code != http.StatusOK || strings.Contains(response.Body.String(), `"upgraded":1`) || currentErr != nil || !os.IsNotExist(backupErr) || !strings.Contains(string(current), "Unknown") {
 		t.Fatalf("maintain = %d %q, current = %q/%v, backup = %q/%v", response.Code, response.Body.String(), current, currentErr, backup, backupErr)
 	}
 }

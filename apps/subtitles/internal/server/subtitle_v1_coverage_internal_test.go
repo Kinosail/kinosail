@@ -251,8 +251,8 @@ func TestSubtitleAcquireAndUpgradeFailureBranches(t *testing.T) {
 	if err := os.WriteFile(target, []byte("subtitle"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if !provider.upgradeEligible(item, "en", time.Now()) {
-		t.Fatal("external sidecar was not eligible for a trusted upgrade")
+	if provider.upgradeEligible(item, "en", time.Now()) {
+		t.Fatal("a household sidecar was eligible for an automatic upgrade")
 	}
 	if upgraded, err := provider.upgradeSidecar(t.Context(), library.Item{Kind: "audio"}, "en"); upgraded || err == nil {
 		t.Fatal("invalid upgrade request was accepted")

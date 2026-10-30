@@ -112,6 +112,10 @@ func (auth *authentication) setup(writer http.ResponseWriter, request *http.Requ
 		localizedError(writer, request, err.Error(), ownerSetupStatus(err))
 		return
 	}
+	if err = auth.settings.addInterfaceSubtitleLanguage(preferredLanguage(request)); err != nil {
+		localizedError(writer, request, "could not save subtitle languages", http.StatusInternalServerError)
+		return
+	}
 	if err := auth.profiles.signInStrong(writer, request, profile.ID); err != nil {
 		localizedError(writer, request, "could not create session", http.StatusInternalServerError)
 		return

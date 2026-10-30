@@ -76,6 +76,10 @@ func (auth *authentication) createAPISetup(writer http.ResponseWriter, request *
 		apiError(writer, err, ownerSetupStatus(err))
 		return
 	}
+	if err = auth.settings.addInterfaceSubtitleLanguage(preferredLanguage(request)); err != nil {
+		apiError(writer, errors.New("could not save subtitle languages"), http.StatusInternalServerError)
+		return
+	}
 	token, err := auth.profiles.createStrongSession(profile.ID, input.Device, false)
 	if err != nil {
 		apiError(writer, errors.New("could not create session"), http.StatusInternalServerError)

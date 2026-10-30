@@ -215,7 +215,7 @@ func TestSubtitleAutomationRetriesAfterMediaOrProviderChanges(t *testing.T) {
 	check(1, 3)
 }
 
-func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing.T) {
+func TestSubtitleProviderNeverReplacesAHouseholdSidecar(t *testing.T) {
 	t.Parallel()
 	var remote *httptest.Server
 	remote = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -258,15 +258,17 @@ func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing
 	if err := provider.ledger.store(subtitleRecordKey(item.ID, "en"), stale); err != nil {
 		t.Fatal(err)
 	}
+	if provider.upgradeEligible(item, "en", time.Now()) {
+		t.Fatal("a household sidecar is eligible for automatic replacement")
+	}
 	upgraded, err := provider.upgradeSidecar(t.Context(), item, "en")
 	current, currentErr := os.ReadFile(target)
-	backup, backupErr := os.ReadFile(target + ".kinosail.bak")
-	if err != nil || currentErr != nil || backupErr != nil || !upgraded || !strings.Contains(string(current), "Exact") || !strings.Contains(string(backup), "Unknown") {
-		t.Fatalf("upgrade = %v, err = %v, current = %q/%v, backup = %q/%v", upgraded, err, current, currentErr, backup, backupErr)
+	_, backupErr := os.Stat(target + ".kinosail.bak")
+	if err != nil || upgraded || currentErr != nil || !strings.Contains(string(current), "Unknown") || !os.IsNotExist(backupErr) {
+		t.Fatalf("upgrade = %v, err = %v, current = %q/%v, backup = %v", upgraded, err, current, currentErr, backupErr)
 	}
-	evidence, marshalErr := json.Marshal(provider.ledger.state.History)
-	if marshalErr != nil || !strings.Contains(string(evidence), `"reason":"exact-hash"`) || !strings.Contains(string(evidence), `"score":100`) || strings.Contains(string(evidence), `"previousScore"`) {
-		t.Fatalf("unknown-file upgrade explanation = %s, %v", evidence, marshalErr)
+	if len(provider.ledger.state.History) != 0 {
+		t.Fatalf("household sidecar history = %#v", provider.ledger.state.History)
 	}
 }
 
