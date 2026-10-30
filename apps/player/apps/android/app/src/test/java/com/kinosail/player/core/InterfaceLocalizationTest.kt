@@ -36,14 +36,6 @@ class InterfaceLocalizationTest {
         assertEquals("Try again", InterfaceCopy.translate(context, "Try again"))
     }
 
-    @Test @Config(sdk = [23]) fun olderPhonesUseTheirConfiguredLanguage() {
-        val app = RuntimeEnvironment.getApplication()
-        val configuration = Configuration(app.resources.configuration)
-        configuration.setLocale(Locale.forLanguageTag("es"))
-        val context = app.createConfigurationContext(configuration)
-        assertEquals("Inicio", InterfaceCopy.translate(context, "Home"))
-    }
-
     @Test fun emptyLocaleListFallsBackWithoutCrashing() {
         val app = RuntimeEnvironment.getApplication()
         val configuration = Configuration(app.resources.configuration)

@@ -484,7 +484,7 @@ jobs:
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
           cache: gradle
           cache-dependency-path: |
             apps/player/apps/android/**/*.gradle*
@@ -536,7 +536,7 @@ jobs:
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
           cache: gradle
           cache-dependency-path: |
             apps/player/apps/android/**/*.gradle*
@@ -640,7 +640,7 @@ jobs:
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
           cache: gradle
           cache-dependency-path: |
             apps/player/apps/android/**/*.gradle*
