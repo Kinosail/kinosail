@@ -161,8 +161,10 @@ func (reader subtitleContextReader) Read(buffer []byte) (int, error) {
 }
 
 func validSubtitlePayload(data []byte) bool {
-	decoded, err := decodeSubtitleText(data)
-	return err == nil && bytes.Contains(decoded, []byte("-->"))
+	if decoded, err := decodeSubtitleText(data); err == nil {
+		return bytes.Contains(decoded, []byte("-->"))
+	}
+	return len(data) > 0 && len(data) <= 4<<20 && !bytes.ContainsRune(data, 0) && bytes.Contains(data, []byte("-->"))
 }
 
 func (provider *subtitleProvider) allowed(link string) bool {
