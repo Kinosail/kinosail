@@ -33,12 +33,10 @@ final class RemoteEpisodeDetailTests: RemoteTestCase {
         XCTAssertTrue(play.waitForExistence(timeout: 5), "Play should have the initial focus; focused: \(focusedLabels(app))")
         let row = play.frame.midY
         XCTAssertFalse(app.buttons["All episodes"].exists, "Episodes belong in the shelf below, not in a button")
-        for expected in ["My List", "Bookmarks", "More"] {
+        for button in [myList, app.buttons["Bookmarks"], app.buttons["More"]] {
             remote.press(.right)
-            let focused = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
-            XCTAssertTrue(focused.label.contains(expected) || expected == "My List" && focused.label == "In My List",
-                          "Right should reach \(expected); focused: \(focusedLabels(app))")
-            XCTAssertEqual(focused.frame.midY, row, accuracy: 24, "\(expected) should share the Play row")
+            XCTAssertTrue(holdsFocus(button), "Right should reach \(button.label); focused: \(focusedLabels(app))")
+            XCTAssertEqual(button.frame.midY, row, accuracy: 24, "\(button.label) should share the Play row")
         }
         remote.press(.down)
         XCTAssertTrue(app.staticTexts["Episodes"].exists)

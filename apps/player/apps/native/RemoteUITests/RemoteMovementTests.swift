@@ -169,7 +169,7 @@ final class RemoteMovementTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Bookmarks"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Bookmarks"].hasFocus, "Back should restore the action that opened Bookmarks")
         remote.press(.right)
-        XCTAssertTrue(app.buttons["More"].hasFocus, "More should end the action row")
+        XCTAssertTrue(holdsFocus(app.buttons["More"]), "More should end the action row")
         record("movie rightmost action", app)
         remote.press(.left)
         remote.press(.left)

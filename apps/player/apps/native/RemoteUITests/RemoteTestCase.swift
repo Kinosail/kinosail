@@ -11,6 +11,11 @@ class RemoteTestCase: XCTestCase {
     }
 
     @MainActor
+    func holdsFocus(_ element: XCUIElement) -> Bool {
+        element.hasFocus || element.descendants(matching: .any).matching(NSPredicate(format: "hasFocus == true")).count > 0
+    }
+
+    @MainActor
     func launchAtSearch(_ app: XCUIApplication) {
         app.launch()
         settleAtSearch(app)
