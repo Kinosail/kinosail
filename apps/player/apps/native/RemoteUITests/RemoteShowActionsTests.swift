@@ -45,11 +45,12 @@ final class RemoteShowActionsTests: RemoteTestCase {
         XCTAssertTrue(menuItem("Mark as watched", in: app).waitForExistence(timeout: 10), "The episode should read as unwatched")
         XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Mark season")).firstMatch.exists)
         record("episode more menu", app)
-        remote.press(.menu)
-        remote.press(.menu)
-
         let saved = app.buttons["In My List"], more = app.buttons["More"]
-        XCTAssertTrue(saved.waitForExistence(timeout: 10))
+        for _ in 0..<3 where !(saved.exists && !app.buttons["Bookmarks"].exists) {
+            remote.press(.menu)
+            settle()
+        }
+        XCTAssertTrue(saved.waitForExistence(timeout: 10), "Back should return to the show page; \(app.debugDescription)")
         for _ in 0..<4 where !holdsFocus(saved) && !holdsFocus(more) && !focusedLabels(app).contains(where: { $0.hasPrefix("Play") || $0.hasPrefix("Resume") }) { remote.press(.up) }
         for _ in 0..<2 where !holdsFocus(saved) { remote.press(holdsFocus(more) ? .left : .right) }
         XCTAssertTrue(holdsFocus(saved), "focused: \(focusedLabels(app))")
