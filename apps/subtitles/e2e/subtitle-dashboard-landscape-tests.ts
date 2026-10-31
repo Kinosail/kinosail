@@ -53,6 +53,31 @@ test("Landscape keeps the current task reachable during pending and failed navig
   }
 });
 
+test("Phone overview reserves no empty space for hidden status messages", async ({ page }) => {
+  for (const viewport of [{width: 390, height: 844}, {width: 844, height: 390}]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    const layout = () => page.evaluate(() => [".subtitle-overview", ".subtitle-browser"].map(selector => document.querySelector(selector)?.getBoundingClientRect().top ?? -1));
+    const before = await layout();
+    await page.evaluate(() => document.querySelectorAll(".subtitle-feedback-slot, .subtitle-update-slot").forEach(slot => { (slot as HTMLElement).style.display = "none"; }));
+    expect(await layout(), `${viewport.width}px: hidden status slots take up space`).toEqual(before);
+    await page.evaluate(() => document.querySelectorAll(".subtitle-feedback-slot, .subtitle-update-slot").forEach(slot => { (slot as HTMLElement).style.display = ""; }));
+    let release!: () => void;
+    const pending = new Promise<void>(resolve => { release = resolve; });
+    await page.route("**/?view=library", async route => { await pending; await route.abort(); });
+    try {
+      await page.getByRole("navigation", {name: "Main navigation"}).getByRole("link", {name: "Library", exact: true}).click();
+      const feedback = page.locator("#subtitle-feedback");
+      await expect(feedback).toContainText("Loading library");
+      const box = await feedback.boundingBox();
+      const nav = await page.locator(".app-header nav").boundingBox();
+      expect(box && box.y >= 0 && box.y + box.height <= viewport.height, `${viewport.width}px: status message is off screen`).toBeTruthy();
+      expect(box && nav && box.y + box.height <= nav.y + 1, `${viewport.width}px: status message overlaps the tab bar`).toBeTruthy();
+      expect(await layout(), `${viewport.width}px: a status message moved the page`).toEqual(before);
+    } finally { release(); await page.unroute("**/?view=library"); }
+  }
+});
+
 test("Enlarged settings keep native timeout choices inside the phone and landscape page", async ({ page }, info) => {
   for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {width: 844, height: 390}]) {
     await page.setViewportSize(viewport);
