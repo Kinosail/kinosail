@@ -158,3 +158,64 @@ func itemWatched(t *testing.T, handler http.Handler, token, id string) bool {
 	mustJSON(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/items/"+id, nil), &detail)
 	return detail.Item.Progress.Watched
 }
+
+func TestShowsCanBeAddedToMyList(t *testing.T) {
+	handler, token := apiServer(t)
+	show := severanceID(t, handler, token)
+	listed := func() bool {
+		t.Helper()
+		var state struct {
+			Listed bool `json:"listed"`
+		}
+		mustJSON(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/shows/"+show+"/list", nil), &state)
+		return state.Listed
+	}
+	listedShows := func() []string {
+		t.Helper()
+		var shows struct {
+			Shows []struct{ ID string }
+		}
+		mustJSON(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/shows?listed=true", nil), &shows)
+		ids := []string{}
+		for _, entry := range shows.Shows {
+			ids = append(ids, entry.ID)
+		}
+		return ids
+	}
+	if listed() || len(listedShows()) != 0 {
+		t.Fatal("show listed before it was added")
+	}
+	if response := apiCall(t, handler, token, http.MethodPut, "/api/v1/shows/"+show+"/list", map[string]any{"listed": true}); response.Code != http.StatusOK {
+		t.Fatalf("add show = %d %q", response.Code, response.Body.String())
+	}
+	if !listed() || len(listedShows()) != 1 || listedShows()[0] != show {
+		t.Fatalf("listed shows = %v", listedShows())
+	}
+	var all struct {
+		Shows []struct{ ID string }
+	}
+	mustJSON(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/shows", nil), &all)
+	if len(all.Shows) != 1 {
+		t.Fatalf("unfiltered shows = %v", all.Shows)
+	}
+	for _, call := range []struct {
+		method, path string
+		body         any
+		status       int
+	}{
+		{http.MethodPut, "/api/v1/shows/" + show + "/list", map[string]any{}, http.StatusBadRequest},
+		{http.MethodPut, "/api/v1/shows/" + show + "/list", map[string]any{"listed": "no"}, http.StatusBadRequest},
+		{http.MethodPut, "/api/v1/shows/0000000000000000/list", map[string]any{"listed": false}, http.StatusNotFound},
+		{http.MethodGet, "/api/v1/shows?listed=maybe", nil, http.StatusBadRequest},
+	} {
+		if response := apiCall(t, handler, token, call.method, call.path, call.body); response.Code != call.status {
+			t.Errorf("%s %s = %d %q, want %d", call.method, call.path, response.Code, response.Body.String(), call.status)
+		}
+	}
+	if !listed() {
+		t.Fatal("rejected calls removed the show from My List")
+	}
+	if response := apiCall(t, handler, token, http.MethodPut, "/api/v1/shows/"+show+"/list", map[string]any{"listed": false}); response.Code != http.StatusOK || listed() {
+		t.Fatalf("remove show = %d, listed %v", response.Code, listed())
+	}
+}

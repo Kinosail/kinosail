@@ -50,6 +50,7 @@ struct DeviceLibraryRouter: DeviceRequestHandler {
             let value = try Self.body(request) { $0 }
             return .json(200, try await Self.validating { try await state.saveMediaPreferences(value) })
         case ("GET", 2, "shows"): return try await show(tail[1])
+        case ("PUT", 3, "shows") where tail[2] == "watched": return try await DeviceLibraryWatched(catalog: catalog).show(id(tail[1]), request: request)
         case ("GET", 2, "items"): return try await detail(tail[1])
         case (_, 3, "items"): return try await itemAction(method, id: tail[1], action: tail[2], request: request)
         case ("PUT", 4, "items") where tail[2] == "progress" && tail[3] == "sync":
@@ -148,6 +149,7 @@ struct DeviceLibraryRouter: DeviceRequestHandler {
             return .json(200, try await Self.validating { try await state.saveItemPreferences(id, value) })
         case ("DELETE", "playback-preferences"): return .json(200, try await state.saveItemPreferences(id, nil))
         case ("PUT", "list"): return try await list(id, request: request)
+        case ("PUT", "watched"): return try await DeviceLibraryWatched(catalog: catalog).item(id, request: request)
         case ("DELETE", "continue-watching"): return try await DeviceLibraryPlayback(catalog: catalog, state: state, streams: streams).dismiss(id)
         case ("POST", "playback-events"): return try await DeviceLibraryPlayback(catalog: catalog, state: state, streams: streams).event(id, request: request)
         default: throw DeviceFailure.unsupported

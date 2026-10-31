@@ -67,6 +67,8 @@ func (handlers MediaHandlers) Register(mux *http.ServeMux, extras MediaExtras) {
 	mux.HandleFunc("DELETE /api/v1/items/{id}/continue-watching", handlers.dismissProgress)
 	mux.HandleFunc("PUT /api/v1/items/{id}/watched", handlers.markItemWatched)
 	mux.HandleFunc("PUT /api/v1/shows/{id}/watched", handlers.markShowWatched)
+	mux.HandleFunc("GET /api/v1/shows/{id}/list", handlers.showListed)
+	mux.HandleFunc("PUT /api/v1/shows/{id}/list", handlers.showListed)
 	mux.HandleFunc("GET /api/v1/history", handlers.history)
 	mux.HandleFunc("GET /api/v1/audio/{id}/queue", handlers.audioQueue)
 	mux.HandleFunc("GET /api/v1/books/{id}/reader", extras.Reader)

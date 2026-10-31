@@ -135,13 +135,13 @@ var apiLibraryRoutes = routeSet(
 	"GET /api/v1/books/{id}/reader/progress",
 	"GET /api/v1/playlists", "GET /api/v1/playlists/{name}",
 	"GET /api/v1/collections", "GET /api/v1/collections/{name}",
-	"GET /api/v1/actor", "GET /api/v1/shows", "GET /api/v1/shows/{id}", "GET /api/v1/albums", "GET /api/v1/albums/{id}",
+	"GET /api/v1/actor", "GET /api/v1/shows", "GET /api/v1/shows/{id}", "GET /api/v1/shows/{id}/list", "GET /api/v1/albums", "GET /api/v1/albums/{id}",
 	"GET /api/v1/watch-rooms/{id}", "GET /art/{id}", "GET /episode-art/{id}", "GET /backdrop/{id}", "GET /person/{id}/{person}",
 )
 
 var apiWriteRoutes = routeSet(
 	"PUT /api/v1/me/media-preferences", "PUT /api/v1/items/{id}/playback-preferences", "DELETE /api/v1/items/{id}/playback-preferences", "POST /api/v1/items/{id}/bookmarks", "DELETE /api/v1/items/{id}/bookmarks/{bookmark}", "PUT /api/v1/items/{id}/progress/sync",
-	"PUT /api/v1/items/{id}/progress", "PUT /api/v1/books/{id}/reader/progress", "DELETE /api/v1/items/{id}/continue-watching", "PUT /api/v1/items/{id}/watched", "PUT /api/v1/shows/{id}/watched", "PUT /api/v1/items/{id}/list",
+	"PUT /api/v1/items/{id}/progress", "PUT /api/v1/books/{id}/reader/progress", "DELETE /api/v1/items/{id}/continue-watching", "PUT /api/v1/items/{id}/watched", "PUT /api/v1/shows/{id}/watched", "PUT /api/v1/shows/{id}/list", "PUT /api/v1/items/{id}/list",
 	"POST /api/v1/playlists", "POST /api/v1/smart-playlists", "DELETE /api/v1/playlists/{name}",
 	"PUT /api/v1/playlists/{name}/items/{id}", "PUT /api/v1/playlists/{name}/order", "POST /api/v1/watch-rooms", "POST /api/v1/items/{id}/playback-events",
 )
