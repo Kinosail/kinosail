@@ -18,6 +18,10 @@ type subtitleSidecar struct {
 }
 
 func (provider *subtitleProvider) openSidecar(item library.Item, language string) (*subtitleSidecar, error) {
+	return provider.openSidecarAt(item, language, provider.managedSidecarPath(item, language))
+}
+
+func (provider *subtitleProvider) openSidecarAt(item library.Item, language, path string) (*subtitleSidecar, error) {
 	if provider.index == nil || item.Kind != "video" || !validLanguage(language) || !filepath.IsAbs(item.Path) {
 		return nil, errors.New("subtitle destination is unavailable")
 	}
@@ -33,7 +37,7 @@ func (provider *subtitleProvider) openSidecar(item library.Item, language string
 		parent, err := root.OpenRoot(relative)
 		_ = root.Close()
 		if err == nil {
-			return &subtitleSidecar{parent, filepath.Base(subtitleSidecarPath(item, language)), filepath.Base(item.Path)}, nil
+			return &subtitleSidecar{parent, filepath.Base(path), filepath.Base(item.Path)}, nil
 		}
 	}
 	return nil, errors.New("subtitle destination is outside the Library")
@@ -91,6 +95,10 @@ func (file *subtitleSidecar) syncDirectory() {
 
 func (file *subtitleSidecar) record(data []byte, record subtitleRecord) subtitleRecord {
 	record.Fingerprint = subtitleFingerprint(data)
+	record.Variant = ""
+	if strings.HasSuffix(file.name, ".sdh.srt") {
+		record.Variant = "sdh"
+	}
 	if info, err := file.root.Stat(file.name); err == nil {
 		record.Size, record.Modified = info.Size(), info.ModTime().UnixNano()
 	}

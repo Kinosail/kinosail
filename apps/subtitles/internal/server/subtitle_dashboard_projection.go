@@ -153,7 +153,7 @@ func (manager *subtitleManager) decorateSubtitleDashboardItem(row *subtitleDashb
 	}
 	language := languages[0]
 
-	row.WantedReason, row.Restorable = "Preferred subtitle is missing", subtitleBackupAvailable(item, language)
+	row.WantedReason, row.Restorable = "Preferred subtitle is missing", manager.provider.backupAvailable(item, language)
 	manager.addSubtitleDashboardRecord(row, item, language, row.Ready)
 	if row.ActionLanguage != "" {
 		language = row.ActionLanguage

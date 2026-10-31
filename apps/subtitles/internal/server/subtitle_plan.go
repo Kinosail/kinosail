@@ -56,7 +56,7 @@ func (manager *subtitleManager) sidecarPlanCoverage(item library.Item, language 
 	}
 	if manager.provider != nil {
 		record, found, err := manager.provider.ledger.record(subtitleRecordKey(item.ID, language))
-		if err == nil && found && record.Role == "captions" && recordedSidecarUnchanged(subtitleSidecarPath(item, language), record) {
+		if err == nil && found && record.Role == "captions" && recordedSidecarUnchanged(subtitleVariantPath(item, language, record.Variant), record) {
 			return true, tracks
 		}
 	}
