@@ -67,7 +67,11 @@ func (handlers MediaHandlers) markWatched(writer http.ResponseWriter, request *h
 		apiAction{err: err, status: handlers.StoreStatus(err)}.serve(writer)
 		return
 	}
-	slog.InfoContext(request.Context(), "marked watched", "operation", "progress.mark-watched", "scope", scope, "watched", watched, "items", len(ids))
+	outcome := "unwatched"
+	if watched {
+		outcome = "watched"
+	}
+	slog.InfoContext(request.Context(), "marked watched", "operation", "progress.mark-watched", "scope", scope, "outcome", outcome, "items", len(ids))
 	apiAction{body: map[string]any{"watched": watched, "items": len(ids)}, status: http.StatusOK}.serve(writer)
 }
 
