@@ -30,7 +30,7 @@ Each finding has a status: **fixed** (with the pull request), **planned** (with 
 | # | Bug | Status |
 |---|---|---|
 | 1 | An untagged `Movie.srt` counted as every preferred language. Automation never fetched the second language, and the manual view disagreed with it. | **Fixed** (#793) |
-| 2 | With the SDH preference and a standard `Movie.en.srt` present, automation retried every 15 minutes and recorded no backoff. | **Fixed** (#793): an occupied sidecar records an `exists` backoff. The SDH preference now saves captions as `Movie.en.sdh.srt` (#SDHPR). |
+| 2 | With the SDH preference and a standard `Movie.en.srt` present, automation retried every 15 minutes and recorded no backoff. | **Fixed** (#793): an occupied sidecar records an `exists` backoff. The SDH preference now saves captions as `Movie.en.sdh.srt` (#805). |
 | 3 | Legacy codepage subtitles (cp1250 Czech, cp1256 Farsi) are rejected before language-aware decoding runs. SubSource rejects every file that is not UTF-8. | **Fixed** (#794) |
 | 4 | New sidecars are created with mode 0600, and upgrades replace a 0644 file with a 0600 one. Media servers running as another user cannot read them. | **Fixed** (#794) |
 | 5 | A 404 or 5xx on one download link blocks the whole provider, so the remaining candidates are skipped. | **Fixed** (#795) |
@@ -51,7 +51,7 @@ Each finding has a status: **fixed** (with the pull request), **planned** (with 
 - The dashboard does not show running work, the next automation run, provider errors as problems, or subtitles installed with unverified timing. **Partly fixed** (#800): the last and next automatic check, and readable provider states. Planned: unverified installs and running operations.
 - Defaults that differ from the Owner's target:
   - Languages are English only and ignore the UI language. **Fixed** (#799): English plus the Owner's interface language.
-  - The SDH preference is strict, with no fallback. **Fixed** (#SDHPR): captions go to `.sdh.srt`; a standard file is the fallback only when none exists.
+  - The SDH preference is strict, with no fallback. **Fixed** (#805): captions go to `.sdh.srt`; a standard file is the fallback only when none exists.
   - There is no provider order, and no provider works without a key.
   - Sidecars the household created can be replaced. **Fixed** (#799).
   - The provider order is planned.
