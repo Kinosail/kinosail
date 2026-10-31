@@ -13,19 +13,19 @@ import (
 const maximumRecipeDurationMilliseconds = 7 * 24 * 60 * 60 * 1000
 
 type HLSRecipe struct {
-	Mode, Burn, Codec      string
-	Audio, Subtitle        int
-	ToneMap, SingleQuality bool
-	DialogueBoost          bool
-	NormalizeLoudness      bool
-	MaxBitrate             int64
-	Omitted                []Range
-	Offset                 float64
-	Width, Height          int
-	SubtitleOrdinal        int
-	SubtitlePath           string
-	SubtitleTime           float64
-	OutputTime             float64
+	Mode, Burn, Codec                string
+	Audio, Subtitle                  int
+	ToneMap, SingleQuality, Surround bool
+	DialogueBoost                    bool
+	NormalizeLoudness                bool
+	MaxBitrate                       int64
+	Omitted                          []Range
+	Offset                           float64
+	Width, Height                    int
+	SubtitleOrdinal                  int
+	SubtitlePath                     string
+	SubtitleTime                     float64
+	OutputTime                       float64
 }
 
 type HLSRecipePolicy struct {
@@ -49,6 +49,7 @@ func RecipeFor(plan PlaybackPlan) HLSRecipe {
 	if recipe.Mode == "transcode" {
 		recipe.Width, recipe.Height = plan.Width, plan.Height
 	}
+	recipe.Surround = plan.Mode == "audio-transcode" && plan.AudioCodec == "eac3"
 	if recipe.Burn == "" {
 		recipe.Subtitle = 0
 	}
@@ -56,7 +57,7 @@ func RecipeFor(plan PlaybackPlan) HLSRecipe {
 }
 
 func (recipe HLSRecipe) Token() string {
-	mode := map[string]string{"remux": "r", "audio-transcode": "a", "transcode": "t"}[recipe.Mode]
+	mode := recipeModeLetter(recipe)
 	burn := recipe.Burn
 	if burn == "" {
 		burn = "none"
@@ -161,7 +162,7 @@ func parseRecipeCodec(parts []string) ([]string, string, error) {
 }
 
 func parseRecipeFields(parts []string, codec string, maximumBitrate int64) (HLSRecipe, error) {
-	mode := map[string]string{"r": "remux", "a": "audio-transcode", "t": "transcode"}[parts[0]]
+	mode := map[string]string{"r": "remux", "a": "audio-transcode", "s": "audio-transcode", "t": "transcode"}[parts[0]]
 	if mode == "" || codec != "" && mode != "transcode" {
 		return HLSRecipe{}, errors.New("playback recipe is invalid")
 	}
@@ -173,7 +174,7 @@ func parseRecipeFields(parts []string, codec string, maximumBitrate int64) (HLSR
 	if audioErr != nil || subtitleErr != nil || toneErr != nil || bitrateErr != nil || audio < 0 || audio > 31 || subtitle < 0 || subtitle > 255 || !validBurn || toneMap < 0 || toneMap > 1 || bitrate < 0 || bitrate > maximumBitrate {
 		return HLSRecipe{}, errors.New("invalid fields")
 	}
-	return HLSRecipe{Mode: mode, Burn: burn, Codec: codec, Audio: audio, Subtitle: subtitle, ToneMap: toneMap == 1, MaxBitrate: bitrate}, nil
+	return HLSRecipe{Mode: mode, Burn: burn, Codec: codec, Audio: audio, Subtitle: subtitle, ToneMap: toneMap == 1, MaxBitrate: bitrate, Surround: parts[0] == "s"}, nil
 }
 
 func prefixedInt(value, prefix string) (int, error) {
