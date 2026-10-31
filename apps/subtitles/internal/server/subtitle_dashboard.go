@@ -40,6 +40,7 @@ type subtitleDashboardItem struct {
 	Missing         []string `json:"missingLanguages,omitempty"`
 	Searchable      bool     `json:"searchable"`
 	ActionLanguage  string   `json:"actionLanguage,omitempty"`
+	TimingUnchecked bool     `json:"timingUnchecked"`
 }
 
 type subtitleHistoryView struct {
@@ -92,6 +93,8 @@ type subtitleDashboardData struct {
 	Items              []subtitleDashboardItem  `json:"items"`
 	History            []subtitleHistoryView    `json:"history,omitempty"`
 	Automation         subtitleAutomationStatus `json:"automation"`
+	TimingUnchecked    int                      `json:"timingUnchecked"`
+	Activity           []subtitleWork           `json:"activity"`
 }
 
 type subtitleManager struct {

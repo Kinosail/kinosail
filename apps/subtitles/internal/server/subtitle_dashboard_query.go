@@ -100,7 +100,7 @@ func (options subtitleDashboardOptions) pageURL(page int) string {
 
 func (options subtitleDashboardOptions) valid() bool {
 	if !options.validSearch() ||
-		!oneOf(options.Status, "all", "ready", "wanted", "checking", "unavailable") || !oneOf(options.Kind, "all", "movie", "episode") || !oneOf(options.Sort, "title", "modified") {
+		!oneOf(options.Status, "all", "ready", "wanted", "checking", "unavailable", "timing") || !oneOf(options.Kind, "all", "movie", "episode") || !oneOf(options.Sort, "title", "modified") {
 		return false
 	}
 	if options.View == "summary" && (options.Page != 1 || options.Status != "all") || options.View == "wanted" && !oneOf(options.Status, "all", "wanted") {

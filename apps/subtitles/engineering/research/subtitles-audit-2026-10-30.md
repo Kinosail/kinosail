@@ -41,7 +41,7 @@ Each finding has a status: **fixed** (with the pull request), **planned** (with 
 | 10 | Exclusive writes need hard links. They fail on SMB, exFAT, and some FUSE mounts, and leftover temporary files are never cleaned up. | **Fixed** (#794 temporary-file cleanup, #798 fallback without hard links) |
 | 11 | Sidecars the household created can be replaced automatically. CONTEXT.md says they never are. | **Fixed** (#799): household files are never replaced |
 | 12 | SubDL has no forced-subtitle filter. | **Fixed** (#801): SubDL releases named `forced` are skipped |
-| 13 | SubSource episode names raise the release match enough to skip sync validation. | **Kept by design**: an exact episode name may install as `unverified`; the SubSource acquisition tests require it. Planned: show unverified installs on the dashboard. |
+| 13 | SubSource episode names raise the release match enough to skip sync validation. | **Kept by design**: an exact episode name may install as `unverified`; the SubSource acquisition tests require it. The dashboard now lists unverified installs as **Timing not checked** (#806). |
 | 14 | Full language names such as `Movie.English.srt` were not recognized, so a duplicate `Movie.en.srt` was added. | **Fixed** (#793) |
 | 15 | The OpenSubtitles 406 download quota gets a 1-minute backoff, and a stale token is not cleared. | **Fixed** (#795) |
 | 16 | A `200` response with an oversized file marked SubDL and OpenSubtitles unavailable. | **Fixed** (#804) |
@@ -49,7 +49,7 @@ Each finding has a status: **fixed** (with the pull request), **planned** (with 
 ## UI and defaults
 
 - The CSS is Player's stylesheet plus a patch with dead rules. Five rules conflict, colors are hard-coded, and breakpoints differ from Player's. **Partly fixed** (#800): state styles are defined once. Planned: remove dead patch rules.
-- The dashboard does not show running work, the next automation run, provider errors as problems, or subtitles installed with unverified timing. **Partly fixed** (#800): the last and next automatic check, and readable provider states. Planned: unverified installs and running operations.
+- The dashboard does not show running work, the next automation run, provider errors as problems, or subtitles installed with unverified timing. **Partly fixed** (#800): the last and next automatic check, and readable provider states. **Fixed** (#806): a **Timing not checked** count and filter, and a **Working now** line for the automatic check and running tasks.
 - Defaults that differ from the Owner's target:
   - Languages are English only and ignore the UI language. **Fixed** (#799): English plus the Owner's interface language.
   - The SDH preference is strict, with no fallback. **Fixed** (#805): captions go to `.sdh.srt`; a standard file is the fallback only when none exists.
