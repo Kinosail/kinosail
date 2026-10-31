@@ -513,6 +513,8 @@ Frame intervals while the picture changes, from the reveal start through the nex
 | Before, 4K | 45.5 ms | 303 ms | 7 |
 | After, 4K | 31.3 ms | 167 ms | 4 |
 
+The 4K after clip comes from the `e614f9cb` run. The next commit only raises the waiting opacity from 0 to 0.02 behind the curtain, which is not visible.
+
 Not verified here: frame time on Apple TV HD (A8) and Apple TV 4K hardware. That needs a physical-device check.
 
 | Clip (720p export of the reveal window) | SHA-256 |
