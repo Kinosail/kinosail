@@ -81,9 +81,9 @@ final class RemoteShowActionsTests: RemoteTestCase {
         remote.press(.select)
         let item = menuItem(label, in: app)
         XCTAssertTrue(item.waitForExistence(timeout: 5), "More should offer \(label); \(app.debugDescription)")
-        let current = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@ AND (hasFocus == true OR selected == true)", label)).firstMatch
-        for _ in 0..<6 where !current.exists { remote.press(.down) }
-        XCTAssertTrue(current.exists, "\(label) should take focus; \(app.debugDescription)")
+        for _ in 0..<6 where focusedMenuLabel(app) != label { remote.press(.up) }
+        for _ in 0..<6 where focusedMenuLabel(app) != label { remote.press(.down) }
+        XCTAssertEqual(focusedMenuLabel(app), label, "\(label) should take focus; \(app.debugDescription)")
         remote.press(.select)
     }
 }
@@ -99,5 +99,14 @@ extension RemoteShowActionsTests {
     @MainActor
     func settle() {
         RunLoop.current.run(until: Date().addingTimeInterval(2))
+    }
+}
+
+extension RemoteShowActionsTests {
+    @MainActor
+    func focusedMenuLabel(_ app: XCUIApplication) -> String? {
+        let cell = app.cells.matching(NSPredicate(format: "hasFocus == true")).firstMatch
+        guard cell.exists else { return nil }
+        return cell.descendants(matching: .any).matching(NSPredicate(format: "label != ''")).firstMatch.label
     }
 }
