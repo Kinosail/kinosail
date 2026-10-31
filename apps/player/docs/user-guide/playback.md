@@ -22,7 +22,7 @@ The player provides controls that depend on the media type and device:
 - Skip detected or Owner-created recap, intro, commercial, outro, or credits markers when the control appears. Confident markers skip on their own when the Owner keeps automatic skipping on.
 - Continue to the next episode when the item belongs to a Show and another episode is available.
 
-Video and audio progress is private to your Profile. Kinosail records progress while you watch. You can mark a supported item watched or unwatched from its detail page.
+Video and audio progress is private to your Profile. Kinosail records progress while you watch. You can mark a supported item watched or unwatched from its detail page. In the iPhone, iPad and Apple TV apps, the **…** menu on a detail page marks a movie or episode watched or unwatched, or marks the episode's whole season watched. The **…** menu on a show page marks the whole show. Marking clears the resume position.
 
 Audiobooks also provide playback speed and a sleep timer. Music queues support low-gap playback when the device supports it. Photos use an image viewer instead of audio or video controls.
 

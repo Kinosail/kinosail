@@ -110,6 +110,18 @@ extension ServerClient {
         await invalidateCatalog()
     }
 
+    func setWatched(itemID: String, watched: Bool) async throws {
+        _ = try await request("/api/v1/items/\(Input.id(itemID))/watched", method: .put, body: .object(["watched": .bool(watched)]))
+        await invalidateCatalog()
+    }
+
+    func setWatched(showID: String, season: Int? = nil, watched: Bool) async throws {
+        var body: [String: JSONValue] = ["watched": .bool(watched)]
+        if let season { body["season"] = .number(Double(season)) }
+        _ = try await request("/api/v1/shows/\(Input.hex(showID, count: 16))/watched", method: .put, body: .object(body))
+        await invalidateCatalog()
+    }
+
     func episodes(showID: String, policy: CatalogPolicy = .reload) async throws -> [MediaItem] {
         try await show(id: showID, policy: policy).episodes
     }

@@ -8,12 +8,12 @@ var mcpReadRoutes = routeSet(
 	"GET /api/v1/audio/{id}/queue", "GET /api/v1/books/{id}/reader", "GET /api/v1/books/{id}/reader/progress",
 	"GET /api/v1/playlists", "GET /api/v1/playlists/{name}",
 	"GET /api/v1/collections", "GET /api/v1/collections/{name}",
-	"GET /api/v1/actor", "GET /api/v1/shows", "GET /api/v1/shows/{id}", "GET /api/v1/albums", "GET /api/v1/albums/{id}",
+	"GET /api/v1/actor", "GET /api/v1/shows", "GET /api/v1/shows/{id}", "GET /api/v1/shows/{id}/list", "GET /api/v1/albums", "GET /api/v1/albums/{id}",
 	"GET /api/v1/watch-rooms/{id}",
 )
 
 var mcpWriteRoutes = routeSet(
-	"PUT /api/v1/items/{id}/progress", "PUT /api/v1/books/{id}/reader/progress", "DELETE /api/v1/items/{id}/continue-watching", "PUT /api/v1/items/{id}/list",
+	"PUT /api/v1/items/{id}/progress", "PUT /api/v1/books/{id}/reader/progress", "DELETE /api/v1/items/{id}/continue-watching", "PUT /api/v1/items/{id}/watched", "PUT /api/v1/shows/{id}/watched", "PUT /api/v1/shows/{id}/list", "PUT /api/v1/items/{id}/list",
 	"POST /api/v1/playlists", "POST /api/v1/smart-playlists", "DELETE /api/v1/playlists/{name}",
 	"PUT /api/v1/playlists/{name}/items/{id}", "PUT /api/v1/playlists/{name}/order", "POST /api/v1/watch-rooms", "PUT /api/v1/me/language",
 )

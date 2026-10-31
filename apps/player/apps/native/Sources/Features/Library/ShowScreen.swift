@@ -52,6 +52,7 @@ struct ShowScreen: View {
                                 Label(next.playLabel, systemImage: "play.fill").padding(.horizontal, 6)
                             }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                             NavigationLink("Details", value: ScreenDestination.detail(next.id)).buttonStyle(SpotlightSecondaryButtonStyle())
+                            ShowActions(showID: showID, episodes: episodes)
                         }
                         if !show.plot.isEmpty {
                             Text(show.plot).font(.body).fixedSize(horizontal: false, vertical: true).frame(maxWidth: 900, alignment: .leading)
@@ -100,6 +101,7 @@ struct ShowScreen: View {
                 Text(ShowSeasonSelection.episodeSummary(next))
                     .font(.headline).foregroundStyle(KinoTheme.muted)
                 if next.progress.seconds > 0 && !next.progress.watched { WatchPosition(item: next) }
+                HStack(spacing: 20) {
                 MediaDestinationLink(destination: .playback(next.id), item: next) {
                     Label(next.playLabel, systemImage: "play.fill")
                         .frame(minWidth: 240, minHeight: playHeight)
@@ -107,6 +109,10 @@ struct ShowScreen: View {
                 }
                 .tvCapsule(prominent: true)
                 .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
+                    ShowActions(showID: showID, episodes: show.episodes)
+                }
+                .fixedSize()
+                .focusSection()
             }
         } }
         .tvMovieHeroArtwork(show.backdrop)

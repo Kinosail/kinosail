@@ -279,7 +279,7 @@ HEAD /dlna/{token}/media/{id}
 POST /settings/dlna
 ```
 
-### HLS, transcoding, playback (remove, 23)
+### HLS, transcoding, playback (remove, 25)
 
 ```text
 GET /api/v1/audio/{id}/queue
@@ -289,8 +289,10 @@ GET /api/v1/items/{id}/playback
 POST /api/v1/items/{id}/playback-events
 PUT /api/v1/items/{id}/progress
 GET /api/v1/items/{id}/watch-progress
+PUT /api/v1/items/{id}/watched
 PUT /api/v1/settings/playback
 PUT /api/v1/settings/transcoder
+PUT /api/v1/shows/{id}/watched
 POST /api/v1/transcoder/test
 POST /continue-watching/{id}/remove
 GET /hls/{id}/audio/{track}/{file...}
@@ -355,7 +357,7 @@ POST /offline/{id}
 GET /static/downloads.js
 ```
 
-### Playlists, collections, lists (remove, 26)
+### Playlists, collections, lists (remove, 28)
 
 ```text
 GET /api/v1/collections
@@ -371,6 +373,8 @@ GET /api/v1/playlists/{name}
 PUT /api/v1/playlists/{name}/items/{id}
 PUT /api/v1/playlists/{name}/order
 POST /api/v1/smart-playlists
+GET /api/v1/shows/{id}/list
+PUT /api/v1/shows/{id}/list
 GET /collection/{name}
 POST /collection/{name}/delete
 POST /collection/{name}/items/{id}

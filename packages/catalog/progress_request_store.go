@@ -210,3 +210,16 @@ func (store *RequestProgressStore) audit(request *http.Request, action, id strin
 	}
 	store.auditor.Playback(request, action, id, title, seconds, watched)
 }
+
+func (store *RequestProgressStore) MarkWatched(request *http.Request, ids []string, watched bool) error {
+	profile, now := store.viewer(request).ID, time.Now().UTC()
+	for _, id := range ids {
+		if _, _, _, err := store.Update(profile+":"+id, func(state PlaybackState) (PlaybackState, bool, error) {
+			state.Seconds, state.Watched, state.Updated = 0, watched, now
+			return state, true, nil
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
+}

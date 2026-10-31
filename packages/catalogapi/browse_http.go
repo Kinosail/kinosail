@@ -1,6 +1,7 @@
 package catalogapi
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
@@ -24,9 +25,17 @@ func (handlers MediaHandlers) registerBrowse(mux *http.ServeMux) {
 }
 
 func (handlers MediaHandlers) shows(writer http.ResponseWriter, request *http.Request) {
+	listedOnly, valid := listedFilter(request)
+	if !valid {
+		apiAction{err: errors.New("listed must be true or false"), status: http.StatusBadRequest}.serve(writer)
+		return
+	}
 	shows := handlers.Index.VisibleView(request).Shows()
 	result := make([]MediaGroup, 0, len(shows))
 	for _, show := range shows {
+		if listedOnly && !handlers.Lists.Has(request, show.ID) {
+			continue
+		}
 		play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
 		result = append(result, MediaGroup{ID: show.ID, Title: show.Title, Artwork: ArtworkURL(show.ArtworkID), Backdrop: BackdropURL(ShowBackdropID(show), show.Backdrop != ""), Play: play})
 	}

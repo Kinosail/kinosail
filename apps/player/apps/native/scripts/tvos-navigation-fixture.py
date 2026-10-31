@@ -10,6 +10,7 @@ PLAY = dict(rate=1, audioLanguage='auto', subtitleLanguage='auto', audioTrack=''
 VIEWER = {'server':'TV Polish QA','serverId':'tv-polish-qa','viewer':dict(id='qa',name='QA Viewer',owner=True,downloads=True,transcode=True,remote=False)}
 PROGRESS = dict(seconds=0,watched=False,session='',revision=0)
 TITLE_PREFS = {}
+SHOW_LISTED = {'value': False}
 def read_movie(args):
     if len(args) != 1 or not args[0] or len(args[0]) > 4096:
         raise ValueError('One generated media path is required')
@@ -39,7 +40,7 @@ if os.environ.get('KINOSAIL_TV_ARTWORK_CAST_FIXTURE') == '1':
     ]
 ITEMS.append(dict(id='0123456789abcdef',kind='show',title='Into the Wild',artwork='/art/show',backdrop='/backdrop/show',genres='Nature',plot='A journey into the natural world.',progress=PROGRESS))
 for n in range(4):
-    ITEMS.append(dict(id=f'episode-{n}',kind='video',title=['First Light','The Long Way Home','A Quiet Evening','The Last Horizon'][n],show='Into the Wild',showId='0123456789abcdef',season=1 if n<2 else 2,episode=n%2+1,rating='PG',artwork=f'/episode-art/episode-{n}',backdrop='/backdrop/show',stream=f'/media/episode-{n}',container='mp4',progress=PROGRESS))
+    ITEMS.append(dict(id=f'episode-{n}',kind='video',title=['First Light','The Long Way Home','A Quiet Evening','The Last Horizon'][n],plot=['Dawn breaks over the river valley.','The herd crosses the high pass.','Rain settles over the forest.','The journey ends at the coast.'][n],show='Into the Wild',showId='0123456789abcdef',season=1 if n<2 else 2,episode=n%2+1,rating='PG',artwork=f'/episode-art/episode-{n}',backdrop='/backdrop/show',stream=f'/media/episode-{n}',container='mp4',progress=PROGRESS))
 for kind,title in [('music','Evening Light'),('audiobook','The Geometry of Sound'),('photo','Color Study'),('book','Field Notes')]:
     ITEMS.append(dict(id=kind,kind=kind,title=title,artwork='/art/'+kind,stream='/media/'+kind,artist='Signal Lab' if kind=='music' else '',container='mp4',progress=PROGRESS))
 CAPTIONS = b'WEBVTT\n\n00:00:01.000 --> 00:00:06.000\nThe river bends toward the mountains.\n\n00:00:12.000 --> 00:00:18.000\nWe should reach the ridge by nightfall.\n'
@@ -51,6 +52,10 @@ def playback_extras(ident):
     return dict(chapters=[dict(title='Opening',start=0,end=10),dict(title='Journey',start=10,end=24),dict(title='Credits',start=24,end=30)],
                 markers=[dict(type='intro',label='',start=2,end=12),dict(type='credits',label='',start=24,end=30)],
                 subtitles=[dict(label='English',language='en',source=f'/subtitle/{ident}/en.vtt',default=False)],next=f'episode-{n+1}' if n < 3 else '')
+def art_label(path):
+    name=path.split('/')[-1]
+    item=next((i for i in ITEMS if i['id']==name and i.get('showId')),None)
+    return f"S{item['season']} E{item['episode']}" if item and path.startswith('/episode-art/') else name.replace('-',' ').upper()
 ART = {}
 def artwork(path):
     if path not in ART:
@@ -62,7 +67,7 @@ def artwork(path):
         for y in range(h): draw.line((0,y,w,y),fill=tuple(int(a+(b-a)*y/h) for a,b in zip(top,bottom)))
         draw.ellipse((w*.57,h*.17,w*.88,h*.48),fill=(216,218,233))
         draw.polygon([(0,h*.82),(w*.35,h*.36),(w*.68,h*.88),(w,h*.55),(w,h),(0,h)],fill=ridge)
-        draw.text((36,h-90),path.split('/')[-1].replace('-',' ').upper(),fill='white',font_size=38)
+        draw.text((36,h-90),art_label(path),fill='white',font_size=38)
         data=BytesIO(); img.save(data,'JPEG',quality=90); ART[path]=data.getvalue()
     return ART[path]
 class Handler(BaseHTTPRequestHandler):
@@ -140,6 +145,8 @@ class Handler(BaseHTTPRequestHandler):
             person=next((p for p in ITEMS[4].get('cast',[]) if p['name']==name),None)
             if not person: return self.send(404,{'error':'missing fixture actor'})
             return self.send(200,dict(name=name,image=person['image'],movies=[],shows=[]))
+        if path=='/api/v1/shows/0123456789abcdef/list': return self.send(200,{'listed':SHOW_LISTED['value']})
+        if path=='/api/v1/shows': return self.send(200,{'shows':[dict(id='0123456789abcdef',title='Into the Wild',artwork='/art/show',backdrop='/backdrop/show')] if SHOW_LISTED['value'] or q.get('listed',['false'])[0]!='true' else []})
         if path=='/api/v1/shows/0123456789abcdef': return self.send(200,dict(id='0123456789abcdef',title='Into the Wild',backdrop='/backdrop/show',plot='A journey into the natural world.',episodes=[i for i in ITEMS if i.get('showId')],genres='Nature',cast=[]))
         if path=='/api/v1/me/media-preferences': return self.send(200,dict(playback=PLAY,autoDownloadNext=0,removeWatched=False,downloadLimitGiB=20,wifiOnly=True,readerFontSize=20,readerTheme='auto'))
         match=re.fullmatch(r'/api/v1/items/([^/]+)(.*)',path)
@@ -205,6 +212,24 @@ class Handler(BaseHTTPRequestHandler):
             TITLE_PREFS[ident]=body
             print('PREFERENCES_FIXTURE_SAVED',json.dumps(dict(item=ident,rate=body['rate'])),flush=True)
             return self.send(200,dict(playback=body,overridden=True))
+        change=re.fullmatch(r'/api/v1/(items|shows)/([a-z0-9-]{1,32})/(watched|list)',self.path)
+        if change:
+            if self.headers.get_all('Authorization',[])!=['Bearer tv-polish-fixture-token']: return self.send(401,{'error':'fixture token required'})
+            kind,ident,action=change.groups()
+            try:
+                body=self.read_body(); key='listed' if action=='list' else 'watched'
+                if not isinstance(body,dict) or key not in body or type(body[key]) is not bool or set(body)-{key,'season'}: raise ValueError()
+                if 'season' in body and (kind!='shows' or type(body['season']) is not int): raise ValueError()
+            except (ValueError,KeyError,TypeError,RecursionError): return self.send(400,{'error':'invalid fixture change'})
+            if action=='list':
+                if kind!='shows' or ident!='0123456789abcdef': return self.send(404,{'error':'unsupported fixture operation'})
+                SHOW_LISTED['value']=body['listed']; print('SHOW_LIST_FIXTURE_SAVED',json.dumps(body),flush=True)
+                return self.send(200,{'listed':body['listed']})
+            targets=[i for i in ITEMS if (i['id']==ident if kind=='items' else i.get('showId')==ident and body.get('season',i.get('season'))==i.get('season'))]
+            if not targets: return self.send(404,{'error':'missing title'})
+            for item in targets: item['progress']={**item['progress'],'seconds':0,'watched':body['watched']}
+            print('WATCHED_FIXTURE_SAVED',json.dumps(dict(kind=kind,items=len(targets),watched=body['watched'])),flush=True)
+            return self.send(200,{'watched':body['watched'],'items':len(targets)})
         if not re.fullmatch(r'/api/v1/items/(?:movie-[0-9]{3}|episode-[0-3])/progress/sync',self.path): return self.send(404,{'error':'unsupported fixture operation'})
         if self.headers.get_all('Authorization',[])!=['Bearer tv-polish-fixture-token']: return self.send(401,{'error':'fixture token required'})
         try:

@@ -562,3 +562,20 @@ Branch `mikeo/source-surround` at `91811e2f`. Xcode 27.1, the tvOS 27.0 "KinoQA 
 - `./scripts/build-apple.sh ios` succeeded.
 
 Not verified here: a live Plex, Jellyfin or Emby server choosing E-AC-3 for a DTS or TrueHD file. Those servers are expected to use the first listed codec; a check against a real server is still needed.
+
+## Mark watched and show actions — 2026-10-31
+
+Branch `mikeo/mark-watched` at `29d5d371`. Xcode 27.1, the tvOS 27.0 "KinoQA 1080p" simulator, the loopback navigation fixture (now with `PUT /api/v1/items/{id}/watched`, `PUT /api/v1/shows/{id}/watched` and `GET`/`PUT /api/v1/shows/{id}/list`) and a seeded session.
+
+- Server: `TestMarkWatchedCoversMoviesEpisodesSeasonsAndShows`, `TestMarkWatchedRejectsBadInputWithoutChangingState` and `TestShowsCanBeAddedToMyList` passed, with the route scope, inventory and OpenAPI checks.
+- `RemoteShowActionsTests/testShowAndEpisodeActionsMarkWatchedAndSaveTheShow` passed: Play, My List and More share one row on the show page; My List saves and removes the show; More marks the show watched and then offers Mark show as unwatched; the episode's More marks it unwatched and offers Mark season 1 as watched; a partly watched show offers Mark show as watched. The fixture log recorded each change once.
+- `RemoteEpisodeDetailTests/testEpisodeDetailKeepsActionsInOneRowAboveTheEpisodes`, `testMovieDetailBackRestoresGridAndBrowseFocus` and `testShowSeasonsAndBackRestoreFocus` passed.
+- `./scripts/build-apple.sh ios` succeeded.
+
+| Screenshot (1920×1080 simulator capture) | SHA-256 |
+| --- | --- |
+| `show-actions.png` | `0c64289f607c9fa3f48d4bc3451638f4496943f4f25fe8866ab26b86d9c0f128` |
+| `show-more-menu-after-mark-watched.png` | `24a71fd55dd8b83a7830f8f279f89f0e50c495c8c71c060a836d67b264c03c30` |
+| `episode-more-menu.png` | `8aff2ff5ec22f59eec40b92349a764618854ee76517348b61ae9297914865ea9` |
+
+Not verified here: the iPhone and iPad menus in a UI test (build only), the Plex, Jellyfin and Emby paths against live servers, and Apple TV hardware.
