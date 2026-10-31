@@ -50,11 +50,7 @@ func (store *profileStore) createCompatibilitySession(id, name string) (string, 
 }
 
 func compatibilityProfile(profile viewerProfile) viewerProfile {
-	if profile.Owner {
-		profile.Owner, profile.Downloads, profile.Transcode, profile.Remote = false, true, true, false
-		profile.Rating, profile.Libraries = "all", []string{"all"}
-	}
-	return profile
+	return identitycore.CompatibilityProfile(profile)
 }
 
 func (store *profileStore) createStrongSession(id, name string, browser bool) (string, error) {

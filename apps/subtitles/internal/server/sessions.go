@@ -21,12 +21,7 @@ type (
 var sessionCookie = identitycore.SessionCookie
 
 func compatibilityProfile(profile viewerProfile) viewerProfile {
-	if !profile.Owner {
-		return profile
-	}
-	profile.Owner, profile.Downloads, profile.Transcode, profile.Remote = false, true, true, false
-	profile.Rating, profile.Libraries = "all", []string{"all"}
-	return profile
+	return identitycore.CompatibilityProfile(profile)
 }
 
 func (store *profileStore) sessionProfiles() []identitycore.SessionProfile {

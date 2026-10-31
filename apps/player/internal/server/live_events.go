@@ -23,7 +23,7 @@ func liveEventAccess(auth *authentication) sharedlive.Access {
 		Profile: func(request *http.Request) string { return currentViewer(request).ID },
 		Allowed: func(request *http.Request) bool {
 			access, found := auth.identity(request)
-			profile := access.profile
+			profile := access.Profile
 			return found && profile.Allowed(publicInternetRequest(request), time.Now()) && (!profile.APIKey || profileAllowsAPI(profile, "GET /api/v1/events"))
 		},
 		Changed: auth.profiles.changes.Changed,

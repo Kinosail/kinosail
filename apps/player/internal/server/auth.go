@@ -102,7 +102,7 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 	if !found {
 		return false
 	}
-	profile := access.profile
+	profile := access.Profile
 	if bound := owneraccess.ProfileID(request); bound != "" && (profile.ID != bound || !profile.Owner || profile.APIKey || !profile.Secured() || auth.profiles.accessPublic(request, access) || !auth.profiles.accessRecentlyAuthenticated(request, access, 8*time.Hour)) {
 		if authenticationErrorRequest(request) {
 			localizedError(writer, request, "sign in as the Owner paired to this device using two-step sign-in", http.StatusForbidden)
@@ -124,10 +124,10 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 
 func (auth *authentication) viewerAccess(access tokenAccess, request *http.Request, matched string) identitycore.Denial {
 	return identitycore.EvaluateAccess(identitycore.AccessInput{
-		Public: publicInternetRequest(request), Owner: access.profile.Owner, APIKey: access.profile.APIKey,
+		Public: publicInternetRequest(request), Owner: access.Profile.Owner, APIKey: access.Profile.APIKey,
 		RecentlyAuthenticated: auth.profiles.accessRecentlyAuthenticated(request, access, auth.publicAuthenticationMaximumAge()), PublicSession: auth.profiles.accessPublic(request, access),
-		RemoteRouteAllowed: publicViewerRouteAllowed(matched), ScheduleAllowed: access.profile.Allowed(publicInternetRequest(request), time.Now()), APIKeyAllowed: profileAllowsAPI(access.profile, matched),
-		LocalOwner: access.profile.ID == "local-owner", MFARequired: auth.settings.requireMFA(), Secured: access.profile.Secured(), EnrollmentRoute: mfaEnrollmentRoute(matched),
+		RemoteRouteAllowed: publicViewerRouteAllowed(matched), ScheduleAllowed: access.Profile.Allowed(publicInternetRequest(request), time.Now()), APIKeyAllowed: profileAllowsAPI(access.Profile, matched),
+		LocalOwner: access.Profile.ID == "local-owner", MFARequired: auth.settings.requireMFA(), Secured: access.Profile.Secured(), EnrollmentRoute: mfaEnrollmentRoute(matched),
 	})
 }
 
@@ -224,7 +224,7 @@ func (auth *authentication) identity(request *http.Request) (tokenAccess, bool) 
 		return access, true
 	}
 	open := !auth.required && !auth.profiles.hasProfiles()
-	return tokenAccess{profile: viewerProfile{ID: "local-owner", Name: "Owner", Owner: true}}, open
+	return tokenAccess{Profile: viewerProfile{ID: "local-owner", Name: "Owner", Owner: true}}, open
 }
 
 func (auth *authentication) signInPath() string {

@@ -43,7 +43,7 @@ func (rooms *watchRoomAdapter) player(request *http.Request, _ *libraryIndex, it
 
 func reauthorizeWatchRoom(auth *authentication, request *http.Request, route string) (*http.Request, string, bool) {
 	access, found := auth.identity(request)
-	profile := access.profile
+	profile := access.Profile
 	if !found || !profile.Allowed(publicInternetRequest(request), time.Now()) || profile.APIKey && !profileAllowsAPI(profile, route) {
 		return request, "", false
 	}
