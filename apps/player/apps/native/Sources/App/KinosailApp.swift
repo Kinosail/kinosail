@@ -59,9 +59,13 @@ struct KinosailApp: App {
 private struct LaunchingAppShell: View {
     @Environment(AppSession.self) private var session
     @State private var launchMinimumElapsed = false
+    @State private var stage = LaunchStage()
 
     var body: some View {
-        LaunchReveal(ready: launchMinimumElapsed && !session.restoring) { AppShell() }
+        LaunchReveal(ready: launchMinimumElapsed && !session.restoring, stage: stage) { AppShell() }
+            .task(id: session.restoring) {
+                if !session.restoring && session.client == nil { stage.contentAppeared() }
+            }
             .task {
                 do { try await Task.sleep(for: .milliseconds(120)) }
                 catch { return }
