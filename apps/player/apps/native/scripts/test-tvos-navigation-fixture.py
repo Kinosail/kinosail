@@ -85,7 +85,7 @@ class NavigationFixtureTests(unittest.TestCase):
             self.assertEqual((status, result), (200, {"watched": True, "items": 2}))
             self.assertEqual([item["progress"]["watched"] for item in self.fixture.ITEMS if item.get("showId")], [False, False, True, True])
             self.assertEqual(self.request("PUT", "/api/v1/shows/0123456789abcdef/list", b'{"listed": true}', authorized=True)[0], (200, {"listed": True}))
-            self.assertEqual(self.request("GET", "/api/v1/shows?listed=true")[0][1]["shows"][0]["id"], "0123456789abcdef")
+            self.assertEqual(self.request("GET", "/api/v1/shows?listed=true", authorized=True)[0][1]["shows"][0]["id"], "0123456789abcdef")
         finally:
             self.fixture.ITEMS[:] = original
             self.fixture.SHOW_LISTED.update(listed)
