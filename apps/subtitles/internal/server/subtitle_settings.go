@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 

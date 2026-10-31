@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 const defaultSubDLURL = "https://api.subdl.com/api/v1"

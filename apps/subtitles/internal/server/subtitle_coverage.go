@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 func (manager *subtitleManager) searchableSubtitleLanguage(ctx context.Context, item library.Item, languages []string) (string, bool) {
@@ -59,12 +59,11 @@ func (manager *subtitleManager) planCoverageAllFacts(item library.Item, language
 }
 
 func subtitleCoverageAll(item library.Item, languages []string) (bool, []string, []string) {
-	mediaBase := strings.TrimSuffix(item.Path, filepath.Ext(item.Path))
 	labels := make([]string, 0, len(item.Subtitles))
 	available := make(map[string]int, len(languages))
 	reportedLanguages := make([]string, 0, len(item.Subtitles))
 	for _, path := range item.Subtitles {
-		label, language := subtitleTrackLanguage(path, mediaBase, languages)
+		label, language := subtitleTrackLanguage(path, item.Path, languages)
 		labels = append(labels, label)
 		if language != "" && subtitleRoleFromPath(path) != "forced" {
 			available[language]++
@@ -75,19 +74,15 @@ func subtitleCoverageAll(item library.Item, languages []string) (bool, []string,
 	return len(missing) == 0, labels, missing
 }
 
-func subtitleTrackLanguage(path, mediaBase string, languages []string) (string, string) {
-	base := strings.TrimSuffix(path, filepath.Ext(path))
-	suffix := strings.TrimPrefix(base, mediaBase)
-	if suffix == "" {
+func subtitleTrackLanguage(path, media string, languages []string) (string, string) {
+	if strings.TrimSuffix(path, filepath.Ext(path)) == strings.TrimSuffix(media, filepath.Ext(media)) {
 		if len(languages) > 0 {
 			return "Default", languages[0]
 		}
 		return "Default", ""
 	}
-	for _, part := range strings.Split(strings.TrimPrefix(suffix, "."), ".") {
-		if canonical, ok := subtitlelanguage.NormalizeFileName(part); ok {
-			return canonical, canonical
-		}
+	if language := subtitlelanguage.FileLanguage(media, path); language != "" {
+		return language, language
 	}
 	return "Other", ""
 }

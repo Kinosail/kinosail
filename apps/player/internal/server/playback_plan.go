@@ -1,10 +1,9 @@
 package server
 
 import (
-	"strings"
-
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 type (
@@ -35,8 +34,7 @@ func viewerPlaybackPolicy(viewer viewerProfile) ViewerPolicy {
 }
 
 func subtitleLanguageFromPath(media, subtitle string) string {
-	label := lower(subtitleLabel(media, subtitle))
-	if language, _, _ := strings.Cut(label, " · "); len(language) >= 2 && len(language) <= 8 {
+	if language := subtitlelanguage.FileLanguage(media, subtitle); language != "" {
 		return language
 	}
 	return "und"
