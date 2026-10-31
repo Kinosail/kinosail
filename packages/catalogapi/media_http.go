@@ -19,6 +19,7 @@ type MediaProgress interface {
 	ClientItems(*http.Request, []library.Item) any
 	ClientItem(*http.Request, library.Item) any
 	Dismiss(*http.Request, string) error
+	MarkWatched(*http.Request, []string, bool) error
 	Get(*http.Request, string) catalog.PlaybackState
 	History(*http.Request, []library.Item, catalog.Page) ([]library.Item, int)
 	SetRevision(*http.Request, string, float64, *bool, string, uint64) (bool, error)
@@ -64,6 +65,8 @@ func (handlers MediaHandlers) Register(mux *http.ServeMux, extras MediaExtras) {
 	mux.HandleFunc("PUT /api/v1/items/{id}/progress", handlers.progress)
 	mux.HandleFunc("POST /api/v1/items/{id}/playback-events", extras.PlaybackEvents)
 	mux.HandleFunc("DELETE /api/v1/items/{id}/continue-watching", handlers.dismissProgress)
+	mux.HandleFunc("PUT /api/v1/items/{id}/watched", handlers.markItemWatched)
+	mux.HandleFunc("PUT /api/v1/shows/{id}/watched", handlers.markShowWatched)
 	mux.HandleFunc("GET /api/v1/history", handlers.history)
 	mux.HandleFunc("GET /api/v1/audio/{id}/queue", handlers.audioQueue)
 	mux.HandleFunc("GET /api/v1/books/{id}/reader", extras.Reader)

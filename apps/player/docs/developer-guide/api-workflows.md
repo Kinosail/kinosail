@@ -35,6 +35,8 @@ Use the same token for the Profile whose state the integration represents:
 
 - `PUT /api/v1/items/{id}/progress` saves viewing progress;
 - `DELETE /api/v1/items/{id}/continue-watching` dismisses a shelf item;
+- `PUT /api/v1/items/{id}/watched` with `{"watched": true}` marks a movie or episode watched or unwatched and clears its resume position;
+- `PUT /api/v1/shows/{id}/watched` with `{"watched": true}` does the same for every episode of a show, or for one season with `"season": 1`;
 - `PUT /api/v1/items/{id}/list` changes My List; and
 - `GET /api/v1/history` reads that Profile's history, most recent first.
 

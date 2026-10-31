@@ -38,6 +38,8 @@ func (stub *mediaProgressStub) Dismiss(*http.Request, string) error {
 	return stub.dismissErr
 }
 
+func (stub *mediaProgressStub) MarkWatched(*http.Request, []string, bool) error { return nil }
+
 func (stub *mediaProgressStub) Get(*http.Request, string) catalog.PlaybackState { return stub.state }
 
 func (stub *mediaProgressStub) History(_ *http.Request, items []library.Item, _ catalog.Page) ([]library.Item, int) {

@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "b31940588d5b90b300c7b0ff96c1d1225092ae48f1eb32fff6d910c8644d44ee"
+const reviewedRouteInventorySHA256 = "5f156f558845ee15361e4950af4a75380cdae850378008d73d97edd88ce120f2"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -109,7 +109,7 @@ var expectedLibraryScopeRoutes = routeSet(
 
 var expectedWriteScopeRoutes = routeSet(
 	"PUT /api/v1/me/media-preferences", "PUT /api/v1/items/{id}/playback-preferences", "DELETE /api/v1/items/{id}/playback-preferences", "POST /api/v1/items/{id}/bookmarks", "DELETE /api/v1/items/{id}/bookmarks/{bookmark}", "PUT /api/v1/items/{id}/progress/sync",
-	"PUT /api/v1/items/{id}/progress", "PUT /api/v1/books/{id}/reader/progress", "DELETE /api/v1/items/{id}/continue-watching", "PUT /api/v1/items/{id}/list",
+	"PUT /api/v1/items/{id}/progress", "PUT /api/v1/books/{id}/reader/progress", "DELETE /api/v1/items/{id}/continue-watching", "PUT /api/v1/items/{id}/watched", "PUT /api/v1/shows/{id}/watched", "PUT /api/v1/items/{id}/list",
 	"POST /api/v1/playlists", "POST /api/v1/smart-playlists", "DELETE /api/v1/playlists/{name}",
 	"PUT /api/v1/playlists/{name}/items/{id}", "PUT /api/v1/playlists/{name}/order", "POST /api/v1/watch-rooms", "POST /api/v1/items/{id}/playback-events",
 )
@@ -138,7 +138,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 483, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 485, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }
