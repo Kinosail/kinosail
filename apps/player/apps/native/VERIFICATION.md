@@ -493,3 +493,34 @@ The live checks exposed and fixed these production failures:
 Real Nox EPUB reading, photo rendering and photo zoom also worked on iPad. Final iOS and tvOS simulator builds succeeded at the recorded production revision. Physical-device installation and pairing evidence are intentionally omitted; simulator interaction remains a separate boundary.
 
 Tests and quality suites remain disabled. Regression source additions are not passing test results, and these concrete live flows do not certify all media formats, background behavior, accessibility or release distribution. Private physical-device evidence is not tracked here.
+
+## Launch sequence — 2026-10-31
+
+Branch `mikeo/tvos-launch-zoom` at `2971a583`; baseline `main` at `084ce98d`. Xcode 27.1, tvOS 27.0 simulators created for this check (Apple TV 4K 3rd generation at 1080p and at 4K), loopback fixture from `scripts/tvos-navigation-fixture.py` with a generated six-second MP4, session seeded by `TVQualitySessionSeed`. Each Remote UI test ran under `xcrun simctl io recordVideo`.
+
+- iOS: `./scripts/build-apple.sh ios` succeeded.
+- tvOS 1080p, loaded: `testLaunchAndLibraryStartOnTopLeftTitle`, `testMovieDetailBackRestoresGridAndBrowseFocus`, `testTopBarAndBrowseReturnPaths` and `RemotePolishTests/testFocusedContinueWatchingCardsKeepTheirNeighborsClear` passed.
+- tvOS 1080p, pending fixture (slow network): `RemoteHomeStateTests/testPendingHomeKeepsNavigationReachableAndRemovesSkeleton` passed. The mark breathes, then the drop lands on the shimmering placeholders.
+- tvOS 1080p with `ReduceMotionEnabled`: the launch test passed; the reveal is the 0.25-second fade.
+- tvOS 4K, loaded: the launch test failed at `e614f9cb` (launch focused Search because arriving rows started at opacity 0) and passed at `2971a583` (rows wait at 0.02).
+
+Frame intervals while the picture changes, from the reveal start through the next two seconds (simulator rendering on the Mac, not Apple TV hardware):
+
+| Run | Mean | Max | Over 20 ms |
+| --- | --- | --- | --- |
+| Before, 1080p | 17.4 ms | 30 ms | 6 |
+| After, 1080p | 17.6 ms | 30 ms | 5 |
+| Before, 4K | 45.5 ms | 303 ms | 7 |
+| After, 4K | 31.3 ms | 167 ms | 4 |
+
+Not verified here: frame time on Apple TV HD (A8) and Apple TV 4K hardware. That needs a physical-device check.
+
+| Clip (720p export of the reveal window) | SHA-256 |
+| --- | --- |
+| `before-1080p.mp4` | `bc68cc8913598e9fcfc5e76dbff4dd583ab3d6b2c0ff797c266519a19845bf83` |
+| `before-4k.mp4` | `66015ffb854148169e0e6654db25db33bbb46dd6bfd72a2099bfe9b9c4eaf91d` |
+| `before-1080p-slow.mp4` | `9524b28333344bb074769ac5e04587e664139adeb28a5cf6ae898ea31761e36f` |
+| `after-1080p.mp4` | `5b8b4f6aef9b6780575b8419f04b411c128c4a648400a3f64908e6409bc930b6` |
+| `after-4k.mp4` | `8036a6b4e5831bd805338e660fcf22032c04aa32b3c85147dfa068d764b11583` |
+| `after-1080p-slow.mp4` | `df6cd2854f116eee259e7b2aee156b1e892807128a437be23da6695552b46bf2` |
+| `after-1080p-reducemotion.mp4` | `e29f2cdf91c13826e3a0d8ec706c9e424d7f1673379d8c7ec0dd6b5ff04694b5` |
