@@ -20,7 +20,7 @@ Use organization tools to keep media for later, make a playback order, or build 
 
 ## Use My List
 
-Open a title and select **Add to My List**. Select the same action again to remove it. Open **My List** from the home page to see your saved items.
+Open a title and select **Add to My List**. Select the same action again to remove it. Open **My List** from the home page to see your saved items. In the iPhone, iPad and Apple TV apps, a show page also has **My List**; saved shows appear in a **Shows** row at the top of My List.
 
 My List uses the current Profile. It does not grant access to an item that the Owner has not granted to that Profile.
 

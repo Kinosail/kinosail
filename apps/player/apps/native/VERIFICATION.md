@@ -553,3 +553,20 @@ Branch `mikeo/tvos-detail-actions` at `9d4eb82a`; baseline `main` with only the 
 | `after-episode-shelf.png` | `a3c7fc97f076860d6114c2dea43c13b260f6f64c3a61ab4c4d7e0379e5933787` |
 | `after-movie-detail.png` | `5048f840e7f90e9ee329a5cfbdcaadd5edfa201f7325dd9c5f01ac932a5e98ce` |
 | `after-movie-more.png` | `3dd22e53ef80f1a0e85060f167881488779a84b9b6242a87402deed8c5570e33` |
+
+## Mark watched and show actions — 2026-10-31
+
+Branch `mikeo/mark-watched` at `29d5d371`. Xcode 27.1, the tvOS 27.0 "KinoQA 1080p" simulator, the loopback navigation fixture (now with `PUT /api/v1/items/{id}/watched`, `PUT /api/v1/shows/{id}/watched` and `GET`/`PUT /api/v1/shows/{id}/list`) and a seeded session.
+
+- Server: `TestMarkWatchedCoversMoviesEpisodesSeasonsAndShows`, `TestMarkWatchedRejectsBadInputWithoutChangingState` and `TestShowsCanBeAddedToMyList` passed, with the route scope, inventory and OpenAPI checks.
+- `RemoteShowActionsTests/testShowAndEpisodeActionsMarkWatchedAndSaveTheShow` passed: Play, My List and More share one row on the show page; My List saves and removes the show; More marks the show watched and then offers Mark show as unwatched; the episode's More marks it unwatched and offers Mark season 1 as watched; a partly watched show offers Mark show as watched. The fixture log recorded each change once.
+- `RemoteEpisodeDetailTests/testEpisodeDetailKeepsActionsInOneRowAboveTheEpisodes`, `testMovieDetailBackRestoresGridAndBrowseFocus` and `testShowSeasonsAndBackRestoreFocus` passed.
+- `./scripts/build-apple.sh ios` succeeded.
+
+| Screenshot (1920×1080 simulator capture) | SHA-256 |
+| --- | --- |
+| `show-actions.png` | `0c64289f607c9fa3f48d4bc3451638f4496943f4f25fe8866ab26b86d9c0f128` |
+| `show-more-menu-after-mark-watched.png` | `24a71fd55dd8b83a7830f8f279f89f0e50c495c8c71c060a836d67b264c03c30` |
+| `episode-more-menu.png` | `8aff2ff5ec22f59eec40b92349a764618854ee76517348b61ae9297914865ea9` |
+
+Not verified here: the iPhone and iPad menus in a UI test (build only), the Plex, Jellyfin and Emby paths against live servers, and Apple TV hardware.
