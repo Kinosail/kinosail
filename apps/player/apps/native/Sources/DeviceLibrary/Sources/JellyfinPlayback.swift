@@ -3,11 +3,12 @@ import Foundation
 enum JellyfinPlayback {
     static func profile(_ capabilities: DeviceCapabilities) -> [String: Any] {
         let video = ["hevc", "h264", "av1"].filter { capabilities.videoCodecs.contains($0) }.joined(separator: ",")
-        let audio = ["aac", "ac3", "eac3", "mp3"].filter { capabilities.audioCodecs.contains($0) || $0 == "aac" }.joined(separator: ",")
+        let direct = ["aac", "ac3", "eac3", "mp3"].filter { capabilities.audioCodecs.contains($0) || $0 == "aac" }.joined(separator: ",")
+        let audio = capabilities.convertedAudioCodecs.joined(separator: ",")
         return [
             "MaxStreamingBitrate": 200_000_000,
             "MaxStaticBitrate": 200_000_000,
-            "DirectPlayProfiles": [["Container": "mp4,m4v,mov", "Type": "Video", "VideoCodec": video, "AudioCodec": audio + ",alac,flac"],
+            "DirectPlayProfiles": [["Container": "mp4,m4v,mov", "Type": "Video", "VideoCodec": video, "AudioCodec": direct + ",alac,flac"],
                                    ["Container": "mp3,aac,m4a,m4b,flac,alac,wav", "Type": "Audio"]],
             "TranscodingProfiles": [["Container": "mp4", "Type": "Video", "Protocol": "hls", "VideoCodec": video, "AudioCodec": audio,
                                      "Context": "Streaming", "MaxAudioChannels": String(capabilities.maxAudioChannels),

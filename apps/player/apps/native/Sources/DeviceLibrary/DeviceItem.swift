@@ -163,4 +163,9 @@ struct DeviceCapabilities: Sendable {
         if !hdr.isEmpty { self.hdr = hdr }
         maxAudioChannels = Int(query["maxAudioChannels"] ?? "").map { min(8, max(1, $0)) } ?? 2
     }
+
+    var convertedAudioCodecs: [String] {
+        let codecs = ["aac", "ac3", "eac3"].filter { $0 == "aac" || audioCodecs.contains($0) }
+        return maxAudioChannels >= 6 && codecs.contains("eac3") ? codecs.reversed() : codecs
+    }
 }
