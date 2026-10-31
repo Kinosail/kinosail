@@ -42,9 +42,6 @@
 .subtitle-coverage-states{gap:.75rem 2rem;padding:1rem 0;border-top:0;border-bottom:1px solid var(--line)}
 .subtitle-coverage-states>a{gap:1rem;min-width:8rem;font-size:.9rem}
 .subtitle-coverage-states strong{font-size:1.2rem;font-weight:700}
-.subtitle-dashboard .subtitle-state{font-size:.85rem;font-weight:600;gap:.5rem}
-.subtitle-dashboard .subtitle-state.ready:before{background:var(--success)}
-.subtitle-dashboard .subtitle-state.wanted:before{background:var(--warning)}
 .subtitle-browser{padding-top:1.5rem}
 .subtitle-list-heading{margin-bottom:1rem}
 .subtitle-list-heading h2{font-size:1.65rem;line-height:1.2;font-weight:800;letter-spacing:-.025em}
