@@ -26,6 +26,7 @@ struct LibraryScreen: View {
     @State private var generation = UUID()
     @State private var loadedKey: String?
     @State private var loadedRevision: UUID?
+    @State private var listedShows = 0
 
     init(initialView: LibraryView = .all, searchMode: Bool = false, initialQuery: String = "", mode: PlayerMode? = nil) {
         let views = searchMode ? mode?.searchViews : nil
@@ -79,6 +80,7 @@ struct LibraryScreen: View {
                 #if os(tvOS)
                 .frame(maxWidth: .infinity, alignment: .leading).focusSection()
                 #endif
+                if selection == .list, query.isEmpty { ListedShowsShelf(count: $listedShows) }
                 if visibleItems.isEmpty {
                     if visiblePage == nil && (loading || loadedKey == nil && failure == nil) {
                         #if os(iOS)
@@ -87,7 +89,7 @@ struct LibraryScreen: View {
                         if let deferred { DeferredLoadingState(retry: deferred, layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) } else { LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) }
                     }
                     else if let failure { RetryState(message: failure) { Task { await load(reset: true) } } }
-                    else {
+                    else if listedShows == 0 {
                         let empty = LibraryEmptyState(view: selection, hasQuery: !query.isEmpty)
                         FeaturePlaceholder(title: empty.title, symbol: empty.symbol, message: empty.message)
                     }

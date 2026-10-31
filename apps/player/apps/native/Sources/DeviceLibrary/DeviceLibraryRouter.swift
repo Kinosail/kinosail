@@ -51,6 +51,10 @@ struct DeviceLibraryRouter: DeviceRequestHandler {
             return .json(200, try await Self.validating { try await state.saveMediaPreferences(value) })
         case ("GET", 2, "shows"): return try await show(tail[1])
         case ("PUT", 3, "shows") where tail[2] == "watched": return try await DeviceLibraryWatched(catalog: catalog).show(id(tail[1]), request: request)
+        case ("GET", 3, "shows") where tail[2] == "list":
+            guard let series = try await catalog.lookup(id(tail[1])), series.kind == .series else { throw DeviceFailure.notFound }
+            return .json(200, .object(["listed": .bool(series.state.favorite)]))
+        case ("PUT", 3, "shows") where tail[2] == "list": return try await list(id(tail[1]), request: request)
         case ("GET", 2, "items"): return try await detail(tail[1])
         case (_, 3, "items"): return try await itemAction(method, id: tail[1], action: tail[2], request: request)
         case ("PUT", 4, "items") where tail[2] == "progress" && tail[3] == "sync":

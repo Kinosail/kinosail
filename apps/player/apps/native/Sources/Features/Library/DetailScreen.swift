@@ -160,26 +160,6 @@ private struct DetailContent: View {
         }
     }
 
-    @ViewBuilder private var moreMenu: some View {
-        let removable = item.progress.seconds > 0 || item.progress.watched
-        if !item.showID.isEmpty || removable {
-            Menu {
-                if !item.showID.isEmpty {
-                    Button("Go to show", systemImage: "tv") { pushed = .show(item.showID) }
-                }
-                if removable {
-                    Button("Remove from Continue watching", systemImage: "minus.circle", role: .destructive) {
-                        change { client in try await client.dismissContinueWatching(itemID: item.id) }
-                    }
-                }
-            } label: {
-                Image(systemName: "ellipsis").frame(minWidth: detailActionHeight, minHeight: detailActionHeight)
-            }
-            .tvCapsule()
-            .accessibilityLabel("More")
-            .disabled(busy)
-        }
-    }
     #endif
 
     private var information: some View {
@@ -196,11 +176,6 @@ private struct DetailContent: View {
                 NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
                     .frame(minHeight: 44)
                 NavigationLink(value: ScreenDestination.playOnTV(item.id)) { Label("Play on another device", systemImage: "tv") }
-                    .frame(minHeight: 44)
-            }
-            if item.progress.seconds > 0 || item.progress.watched {
-                Button("Remove from Continue watching", systemImage: "minus.circle") { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
-                    .disabled(busy)
                     .frame(minHeight: 44)
             }
             #endif
@@ -251,10 +226,21 @@ private struct DetailContent: View {
         moreMenu
         #endif
         #if os(iOS)
+        moreMenu
         if session.viewer?.downloads == true && (item.kind == .video || item.isAudio) {
             DetailDownloadButton(item: item) { showsDownloads = true }
         }
         #endif
+    }
+
+    @ViewBuilder private var moreMenu: some View {
+        if item.kind == .video || !item.showID.isEmpty || item.progress.seconds > 0 || item.progress.watched {
+            #if os(tvOS)
+            DetailMoreMenu(target: .item(item), busy: busy, goToShow: item.showID.isEmpty ? nil : { pushed = .show(item.showID) }, change: change)
+            #else
+            DetailMoreMenu(target: .item(item), busy: busy, change: change)
+            #endif
+        }
     }
 
     private var playAction: some View {

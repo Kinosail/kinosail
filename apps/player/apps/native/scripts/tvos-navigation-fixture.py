@@ -10,6 +10,7 @@ PLAY = dict(rate=1, audioLanguage='auto', subtitleLanguage='auto', audioTrack=''
 VIEWER = {'server':'TV Polish QA','serverId':'tv-polish-qa','viewer':dict(id='qa',name='QA Viewer',owner=True,downloads=True,transcode=True,remote=False)}
 PROGRESS = dict(seconds=0,watched=False,session='',revision=0)
 TITLE_PREFS = {}
+SHOW_LISTED = {'value': False}
 def read_movie(args):
     if len(args) != 1 or not args[0] or len(args[0]) > 4096:
         raise ValueError('One generated media path is required')
@@ -140,6 +141,8 @@ class Handler(BaseHTTPRequestHandler):
             person=next((p for p in ITEMS[4].get('cast',[]) if p['name']==name),None)
             if not person: return self.send(404,{'error':'missing fixture actor'})
             return self.send(200,dict(name=name,image=person['image'],movies=[],shows=[]))
+        if path=='/api/v1/shows/0123456789abcdef/list': return self.send(200,{'listed':SHOW_LISTED['value']})
+        if path=='/api/v1/shows': return self.send(200,{'shows':[dict(id='0123456789abcdef',title='Into the Wild',artwork='/art/show',backdrop='/backdrop/show')] if SHOW_LISTED['value'] or q.get('listed',['false'])[0]!='true' else []})
         if path=='/api/v1/shows/0123456789abcdef': return self.send(200,dict(id='0123456789abcdef',title='Into the Wild',backdrop='/backdrop/show',plot='A journey into the natural world.',episodes=[i for i in ITEMS if i.get('showId')],genres='Nature',cast=[]))
         if path=='/api/v1/me/media-preferences': return self.send(200,dict(playback=PLAY,autoDownloadNext=0,removeWatched=False,downloadLimitGiB=20,wifiOnly=True,readerFontSize=20,readerTheme='auto'))
         match=re.fullmatch(r'/api/v1/items/([^/]+)(.*)',path)
@@ -205,6 +208,24 @@ class Handler(BaseHTTPRequestHandler):
             TITLE_PREFS[ident]=body
             print('PREFERENCES_FIXTURE_SAVED',json.dumps(dict(item=ident,rate=body['rate'])),flush=True)
             return self.send(200,dict(playback=body,overridden=True))
+        change=re.fullmatch(r'/api/v1/(items|shows)/([a-z0-9-]{1,32})/(watched|list)',self.path)
+        if change:
+            if self.headers.get_all('Authorization',[])!=['Bearer tv-polish-fixture-token']: return self.send(401,{'error':'fixture token required'})
+            kind,ident,action=change.groups()
+            try:
+                body=self.read_body(); key='listed' if action=='list' else 'watched'
+                if not isinstance(body,dict) or key not in body or type(body[key]) is not bool or set(body)-{key,'season'}: raise ValueError()
+                if 'season' in body and (kind!='shows' or type(body['season']) is not int): raise ValueError()
+            except (ValueError,KeyError,TypeError,RecursionError): return self.send(400,{'error':'invalid fixture change'})
+            if action=='list':
+                if kind!='shows' or ident!='0123456789abcdef': return self.send(404,{'error':'unsupported fixture operation'})
+                SHOW_LISTED['value']=body['listed']; print('SHOW_LIST_FIXTURE_SAVED',json.dumps(body),flush=True)
+                return self.send(200,{'listed':body['listed']})
+            targets=[i for i in ITEMS if (i['id']==ident if kind=='items' else i.get('showId')==ident and body.get('season',i.get('season'))==i.get('season'))]
+            if not targets: return self.send(404,{'error':'missing title'})
+            for item in targets: item['progress']={**item['progress'],'seconds':0,'watched':body['watched']}
+            print('WATCHED_FIXTURE_SAVED',json.dumps(dict(kind=kind,items=len(targets),watched=body['watched'])),flush=True)
+            return self.send(200,{'watched':body['watched'],'items':len(targets)})
         if not re.fullmatch(r'/api/v1/items/(?:movie-[0-9]{3}|episode-[0-3])/progress/sync',self.path): return self.send(404,{'error':'unsupported fixture operation'})
         if self.headers.get_all('Authorization',[])!=['Bearer tv-polish-fixture-token']: return self.send(401,{'error':'fixture token required'})
         try:
