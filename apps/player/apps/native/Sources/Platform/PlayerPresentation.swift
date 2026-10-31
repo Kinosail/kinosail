@@ -22,6 +22,10 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored private var closing: Task<Void, Never>?
     @ObservationIgnored private var isolatedRecognizers: [(UIGestureRecognizer, touches: [NSNumber], presses: [NSNumber])] = []
     @ObservationIgnored private var remoteTouchesIsolated = false
+    @ObservationIgnored weak var matchedDisplay: AVDisplayManager?
+    var displayManager: AVDisplayManager? {
+        (controller.viewIfLoaded?.window ?? UIApplication.shared.connectedScenes.lazy.compactMap { ($0 as? UIWindowScene)?.keyWindow }.first)?.avDisplayManager
+    }
     #endif
     @ObservationIgnored var visible = false
     @ObservationIgnored var showingOptions = false
@@ -43,6 +47,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         controller.delegate = self
         controller.showsPlaybackControls = true
         controller.allowsPictureInPicturePlayback = true
+        controller.appliesPreferredDisplayCriteriaAutomatically = false
         readinessObservation = controller.observe(\.isReadyForDisplay, options: [.initial, .new]) { [weak self] _, _ in
             Task { @MainActor in self?.readyForDisplay = self?.controller.isReadyForDisplay ?? false }
         }
@@ -192,8 +197,20 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     func stopPictureInPicture() { pip?.stopPictureInPicture() }
     #endif
 
+    #if os(tvOS)
+    func resetDisplay() {
+        DisplayMatching.reset(matchedDisplay)
+        matchedDisplay = nil
+    }
+    #endif
+
     func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) { pictureInPicture = true }
-    func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) { pictureInPicture = false }
+    func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+        pictureInPicture = false
+        #if os(tvOS)
+        if !visible { resetDisplay() }
+        #endif
+    }
     func playerViewController(_ playerViewController: AVPlayerViewController,
                               restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
         restoreInterface(completionHandler)

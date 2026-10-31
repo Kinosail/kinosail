@@ -165,6 +165,7 @@ struct NativePlayerView: UIViewControllerRepresentable {
         coordinator.visible = false
         coordinator.restoreRemoteTouches()
         coordinator.close = nil
+        if !coordinator.pictureInPicture { coordinator.resetDisplay() }
         if !coordinator.pictureInPicture { controller.player = nil }
     }
 }
