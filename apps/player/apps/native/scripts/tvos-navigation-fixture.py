@@ -40,7 +40,7 @@ if os.environ.get('KINOSAIL_TV_ARTWORK_CAST_FIXTURE') == '1':
     ]
 ITEMS.append(dict(id='0123456789abcdef',kind='show',title='Into the Wild',artwork='/art/show',backdrop='/backdrop/show',genres='Nature',plot='A journey into the natural world.',progress=PROGRESS))
 for n in range(4):
-    ITEMS.append(dict(id=f'episode-{n}',kind='video',title=['First Light','The Long Way Home','A Quiet Evening','The Last Horizon'][n],show='Into the Wild',showId='0123456789abcdef',season=1 if n<2 else 2,episode=n%2+1,rating='PG',artwork=f'/episode-art/episode-{n}',backdrop='/backdrop/show',stream=f'/media/episode-{n}',container='mp4',progress=PROGRESS))
+    ITEMS.append(dict(id=f'episode-{n}',kind='video',title=['First Light','The Long Way Home','A Quiet Evening','The Last Horizon'][n],plot=['Dawn breaks over the river valley.','The herd crosses the high pass.','Rain settles over the forest.','The journey ends at the coast.'][n],show='Into the Wild',showId='0123456789abcdef',season=1 if n<2 else 2,episode=n%2+1,rating='PG',artwork=f'/episode-art/episode-{n}',backdrop='/backdrop/show',stream=f'/media/episode-{n}',container='mp4',progress=PROGRESS))
 for kind,title in [('music','Evening Light'),('audiobook','The Geometry of Sound'),('photo','Color Study'),('book','Field Notes')]:
     ITEMS.append(dict(id=kind,kind=kind,title=title,artwork='/art/'+kind,stream='/media/'+kind,artist='Signal Lab' if kind=='music' else '',container='mp4',progress=PROGRESS))
 CAPTIONS = b'WEBVTT\n\n00:00:01.000 --> 00:00:06.000\nThe river bends toward the mountains.\n\n00:00:12.000 --> 00:00:18.000\nWe should reach the ridge by nightfall.\n'
@@ -52,6 +52,10 @@ def playback_extras(ident):
     return dict(chapters=[dict(title='Opening',start=0,end=10),dict(title='Journey',start=10,end=24),dict(title='Credits',start=24,end=30)],
                 markers=[dict(type='intro',label='',start=2,end=12),dict(type='credits',label='',start=24,end=30)],
                 subtitles=[dict(label='English',language='en',source=f'/subtitle/{ident}/en.vtt',default=False)],next=f'episode-{n+1}' if n < 3 else '')
+def art_label(path):
+    name=path.split('/')[-1]
+    item=next((i for i in ITEMS if i['id']==name and i.get('showId')),None)
+    return f"S{item['season']} E{item['episode']}" if item and path.startswith('/episode-art/') else name.replace('-',' ').upper()
 ART = {}
 def artwork(path):
     if path not in ART:
@@ -63,7 +67,7 @@ def artwork(path):
         for y in range(h): draw.line((0,y,w,y),fill=tuple(int(a+(b-a)*y/h) for a,b in zip(top,bottom)))
         draw.ellipse((w*.57,h*.17,w*.88,h*.48),fill=(216,218,233))
         draw.polygon([(0,h*.82),(w*.35,h*.36),(w*.68,h*.88),(w,h*.55),(w,h),(0,h)],fill=ridge)
-        draw.text((36,h-90),path.split('/')[-1].replace('-',' ').upper(),fill='white',font_size=38)
+        draw.text((36,h-90),art_label(path),fill='white',font_size=38)
         data=BytesIO(); img.save(data,'JPEG',quality=90); ART[path]=data.getvalue()
     return ART[path]
 class Handler(BaseHTTPRequestHandler):

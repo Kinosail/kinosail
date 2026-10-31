@@ -27,6 +27,9 @@ final class RemoteEpisodeDetailTests: RemoteTestCase {
         remote.press(.select)
         let myList = app.buttons.matching(NSPredicate(format: "label == 'My List' OR label == 'In My List'")).firstMatch
         XCTAssertTrue(myList.waitForExistence(timeout: 10), app.debugDescription)
+        let plots = ["Dawn breaks over the river valley.", "The herd crosses the high pass.", "Rain settles over the forest.", "The journey ends at the coast."]
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label IN %@", plots)).firstMatch.exists, "The episode plot should show")
+        XCTAssertTrue(app.buttons["show.season-1"].exists && app.buttons["show.season-2"].exists, "A show with two seasons should offer the season picker")
         record("episode detail", app)
 
         let play = app.buttons.matching(NSPredicate(format: "hasFocus == true AND (label BEGINSWITH 'Play' OR label BEGINSWITH 'Resume')")).firstMatch

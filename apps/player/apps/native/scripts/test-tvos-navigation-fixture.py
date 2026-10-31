@@ -65,6 +65,31 @@ class NavigationFixtureTests(unittest.TestCase):
                 self.assertEqual(self.request("GET", "/qa/state?" + query)[0][0], 400)
                 self.assertEqual((self.fixture.STATE, self.fixture.VIEWER["viewer"]), before)
 
+    def test_episode_artwork_and_plots_match_episode_numbers(self):
+        episodes = [item for item in self.fixture.ITEMS if item.get("showId")]
+        self.assertEqual(len(episodes), 4)
+        for item in episodes:
+            self.assertEqual(self.fixture.art_label(item["artwork"]), f"S{item['season']} E{item['episode']}")
+            self.assertTrue(item["plot"])
+        self.assertEqual(self.fixture.art_label("/art/movie-004"), "MOVIE 004")
+
+    def test_watched_and_show_list_changes_validate_before_saving(self):
+        original = [dict(item) for item in self.fixture.ITEMS]
+        listed = dict(self.fixture.SHOW_LISTED)
+        try:
+            self.assertEqual(self.request("PUT", "/api/v1/items/episode-0/watched", b'{"watched": true}')[0][0], 401)
+            for body in [b'{}', b'{"watched": "yes"}', b'{"watched": true, "extra": 1}']:
+                self.assertEqual(self.request("PUT", "/api/v1/shows/0123456789abcdef/watched", body, authorized=True)[0][0], 400)
+            self.assertEqual(self.fixture.ITEMS, original)
+            status, result = self.request("PUT", "/api/v1/shows/0123456789abcdef/watched", b'{"watched": true, "season": 2}', authorized=True)[0]
+            self.assertEqual((status, result), (200, {"watched": True, "items": 2}))
+            self.assertEqual([item["progress"]["watched"] for item in self.fixture.ITEMS if item.get("showId")], [False, False, True, True])
+            self.assertEqual(self.request("PUT", "/api/v1/shows/0123456789abcdef/list", b'{"listed": true}', authorized=True)[0], (200, {"listed": True}))
+            self.assertEqual(self.request("GET", "/api/v1/shows?listed=true")[0][1]["shows"][0]["id"], "0123456789abcdef")
+        finally:
+            self.fixture.ITEMS[:] = original
+            self.fixture.SHOW_LISTED.update(listed)
+
     def test_empty_details_remove_only_response_backdrop(self):
         original_state = dict(self.fixture.STATE)
         original_items = [dict(item) for item in self.fixture.ITEMS]
