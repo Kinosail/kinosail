@@ -208,6 +208,8 @@ struct MediaShelf: View {
     var playsOnSelect = false
     var takesFocus = false
     var onTookFocus: (() -> Void)?
+    var preferredFocusID: String?
+    @Namespace private var shelfFocus
     #endif
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -229,6 +231,8 @@ struct MediaShelf: View {
                                   onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows,
                                   reservesSubtitle: reservesSubtitle, playsOnSelect: playsOnSelect,
                                   takesFocus: takesFocus && index == 0, onTookFocus: onTookFocus).frame(width: width)
+                            .prefersDefaultFocus(item.id == preferredFocusID, in: shelfFocus)
+                            .id(item.id)
                             .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
                         #else
                         MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback, onFocus: onFocus,
@@ -248,6 +252,8 @@ struct MediaShelf: View {
             #if os(tvOS)
             .scrollClipDisabled()
             .padding(.horizontal, -24)
+            .focusScope(shelfFocus)
+            .modifier(ShelfStartPosition(itemID: preferredFocusID))
             #endif
             #if os(iOS)
             .scrollBounceBehavior(.basedOnSize, axes: .vertical)
@@ -275,3 +281,20 @@ struct MediaShelf: View {
         #endif
     }
 }
+
+#if os(tvOS)
+private struct ShelfStartPosition: ViewModifier {
+    let itemID: String?
+    @State private var position: String?
+
+    func body(content: Content) -> some View {
+        if let itemID {
+            content
+                .scrollPosition(id: $position, anchor: .leading)
+                .onAppear { if position == nil { position = itemID } }
+        } else {
+            content
+        }
+    }
+}
+#endif

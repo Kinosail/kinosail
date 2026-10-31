@@ -4,7 +4,6 @@ struct ShowScreen: View {
     let showID: String
     @Environment(AppSession.self) private var session
     #if os(tvOS)
-    @State private var selectedSeason: Int?
     @Namespace private var showFocus
     @State private var quickPlay: ScreenDestination?
     @Environment(\.dynamicTypeSize) private var dynamicType
@@ -35,12 +34,8 @@ struct ShowScreen: View {
                     let next = ShowSeasonSelection.featuredEpisode(in: episodes)
                     tvHero(show: show, next: next)
                     if let next {
-                        let groups = ShowSeasonSelection.groups(episodes)
-                        let season = ShowSeasonSelection.resolve(selectedSeason, among: groups.map(\.number), defaultingTo: next.season) ?? next.season
-                        tvSeasons(groups, selected: season)
-                        MediaShelf(title: "Episodes", items: episodes.filter { $0.season == season },
-                                   landscape: true, onQuickPlay: { session.open($0) { quickPlay = $0 } }, playsOnSelect: true)
-                            .id(season)
+                        TVSeasonEpisodes(episodes: episodes, featured: next) { session.open($0) { quickPlay = $0 } }
+                            .id(showID)
                     } else {
                         ContentUnavailableView("No episodes", systemImage: "tv",
                                                description: Text("This show has no available episodes."))
@@ -86,9 +81,6 @@ struct ShowScreen: View {
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         #endif
-        #if os(tvOS)
-        .onChange(of: showID) { _, _ in selectedSeason = nil }
-        #endif
     }
 
     #if os(tvOS)
@@ -127,24 +119,6 @@ struct ShowScreen: View {
         }
     }
 
-    private func tvSeasons(_ groups: [ShowSeasonSelection.Group], selected: Int) -> some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 16) {
-                ForEach(groups) { group in
-                    let isSelected = group.number == selected
-                    Button(group.title) { selectedSeason = group.number }
-                        .tvCapsule(prominent: isSelected)
-                        .accessibilityAddTraits(isSelected ? .isSelected : [])
-                        .accessibilityIdentifier("show.season-\(group.number)")
-                }
-            }
-            .padding(.horizontal, 24).padding(.vertical, 18)
-        }
-        .scrollIndicators(.hidden)
-        .scrollClipDisabled()
-        .padding(.horizontal, -24)
-        .focusSection()
-    }
     #endif
 }
 
@@ -178,3 +152,46 @@ enum ShowSeasonSelection {
             ?? seasons.first
     }
 }
+
+#if os(tvOS)
+struct TVSeasonEpisodes: View {
+    let episodes: [MediaItem]
+    let featured: MediaItem
+    var currentID: String?
+    var seasonsFirst = true
+    let onQuickPlay: (ScreenDestination) -> Void
+    @State private var selectedSeason: Int?
+
+    var body: some View {
+        let groups = ShowSeasonSelection.groups(episodes)
+        let season = ShowSeasonSelection.resolve(selectedSeason, among: groups.map(\.number), defaultingTo: featured.season) ?? featured.season
+        VStack(alignment: .leading, spacing: 28) {
+            if seasonsFirst { seasons(groups, selected: season) }
+            MediaShelf(title: "Episodes", items: episodes.filter { $0.season == season },
+                       landscape: true, onQuickPlay: onQuickPlay, playsOnSelect: true,
+                       preferredFocusID: season == featured.season ? currentID : nil)
+                .id(season)
+            if !seasonsFirst && groups.count > 1 { seasons(groups, selected: season) }
+        }
+    }
+
+    private func seasons(_ groups: [ShowSeasonSelection.Group], selected: Int) -> some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 16) {
+                ForEach(groups) { group in
+                    let isSelected = group.number == selected
+                    Button(group.title) { selectedSeason = group.number }
+                        .tvCapsule(prominent: isSelected)
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
+                        .accessibilityIdentifier("show.season-\(group.number)")
+                }
+            }
+            .padding(.horizontal, 24).padding(.vertical, 18)
+        }
+        .scrollIndicators(.hidden)
+        .scrollClipDisabled()
+        .padding(.horizontal, -24)
+        .focusSection()
+    }
+}
+#endif

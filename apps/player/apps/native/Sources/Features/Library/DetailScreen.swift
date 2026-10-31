@@ -61,6 +61,7 @@ private struct DetailContent: View {
     #if os(tvOS)
     @Namespace private var detailFocus
     @FocusState private var primaryFocused: Bool
+    @State private var pushed: ScreenDestination?
     @Environment(\.dynamicTypeSize) private var dynamicType
     @ScaledMetric(relativeTo: .body) private var detailActionHeight = 44
     #endif
@@ -76,6 +77,7 @@ private struct DetailContent: View {
                 CinemaHero(item: item, showsPlot: false, prefersEpisodeStill: true) { actions }
                 information.frame(maxWidth: 900, alignment: .leading)
             }
+            episodes
             CastShelf(people: item.cast ?? [])
             #else
             if !item.spotlightArtwork.isEmpty {
@@ -90,6 +92,7 @@ private struct DetailContent: View {
         .frame(maxWidth: .infinity, alignment: .center)
         #if os(tvOS)
         .focusScope(detailFocus)
+        .navigationDestination(item: $pushed) { DestinationScreen(destination: $0) }
         #endif
         #if os(iOS)
         .sheet(isPresented: $showsDownloads) { NavigationStack { DownloadOptionsScreen(item: item) } }
@@ -104,32 +107,78 @@ private struct DetailContent: View {
     #if os(tvOS)
     private var tvMovieHero: some View {
         let movie = TVMovieDetail(item: item), metadata = movie.metadata
-        return TVMovieHeroLayout { VStack(alignment: .leading, spacing: 14) {
+        return TVMovieHeroLayout(width: 1080) { VStack(alignment: .leading, spacing: 16) {
+            if !item.show.isEmpty {
+                Text(item.show).font(.headline).foregroundStyle(KinoTheme.text.opacity(0.85))
+            }
             Text(movie.title)
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
-            if !metadata.isEmpty { Text(metadata).font(.callout).foregroundStyle(KinoTheme.muted) }
+            if !metadata.isEmpty {
+                Text(metadata).font(.headline.weight(.regular)).foregroundStyle(KinoTheme.text.opacity(0.78))
+            }
             if !item.plot.isEmpty {
-                Text(item.plot).font(.body).lineLimit(dynamicType.isAccessibilitySize ? nil : 4)
+                Text(item.plot).font(.body).foregroundStyle(KinoTheme.text.opacity(0.92))
+                    .lineLimit(dynamicType.isAccessibilitySize ? nil : 3)
                     .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: 740, alignment: .leading)
             }
-            if item.progress.seconds > 0 && !item.progress.watched { WatchPosition(item: item) }
-            HStack {
-                playAction
-                Spacer(minLength: 0)
+            if item.progress.seconds > 0 && !item.progress.watched {
+                WatchPosition(item: item).frame(maxWidth: 520, alignment: .leading)
             }
-            .focusSection()
-            ViewThatFits(in: .horizontal) {
-                HStack(alignment: .top, spacing: 16) { secondaryActions.fixedSize() }
-                VStack(alignment: .leading, spacing: 12) { secondaryActions }
-            }
-            .controlSize(.large)
+            actionRow
         } }
         .tvMovieHeroArtwork(item.backdrop)
         .foregroundStyle(KinoTheme.text)
         .tvMovieHeroBleed()
         .focusSection()
+    }
+
+    private var actionRow: some View {
+        HStack(spacing: 20) {
+            primaryAction
+            secondaryActions
+        }
+        .fixedSize()
+        .focusSection()
+    }
+
+    @ViewBuilder private var episodes: some View {
+        if !item.showID.isEmpty {
+            ResourceView(identity: "\(session.profileKey ?? ""):\(item.showID)", refreshID: session.contentRevision.uuidString,
+                         loadingLayout: .shelf, load: { policy in
+                guard let client = session.client else { throw ClientError.unavailable }
+                return try await client.show(id: item.showID, policy: policy)
+            }) { show in
+                if !show.episodes.isEmpty {
+                    TVSeasonEpisodes(episodes: show.episodes, featured: item, currentID: item.id, seasonsFirst: false) { destination in
+                        session.open(destination) { pushed = $0 }
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder private var moreMenu: some View {
+        let removable = item.progress.seconds > 0 || item.progress.watched
+        if !item.showID.isEmpty || removable {
+            Menu {
+                if !item.showID.isEmpty {
+                    Button("Go to show", systemImage: "tv") { pushed = .show(item.showID) }
+                }
+                if removable {
+                    Button("Remove from Continue watching", systemImage: "minus.circle", role: .destructive) {
+                        change { client in try await client.dismissContinueWatching(itemID: item.id) }
+                    }
+                }
+            } label: {
+                Image(systemName: "ellipsis").frame(minWidth: detailActionHeight, minHeight: detailActionHeight)
+            }
+            .tvCapsule()
+            .accessibilityLabel("More")
+            .disabled(busy)
+        }
     }
     #endif
 
@@ -199,18 +248,7 @@ private struct DetailContent: View {
             }
                 .tvCapsule()
         }
-        if !item.showID.isEmpty {
-            NavigationLink(value: ScreenDestination.show(item.showID)) {
-                Text("All episodes").frame(minHeight: detailActionHeight)
-            }
-                .tvCapsule()
-        }
-        if item.progress.seconds > 0 || item.progress.watched {
-            Button { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
-                label: { Label("Remove", systemImage: "minus.circle").frame(minHeight: detailActionHeight) }
-                .accessibilityLabel("Remove from Continue watching")
-                .tvCapsule().disabled(busy)
-        }
+        moreMenu
         #endif
         #if os(iOS)
         if session.viewer?.downloads == true && (item.kind == .video || item.isAudio) {
@@ -258,7 +296,7 @@ struct TVMovieDetail {
     var title: String { item.show.isEmpty ? item.title : ShowSeasonSelection.episodeTitle(item) }
     var metadata: String {
         let facts = item.show.isEmpty ? [item.year, item.rating, item.genres]
-            : [item.show, "S\(item.season) E\(item.episode)", item.rating]
+            : ["Season \(item.season), Episode \(item.episode)", item.year, item.rating]
         return facts.filter { !$0.isEmpty }.joined(separator: " · ")
     }
 }
