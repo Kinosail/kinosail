@@ -163,15 +163,7 @@ func validSubtitlePayload(data []byte) bool {
 }
 
 func (provider *subtitleProvider) allowed(link string) bool {
-	base, baseErr := url.Parse(provider.config.URL)
-	download, downloadErr := url.Parse(link)
-	if baseErr != nil || downloadErr != nil || download.Host == "" {
-		return false
-	}
-	if download.Host == base.Host {
-		return download.Scheme == base.Scheme
-	}
-	return download.Scheme == "https" && strings.HasSuffix(strings.ToLower(download.Hostname()), ".subdl.com")
+	return trustedProviderLink(provider.config.URL, link, "subdl.com")
 }
 
 func (provider *subtitleProvider) resolve(link string) string {

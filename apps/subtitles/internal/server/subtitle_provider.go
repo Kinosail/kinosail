@@ -188,13 +188,11 @@ func (provider *subtitleProvider) subtitleCandidates(ctx context.Context, item l
 	configured, failed := 0, 0
 	searchContext, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-	searches := []func(context.Context, library.Item, string) subtitleCandidateSearch{
-		provider.subDLCandidateSearch, provider.openSubtitlesCandidateSearch, provider.subSourceCandidateSearch,
-	}
-	results := make([]subtitleCandidateSearch, len(searches))
+	sources := provider.sources()
+	results := make([]subtitleCandidateSearch, len(sources))
 	var workers sync.WaitGroup
-	for index, search := range searches {
-		workers.Go(func() { results[index] = search(searchContext, item, language) })
+	for index, source := range sources {
+		workers.Go(func() { results[index] = searchSubtitleSource(searchContext, source, item, language) })
 	}
 	workers.Wait()
 	for _, search := range results {

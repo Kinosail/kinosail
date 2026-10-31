@@ -277,16 +277,7 @@ func (provider *openSubtitlesProvider) endpointAt(baseURL, path string) (*url.UR
 }
 
 func (provider *openSubtitlesProvider) allowed(link string) bool {
-	base, baseErr := url.Parse(provider.config.URL)
-	target, targetErr := url.Parse(link)
-	if baseErr != nil || targetErr != nil || target.Host == "" {
-		return false
-	}
-	if target.Host == base.Host {
-		return target.Scheme == base.Scheme
-	}
-	host := strings.ToLower(target.Hostname())
-	return target.Scheme == "https" && (host == "opensubtitles.com" || strings.HasSuffix(host, ".opensubtitles.com"))
+	return trustedProviderLink(provider.config.URL, link, "opensubtitles.com")
 }
 
 func (provider *openSubtitlesProvider) forgetToken(token string) bool {

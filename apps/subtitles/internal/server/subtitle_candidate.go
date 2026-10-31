@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"net/url"
 	"path/filepath"
 	"strconv"
@@ -10,24 +9,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/library"
 )
-
-func (provider *subtitleProvider) subDLCandidateSearch(ctx context.Context, item library.Item, language string) subtitleCandidateSearch {
-	if !provider.subDLConfigured() {
-		return subtitleCandidateSearch{}
-	}
-	found, err := provider.searchSubDL(ctx, item, language)
-	if err != nil {
-		return subtitleCandidateSearch{Configured: true, Failed: true}
-	}
-	result := subtitleCandidateSearch{Candidates: make([]subtitleDownloadCandidate, 0, len(found)), Configured: true}
-	for _, candidate := range found {
-		link := candidate.URL
-		result.Candidates = append(result.Candidates, subtitleDownloadCandidate{Language: language, Score: candidate.Score, ReleaseMatch: candidate.ReleaseMatch, Source: "subdl", HI: candidate.HI, Download: func(ctx context.Context) ([]byte, error) {
-			return provider.download(ctx, link)
-		}})
-	}
-	return result
-}
 
 const (
 	minimumSubtitleScore      = 60
