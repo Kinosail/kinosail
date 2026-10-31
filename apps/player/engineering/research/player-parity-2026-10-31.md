@@ -1,6 +1,6 @@
 # Player parity with best-in-class players — 2026-10-31
 
-Goal (from the Owner): the Kinosail player clients must be as good as or better than the best-in-class third-party video players on Apple platforms, and support the major media servers. This note compares Kinosail today with that bar and orders the work. Apple TV and iPhone/iPad come first because iOS and tvOS are the design standard; Android, Android TV and web follow.
+Goal (from the Owner): the Kinosail player clients must be as good as or better than the best-in-class third-party video players on Apple platforms, and support the major media servers. This note compares Kinosail today with that bar and orders the work. Scope (Owner, 2026-10-31): iPhone, iPad and Apple TV only. "Focus on iOS and Apple TV for now. No Mac apps etc." iPad is part of iOS. Other platforms are listed under [Later, not planned](#later-not-planned).
 
 Status key: **Have** (shipped and evidenced), **Partial**, **Missing**, **Verify** (code suggests support, but no evidence yet). Evidence paths are relative to the repository root.
 
@@ -163,13 +163,11 @@ A buyer with only a NAS or files on a drive still expects a full library: artwor
 | tvOS multi-user profiles | One app session for the Apple TV | Missing | Run as the current Apple TV user so each person has their own sources and progress |
 | Apple TV app "Up Next" integration | None | Not available (likely) | Apple's TV app integration is a partner program for video providers with their own catalog; a player for personal media is unlikely to qualify (M11) |
 
-### P8 — More platforms
+### P8 — iPad
 
 | Capability | Kinosail today | Status | Evidence / note |
 | --- | --- | --- | --- |
 | iPad multitasking and Stage Manager | iPad builds from the iOS target | Verify | Check Split View, Slide Over, Stage Manager window sizes and external displays |
-| Mac app | Not a target (`apps/player/apps/native/AGENTS.md`) | Missing | Native SwiftUI target preferred over Catalyst for a media app; shares the on-device library and StoreKit products (universal purchase) |
-| Apple Vision Pro | Not a target | Missing | Immersive theater environment; Dolby Vision and spatial audio through AVKit |
 
 ## App Store readiness track
 
@@ -280,9 +278,9 @@ Ranked by what sells the player to a buyer without a Kinosail Server. Each phase
 5. **Phase 5, subtitles.** Original PGS bitmaps and styled ASS (on the phase 3 engine); offset; size, color, background and position; automatic forced tracks; in-app online search for buyers without Kinosail Subtitles.
 6. **Phase 6, Apple ecosystem polish.** App Intents and Shortcuts phrases; widgets and Live Activities; SharePlay tied to Watch Rooms; the iPhone as an Apple TV remote and keyboard; tvOS multi-user profiles.
 7. **Phase 7, player experience.** Next-episode countdown with cancel; chapters in the transport bar; audio delay; video sleep timer; thumbnails for direct play.
-8. **Phase 8, more platforms.** iPad multitasking and Stage Manager checks first (small); then a Mac app; then Apple Vision Pro.
+8. **Phase 8, iPad.** Split View, Slide Over, Stage Manager and external display checks, with fixes.
 9. **Phase 9, cloud drives.** Dropbox and OneDrive, then Box and pCloud, then Google Drive (after M10).
-10. **Phase 10, measurement and other clients.** Time-to-first-frame and memory budgets, a playback test matrix of real files; then Android, Android TV and web on the same matrix.
+10. **Phase 10, measurement.** Time-to-first-frame and memory budgets, and a playback test matrix of real files.
 
 **Runs in parallel with every phase:**
 
@@ -290,3 +288,12 @@ Ranked by what sells the player to a buyer without a Kinosail Server. Each phase
 - **Accessibility (P6).** A VoiceOver, Dynamic Type and caption-style pass recorded for each release; audio-description tracks in phase 2.
 
 Skipped on purpose: lossless TrueHD/DTS passthrough on Apple TV (platform limit, D2); Google Cast on Apple clients (no native sender SDK, already documented); Apple TV app integration until M11. Phases 3 and 4 cannot ship playback of MKV, DTS, TrueHD or PGS until M5 is decided, and their metadata needs M4; the browsers, scanners and CloudKit sync can be built first.
+
+## Later, not planned
+
+Out of scope for this program by the Owner's decision of 2026-10-31. Kept here so the matrix shows them; no work is scheduled.
+
+- Mac app (native or Catalyst).
+- Apple Vision Pro.
+- Android phone and Android TV parity with this matrix.
+- Web Player parity with this matrix.
