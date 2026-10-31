@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
@@ -26,15 +27,11 @@ func subtitleLanguageFromPath(media, subtitle string) string {
 }
 
 func subtitleRoleFromPath(path string) string {
-	name := strings.ToLower(filepath.Base(path))
-	switch {
-	case strings.Contains(name, ".forced."):
+	if library.SubtitleFileForced(path) {
 		return "forced"
-	case strings.Contains(name, ".sdh."), strings.Contains(name, ".cc."), strings.Contains(name, ".hi."):
-		return "captions"
-	case strings.Contains(name, ".commentary."):
-		return "commentary"
-	default:
-		return "translation"
 	}
+	if role := library.SubtitleFileRole(path); role != "" {
+		return role
+	}
+	return "translation"
 }
