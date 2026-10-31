@@ -81,8 +81,9 @@ final class RemoteShowActionsTests: RemoteTestCase {
         remote.press(.select)
         let item = menuItem(label, in: app)
         XCTAssertTrue(item.waitForExistence(timeout: 5), "More should offer \(label); \(app.debugDescription)")
-        for _ in 0..<6 where !(item.hasFocus || item.isSelected) { remote.press(.down) }
-        XCTAssertTrue(item.hasFocus || item.isSelected, "\(label) should take focus; focused: \(focusedLabels(app))")
+        let current = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@ AND (hasFocus == true OR selected == true)", label)).firstMatch
+        for _ in 0..<6 where !current.exists { remote.press(.down) }
+        XCTAssertTrue(current.exists, "\(label) should take focus; \(app.debugDescription)")
         remote.press(.select)
     }
 }
