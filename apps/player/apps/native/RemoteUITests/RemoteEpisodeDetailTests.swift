@@ -23,6 +23,8 @@ final class RemoteEpisodeDetailTests: RemoteTestCase {
         let episode = focusedLabels(app).first ?? ""
         XCTAssertFalse(episode.isEmpty, "Down should reach an episode")
         remote.press(.select, forDuration: 1.2)
+        XCTAssertTrue(app.descendants(matching: .any)["Details"].waitForExistence(timeout: 5), "Press and hold should offer Details")
+        remote.press(.select)
         let myList = app.buttons.matching(NSPredicate(format: "label == 'My List' OR label == 'In My List'")).firstMatch
         XCTAssertTrue(myList.waitForExistence(timeout: 10), app.debugDescription)
         record("episode detail", app)
