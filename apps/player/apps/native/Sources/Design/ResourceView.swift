@@ -38,6 +38,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
     let load: (CatalogPolicy) async throws -> Value
     @ViewBuilder let content: (Value) -> Content
     @Environment(AppSession.self) private var session
+    @Environment(\.launchStage) private var launchStage
     @Environment(\.scenePhase) private var scenePhase
     @State private var value: Value?
     @State private var failure: String?
@@ -93,8 +94,10 @@ struct ResourceView<Value: Sendable, Content: View>: View {
                         Button("Try again") { revision += 1 }
                     }
                     content(value)
+                        .onAppear { launchStage?.contentAppeared() }
                 }
-            } else if loadedIdentity == identity, let failure { RetryState(message: failure, focusesRetry: focusesRetry) { revision += 1 } }
+            } else if loadedIdentity == identity, let failure { RetryState(message: failure, focusesRetry: focusesRetry) { revision += 1 }
+                .onAppear { launchStage?.contentAppeared() } }
             else if let deferred { DeferredLoadingState(retry: deferred, layout: loadingLayout) }
             else { LoadingState(layout: loadingLayout) }
         }
