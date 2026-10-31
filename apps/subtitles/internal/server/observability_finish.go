@@ -52,14 +52,7 @@ func (observation requestObservation) status() int {
 }
 
 func (observation requestObservation) record(status int, panicked bool) {
-	observation.activity.failures.Record(observation.facts.id, observation.request.Method, observation.request.URL.Path, status, time.Since(observation.started))
-	observation.activity.requests.Add(1)
-	if status >= http.StatusBadRequest {
-		observation.activity.requestErrors.Add(1)
-	}
-	if panicked {
-		observation.activity.panics.Add(1)
-	}
+	observation.activity.Observe(observation.facts.id, observation.request.Method, observation.request.URL.Path, status, time.Since(observation.started), panicked)
 	if (status == http.StatusUnauthorized || status == http.StatusForbidden) && !observation.facts.securityRecorded {
 		observation.activity.Denied(observation.request, http.StatusText(status))
 	}

@@ -209,6 +209,13 @@ Still open:
 
 Recompute the identical-file list. Move the adapters in [Shared code for packages](#shared-code-for-packages) when both apps still need them, with both apps' CI journeys green.
 
+The 2026-10-30 recount found 41 byte-identical files with 1,039 lines. Most are thin adapters over `packages/`. The duplicated logic sits in the stores and request observation around them. Stage 3 moves that logic in small pull requests, each with Player regression coverage:
+
+1. **3a, request telemetry.** `operations.RequestTelemetry` counts requests, errors, and panics and keeps recent failures for both apps.
+2. **3b, audit store.** One audit store constructor in `packages/auditjournal`.
+3. **3c, access state.** Session and API-key persistence, retry, and flush (`profiles_access_state.go`) in `packages/identitycore`.
+4. **3d, sidecar naming.** Default, Language, and SDH Subtitle names in `packages/library`, used by Subtitles to write and by Player to read.
+
 ## Verification limits
 
 - The route list comes from a static scan. The Stage 2a run-time test now checks every removed route against the running handler.

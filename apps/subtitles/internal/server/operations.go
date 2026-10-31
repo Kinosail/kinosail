@@ -34,10 +34,8 @@ func metadataRefresh(store *metadataStore, index *libraryIndex) sharedoperations
 func operationDiagnostics(settings *settingsStore, index *libraryIndex, profiles *profileStore, audit *auditStore) sharedoperations.Binding {
 	return sharedoperations.NewBinding(sharedoperations.BindingConfig{
 		Activity: audit.HTTPTracker, Index: index.Index, Now: time.Now, Started: applicationStarted, Version: ApplicationVersion,
-		HTTPActivity: func() (uint64, uint64, uint64) {
-			return audit.requests.Load(), audit.requestErrors.Load(), audit.panics.Load()
-		},
-		Failures: audit.failures.Recent,
+		HTTPActivity: audit.Counts,
+		Failures:     audit.Recent,
 		PlaybackSettings: func() (string, string, string) {
 			return "", "", settings.scanFrequency()
 		}, Sessions: profiles.activeSessions,
@@ -55,9 +53,7 @@ func diagnostics(settings *settingsStore, index *libraryIndex, profiles *profile
 func operationMetrics(index *libraryIndex, profiles *profileStore, audit *auditStore, events *liveEventHub) sharedoperations.Binding {
 	return sharedoperations.NewBinding(sharedoperations.BindingConfig{
 		Events: events, Activity: audit.HTTPTracker, Index: index.Index,
-		HTTPActivity: func() (uint64, uint64, uint64) {
-			return audit.requests.Load(), audit.requestErrors.Load(), audit.panics.Load()
-		}, Sessions: profiles.activeSessions,
+		HTTPActivity: audit.Counts, Sessions: profiles.activeSessions,
 	})
 }
 

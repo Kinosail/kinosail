@@ -45,8 +45,8 @@ func finishObservedRequest(activity *auditStore, route func(*http.Request) strin
 	if status == 0 {
 		status = http.StatusOK
 	}
-	recordObservedStatus(activity, request, facts, status, panicked)
-	activity.failures.Record(facts.id, request.Method, request.URL.Path, status, time.Since(started))
+	activity.Observe(facts.id, request.Method, request.URL.Path, status, time.Since(started), panicked)
+	recordObservedStatus(activity, request, facts, status)
 	pattern := route(request)
 	if jellyfinMediaPath(request.URL.Path) && status >= http.StatusBadRequest {
 		slog.Warn("Jellyfin media authentication diagnostic", "diagnostic", "[PLAYBACK-AUTH]", "request_id", httpguard.LogText(facts.id, 64), "route", pattern, "status", status, "token_source", sessionTokenSource(request), "api_key_query", jellyfinQueryShape(request, "api_key"), "play_session_query", jellyfinQueryShape(request, "playSessionId"), "client", jellyfinClientClass(request))
@@ -67,14 +67,7 @@ func recoverObservedRequest(capture *auditWriter, request *http.Request, facts *
 	return true
 }
 
-func recordObservedStatus(activity *auditStore, request *http.Request, facts *requestActivity, status int, panicked bool) {
-	activity.requests.Add(1)
-	if status >= http.StatusBadRequest {
-		activity.requestErrors.Add(1)
-	}
-	if panicked {
-		activity.panics.Add(1)
-	}
+func recordObservedStatus(activity *auditStore, request *http.Request, facts *requestActivity, status int) {
 	if (status == http.StatusUnauthorized || status == http.StatusForbidden) && !facts.securityRecorded {
 		activity.Denied(request, http.StatusText(status))
 	}
