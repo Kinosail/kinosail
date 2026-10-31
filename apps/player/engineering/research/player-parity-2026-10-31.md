@@ -51,12 +51,30 @@ Sections are in priority order for a buyer without a Kinosail Server.
 | Playback from Plex, Jellyfin, Emby | Direct play when AVFoundation can; otherwise the remote server remuxes or transcodes; progress written back | Partial | Jellyfin direct-play profile lists MP4/M4V/MOV only, so every MKV is remuxed by the remote server. The profile asks for AAC, not E-AC-3 surround. |
 | Music, audiobooks, books, photos from Plex, Jellyfin, Emby | Empty views | Missing | `DeviceLibraryRouter.swift` returns no items for these views |
 | Collections, people pages, albums from these sources | Not supported | Missing | Router returns "unsupported" |
-| Downloads, bookmarks, casting from these sources | Kinosail Server only | Missing | `IMPLEMENTATION.md` Other servers row |
+| Offline downloads from any source | iPhone/iPad downloads from a Kinosail Server only; the Server converts when the format needs it | Partial | Add downloads from Plex, Jellyfin and Emby (their download or transcode-to-file APIs), shares and cloud drives; see R3 on guideline 5.2.3 |
+| Bookmarks, casting from these sources | Kinosail Server only | Missing | `IMPLEMENTATION.md` Other servers row |
 | Subtitle search and sidecars for these sources | Embedded and server sidecars only | Partial | No online search; Kinosail Subtitles needs a Kinosail Server |
-| SMB, NFS, WebDAV shares | None | Missing | Needs a share client, a scanner, a local index, metadata matching and an on-device playback engine (D1) |
-| Metadata for shares (posters, plots, cast, episode names) | None | Missing | Needs a metadata provider and its commercial terms (decision M4) |
+| Local playback: files on the device, the Files app, iCloud Drive, USB and SSD drives on iPhone/iPad | None: the app declares no document types and has no file importer | Missing | `Configuration/iOS-Info.plist`; needs document types, `LSSupportsOpeningDocumentsInPlace`, security-scoped bookmarks and the on-device engine (D1) for MKV |
+| "Open in Kinosail" from the Share Sheet and AirDrop | The app opens only its own links (`onOpenURL` for Quick Connect and app links) | Missing | Same document-type work as local playback |
+| Metadata matching for loose files | None | Missing | Same matcher as shares; needs M4 |
+| SMB shares, with automatic discovery on the local network | None | Missing | Discovery today finds only Jellyfin/Emby (port 8096) and Plex (32400): `SourceDiscovery.swift`. Add Bonjour `_smb._tcp` discovery. |
+| NFS and WebDAV shares | None | Missing | Needs a share client, a scanner, a local index, metadata matching and the on-device engine (D1) |
+| DLNA/UPnP media servers as a source | None; the Server can cast to DLNA renderers, which is the opposite direction | Missing | `Sources/Features/Casting/PlayOnTVScreen.swift` |
+| FTP and SFTP | None | Missing | Lower demand than SMB; same scanner |
+| Cloud drives (Google Drive, Dropbox, OneDrive, Box, pCloud) | None | Missing (later phase) | Each provider needs a registered app and has review rules of its own; Google's Drive read scopes are restricted and need a security assessment (R2, M10) |
+| Metadata for shares and local files (posters, plots, cast, episode names) | None | Missing | Needs a metadata provider and its commercial terms (R2, M4) |
 | Trakt scrobbling and sync | None | Missing | Common reason people pick a player |
 | Kinosail Server | Native | Have | The free path; see M2 for what the app charges here |
+
+### P0b — A library with no server at all
+
+A buyer with only a NAS or files on a drive still expects a full library: artwork, seasons, Continue watching and Up Next.
+
+| Capability | Kinosail today | Status | Evidence / note |
+| --- | --- | --- | --- |
+| On-device library built from shares and local files | None; the on-device library combines Plex, Jellyfin and Emby only | Missing | Extend `Sources/DeviceLibrary` with a file-source catalog, a background scanner and the metadata matcher |
+| Watch state, progress, My List synced across the user's own devices | Kinosail Server or the remote server stores progress; iCloud Keychain syncs only account sign-ins | Missing | CloudKit private database: no Kinosail account and no backend for Kinosail to run. Data stays in the user's iCloud, so the app's privacy label can stay "Data Not Collected" (confirm against Apple's definition before release). |
+| Up Next and Continue watching without a server | Server-backed only | Missing | Built from the CloudKit state above |
 
 ### P1 — Playback compatibility and picture/sound fidelity
 
@@ -124,6 +142,35 @@ Sections are in priority order for a buyer without a Kinosail Server.
 | Time to first frame | Not measured | Missing | Target: direct play ≤ 1.5 s, remux ≤ 3 s on Apple TV HD |
 | Memory and thermal on Apple TV HD | Not measured | Missing | Budget per playback mode |
 
+### P6 — Accessibility (baseline for every release)
+
+| Capability | Kinosail today | Status | Evidence / note |
+| --- | --- | --- | --- |
+| VoiceOver on every screen | Labels on many controls (36 files set `accessibilityLabel`) | Partial | Needs a full VoiceOver pass on iPhone, iPad and Apple TV, recorded in `VERIFICATION.md` |
+| Audio-description tracks | Not recognized | Missing | Mark tracks with the "describes video" characteristic and prefer them when the system Audio Descriptions setting is on |
+| Caption style from system settings | AVKit tracks follow the system style; Kinosail's own caption label uses a fixed style | Partial | `PlayerPresentation.swift` (tvOS label); read `MACaptionAppearance` for size, color and background |
+| Dynamic Type | Supported in many views (23 files) | Partial | Check the largest sizes on iPhone and iPad |
+| Reduce Motion | Respected in launch, focus and transitions (20 files) | Have | `KinoMotion.swift`, `LaunchReveal.swift` |
+
+### P7 — Apple ecosystem polish
+
+| Capability | Kinosail today | Status | Evidence / note |
+| --- | --- | --- | --- |
+| Siri, Shortcuts, App Intents | "Search library" and "Play title" intents | Partial | `Sources/Platform/LibraryIntents.swift`; add Continue watching, Next episode, play from a source, and App Shortcuts phrases |
+| SharePlay, tied to Watch Rooms | Watch Rooms exist in the web Player; no Group Activities in the apps | Missing | Group Activities for synced playback across people's own devices |
+| Widgets and Live Activities for what is playing | None | Missing | WidgetKit and ActivityKit on iPhone/iPad; a Continue watching widget |
+| iPhone as an Apple TV remote and keyboard | The Watch app is a remote; the Server has remote players | Partial | Add an iPhone remote with text entry for search |
+| tvOS multi-user profiles | One app session for the Apple TV | Missing | Run as the current Apple TV user so each person has their own sources and progress |
+| Apple TV app "Up Next" integration | None | Not available (likely) | Apple's TV app integration is a partner program for video providers with their own catalog; a player for personal media is unlikely to qualify (M11) |
+
+### P8 — More platforms
+
+| Capability | Kinosail today | Status | Evidence / note |
+| --- | --- | --- | --- |
+| iPad multitasking and Stage Manager | iPad builds from the iOS target | Verify | Check Split View, Slide Over, Stage Manager window sizes and external displays |
+| Mac app | Not a target (`apps/player/apps/native/AGENTS.md`) | Missing | Native SwiftUI target preferred over Catalyst for a media app; shares the on-device library and StoreKit products (universal purchase) |
+| Apple Vision Pro | Not a target | Missing | Immersive theater environment; Dolby Vision and spatial audio through AVKit |
+
 ## App Store readiness track
 
 This track runs in parallel with the phases. Engineering can design and build every item below. Creating records, signing agreements, setting prices and paying for anything stay with the Owner.
@@ -148,6 +195,40 @@ This track runs in parallel with the phases. Engineering can design and build ev
 | TestFlight | Builds install on Owner devices through a signed-device helper | Archive and upload from the Mac with `xcodebuild -exportArchive`; internal testing first; external testing needs Beta App Review and the demo access above | Needs the App Store Connect record and agreements (M3) |
 | Watch and Top Shelf | Built and signed with the app | Include in the archive; the watch app is a remote only | Guideline 4.2 (minimum functionality) is met because the watch app controls playback |
 
+## Paid-app risks for the Owner
+
+These are flags, not solutions. Engineering has not assumed an answer. None of this is legal advice; counsel and each provider must confirm before release.
+
+### R1 — Codec licensing
+
+Formats split into three groups on Apple platforms:
+
+| Group | Formats | What it means for a paid app |
+| --- | --- | --- |
+| Decoded by Apple's system decoders (AVFoundation) | H.264, HEVC (hardware), AV1 (devices with hardware AV1 decode only), AAC and HE-AAC, MP3, ALAC, FLAC, Opus, LPCM, AC-3 (Dolby Digital), E-AC-3 (Dolby Digital Plus), HDR10, HLG, Dolby Vision profiles 5 and 8 | The decoders ship in the operating system. The app calls them through AVFoundation, which is how Kinosail plays today. No separate codec license is expected for this use; counsel should confirm. |
+| Passthrough only | Dolby Atmos carried in E-AC-3 (JOC): Apple TV sends it to the receiver as Dolby Digital Plus | Handled by the system. Apple TV cannot pass TrueHD or DTS bitstreams at all, so passthrough is not an option for them (D2). |
+| Needs a license decision if the app decodes it in software | DTS family (DTS, DTS-HD MA, DTS:X); Dolby TrueHD (and Atmos in TrueHD); VC-1; MPEG-2 video; HEVC and AV1 on devices without hardware decode; any other format added with the on-device engine (D1) | Patent pools or the format owner may require a license for a decoder in a paid app. Patent status differs by country and some older patents have expired, so counsel must check each format. Using the names "Dolby", "Dolby Vision", "Atmos" or "DTS" in the app or store listing is a trademark question too. |
+
+Today these files avoid in-app decoding because a server converts them: the Kinosail Server converts DTS and TrueHD to E-AC-3 or AAC with its bundled FFmpeg, and Plex, Jellyfin and Emby transcode on their own servers. The same counsel review should cover the decoders in the free Server image.
+
+### R2 — Metadata provider terms
+
+| Provider | Published terms (checked 2026-10-31) | Effect |
+| --- | --- | --- |
+| TMDB | The API terms say charging users a fee for an app is commercial use, and commercial use "is only permitted under a separate written agreement between You and TMDB". Attribution with the TMDB logo and a non-endorsement notice is required. | A paid Kinosail app needs a written TMDB agreement before it calls TMDB from the device. |
+| TheTVDB | The API "is available for both commercial projects and to individual developers"; commercial pricing is by contact with sales. Attribution with a link to TheTVDB.com is required. | Needs a commercial license; price unknown. |
+| fanart.tv | Not checked in this pass | Confirm their terms for a paid app before use. |
+
+Note: today Plex, Jellyfin and Emby supply their own metadata to the app, so these terms matter only for shares, local files and cloud drives.
+
+### R3 — App Review for apps that play user media from third-party servers
+
+- **2.1(a), demo access:** reviewers need "demo account info (and turn on your back-end service!)" when an app has a login; a built-in demo mode needs Apple's prior approval. Kinosail needs a demo server (M6).
+- **5.2.2, third-party services:** an app that "uses, accesses, monetizes access to, or displays content from a third-party service" must be permitted to by that service's terms, and "authorization must be provided upon request". This applies to Plex, Jellyfin, Emby, Trakt, metadata providers and cloud drives. Plex's API terms need a specific check, because the app charges money and signs in through plex.tv.
+- **5.2.3, downloading:** apps must not "save, convert, or download media from third-party sources … without explicit authorization from those sources". Offline downloads from Plex, Jellyfin, Emby and cloud drives need that authorization, or clear terms that allow them. Downloads from the user's own Kinosail Server and own shares are the safer case.
+- **4.2.7 (remote desktop clients)** does not apply: Kinosail is a media player, not a mirror of the host.
+- Screenshots and the demo must use public-domain or Owner-made media only.
+
 ## Decisions for the Owner
 
 Each item needs the Owner. Engineering will not set prices, create App Store Connect records, sign agreements, spend money or change licensing.
@@ -163,6 +244,9 @@ Each item needs the Owner. Engineering will not set prices, create App Store Con
 | M7 | Terms for app binaries and app source | Use Apple's standard App Store licence for the binaries. Decide whether the native app source stays public under PolyForm Perimeter (see F2). |
 | M8 | README and site wording | Approve the wording changes in F1 and F6 before launch. |
 | M9 | Launch languages | English plus the 17 catalog languages only after the catalog is complete; otherwise English, German, French, Spanish, Japanese and Portuguese (Brazil) first. |
+| M10 | Cloud drive app registrations | Later phase. Each provider needs a developer app registration in the Owner's name; Google's restricted Drive scopes need a paid yearly security assessment. Start with Dropbox and OneDrive, decide on Google Drive after measuring demand. |
+| M11 | Apple TV app integration | Ask Apple only if the Owner wants to try; a personal-media player is unlikely to qualify. No engineering work until then. |
+| M12 | Codec and Plex terms review (R1, R3) | Engage counsel before the first paid release that bundles the on-device engine, and before shipping downloads from third-party servers. |
 
 ## License and documentation consistency
 
@@ -190,13 +274,19 @@ Checked against the model "free Server, paid apps, source under PolyForm Perimet
 Ranked by what sells the player to a buyer without a Kinosail Server. Each phase ships as reviewable pull requests with tests and recorded verification.
 
 1. **Phase 1, picture and sound on Apple TV (in progress).** In review: match frame rate and dynamic range (#820, simulator-verified, works for all sources) and E-AC-3 5.1 for DTS-HD and TrueHD on a Kinosail Server (#819, in the merge queue; FFmpeg in the Nox Player image converted a real DTS-HD MA 7.1 file to E-AC-3 5.1). Next: ask Plex, Jellyfin and Emby for E-AC-3 surround in their device profiles; Dolby Vision P5/P8 and P7 fallback; a stream quality cap.
-2. **Phase 2, Plex, Jellyfin and Emby as first-class sources.** MKV direct play through the remote server's remux without needless transcodes; music, audiobooks and photos; collections and people; downloads on iPhone/iPad; per-show audio and subtitle memory; Trakt.
-3. **Phase 3, network shares.** SMB first (most NAS units), then WebDAV and NFS; a share browser, background scanner, local index and metadata matching (needs M4); on-device playback engine (needs M5).
-4. **Phase 4, subtitles.** Original PGS bitmaps and styled ASS (on-device, shared with phase 3); offset; size, color, background and position; automatic forced tracks; in-app online search for buyers without Kinosail Subtitles.
-5. **Phase 5, player experience.** Next-episode countdown with cancel; chapters in the transport bar; audio delay; video sleep timer; thumbnails for direct play.
-6. **Phase 6, measurement.** Time-to-first-frame and memory budgets and a playback test matrix of real files (crash reporting moves to the App Store track).
-7. **Phase 7, other clients.** Bring Android, Android TV and web to the same matrix.
+2. **Phase 2, Plex, Jellyfin and Emby as first-class sources.** MKV through the remote server's remux without needless transcodes; music, audiobooks and photos; collections and people; offline downloads from these servers (after the R3 check); per-show audio and subtitle memory; Trakt.
+3. **Phase 3, the serverless library and local playback.** The on-device playback engine (needs M5); an on-device library with artwork, seasons, Continue watching and Up Next (metadata needs M4); watch state and progress synced through the CloudKit private database; files on the device, Files app, iCloud Drive and USB/SSD drives; "Open in Kinosail" from the Share Sheet and AirDrop.
+4. **Phase 4, network sources.** SMB with automatic discovery first (most NAS units), then WebDAV, NFS, DLNA/UPnP servers, FTP and SFTP, all feeding the phase 3 library; offline downloads from shares.
+5. **Phase 5, subtitles.** Original PGS bitmaps and styled ASS (on the phase 3 engine); offset; size, color, background and position; automatic forced tracks; in-app online search for buyers without Kinosail Subtitles.
+6. **Phase 6, Apple ecosystem polish.** App Intents and Shortcuts phrases; widgets and Live Activities; SharePlay tied to Watch Rooms; the iPhone as an Apple TV remote and keyboard; tvOS multi-user profiles.
+7. **Phase 7, player experience.** Next-episode countdown with cancel; chapters in the transport bar; audio delay; video sleep timer; thumbnails for direct play.
+8. **Phase 8, more platforms.** iPad multitasking and Stage Manager checks first (small); then a Mac app; then Apple Vision Pro.
+9. **Phase 9, cloud drives.** Dropbox and OneDrive, then Box and pCloud, then Google Drive (after M10).
+10. **Phase 10, measurement and other clients.** Time-to-first-frame and memory budgets, a playback test matrix of real files; then Android, Android TV and web on the same matrix.
 
-**App Store readiness** runs alongside phases 1–4. Order: localization and the native notices file now; StoreKit 2 entitlements, paywall and trial behind a build flag next; MetricKit reporting; then TestFlight once M3 and M6 are done.
+**Runs in parallel with every phase:**
 
-Skipped on purpose: lossless TrueHD/DTS passthrough on Apple TV (platform limit, D2); Google Cast on Apple clients (no native sender SDK, already documented). Phase 3 cannot ship playback until M4 and M5 are decided; the share browser and scanner can be built first.
+- **App Store readiness.** Localization and the native notices file now; StoreKit 2 entitlements, paywall and trial behind a build flag next; MetricKit reporting; then TestFlight once M3 and M6 are done.
+- **Accessibility (P6).** A VoiceOver, Dynamic Type and caption-style pass recorded for each release; audio-description tracks in phase 2.
+
+Skipped on purpose: lossless TrueHD/DTS passthrough on Apple TV (platform limit, D2); Google Cast on Apple clients (no native sender SDK, already documented); Apple TV app integration until M11. Phases 3 and 4 cannot ship playback of MKV, DTS, TrueHD or PGS until M5 is decided, and their metadata needs M4; the browsers, scanners and CloudKit sync can be built first.
