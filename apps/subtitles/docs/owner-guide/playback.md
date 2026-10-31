@@ -7,7 +7,7 @@ last_reviewed: 2026-09-27
 
 # Configure languages and automation
 
-In **Settings → Languages**, choose up to 20 preferred languages and put them in priority order. The first is the primary language. Choose a subtitle role: standard dialogue or SDH/captions. Use a catalog language tag such as `en` or `pt-br`. `KINOSAIL_SUBTITLE_LANGUAGE` sets the deployment-managed primary language.
+In **Settings → Languages**, choose up to 20 preferred languages and put them in priority order. The first is the primary language. Choose a subtitle role: standard dialogue or SDH/captions. With SDH/captions, Kinosail saves captions as `Movie.en.sdh.srt`, next to any standard `Movie.en.srt`. When no captions exist and the movie has no standard file, Kinosail saves a standard file as `Movie.en.srt`. Kinosail never adds a second standard file. Use a catalog language tag such as `en` or `pt-br`. `KINOSAIL_SUBTITLE_LANGUAGE` sets the deployment-managed primary language.
 
 The dashboard checks coverage in every selected language. Existing embedded text is considered before a provider request. A language-tagged sidecar covers that language; adding a preference does not translate an existing file.
 

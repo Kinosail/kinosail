@@ -95,7 +95,7 @@ func (manager *subtitleManager) inspectSubtitle(request *http.Request, id, langu
 		return subtitleReview{}, status, err
 	}
 	result := subtitleReview{ID: id, Title: item.Title, Language: language, Fingerprint: "missing", Source: "Not installed", MatchEvidence: "No verified identity evidence", Role: "translation", Warnings: []string{}}
-	sourcePath, data, err := subtitleReviewSource(item, language)
+	sourcePath, data, err := manager.provider.reviewSource(item, language)
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return subtitleReview{}, http.StatusConflict, errors.New("subtitle file is unavailable")
 	}
@@ -144,7 +144,7 @@ func (manager *subtitleManager) inspectSubtitle(request *http.Request, id, langu
 	return result, http.StatusOK, nil
 }
 
-func subtitleReviewSource(item library.Item, language string) (string, []byte, error) {
+func (provider *subtitleProvider) reviewSource(item library.Item, language string) (string, []byte, error) {
 	if !filepath.IsLocal(language) || filepath.Base(language) != language {
 		return "", nil, errors.New("subtitle language is invalid")
 	}
@@ -153,7 +153,7 @@ func subtitleReviewSource(item library.Item, language string) (string, []byte, e
 		return "", nil, err
 	}
 	language = canonical[0]
-	target := subtitleSidecarPath(item, language)
+	target := provider.managedSidecarPath(item, language)
 	if _, err := os.Lstat(target); err == nil {
 		data, readErr := readUpgradeSidecar(target)
 		return target, data, readErr
@@ -192,7 +192,7 @@ func (manager *subtitleManager) exportSubtitle(request *http.Request, id, langua
 	if err != nil {
 		return nil, "", status, err
 	}
-	_, data, err := subtitleReviewSource(item, language)
+	_, data, err := manager.provider.reviewSource(item, language)
 	if err != nil {
 		return nil, "", http.StatusNotFound, errors.New("subtitle is unavailable")
 	}

@@ -21,6 +21,7 @@ type subtitleRecord struct {
 	BackupRole                string   `json:"backup_role,omitempty"`
 	BackupFingerprint         string   `json:"backup_fingerprint,omitempty"`
 	Role                      string   `json:"role,omitempty"`
+	Variant                   string   `json:"variant,omitempty"`
 	BackupOriginalFingerprint string   `json:"backup_original_fingerprint,omitempty"`
 	OriginalFingerprint       string   `json:"original_fingerprint,omitempty"`
 	Fingerprint               string   `json:"fingerprint"`
@@ -146,7 +147,7 @@ func validSubtitleRecord(record subtitleRecord) bool {
 }
 
 func validSubtitleRecordKinds(record subtitleRecord) bool {
-	return oneOf(record.BackupRole, "", "translation", "captions") && oneOf(record.Role, "", "translation", "captions") && oneOf(record.TimingEvidence, "", "unverified", "audio", "file-hash", "embedded", "manual") && oneOf(record.Synchronization, "", "none", "global", "linear", "piecewise", "manual") && oneOf(record.Source, "embedded", "subdl", "opensubtitles", "subsource", "external", "ocr", "transcription")
+	return oneOf(record.BackupRole, "", "translation", "captions") && oneOf(record.Role, "", "translation", "captions") && oneOf(record.Variant, "", "sdh") && oneOf(record.TimingEvidence, "", "unverified", "audio", "file-hash", "embedded", "manual") && oneOf(record.Synchronization, "", "none", "global", "linear", "piecewise", "manual") && oneOf(record.Source, "embedded", "subdl", "opensubtitles", "subsource", "external", "ocr", "transcription")
 }
 
 func validSubtitleRecordBounds(record subtitleRecord) bool {

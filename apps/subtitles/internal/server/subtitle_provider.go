@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"sort"
 	"sync"
 	"sync/atomic"
@@ -139,7 +140,11 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 		return errors.New("subtitle request is invalid")
 	}
 	language = canonical[0]
-	target, err := provider.openSidecar(item, language)
+	standard, variant := subtitleSidecarPath(item, language), ""
+	if provider.preference() == "sdh" {
+		variant = "sdh"
+	}
+	target, err := provider.openSidecarAt(item, language, subtitleVariantPath(item, language, variant))
 	if err != nil {
 		return err
 	}
@@ -150,7 +155,11 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return err
 	}
-	cleaned, record, err := provider.acquire(ctx, item, language, nil)
+	_, standardErr := target.root.Lstat(filepath.Base(standard))
+	accept := func(candidate subtitleDownloadCandidate) bool {
+		return candidate.HI || variant != "sdh" || errors.Is(standardErr, os.ErrNotExist)
+	}
+	cleaned, record, err := provider.acquire(ctx, item, language, accept)
 	if err != nil {
 		outcome, safeError := "no-result", "No trusted subtitle found"
 		if errors.Is(err, errSubtitleProviderUnavailable) {
@@ -161,6 +170,9 @@ func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library
 	}
 	if err = provider.retainSubtitleOriginal(cleaned.Original, &record); err != nil {
 		return err
+	}
+	if variant == "sdh" && record.Role != "captions" {
+		target.name = filepath.Base(standard)
 	}
 	if err = provider.installSidecar(target, sidecarInstall{Key: subtitleRecordKey(item.ID, language), Data: cleaned.Data, Record: record, Action: "added", Reason: "missing"}); err != nil { //nolint:contextcheck // Ledger commits must finish after client cancellation.
 		return err

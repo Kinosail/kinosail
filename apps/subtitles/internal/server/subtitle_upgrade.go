@@ -23,8 +23,7 @@ func (provider *subtitleProvider) upgradeEligible(item library.Item, language st
 	if !provider.upgradeAvailable(item, language) {
 		return false
 	}
-	target := subtitleSidecarPath(item, language)
-	info, err := os.Lstat(target)
+	info, err := os.Lstat(provider.managedSidecarPath(item, language))
 	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > 4<<20 {
 		return false
 	}
@@ -108,7 +107,7 @@ func (provider *subtitleProvider) sidecarUnchanged(target *subtitleSidecar, key,
 }
 
 func subtitleUpgradeImproves(candidate subtitleDownloadCandidate, previous subtitleRecord) bool {
-	return candidate.Score >= previous.Score+subtitleUpgradeGain
+	return candidate.Score >= previous.Score+subtitleUpgradeGain && (previous.Variant != "sdh" || candidate.HI)
 }
 
 func (provider *subtitleProvider) installSubtitleUpgrade(target *subtitleSidecar, key string, current, data []byte, previous, next subtitleRecord, managed bool) (bool, error) {

@@ -23,7 +23,7 @@ func (manager *subtitleManager) subtitleEditSource(item library.Item, input subt
 	if source == "subsource" {
 		return nil, http.StatusConflict, errors.New("this provider requires its subtitle to remain unchanged")
 	}
-	_, data, err := subtitleReviewSource(item, input.Language)
+	_, data, err := manager.provider.reviewSource(item, input.Language)
 	if err != nil {
 		return nil, http.StatusNotFound, errors.New("choose a subtitle file to import")
 	}

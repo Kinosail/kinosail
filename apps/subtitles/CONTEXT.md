@@ -41,7 +41,7 @@ The two- or three-letter language code an Owner wants each Media File to cover.
 An untagged Subtitle File whose base name exactly matches its Media File.
 
 **Language Subtitle**:
-A Subtitle File with a language tag between its media base name and extension, such as `Arrival.en.srt`.
+A Subtitle File with a language tag between its media base name and extension, such as `Arrival.en.srt`. An SDH Language Subtitle adds `.sdh` after the tag, such as `Arrival.en.sdh.srt`.
 
 **Ready Item**:
 A Media File with a Default Subtitle or a Language Subtitle matching the Preferred Language.

@@ -13,7 +13,7 @@ func TestSubtitleReviewRejectsInvalidLanguageBeforeReading(t *testing.T) {
 	root := t.TempDir()
 	item := library.Item{Path: filepath.Join(root, "film.mp4")}
 	for _, language := range []string{"", "../en", "en/../../secret", "/en", "en\\secret", "en\x00", strings.Repeat("x", 300), "unknown-language"} {
-		path, data, err := subtitleReviewSource(item, language)
+		path, data, err := (*subtitleProvider)(nil).reviewSource(item, language)
 		if err == nil || path != "" || data != nil {
 			t.Fatalf("invalid language %q reached source: %q %v", language, path, err)
 		}
@@ -31,7 +31,7 @@ func TestSubtitleReviewCanonicalizesLanguageBeforeReading(t *testing.T) {
 	if err := os.WriteFile(path, content, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	got, data, err := subtitleReviewSource(item, "EN")
+	got, data, err := (*subtitleProvider)(nil).reviewSource(item, "EN")
 	if err != nil || got != path || string(data) != string(content) {
 		t.Fatalf("canonical source = %q, %v", got, err)
 	}

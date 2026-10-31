@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"os"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -83,9 +82,4 @@ func (provider *subtitleProvider) restorePrevious(item library.Item, language st
 		return err
 	}
 	return provider.installSidecar(target, sidecarInstall{Key: key, Data: previous, Current: current, Backup: true, PreviousBackup: previous, Record: record, Action: "restored", Reason: "restore"})
-}
-
-func subtitleBackupAvailable(item library.Item, language string) bool {
-	info, err := os.Lstat(subtitleSidecarPath(item, language) + ".kinosail.bak")
-	return err == nil && info.Mode().IsRegular() && info.Size() > 0 && info.Size() <= 4<<20
 }
