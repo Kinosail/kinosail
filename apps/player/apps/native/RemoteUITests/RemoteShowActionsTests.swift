@@ -25,6 +25,7 @@ final class RemoteShowActionsTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["In My List"].waitForExistence(timeout: 10), "My List should save the show")
         remote.press(.right)
         choose("Mark show as watched", in: app)
+        settle()
         remote.press(.select)
         XCTAssertTrue(menuItem("Mark show as unwatched", in: app).waitForExistence(timeout: 10), "The show should read as watched; \(app.debugDescription)")
         record("show more menu after mark watched", app)
@@ -39,6 +40,7 @@ final class RemoteShowActionsTests: RemoteTestCase {
         for _ in 0..<3 { remote.press(.right) }
         XCTAssertTrue(holdsFocus(app.buttons["More"]), "focused: \(focusedLabels(app))")
         choose("Mark as unwatched", in: app)
+        settle()
         remote.press(.select)
         XCTAssertTrue(menuItem("Mark as watched", in: app).waitForExistence(timeout: 10), "The episode should read as unwatched")
         XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Mark season")).firstMatch.exists)
@@ -89,5 +91,12 @@ extension RemoteShowActionsTests {
     @MainActor
     func menuItem(_ label: String, in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
+    }
+}
+
+extension RemoteShowActionsTests {
+    @MainActor
+    func settle() {
+        RunLoop.current.run(until: Date().addingTimeInterval(2))
     }
 }
