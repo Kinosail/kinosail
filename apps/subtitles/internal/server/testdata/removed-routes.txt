@@ -74,6 +74,7 @@ GET /api/v1/profiles
 GET /api/v1/remote-access
 GET /api/v1/shows
 GET /api/v1/shows/{id}
+GET /api/v1/shows/{id}/list
 GET /api/v1/viewing-syncs
 GET /api/v1/watch-rooms/{id}
 GET /api/v1/watch-rooms/{id}/events
@@ -186,6 +187,7 @@ PUT /api/v1/items/{id}/list
 PUT /api/v1/items/{id}/markers
 PUT /api/v1/items/{id}/metadata
 PUT /api/v1/items/{id}/progress
+PUT /api/v1/items/{id}/watched
 PUT /api/v1/playlists/{name}/items/{id}
 PUT /api/v1/playlists/{name}/order
 PUT /api/v1/profiles/{id}
@@ -194,3 +196,5 @@ PUT /api/v1/settings/dlna
 PUT /api/v1/settings/jellyfin
 PUT /api/v1/settings/navigation
 PUT /api/v1/settings/public-session-timeouts
+PUT /api/v1/shows/{id}/list
+PUT /api/v1/shows/{id}/watched
