@@ -23,7 +23,7 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 		return manager.subtitleHistoryProjection(options, items)
 	}
 	languages := manager.settings.subtitleLanguages()
-	data := subtitleDashboardData{subtitleDashboardOptions: options, ServerName: manager.settings.serverName(), Language: languages[0], Languages: languages, LanguageSummary: strings.Join(languages, ", "), ProviderConfigured: manager.provider.configured(), Preference: manager.settings.subtitlePreference(), PageSize: subtitleLibraryPageSize, Items: []subtitleDashboardItem{}, Automation: manager.automationStatus()}
+	data := subtitleDashboardData{subtitleDashboardOptions: options, ServerName: manager.settings.serverName(), Language: languages[0], Languages: languages, LanguageSummary: strings.Join(languages, ", "), ProviderConfigured: manager.provider.configured(), Preference: manager.settings.subtitlePreference(), PageSize: subtitleLibraryPageSize, Items: []subtitleDashboardItem{}, Automation: manager.automationStatus(), Activity: manager.activity(request)}
 	for _, language := range languages {
 		data.ProviderReady = data.ProviderReady || manager.provider.supports(language)
 		data.ProviderAvailable = data.ProviderAvailable || subtitleProviderAvailable(language)
@@ -42,7 +42,7 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 			continue
 		}
 		row := manager.subtitleDashboardCoverage(item, languages)
-		data.countCoverage(row.State)
+		data.countCoverage(row)
 		if !options.includes(item, row) {
 			continue
 		}
@@ -78,9 +78,12 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 	return data, nil
 }
 
-func (data *subtitleDashboardData) countCoverage(state string) {
+func (data *subtitleDashboardData) countCoverage(row subtitleDashboardItem) {
 	data.Total++
-	switch state {
+	if row.TimingUnchecked {
+		data.TimingUnchecked++
+	}
+	switch row.State {
 	case "checking":
 		data.Pending++
 	case "unavailable":
@@ -114,7 +117,11 @@ func (options subtitleDashboardOptions) includes(item library.Item, row subtitle
 	if options.View != "library" && row.State != "wanted" {
 		return false
 	}
-	if options.Status != "all" && options.Status != row.State {
+	if options.Status == "timing" {
+		if !row.TimingUnchecked {
+			return false
+		}
+	} else if options.Status != "all" && options.Status != row.State {
 		return false
 	}
 	if options.Kind != "all" && options.Kind != row.MediaKind {
@@ -135,6 +142,7 @@ func (manager *subtitleManager) subtitleDashboardCoverage(item library.Item, lan
 	}
 	ready, tracks, missing := manager.planCoverageAllFacts(item, languages, media)
 	row.Ready, row.Tracks, row.Missing, row.State = ready, strings.Join(tracks, ", "), missing, "wanted"
+	row.TimingUnchecked = manager.timingUnchecked(item, languages)
 	if ready {
 		row.State = "ready"
 	}

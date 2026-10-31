@@ -55,6 +55,7 @@ func (manager *subtitleManager) runAutomation(ctx context.Context, trigger <-cha
 			case <-timer.C:
 			}
 		}
+		manager.noteAutomationStart(time.Now())
 		result := manager.automate(ctx, subtitleAutomationLimit)
 		manager.noteAutomation(result, time.Now())
 		next = time.Now().Add(subtitleAutomationInterval)

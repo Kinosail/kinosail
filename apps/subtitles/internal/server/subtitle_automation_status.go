@@ -12,6 +12,8 @@ type subtitleAutomationStatus struct {
 	Added     int    `json:"added"`
 	Upgraded  int    `json:"upgraded"`
 	Failed    int    `json:"failed"`
+	Running   bool   `json:"running"`
+	Started   string `json:"started,omitempty"`
 }
 
 type subtitleAutomationClock struct {
