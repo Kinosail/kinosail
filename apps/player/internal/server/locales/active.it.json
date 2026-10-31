@@ -2062,5 +2062,17 @@
   {
     "id": "Reconnect to your Server to keep watching.",
     "other": "Riconnettiti al tuo Server per continuare a guardare."
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "Copia la chiave di configurazione o il link di configurazione nella tua app di autenticazione."
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "Salva tutti i codici di recupero prima di continuare. Ogni codice funziona una volta."
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "Inserisci il codice attuale a 6 cifre per confermare l'app."
   }
 ]

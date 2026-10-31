@@ -2062,5 +2062,17 @@
   {
     "id": "Reconnect to your Server to keep watching.",
     "other": "Reconnect to your Server to keep watching."
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "Copy the setup key or setup link into your authenticator app."
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "Save every recovery code before you continue. Each code works once."
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "Enter the current 6-digit code to confirm the app."
   }
 ]

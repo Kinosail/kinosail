@@ -2062,5 +2062,17 @@
   {
     "id": "Reconnect to your Server to keep watching.",
     "other": "重新連線到你的伺服器即可繼續觀看。"
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "將設定金鑰或設定連結複製到您的驗證器應用程式。"
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "繼續之前，請儲存所有恢復代碼。每個代碼只能使用一次。"
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "輸入目前的 6 位數代碼以確認應用程式。"
   }
 ]

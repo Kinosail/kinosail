@@ -2062,5 +2062,17 @@
   {
     "id": "Reconnect to your Server to keep watching.",
     "other": "İzlemeye devam etmek için Sunucunuza yeniden bağlanın."
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "Kurulum anahtarını veya kurulum bağlantısını kimlik doğrulayıcı uygulamanıza kopyalayın."
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "Devam etmeden önce tüm kurtarma kodlarını kaydedin. Her kod bir kez çalışır."
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "Uygulamayı onaylamak için geçerli 6 haneli kodu girin."
   }
 ]
