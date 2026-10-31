@@ -16,6 +16,7 @@ enum KinoMotion {
     static let contentWaitBudget: Duration = .milliseconds(1200)
     static let arrivalStagger = 0.07
     static let arrivalLift: CGFloat = 36
+    static let arrivalStartOpacity = 0.02
     static let contentStartScale: CGFloat = 1.08
     static let contentStartShade = 0.35
 }
@@ -52,7 +53,7 @@ private struct LaunchArrival: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .opacity(shown ? 1 : 0)
+            .opacity(shown ? 1 : KinoMotion.arrivalStartOpacity)
             .offset(y: shown ? 0 : KinoMotion.arrivalLift)
             .onAppear { if !waiting { land() } }
             .onChange(of: stage?.phase) { _, phase in if phase != .curtain { land() } }
