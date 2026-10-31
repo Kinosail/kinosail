@@ -54,7 +54,7 @@ func TestOpenSubtitlesLoginDoesNotHoldSessionMutexAcrossNetwork(t *testing.T) {
 		_, _ = writer.Write([]byte(`{"status":200,"token":"fixture-token"}`))
 	}))
 	defer fixture.Close()
-	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: fixture.URL, APIKey: "fixture", Username: "fixture", Password: "fixture"})
+	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: fixture.URL, APIKey: "fixture", Username: "fixture", Password: "fixture"}, newSubtitleProviderHealthRegistry())
 	done := make(chan error, 1)
 	go func() { _, _, err := provider.session(t.Context()); done <- err }()
 	select {
@@ -91,9 +91,9 @@ func TestTemporaryLoginFailureUsesProviderRetryInsteadOfOneHour(t *testing.T) {
 		_, _ = writer.Write([]byte(`{"status":200,"token":"fixture-token"}`))
 	}))
 	defer fixture.Close()
-	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: fixture.URL, APIKey: "fixture", Username: "fixture", Password: "fixture"})
+	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: fixture.URL, APIKey: "fixture", Username: "fixture", Password: "fixture"}, newSubtitleProviderHealthRegistry())
 	now := time.Now()
-	provider.health.now = func() time.Time { return now }
+	provider.client.health.now = func() time.Time { return now }
 	if _, _, err := provider.session(t.Context()); err == nil {
 		t.Fatal("temporary failure accepted")
 	}

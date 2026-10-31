@@ -22,7 +22,7 @@ func openSubtitlesQuotaFixture(t *testing.T, handle func(http.ResponseWriter, *h
 		http.NotFound(writer, request)
 	}))
 	t.Cleanup(remote.Close)
-	return newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: remote.URL, APIKey: "key", Username: "user", Password: "password"})
+	return newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: remote.URL, APIKey: "key", Username: "user", Password: "password"}, newSubtitleProviderHealthRegistry())
 }
 
 func TestOpenSubtitlesDailyDownloadQuotaWaitsForTheReset(t *testing.T) {
@@ -38,7 +38,7 @@ func TestOpenSubtitlesDailyDownloadQuotaWaitsForTheReset(t *testing.T) {
 	if _, err := provider.download(t.Context(), 7); err == nil {
 		t.Fatal("quota response produced a download")
 	}
-	views := provider.health.views(map[string]bool{"OpenSubtitles": true})
+	views := provider.client.health.views(map[string]bool{"OpenSubtitles": true})
 	var state, retry string
 	for _, view := range views {
 		if view.Name == "OpenSubtitles" {
@@ -76,7 +76,7 @@ func TestOpenSubtitlesStaleTokenIsReplacedInsteadOfBlockingForADay(t *testing.T)
 	if token != "" {
 		t.Fatalf("stale token kept after 401: %q", token)
 	}
-	for _, view := range provider.health.views(map[string]bool{"OpenSubtitles": true}) {
+	for _, view := range provider.client.health.views(map[string]bool{"OpenSubtitles": true}) {
 		if view.Name != "OpenSubtitles" || view.NextRetry == "" {
 			continue
 		}

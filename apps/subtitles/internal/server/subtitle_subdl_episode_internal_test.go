@@ -28,7 +28,7 @@ func TestSubDLEpisodeSearchUsesTheShowYearAndIDs(t *testing.T) {
 		ShowProviderIDs: map[string]string{"tmdb": "1399"},
 	}
 	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), sidecarTestIndex(item), nil, "")
-	if _, err := provider.searchSubDL(t.Context(), item, "en"); err != nil {
+	if _, err := provider.subdl.search(t.Context(), item, "en"); err != nil {
 		t.Fatal(err)
 	}
 	mu.Lock()

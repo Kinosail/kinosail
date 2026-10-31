@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"net/http"
 	"net/url"
 	"os"
 	"sort"
@@ -27,9 +26,9 @@ type subtitleProvider struct {
 	index     *libraryIndex
 	settings  *settingsStore
 	sync      *subtitleSynchronizer
+	subdl     *subDLProvider
 	open      *openSubtitlesProvider
 	subsource *subSourceProvider
-	client    *http.Client
 	ledger    *subtitleLedger
 	health    *subtitleProviderHealthRegistry
 	admission *subtitleAdmission
@@ -59,16 +58,20 @@ var (
 )
 
 func newSubtitleProvider(config SubtitleConfig, cache, data string, index *libraryIndex, settings *settingsStore, ffmpeg string, databases ...*database.Store) *subtitleProvider {
-	if config.URL == "" {
-		config.URL = "https://api.subdl.com/api/v1"
-	}
-	health := newSubtitleProviderHealthRegistry(data)
-	provider := &subtitleProvider{config: config, cache: cache, index: index, settings: settings, sync: newSubtitleSynchronizer(ffmpeg), open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: newSubtitleLedger(data, databases...), health: health}
-	provider.open.health, provider.subsource.health = health, health
+	provider := &subtitleProvider{cache: cache, index: index, settings: settings, sync: newSubtitleSynchronizer(ffmpeg), ledger: newSubtitleLedger(data, databases...), health: newSubtitleProviderHealthRegistry(data)}
 	provider.sync.cacheDir = cache
-	provider.client = localIntegrationHTTPClient(15 * time.Second)
-	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
+	provider.useConfig(config)
 	return provider
+}
+
+func (provider *subtitleProvider) useConfig(config SubtitleConfig) {
+	if config.URL == "" {
+		config.URL = defaultSubDLURL
+	}
+	provider.config = config
+	provider.subdl = newSubDLProvider(config.URL, config.APIKey, provider.health)
+	provider.open = newOpenSubtitlesProvider(config.OpenSubtitles, provider.health)
+	provider.subsource = newSubSourceProvider(config.SubSource, provider.health)
 }
 
 func (provider *subtitleProvider) active() *subtitleProvider {
@@ -80,25 +83,20 @@ func (provider *subtitleProvider) active() *subtitleProvider {
 
 func (provider *subtitleProvider) replaceConfig(config SubtitleConfig) {
 	previous := provider.active().config
-	if config.URL == "" {
-		config.URL = "https://api.subdl.com/api/v1"
-	}
-	if config == previous {
+	next := &subtitleProvider{cache: provider.cache, index: provider.index, settings: provider.settings, sync: provider.sync, ledger: provider.ledger, health: provider.health, admission: provider.admission}
+	next.useConfig(config)
+	if next.config == previous {
 		return
 	}
-	next := &subtitleProvider{config: config, cache: provider.cache, index: provider.index, settings: provider.settings, sync: provider.sync, open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: provider.ledger, health: provider.health, admission: provider.admission}
-	next.open.health, next.subsource.health = provider.health, provider.health
-	next.client = localIntegrationHTTPClient(15 * time.Second)
-	next.client.CheckRedirect = subtitleProviderRedirect(next.allowed)
 	provider.current.Store(next)
-	if config.URL != previous.URL || config.APIKey != previous.APIKey {
-		provider.health.reset("SubDL")
-	}
-	if config.OpenSubtitles != previous.OpenSubtitles {
-		provider.health.reset("OpenSubtitles")
-	}
-	if config.SubSource != previous.SubSource {
-		provider.health.reset("SubSource")
+	for name, changed := range map[string]bool{
+		"SubDL":         next.config.URL != previous.URL || next.config.APIKey != previous.APIKey,
+		"OpenSubtitles": next.config.OpenSubtitles != previous.OpenSubtitles,
+		"SubSource":     next.config.SubSource != previous.SubSource,
+	} {
+		if changed {
+			provider.health.reset(name)
+		}
 	}
 	provider.ledger.clearSearches()
 }
@@ -112,12 +110,15 @@ func (provider *subtitleProvider) label() string {
 
 func (provider *subtitleProvider) configured() bool {
 	provider = provider.active()
-	return provider.cache != "" && (provider.subDLConfigured() || provider.open.configured() || provider.subsource.configured())
-}
-
-func (provider *subtitleProvider) subDLConfigured() bool {
-	provider = provider.active()
-	return validSubtitleProviderEndpoint(provider.config.URL) && validSubtitleProviderCredential(provider.config.APIKey)
+	if provider.cache == "" {
+		return false
+	}
+	for _, source := range provider.sources() {
+		if source.configured() {
+			return true
+		}
+	}
+	return false
 }
 
 func validSubtitleProviderEndpoint(value string) bool {

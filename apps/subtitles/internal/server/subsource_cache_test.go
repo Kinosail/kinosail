@@ -23,7 +23,7 @@ func TestSubSourceReusesRecentSearchResults(t *testing.T) {
 		backend.Config.Handler.ServeHTTP(writer, request)
 	}))
 	t.Cleanup(remote.Close)
-	provider := newSubSourceProvider(SubSourceConfig{URL: remote.URL + "/api/v1", APIKey: "key", PersonalUse: true})
+	provider := newSubSourceProvider(SubSourceConfig{URL: remote.URL + "/api/v1", APIKey: "key", PersonalUse: true}, newSubtitleProviderHealthRegistry())
 	now := time.Now()
 	provider.now = func() time.Time { return now }
 	item := library.Item{ID: "arrival", Kind: "video", Path: "/media/Arrival.2016.1080p.WEB-DL.mkv", Title: "Arrival", Year: "2016", ProviderIDs: map[string]string{"imdb": "tt2543164", "tmdb": "329865"}}

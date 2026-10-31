@@ -56,12 +56,12 @@ func (cache *subSourceCache[T]) put(key string, value T, now time.Time) {
 	cache.entries[key] = subSourceCacheEntry[T]{value: value, expires: now.Add(subSourceCacheLifetime)}
 }
 
-func cachedSubSourceJSON[T any](ctx context.Context, provider *subSourceProvider, cache *subSourceCache[T], endpoint string) (T, error) {
+func cachedSubSourceJSON[T any](ctx context.Context, provider *subSourceProvider, cache *subSourceCache[T], route, endpoint string) (T, error) {
 	if value, found := cache.get(endpoint, provider.now()); found {
 		return value, nil
 	}
 	var value T
-	if err := provider.requestJSON(ctx, endpoint, &value); err != nil {
+	if err := provider.requestJSON(ctx, route, endpoint, &value); err != nil {
 		return value, err
 	}
 	cache.put(endpoint, value, provider.now())

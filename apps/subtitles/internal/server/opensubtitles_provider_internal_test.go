@@ -61,7 +61,7 @@ func TestOpenSubtitlesSearchAndDownloadUseTrustedSession(t *testing.T) {
 	if err := os.WriteFile(path, make([]byte, openSubtitlesHashBlock*2), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: server.URL, APIKey: "app-key", Username: "owner", Password: "password"})
+	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: server.URL, APIKey: "app-key", Username: "owner", Password: "password"}, newSubtitleProviderHealthRegistry())
 	item := library.Item{Kind: "video", Title: "Arrival", Year: "2016", Path: path, ProviderIDs: map[string]string{"imdb": "tt2543164"}}
 	candidates, err := provider.search(context.Background(), item, "en")
 	if err != nil || len(candidates) != 1 || candidates[0].FileID != 42 || candidates[0].ReleaseMatch != 1 {
@@ -95,7 +95,7 @@ func TestOpenSubtitlesFailedLoginBacksOffWithoutDownload(t *testing.T) {
 		}
 	}))
 	t.Cleanup(server.Close)
-	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: server.URL, APIKey: "app-key", Username: "owner", Password: "password"})
+	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: server.URL, APIKey: "app-key", Username: "owner", Password: "password"}, newSubtitleProviderHealthRegistry())
 	for range 2 {
 		if data, err := provider.download(context.Background(), 42); err == nil || data != nil {
 			t.Fatalf("download = %q, error = %v", data, err)
@@ -116,13 +116,13 @@ func TestSubtitleProviderCredentialRejectsControls(t *testing.T) {
 			if validSubtitleProviderCredential(value) {
 				t.Fatal("unsafe provider credential was accepted")
 			}
-			if (&subtitleProvider{config: SubtitleConfig{URL: "https://api.subdl.com/api/v1", APIKey: value}}).subDLConfigured() {
+			if newSubDLProvider("https://api.subdl.com/api/v1", value, nil).configured() {
 				t.Fatal("SubDL reported an unsafe credential as configured")
 			}
-			if newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: "https://api.opensubtitles.com/api/v1", APIKey: value, Username: "owner", Password: "password"}).configured() {
+			if newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: "https://api.opensubtitles.com/api/v1", APIKey: value, Username: "owner", Password: "password"}, newSubtitleProviderHealthRegistry()).configured() {
 				t.Fatal("OpenSubtitles reported an unsafe credential as configured")
 			}
-			if newSubSourceProvider(SubSourceConfig{URL: "https://api.subsource.net/api/v1", APIKey: value, PersonalUse: true}).configured() {
+			if newSubSourceProvider(SubSourceConfig{URL: "https://api.subsource.net/api/v1", APIKey: value, PersonalUse: true}, newSubtitleProviderHealthRegistry()).configured() {
 				t.Fatal("SubSource reported an unsafe credential as configured")
 			}
 		})

@@ -180,17 +180,17 @@ func TestSubtitleCredentialRedirectsBoundTargetsBeforeRequest(t *testing.T) {
 				provider := newSubtitleProvider(initialConfig, t.TempDir(), t.TempDir(), nil, nil, "")
 				if reconfigured {
 					provider.replaceConfig(config)
-					provider.client.CloseIdleConnections()
-					provider.subsource.client.CloseIdleConnections()
-					provider.open.client.CloseIdleConnections()
+					provider.subdl.client.http.CloseIdleConnections()
+					provider.subsource.client.http.CloseIdleConnections()
+					provider.open.client.http.CloseIdleConnections()
 					provider = provider.active()
 				}
 				ctx, cancel := context.WithTimeout(t.Context(), 3*time.Second)
 				defer cancel()
 				attempted, connected := provider.testCredentials(ctx)
-				provider.client.CloseIdleConnections()
-				provider.subsource.client.CloseIdleConnections()
-				provider.open.client.CloseIdleConnections()
+				provider.subdl.client.http.CloseIdleConnections()
+				provider.subsource.client.http.CloseIdleConnections()
+				provider.open.client.http.CloseIdleConnections()
 				addresses := []string{remote.Listener.Addr().String(), outside.Listener.Addr().String()}
 				remote.Close()
 				outside.Close()

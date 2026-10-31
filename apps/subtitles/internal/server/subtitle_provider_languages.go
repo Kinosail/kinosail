@@ -14,7 +14,7 @@ func (provider *subtitleProvider) supports(language string) bool {
 	_, subDL := subtitlelanguage.Code(canonical, subtitlelanguage.SubDL)
 	_, open := subtitlelanguage.Code(canonical, subtitlelanguage.OpenSubtitles)
 	_, subSource := subtitlelanguage.Code(canonical, subtitlelanguage.SubSource)
-	return subDL && provider.subDLConfigured() || open && provider.open.configured() || subSource && provider.subsource.configured()
+	return subDL && provider.subdl.configured() || open && provider.open.configured() || subSource && provider.subsource.configured()
 }
 
 func subtitleProviderAvailable(language string) bool {

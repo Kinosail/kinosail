@@ -62,7 +62,7 @@ func TestSubDLSearchUsesSeriesIdentity(t *testing.T) {
 	t.Cleanup(remote.Close)
 	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), nil, nil, "")
 	item := library.Item{Path: "/media/Series.S02E03.mkv", Show: "Series", Season: 2, Episode: 3, ShowProviderIDs: map[string]string{"imdb": "tt1234567"}}
-	if _, err := provider.searchSubDL(t.Context(), item, "en"); err != nil {
+	if _, err := provider.subdl.search(t.Context(), item, "en"); err != nil {
 		t.Fatal(err)
 	}
 	values, err := url.ParseQuery(<-query)
