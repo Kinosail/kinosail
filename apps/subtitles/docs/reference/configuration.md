@@ -79,7 +79,7 @@ The following table describes typed application settings. Use the running config
 | `transcoding.accelerator` | `KINOSAIL_TRANSCODE_ACCELERATOR` | enum | blank | no |
 | `transcoding.codec` | `KINOSAIL_TRANSCODE_CODEC` | enum | blank | no |
 | `transcoding.tone_map` | `KINOSAIL_TONE_MAP` | boolean | blank | no |
-| `subtitles.language` | `KINOSAIL_SUBTITLE_LANGUAGE` | lowercase ISO code | blank | no |
+| `subtitles.language` | `KINOSAIL_SUBTITLE_LANGUAGE` | catalog language tag, such as `en` or `pt-BR` | blank | no |
 | `scanning.interval` | `KINOSAIL_SCAN_INTERVAL` | duration | `10m` | yes |
 | `scanning.frequency` | `KINOSAIL_SCAN_FREQUENCY` | enum | blank | no |
 | `dlna.url` | `KINOSAIL_DLNA_URL` | URL | blank | yes |
