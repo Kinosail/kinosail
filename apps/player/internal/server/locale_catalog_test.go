@@ -37,7 +37,7 @@ func TestNewInteractiveCopyHasTranslations(t *testing.T) {
 func TestTranslatedCatalogsLocalizeAuthenticationCode(t *testing.T) {
 	t.Parallel()
 	englishCatalog := readTestCatalog(t, "en")
-	for _, message := range []string{"Authentication code", "Authentication or recovery code"} {
+	for _, message := range []string{"Authentication code", "Authentication or recovery code", "Copy the setup key or setup link into your authenticator app.", "Save every recovery code before you continue. Each code works once.", "Enter the current 6-digit code to confirm the app."} {
 		english := englishCatalog[message]
 		if english == "" {
 			t.Fatalf("English catalog is missing %q", message)

@@ -2062,5 +2062,17 @@
   {
     "id": "Reconnect to your Server to keep watching.",
     "other": "계속 시청하려면 서버에 다시 연결하세요."
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "설정 키 또는 설정 링크를 인증 앱에 복사하세요."
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "계속하기 전에 모든 복구 코드를 저장하세요. 각 코드는 한 번만 작동합니다."
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "앱을 확인하려면 현재 6자리 코드를 입력하세요."
   }
 ]

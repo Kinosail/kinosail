@@ -2062,5 +2062,17 @@
   {
     "id": "Reconnect to your Server to keep watching.",
     "other": "أعد الاتصال بالخادم لمتابعة المشاهدة."
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "انسخ مفتاح الإعداد أو رابط الإعداد إلى تطبيق المصادقة الخاص بك."
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "احفظ جميع رموز الاسترداد قبل المتابعة. يعمل كل رمز مرة واحدة."
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "أدخل الرمز الحالي المكوّن من 6 أرقام لتأكيد التطبيق."
   }
 ]

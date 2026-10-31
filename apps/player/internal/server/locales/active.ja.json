@@ -2062,5 +2062,17 @@
   {
     "id": "Reconnect to your Server to keep watching.",
     "other": "視聴を続けるにはサーバーに再接続してください。"
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "セットアップ キーまたはセットアップ リンクを認証アプリにコピーしてください。"
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "続行する前に、すべてのリカバリ コードを保存してください。各コードは 1 回だけ使用できます。"
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "アプリを確認するには、現在の 6 桁のコードを入力してください。"
   }
 ]
