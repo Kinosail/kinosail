@@ -554,6 +554,15 @@ Branch `mikeo/tvos-detail-actions` at `9d4eb82a`; baseline `main` with only the 
 | `after-movie-detail.png` | `5048f840e7f90e9ee329a5cfbdcaadd5edfa201f7325dd9c5f01ac932a5e98ce` |
 | `after-movie-more.png` | `3dd22e53ef80f1a0e85060f167881488779a84b9b6242a87402deed8c5570e33` |
 
+## Surround from Plex, Jellyfin and Emby — 2026-10-31
+
+Branch `mikeo/source-surround` at `91811e2f`. Xcode 27.1, the tvOS 27.0 "KinoQA 1080p" simulator.
+
+- `Kinosail-tvOSTests/SourceSurroundAudioTests` passed (4 tests): with six or more output channels and E-AC-3 support, the Jellyfin/Emby transcode profile and the Plex transcode target list E-AC-3 first; stereo outputs and clients without E-AC-3 keep AAC first.
+- `./scripts/build-apple.sh ios` succeeded.
+
+Not verified here: a live Plex, Jellyfin or Emby server choosing E-AC-3 for a DTS or TrueHD file. Those servers are expected to use the first listed codec; a check against a real server is still needed.
+
 ## Mark watched and show actions — 2026-10-31
 
 Branch `mikeo/mark-watched` at `29d5d371`. Xcode 27.1, the tvOS 27.0 "KinoQA 1080p" simulator, the loopback navigation fixture (now with `PUT /api/v1/items/{id}/watched`, `PUT /api/v1/shows/{id}/watched` and `GET`/`PUT /api/v1/shows/{id}/list`) and a seeded session.

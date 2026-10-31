@@ -20,7 +20,7 @@ enum PlexPlayback {
         let directRequest = try client.request(key, base: base)
         var copy = ["h264"]
         if capabilities.videoCodecs.contains("hevc") { copy.append("hevc") }
-        let audio = ["aac", "ac3", "eac3"].filter { $0 == "aac" || capabilities.audioCodecs.contains($0) }.joined(separator: ",")
+        let audio = capabilities.convertedAudioCodecs.joined(separator: ",")
         var transcode = try client.request("/video/:/transcode/universal/start.m3u8", [
             "path": "/library/metadata/\(item.ref.item)", "protocol": "hls", "directPlay": "0", "directStream": "1",
             "directStreamAudio": "1", "mediaIndex": "0", "partIndex": "0", "fastSeek": "1", "offset": "0",
