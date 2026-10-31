@@ -1,12 +1,10 @@
 package server
 
 import (
-	"path/filepath"
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
-	"golang.org/x/text/language"
 )
 
 type (
@@ -44,20 +42,4 @@ func subtitleLanguageFromPath(media, subtitle string) string {
 	return "und"
 }
 
-func subtitleRoleFromPath(path string) string {
-	name := lower(filepath.Base(path))
-	parts := strings.Split(strings.TrimSuffix(name, filepath.Ext(name)), ".")
-	if len(parts) >= 3 && parts[len(parts)-1] == "hi" {
-		if tag, err := language.Parse(parts[len(parts)-2]); err == nil && tag != language.Und {
-			return "captions"
-		}
-	}
-	switch {
-	case strings.Contains(name, ".sdh."), strings.Contains(name, ".cc."):
-		return "captions"
-	case strings.Contains(name, ".commentary."):
-		return "commentary"
-	default:
-		return ""
-	}
-}
+func subtitleRoleFromPath(path string) string { return library.SubtitleFileRole(path) }

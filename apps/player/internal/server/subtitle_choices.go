@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"path/filepath"
 	"slices"
 	"strconv"
 	"strings"
@@ -101,7 +100,7 @@ func subtitleCandidates(item library.Item, media probeResult) []subtitleCandidat
 	}
 	for index, path := range item.Subtitles {
 		role := subtitleRoleFromPath(path)
-		forced := strings.Contains(strings.ToLower(filepath.Base(path)), ".forced.")
+		forced := library.SubtitleFileForced(path)
 		code := sidecarSubtitleLanguage(item.Path, path)
 		option := playback.SubtitleOption{Language: code, Role: role, Forced: forced, External: true, Default: index == 0}
 		candidates = append(candidates, subtitleCandidate{option: option, stream: -1, order: len(candidates), track: subtitleTrack{Source: fmt.Sprintf("/subtitle/%s/%d", item.ID, index), Language: code, Role: role, Kind: subtitleTrackKind(role), Forced: forced}})
