@@ -2,11 +2,12 @@
 import SwiftUI
 
 struct TVMovieHeroLayout<Content: View>: View {
+    var width: CGFloat = 740
     @ViewBuilder let content: Content
 
     var body: some View {
         content
-            .frame(maxWidth: 740, alignment: .leading)
+            .frame(maxWidth: width, alignment: .leading)
             .padding(.vertical, 40)
             .padding(.horizontal, KinoTheme.contentPadding + 40)
             .frame(maxWidth: .infinity, minHeight: 600, alignment: .bottomLeading)

@@ -208,6 +208,8 @@ struct MediaShelf: View {
     var playsOnSelect = false
     var takesFocus = false
     var onTookFocus: (() -> Void)?
+    var preferredFocusID: String?
+    @FocusState private var focusedCard: String?
     #endif
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -229,6 +231,8 @@ struct MediaShelf: View {
                                   onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows,
                                   reservesSubtitle: reservesSubtitle, playsOnSelect: playsOnSelect,
                                   takesFocus: takesFocus && index == 0, onTookFocus: onTookFocus).frame(width: width)
+                            .modifier(ShelfCardFocus(active: preferredFocusID != nil, id: item.id, focusedCard: $focusedCard))
+                            .id(item.id)
                             .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
                         #else
                         MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback, onFocus: onFocus,
@@ -248,6 +252,7 @@ struct MediaShelf: View {
             #if os(tvOS)
             .scrollClipDisabled()
             .padding(.horizontal, -24)
+            .modifier(ShelfStartPosition(itemID: preferredFocusID, focusedCard: $focusedCard))
             #endif
             #if os(iOS)
             .scrollBounceBehavior(.basedOnSize, axes: .vertical)

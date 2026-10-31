@@ -537,3 +537,19 @@ Branch `mikeo/tvos-match-content` at `83e1d1e2`. Xcode 27.1, the tvOS 27.0 "Kino
 - The Server already writes `FRAME-RATE` and `VIDEO-RANGE` in each HLS variant (`packages/playback/hls_playlist.go`), which AVFoundation reads as the stream's display criteria.
 
 Not verified here: the frame-rate and SDR/HDR switch on Apple TV hardware connected to a TV with Match Content on. That needs a physical-device check.
+
+## Apple TV detail actions — 2026-10-31
+
+Branch `mikeo/tvos-detail-actions` at `9d4eb82a`; baseline `main` with only the new test at `caff8d3b`. Xcode 27.1, the tvOS 27.0 "KinoQA 1080p" simulator, the loopback navigation fixture and a seeded session, as in the launch check above.
+
+- Before: `RemoteEpisodeDetailTests/testEpisodeDetailKeepsActionsInOneRowAboveTheEpisodes` failed on main with "Episodes belong in the shelf below, not in a button" (the All episodes button).
+- After: that test, `testMovieDetailBackRestoresGridAndBrowseFocus` (updated for the single action row), `testShowSeasonsAndBackRestoreFocus` and `testLaunchAndLibraryStartOnTopLeftTitle` passed. `./scripts/build-apple.sh ios` succeeded.
+- During the work the episode test caught two defects: SwiftUI exposes focus on an unlabeled element inside the More menu button (the tests now accept focus inside an element), and Down from More landed on the nearest episode instead of the current one (fixed with a user-initiated default focus on the shelf).
+
+| Screenshot (1920×1080 simulator capture) | SHA-256 |
+| --- | --- |
+| `before-episode-detail.png` | `29300757b18043dbe6d36035c392bdac010c335e7874aefd349e5e3dbd0da9f6` |
+| `after-episode-detail.png` | `85ab54aec79214649bccc84a1382f320b15e8ce770124f054f276f999586cd07` |
+| `after-episode-shelf.png` | `a3c7fc97f076860d6114c2dea43c13b260f6f64c3a61ab4c4d7e0379e5933787` |
+| `after-movie-detail.png` | `5048f840e7f90e9ee329a5cfbdcaadd5edfa201f7325dd9c5f01ac932a5e98ce` |
+| `after-movie-more.png` | `3dd22e53ef80f1a0e85060f167881488779a84b9b6242a87402deed8c5570e33` |
