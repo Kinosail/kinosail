@@ -14,9 +14,9 @@ Kinosail Subtitles is a free, self-hosted app that scans local movies and episod
 <figure class="product-screenshot">
   <picture>
     <source media="(max-width: 600px)" srcset="{{ '/assets/images/subtitles-dashboard-mobile.webp' | relative_url }}" width="780" height="2480">
-    <img src="{{ '/assets/images/subtitles-dashboard-desktop.webp' | relative_url }}" width="2880" height="3044" alt="Kinosail Subtitles dashboard with five wanted fictional files, one ready file, and the next subtitle action" fetchpriority="high">
+    <img src="{{ '/assets/images/subtitles-dashboard-desktop.webp' | relative_url }}" width="2880" height="3248" alt="Kinosail Subtitles dashboard with five wanted fictional files, one ready file, and the next subtitle action" fetchpriority="high">
   </picture>
-  <figcaption>Actual Subtitles app running in Podman with fictional movies and episodes. <a href="{{ '/assets/images/subtitles-dashboard-desktop.webp' | relative_url }}">View desktop image</a> · <a href="{{ '/assets/images/subtitles-dashboard-mobile.webp' | relative_url }}">View phone image</a></figcaption>
+  <figcaption>Actual Subtitles app running in an isolated container with fictional movies and episodes. <a href="{{ '/assets/images/subtitles-dashboard-desktop.webp' | relative_url }}">View desktop image</a> · <a href="{{ '/assets/images/subtitles-dashboard-mobile.webp' | relative_url }}">View phone image</a></figcaption>
 </figure>
 
 - [Install the published container]({{ '/getting-started/install/' | relative_url }})
