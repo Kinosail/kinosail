@@ -203,7 +203,5 @@ func (provider *subSourceProvider) endpoint(path string) (*url.URL, error) {
 }
 
 func (provider *subSourceProvider) allowed(link string) bool {
-	base, baseErr := url.Parse(provider.config.URL)
-	target, targetErr := url.Parse(link)
-	return baseErr == nil && targetErr == nil && target.Host != "" && target.Host == base.Host && target.Scheme == base.Scheme
+	return trustedProviderLink(provider.config.URL, link, "")
 }

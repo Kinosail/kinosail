@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -10,24 +9,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/library"
 )
-
-func (provider *subtitleProvider) openSubtitlesCandidateSearch(ctx context.Context, item library.Item, language string) subtitleCandidateSearch {
-	if !provider.open.configured() {
-		return subtitleCandidateSearch{}
-	}
-	found, err := provider.open.search(ctx, item, language)
-	if err != nil {
-		return subtitleCandidateSearch{Configured: true, Failed: true}
-	}
-	result := subtitleCandidateSearch{Candidates: make([]subtitleDownloadCandidate, 0, len(found)), Configured: true}
-	for _, candidate := range found {
-		fileID := candidate.FileID
-		result.Candidates = append(result.Candidates, subtitleDownloadCandidate{Language: language, ExactHash: candidate.ExactHash, Score: candidate.Score, ReleaseMatch: candidate.ReleaseMatch, Source: "opensubtitles", HI: candidate.HI, Download: func(ctx context.Context) ([]byte, error) {
-			return provider.open.download(ctx, fileID)
-		}})
-	}
-	return result
-}
 
 type openSubtitlesResponse struct {
 	TotalCount int                       `json:"total_count"`

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -11,24 +10,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/library"
 )
-
-func (provider *subtitleProvider) subSourceCandidateSearch(ctx context.Context, item library.Item, language string) subtitleCandidateSearch {
-	if !provider.subsource.configured() {
-		return subtitleCandidateSearch{}
-	}
-	found, err := provider.subsource.search(ctx, item, language)
-	if err != nil {
-		return subtitleCandidateSearch{Configured: true, Failed: true}
-	}
-	result := subtitleCandidateSearch{Candidates: make([]subtitleDownloadCandidate, 0, len(found)), Configured: true}
-	for _, candidate := range found {
-		candidate := candidate
-		result.Candidates = append(result.Candidates, subtitleDownloadCandidate{Language: language, Score: candidate.Score, ReleaseMatch: candidate.ReleaseMatch, Source: "subsource", Preserve: true, HI: candidate.HI, Download: func(ctx context.Context) ([]byte, error) {
-			return provider.subsource.download(ctx, candidate, item)
-		}})
-	}
-	return result
-}
 
 type subSourceMovieResponse struct {
 	Success bool             `json:"success"`
