@@ -10,9 +10,9 @@ import (
 
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	sharednavigation "github.com/MikeO7/kinosail/packages/navigation"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 var errManagedSetting = errors.New("setting is externally managed")

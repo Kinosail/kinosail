@@ -3,8 +3,8 @@ package configuration
 import (
 	"strings"
 
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/federation"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 func validSubtitleLanguage(language string) bool {

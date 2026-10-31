@@ -3,8 +3,8 @@ package server
 import (
 	"testing"
 
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 func TestRankSubDLCandidatesUsesIdentityReleaseAndAccessibilityEvidence(t *testing.T) {

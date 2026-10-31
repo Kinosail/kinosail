@@ -1,6 +1,6 @@
 package server
 
-import "github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
+import "github.com/MikeO7/kinosail/packages/subtitlelanguage"
 
 func (provider *subtitleProvider) supports(language string) bool {
 	provider = provider.active()

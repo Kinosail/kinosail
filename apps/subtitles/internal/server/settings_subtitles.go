@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/settingsstate"
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 const maximumSubtitleLanguages = settingsstate.MaximumSubtitleLanguages

@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 func apiSettings(api apiServices) http.HandlerFunc {

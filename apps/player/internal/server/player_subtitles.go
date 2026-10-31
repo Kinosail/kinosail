@@ -1,18 +1,14 @@
 package server
 
 import (
-	"path/filepath"
 	"strings"
 
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 	"golang.org/x/text/language"
 )
 
 func sidecarSubtitleLanguage(media, subtitle string) string {
-	mediaName := strings.TrimSuffix(filepath.Base(media), filepath.Ext(media))
-	subtitleName := strings.TrimSuffix(filepath.Base(subtitle), filepath.Ext(subtitle))
-	suffix := strings.TrimPrefix(subtitleName, mediaName+".")
-	code, _, _ := strings.Cut(suffix, ".")
-	if base, err := language.ParseBase(strings.ToLower(code)); err == nil {
+	if base, err := language.ParseBase(strings.Split(subtitlelanguage.FileLanguage(media, subtitle), "-")[0]); err == nil {
 		return base.String()
 	}
 	return ""

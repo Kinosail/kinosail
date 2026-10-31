@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
+	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 const (

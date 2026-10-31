@@ -68,8 +68,7 @@ func cleanupSidecarCandidate(index *libraryIndex, item library.Item, path string
 	if !cleanupSidecarName(item.Path, path) {
 		return nil, true
 	}
-	mediaBase := strings.TrimSuffix(item.Path, filepath.Ext(item.Path))
-	_, tagged := subtitleTrackLanguage(path, mediaBase, nil)
+	_, tagged := subtitleTrackLanguage(path, item.Path, nil)
 	if tagged == "" {
 		return nil, true
 	}

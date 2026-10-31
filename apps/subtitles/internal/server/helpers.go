@@ -1,9 +1,7 @@
 package server
 
 import (
-	"path/filepath"
 	"slices"
-	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
@@ -19,7 +17,7 @@ func oneOf(value string, allowed ...string) bool {
 }
 
 func subtitleLanguageFromPath(media, subtitle string) string {
-	_, language := subtitleTrackLanguage(subtitle, strings.TrimSuffix(media, filepath.Ext(media)), nil)
+	_, language := subtitleTrackLanguage(subtitle, media, nil)
 	if language != "" {
 		return language
 	}
