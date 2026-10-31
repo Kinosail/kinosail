@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"net/http"
-	"sync/atomic"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/auditjournal"
@@ -18,10 +17,7 @@ type (
 
 type auditStore struct {
 	*auditjournal.HTTPTracker
-	requests      atomic.Uint64
-	requestErrors atomic.Uint64
-	panics        atomic.Uint64
-	failures      operations.FailureLog
+	operations.RequestTelemetry
 }
 
 func newAuditStore(ctx context.Context, dataDir string, notify func(auditEvent), retentions ...time.Duration) *auditStore {

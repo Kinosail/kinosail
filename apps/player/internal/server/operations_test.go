@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -55,6 +56,13 @@ func TestOwnerCanInspectMetricsPlaybackAndRedactedDiagnostics(t *testing.T) {
 	}
 	if diagnostics.Header().Get("Content-Disposition") == "" || strings.Contains(diagnostics.Body.String(), "owner-password") || strings.Contains(diagnostics.Body.String(), mediaDir) {
 		t.Fatalf("unsafe diagnostics: headers=%v body=%s", diagnostics.Header(), diagnostics.Body.String())
+	}
+	var counts struct {
+		Requests uint64 `json:"httpRequests"`
+		Errors   uint64 `json:"httpErrors"`
+	}
+	if err := json.Unmarshal(diagnosticsAPI.Body.Bytes(), &counts); err != nil || counts.Requests < 8 || counts.Errors < 1 {
+		t.Fatalf("request telemetry = %+v, %v", counts, err)
 	}
 	for _, private := range []string{"private-title", "private-secret", "token="} {
 		if strings.Contains(diagnosticsAPI.Body.String(), private) {

@@ -72,9 +72,7 @@ func metadataRefreshConfig(store *metadataStore, items []library.Item, refresh f
 func operationMetrics(index *libraryIndex, profiles *profileStore, hls *hlsManager, audit *auditStore, imports *viewingImportManager, events *liveEventHub, rooms *watchRoomAdapter) sharedoperations.Binding {
 	return sharedoperations.NewBinding(sharedoperations.BindingConfig{
 		Index: index.Index, Cache: hls.cacheOps, Activity: audit.HTTPTracker, Viewing: imports.previewer, Events: events, Rooms: rooms.rooms,
-		Sessions: profiles.activeSessions, HTTPActivity: func() (uint64, uint64, uint64) {
-			return audit.requests.Load(), audit.requestErrors.Load(), audit.panics.Load()
-		},
+		Sessions: profiles.activeSessions, HTTPActivity: audit.Counts,
 		Workload: func() sharedoperations.WorkloadSnapshot {
 			value := hls.workloads.Metrics()
 			return sharedoperations.WorkloadSnapshot{Capacity: value.Capacity, BackgroundCapacity: value.BackgroundCapacity, ActivePlayback: value.ActivePlayback, ActiveBackground: value.ActiveBackground, WaitingPlayback: value.WaitingPlayback, WaitingBackground: value.WaitingBackground, ActiveInteractive: value.ActiveInteractive, WaitingInteractive: value.WaitingInteractive}
@@ -92,10 +90,8 @@ func operationDiagnostics(settings *settingsStore, index *libraryIndex, profiles
 		Sessions: profiles.activeSessions, PlaybackSettings: func() (string, string, string) {
 			return settings.playbackMode(), settings.transcoding().Name, settings.scanFrequency()
 		},
-		HTTPActivity: func() (uint64, uint64, uint64) {
-			return audit.requests.Load(), audit.requestErrors.Load(), audit.panics.Load()
-		},
-		Failures: audit.failures.Recent,
+		HTTPActivity: audit.Counts,
+		Failures:     audit.Recent,
 	})
 }
 
