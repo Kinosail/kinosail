@@ -20,10 +20,10 @@ Each finding has a status: **fixed** (with the pull request), **planned** (with 
   - OpenSubtitles and SubSource each have their own HTTP, health, download, and archive code.
   - Scoring rules differ between providers.
   - The provider list is hard-coded in at least 7 places.
-  - **Planned:** one `subtitleSource` interface with one HTTP client.
+  - **Fixed** (#802, #804): one `subtitleSource` interface. SubDL is its own source. All three sources use one `providerClient` for link trust, health, JSON, and file downloads. Scoring rules still differ by provider.
 - Five call sites repeat the sidecar install steps by hand: keep the original, back up, write, record history, roll back. The rollback errors are discarded. **Fixed** (#798): one `installSidecar` transaction with logged rollback.
 - Dead code: five empty files, test-only aliases, and variadic "optional" dependencies that only tests omit. **Partly fixed** (#797): empty files and test-only aliases removed. The variadic dependencies remain.
-- Provider and sidecar code writes no logs, so provider failures are invisible. **Partly fixed** (#798): every sidecar write and failed rollback is logged. Provider request logging is planned with the provider abstraction.
+- Provider and sidecar code writes no logs, so provider failures are invisible. **Fixed** (#798, #804): every sidecar write and failed rollback is logged. Provider requests are logged by `providerClient` with the provider, route, status, and outcome, never URLs or keys.
 
 ## Correctness bugs
 
@@ -44,6 +44,7 @@ Each finding has a status: **fixed** (with the pull request), **planned** (with 
 | 13 | SubSource episode names raise the release match enough to skip sync validation. | **Kept by design**: an exact episode name may install as `unverified`; the SubSource acquisition tests require it. Planned: show unverified installs on the dashboard. |
 | 14 | Full language names such as `Movie.English.srt` were not recognized, so a duplicate `Movie.en.srt` was added. | **Fixed** (#793) |
 | 15 | The OpenSubtitles 406 download quota gets a 1-minute backoff, and a stale token is not cleared. | **Fixed** (#795) |
+| 16 | A `200` response with an oversized file marked SubDL and OpenSubtitles unavailable. | **Fixed** (#804) |
 
 ## UI and defaults
 

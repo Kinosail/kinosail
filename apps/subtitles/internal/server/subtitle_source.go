@@ -9,12 +9,14 @@ import (
 )
 
 type subtitleSource interface {
+	name() string
 	configured() bool
+	checkCredentials(ctx context.Context) error
 	candidates(ctx context.Context, item library.Item, language string) ([]subtitleDownloadCandidate, error)
 }
 
 func (provider *subtitleProvider) sources() []subtitleSource {
-	return []subtitleSource{subDLSource{provider}, provider.open, provider.subsource}
+	return []subtitleSource{provider.subdl, provider.open, provider.subsource}
 }
 
 func searchSubtitleSource(ctx context.Context, source subtitleSource, item library.Item, language string) subtitleCandidateSearch {
@@ -26,25 +28,6 @@ func searchSubtitleSource(ctx context.Context, source subtitleSource, item libra
 		return subtitleCandidateSearch{Configured: true, Failed: true}
 	}
 	return subtitleCandidateSearch{Candidates: found, Configured: true}
-}
-
-type subDLSource struct{ provider *subtitleProvider }
-
-func (source subDLSource) configured() bool { return source.provider.subDLConfigured() }
-
-func (source subDLSource) candidates(ctx context.Context, item library.Item, language string) ([]subtitleDownloadCandidate, error) {
-	found, err := source.provider.searchSubDL(ctx, item, language)
-	if err != nil {
-		return nil, err
-	}
-	candidates := make([]subtitleDownloadCandidate, 0, len(found))
-	for _, candidate := range found {
-		link := candidate.URL
-		candidates = append(candidates, subtitleDownloadCandidate{Language: language, Score: candidate.Score, ReleaseMatch: candidate.ReleaseMatch, Source: "subdl", HI: candidate.HI, Download: func(ctx context.Context) ([]byte, error) {
-			return source.provider.download(ctx, link)
-		}})
-	}
-	return candidates, nil
 }
 
 func (provider *openSubtitlesProvider) candidates(ctx context.Context, item library.Item, language string) ([]subtitleDownloadCandidate, error) {

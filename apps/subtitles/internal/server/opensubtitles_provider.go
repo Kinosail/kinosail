@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -25,13 +24,12 @@ type OpenSubtitlesConfig struct {
 
 type openSubtitlesProvider struct {
 	config       OpenSubtitlesConfig
-	client       *http.Client
 	mu           sync.Mutex
 	token        string
 	sessionURL   string
 	tokenExpires time.Time
 	login        *openSubtitlesSessionFlight
-	health       *subtitleProviderHealthRegistry
+	client       *providerClient
 }
 
 type openSubtitlesSessionFlight struct {
@@ -50,14 +48,18 @@ type openSubtitlesDownload struct {
 	Link string `json:"link"`
 }
 
-func newOpenSubtitlesProvider(config OpenSubtitlesConfig) *openSubtitlesProvider {
+func newOpenSubtitlesProvider(config OpenSubtitlesConfig, health *subtitleProviderHealthRegistry) *openSubtitlesProvider {
 	if config.URL == "" {
 		config.URL = "https://api.opensubtitles.com/api/v1"
 	}
-	provider := &openSubtitlesProvider{config: config, health: newSubtitleProviderHealthRegistry()}
-	provider.client = localIntegrationHTTPClient(15 * time.Second)
-	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
-	return provider
+	return &openSubtitlesProvider{config: config, client: newProviderClient("OpenSubtitles", config.URL, "opensubtitles.com", health)}
+}
+
+func (provider *openSubtitlesProvider) name() string { return "OpenSubtitles" }
+
+func (provider *openSubtitlesProvider) checkCredentials(ctx context.Context) error {
+	_, _, err := provider.session(ctx)
+	return err
 }
 
 func (provider *openSubtitlesProvider) configured() bool {
@@ -77,7 +79,7 @@ func (provider *openSubtitlesProvider) search(ctx context.Context, item library.
 		return nil, errors.New("OpenSubtitles is not configured")
 	}
 	baseURL, token := provider.cachedSession()
-	endpoint, err := provider.endpointAt(baseURL, "subtitles")
+	endpoint, err := provider.client.endpoint(baseURL, "subtitles")
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +111,7 @@ func (provider *openSubtitlesProvider) search(ctx context.Context, item library.
 	}
 	endpoint.RawQuery = query.Encode()
 	var response openSubtitlesResponse
-	if err := provider.requestJSON(ctx, http.MethodGet, endpoint.String(), nil, token, &response); err != nil {
+	if err := provider.requestJSON(ctx, "search", http.MethodGet, endpoint.String(), nil, token, &response); err != nil {
 		return nil, err
 	}
 	if query.Get("moviehash") == "" {
@@ -134,31 +136,16 @@ func (provider *openSubtitlesProvider) download(ctx context.Context, fileID int6
 	if err != nil {
 		return nil, err
 	}
-	endpoint, err := provider.endpointAt(baseURL, "download")
+	endpoint, err := provider.client.endpoint(baseURL, "download")
 	if err != nil {
 		return nil, err
 	}
 	body, _ := json.Marshal(map[string]any{"file_id": fileID, "sub_format": "srt"})
 	var response openSubtitlesDownload
-	if err := provider.requestJSON(ctx, http.MethodPost, endpoint.String(), body, token, &response); err != nil || len(response.Link) == 0 || len(response.Link) > 2048 {
+	if err := provider.requestJSON(ctx, "download", http.MethodPost, endpoint.String(), body, token, &response); err != nil || len(response.Link) == 0 || len(response.Link) > 2048 {
 		return nil, errors.New("OpenSubtitles download failed")
 	}
-	if !provider.allowed(response.Link) {
-		return nil, errors.New("OpenSubtitles download is not trusted")
-	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, response.Link, nil)
-	if err != nil {
-		return nil, err
-	}
-	download, err := provider.client.Do(request)
-	if err != nil {
-		provider.health.observe("OpenSubtitles", nil, err)
-		return nil, err
-	}
-	defer download.Body.Close()
-	data, err := readSubtitle(download)
-	provider.health.observeFile("OpenSubtitles", download, err)
-	return data, err
+	return provider.client.file(ctx, providerCall{route: "file", method: http.MethodGet, endpoint: response.Link})
 }
 
 func (provider *openSubtitlesProvider) session(ctx context.Context) (string, string, error) {
@@ -192,21 +179,21 @@ func (provider *openSubtitlesProvider) session(ctx context.Context) (string, str
 }
 
 func (provider *openSubtitlesProvider) loginSession(ctx context.Context) (string, string, error) {
-	endpoint, err := provider.endpoint("login")
+	endpoint, err := provider.client.endpoint(provider.config.URL, "login")
 	if err != nil {
 		return "", "", err
 	}
 	body, _ := json.Marshal(map[string]string{"username": provider.config.Username, "password": provider.config.Password})
 	var login openSubtitlesLogin
-	if err := provider.requestJSON(ctx, http.MethodPost, endpoint.String(), body, "", &login); err != nil {
+	if err := provider.requestJSON(ctx, "login", http.MethodPost, endpoint.String(), body, "", &login); err != nil {
 		return "", "", err
 	}
 	if login.Status != http.StatusOK || !validSubtitleProviderCredential(login.Token) {
-		provider.health.observe("OpenSubtitles", nil, errors.New("invalid login response"))
+		provider.client.health.observe("OpenSubtitles", nil, errors.New("invalid login response"))
 		return "", "", errors.New("OpenSubtitles login failed")
 	}
 	if login.BaseURL != "" && login.BaseURL != "api.opensubtitles.com" && login.BaseURL != "vip-api.opensubtitles.com" {
-		provider.health.observe("OpenSubtitles", nil, errors.New("invalid login host"))
+		provider.client.health.observe("OpenSubtitles", nil, errors.New("invalid login host"))
 		return "", "", errors.New("OpenSubtitles login host is invalid")
 	}
 	base := provider.config.URL
@@ -225,59 +212,14 @@ func (provider *openSubtitlesProvider) cachedSession() (string, string) {
 	return provider.config.URL, ""
 }
 
-func (provider *openSubtitlesProvider) requestJSON(ctx context.Context, method, endpoint string, body []byte, token string, target any) error {
-	if !provider.allowed(endpoint) {
-		return errors.New("OpenSubtitles endpoint is not trusted")
-	}
-	if err := provider.health.before("OpenSubtitles"); err != nil {
-		return err
-	}
-	request, err := http.NewRequestWithContext(ctx, method, endpoint, bytes.NewReader(body))
-	if err != nil {
-		return err
-	}
-	request.Header.Set("Api-Key", provider.config.APIKey)
-	request.Header.Set("Accept", "application/json")
-	request.Header.Set("User-Agent", "Kinosail Subtitles v0.1")
-	if len(body) > 0 {
-		request.Header.Set("Content-Type", "application/json")
-	}
+func (provider *openSubtitlesProvider) requestJSON(ctx context.Context, route, method, endpoint string, body []byte, token string, target any) error {
+	header := http.Header{}
+	header.Set("Api-Key", provider.config.APIKey)
 	if token != "" {
-		request.Header.Set("Authorization", "Bearer "+token)
+		header.Set("Authorization", "Bearer "+token)
 	}
-	response, err := provider.client.Do(request)
-	if err != nil {
-		provider.health.observe("OpenSubtitles", nil, err)
-		return err
-	}
-	defer response.Body.Close()
-	if response.StatusCode == http.StatusUnauthorized && token != "" && provider.forgetToken(token) {
-		provider.health.observe("OpenSubtitles", nil, errors.New("session expired"))
-		return errors.New("OpenSubtitles session expired")
-	}
-	if response.StatusCode < 200 || response.StatusCode > 299 {
-		provider.health.observe("OpenSubtitles", response, errors.New("request failed"))
-		return errors.New("OpenSubtitles rejected request")
-	}
-	err = decodeExternalJSON(response.Body, 2<<20, target)
-	provider.health.observe("OpenSubtitles", response, err)
-	return err
-}
-
-func (provider *openSubtitlesProvider) endpoint(path string) (*url.URL, error) {
-	return provider.endpointAt(provider.config.URL, path)
-}
-
-func (provider *openSubtitlesProvider) endpointAt(baseURL, path string) (*url.URL, error) {
-	endpoint, err := url.Parse(strings.TrimRight(baseURL, "/") + "/" + path)
-	if err != nil || !provider.allowed(endpoint.String()) {
-		return nil, errors.New("OpenSubtitles endpoint is invalid")
-	}
-	return endpoint, nil
-}
-
-func (provider *openSubtitlesProvider) allowed(link string) bool {
-	return trustedProviderLink(provider.config.URL, link, "opensubtitles.com")
+	expired := func() bool { return token != "" && provider.forgetToken(token) }
+	return provider.client.json(ctx, providerCall{route: route, method: method, endpoint: endpoint, body: body, header: header, expired: expired}, target)
 }
 
 func (provider *openSubtitlesProvider) forgetToken(token string) bool {

@@ -24,20 +24,28 @@ type SubSourceConfig struct {
 
 type subSourceProvider struct {
 	config    SubSourceConfig
-	client    *http.Client
-	health    *subtitleProviderHealthRegistry
+	client    *providerClient
 	now       func() time.Time
 	movies    subSourceCache[subSourceMovieResponse]
 	subtitles subSourceCache[subSourceSubtitleResponse]
 }
 
-func newSubSourceProvider(config SubSourceConfig) *subSourceProvider {
+func newSubSourceProvider(config SubSourceConfig, health *subtitleProviderHealthRegistry) *subSourceProvider {
 	if config.URL == "" {
 		config.URL = "https://api.subsource.net/api/v1"
 	}
-	provider := &subSourceProvider{config: config, client: localIntegrationHTTPClient(15 * time.Second), health: newSubtitleProviderHealthRegistry(), now: time.Now}
-	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
-	return provider
+	return &subSourceProvider{config: config, client: newProviderClient("SubSource", config.URL, "", health), now: time.Now}
+}
+
+func (provider *subSourceProvider) name() string { return "SubSource" }
+
+func (provider *subSourceProvider) checkCredentials(ctx context.Context) error {
+	endpoint, err := provider.endpoint("languages")
+	if err != nil {
+		return err
+	}
+	var response map[string]any
+	return provider.requestJSON(ctx, "languages", endpoint.String(), &response)
 }
 
 func (provider *subSourceProvider) configured() bool {
@@ -72,7 +80,7 @@ func (provider *subSourceProvider) search(ctx context.Context, item library.Item
 		query.Set("q", title)
 	}
 	endpoint.RawQuery = query.Encode()
-	movies, err := cachedSubSourceJSON(ctx, provider, &provider.movies, endpoint.String())
+	movies, err := cachedSubSourceJSON(ctx, provider, &provider.movies, "movies", endpoint.String())
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +98,7 @@ func (provider *subSourceProvider) search(ctx context.Context, item library.Item
 	query.Set("movieId", strconv.FormatInt(movie.MovieID, 10))
 	query.Set("sort", "rating")
 	endpoint.RawQuery = query.Encode()
-	subtitles, err := cachedSubSourceJSON(ctx, provider, &provider.subtitles, endpoint.String())
+	subtitles, err := cachedSubSourceJSON(ctx, provider, &provider.subtitles, "subtitles", endpoint.String())
 	if err != nil {
 		return nil, err
 	}
@@ -98,30 +106,11 @@ func (provider *subSourceProvider) search(ctx context.Context, item library.Item
 }
 
 func (provider *subSourceProvider) download(ctx context.Context, candidate subSourceCandidate, item library.Item) ([]byte, error) {
-	if err := provider.health.before("SubSource"); err != nil {
-		return nil, err
-	}
 	endpoint, err := provider.endpoint("subtitles/" + strconv.FormatInt(candidate.ID, 10) + "/download")
 	if err != nil {
 		return nil, err
 	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	provider.headers(request)
-	response, err := provider.client.Do(request)
-	if err != nil {
-		provider.health.observe("SubSource", nil, err)
-		return nil, err
-	}
-	defer response.Body.Close()
-	data, err := readSubtitle(response)
-	availabilityErr := err
-	if response.StatusCode == http.StatusOK && errors.Is(err, errSubtitleDownloadTooLarge) {
-		availabilityErr = nil
-	}
-	provider.health.observeFile("SubSource", response, availabilityErr)
+	data, err := provider.client.file(ctx, providerCall{route: "file", method: http.MethodGet, endpoint: endpoint.String(), header: provider.header()})
 	if err != nil {
 		return nil, err
 	}
@@ -161,47 +150,16 @@ func readSubSourceArchive(archive *zip.Reader, item library.Item) ([]byte, error
 	return subtitle, nil
 }
 
-func (provider *subSourceProvider) requestJSON(ctx context.Context, endpoint string, target any) error {
-	if !provider.allowed(endpoint) {
-		return errors.New("SubSource endpoint is not trusted")
-	}
-	if err := provider.health.before("SubSource"); err != nil {
-		return err
-	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
-	if err != nil {
-		return err
-	}
-	provider.headers(request)
-	response, err := provider.client.Do(request)
-	if err != nil {
-		provider.health.observe("SubSource", nil, err)
-		return err
-	}
-	defer response.Body.Close()
-	if response.StatusCode < 200 || response.StatusCode > 299 {
-		provider.health.observe("SubSource", response, errors.New("request failed"))
-		return errors.New("SubSource rejected request")
-	}
-	err = decodeExternalJSON(response.Body, 2<<20, target)
-	provider.health.observe("SubSource", response, err)
-	return err
+func (provider *subSourceProvider) requestJSON(ctx context.Context, route, endpoint string, target any) error {
+	return provider.client.json(ctx, providerCall{route: route, method: http.MethodGet, endpoint: endpoint, header: provider.header()}, target)
 }
 
-func (provider *subSourceProvider) headers(request *http.Request) {
-	request.Header.Set("Accept", "application/json")
-	request.Header.Set("User-Agent", "Kinosail Subtitles v0.1")
-	request.Header.Set("X-API-Key", provider.config.APIKey)
+func (provider *subSourceProvider) header() http.Header {
+	header := http.Header{}
+	header.Set("X-API-Key", provider.config.APIKey)
+	return header
 }
 
 func (provider *subSourceProvider) endpoint(path string) (*url.URL, error) {
-	endpoint, err := url.Parse(strings.TrimRight(provider.config.URL, "/") + "/" + path)
-	if err != nil || !provider.allowed(endpoint.String()) {
-		return nil, errors.New("SubSource endpoint is invalid")
-	}
-	return endpoint, nil
-}
-
-func (provider *subSourceProvider) allowed(link string) bool {
-	return trustedProviderLink(provider.config.URL, link, "")
+	return provider.client.endpoint(provider.config.URL, path)
 }

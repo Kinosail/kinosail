@@ -17,7 +17,7 @@ func TestSubtitleProviderResolvesRelativeDownloadLinks(t *testing.T) {
 	} {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			provider := subtitleProvider{config: SubtitleConfig{URL: test.base}}
+			provider := newSubDLProvider(test.base, "", nil)
 			if got := provider.resolve(test.link); got != test.want {
 				t.Fatalf("resolved link = %q, want %q", got, test.want)
 			}
@@ -27,7 +27,7 @@ func TestSubtitleProviderResolvesRelativeDownloadLinks(t *testing.T) {
 
 func TestSubtitleProviderAllowsOnlyConfiguredOrSubDLOrigins(t *testing.T) {
 	t.Parallel()
-	provider := subtitleProvider{config: SubtitleConfig{URL: "https://api.subdl.com/api/v1"}}
+	provider := newSubDLProvider("https://api.subdl.com/api/v1", "", nil)
 	for link, allowed := range map[string]bool{
 		"%":                               false,
 		"http://api.subdl.com/file.srt":   false,
@@ -35,12 +35,12 @@ func TestSubtitleProviderAllowsOnlyConfiguredOrSubDLOrigins(t *testing.T) {
 		"https://dl.subdl.com/file.srt":   true,
 		"https://subdl.com.evil/file.srt": false,
 	} {
-		if got := provider.allowed(link); got != allowed {
+		if got := provider.client.allowed(link); got != allowed {
 			t.Fatalf("link %q allowed = %v", link, got)
 		}
 	}
-	provider.config.URL = "://invalid"
-	if provider.allowed("https://dl.subdl.com/file.srt") {
+	provider = newSubDLProvider("://invalid", "", nil)
+	if provider.client.allowed("https://dl.subdl.com/file.srt") {
 		t.Fatal("invalid configured origin allowed a subtitle link")
 	}
 }

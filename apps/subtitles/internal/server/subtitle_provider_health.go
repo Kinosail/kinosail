@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/url"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -222,36 +221,21 @@ func subtitleSafeProviderError(status int) string {
 }
 
 func (provider *subtitleProvider) healthViews() []subtitleProviderHealth {
-	provider = provider.active()
-	return provider.health.views(map[string]bool{"SubDL": provider.subDLConfigured(), "OpenSubtitles": provider.open.configured(), "SubSource": provider.subsource.configured()})
+	configured := map[string]bool{}
+	for _, source := range provider.active().sources() {
+		configured[source.name()] = source.configured()
+	}
+	return provider.health.views(configured)
 }
 
 func (provider *subtitleProvider) testCredentials(ctx context.Context) (int, int) {
-	provider = provider.active()
 	attempted, connected := 0, 0
-	if provider.subDLConfigured() {
-		attempted++
-		endpoint, _ := url.Parse(strings.TrimRight(provider.config.URL, "/"))
-		endpoint.Path = strings.TrimSuffix(endpoint.Path, "/api/v1") + "/api/v2/me"
-		query := endpoint.Query()
-		query.Set("api_key", provider.config.APIKey)
-		endpoint.RawQuery = query.Encode()
-		var response map[string]any
-		if provider.json(ctx, endpoint.String(), &response) == nil {
-			connected++
+	for _, source := range provider.active().sources() {
+		if !source.configured() {
+			continue
 		}
-	}
-	if provider.open.configured() {
 		attempted++
-		if _, _, err := provider.open.session(ctx); err == nil {
-			connected++
-		}
-	}
-	if provider.subsource.configured() {
-		attempted++
-		endpoint, err := provider.subsource.endpoint("languages")
-		var response map[string]any
-		if err == nil && provider.subsource.requestJSON(ctx, endpoint.String(), &response) == nil {
+		if source.checkCredentials(ctx) == nil {
 			connected++
 		}
 	}

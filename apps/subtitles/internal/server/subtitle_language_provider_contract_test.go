@@ -22,7 +22,7 @@ func TestCriticalVariantsUseExactOpenSubtitlesCodes(t *testing.T) {
 		_ = json.NewEncoder(writer).Encode(openSubtitlesResponse{})
 	}))
 	t.Cleanup(remote.Close)
-	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: remote.URL, APIKey: "key", Username: "owner", Password: "password"})
+	provider := newOpenSubtitlesProvider(OpenSubtitlesConfig{URL: remote.URL, APIKey: "key", Username: "owner", Password: "password"}, newSubtitleProviderHealthRegistry())
 	item := library.Item{Path: "/media/Movie.mkv", Title: "Movie"}
 	for _, test := range tests {
 		before := len(seen)
@@ -52,7 +52,7 @@ func TestCriticalVariantsUseOnlyExactSubDLAndSubSourceCodes(t *testing.T) {
 	t.Cleanup(subDLRemote.Close)
 	subDL := newSubtitleProvider(SubtitleConfig{URL: subDLRemote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), nil, nil, "")
 	for index, test := range []struct{ tag, code string }{{"pt-BR", "BR_PT"}, {"zh-Hant", "ZH_BG"}} {
-		if _, err := subDL.searchSubDL(context.Background(), item, test.tag); err != nil {
+		if _, err := subDL.subdl.search(context.Background(), item, test.tag); err != nil {
 			t.Errorf("SubDL search %s: %v", test.tag, err)
 		} else if len(subDLSeen) != index+1 || subDLSeen[index] != test.code {
 			t.Errorf("SubDL search %s sent %q; want %q", test.tag, subDLSeen[index:], test.code)
@@ -60,7 +60,7 @@ func TestCriticalVariantsUseOnlyExactSubDLAndSubSourceCodes(t *testing.T) {
 	}
 	for _, tag := range []string{"pt-PT", "zh-Hans", "es-419", "sr-Latn"} {
 		before := len(subDLSeen)
-		if _, err := subDL.searchSubDL(context.Background(), item, tag); err == nil || len(subDLSeen) != before {
+		if _, err := subDL.subdl.search(context.Background(), item, tag); err == nil || len(subDLSeen) != before {
 			t.Errorf("unsupported SubDL %s: error=%v calls=%d", tag, err, len(subDLSeen)-before)
 		}
 	}
@@ -81,7 +81,7 @@ func TestCriticalVariantsUseOnlyExactSubDLAndSubSourceCodes(t *testing.T) {
 		}
 	}))
 	t.Cleanup(subSourceRemote.Close)
-	subSource := newSubSourceProvider(SubSourceConfig{URL: subSourceRemote.URL, APIKey: "key", PersonalUse: true})
+	subSource := newSubSourceProvider(SubSourceConfig{URL: subSourceRemote.URL, APIKey: "key", PersonalUse: true}, newSubtitleProviderHealthRegistry())
 	if _, err := subSource.search(context.Background(), item, "pt-BR"); err != nil {
 		t.Fatal(err)
 	}

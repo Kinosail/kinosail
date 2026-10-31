@@ -30,64 +30,6 @@ func subtitleProviderRedirect(allowed func(string) bool) func(*http.Request, []*
 	}
 }
 
-func (provider *subtitleProvider) json(ctx context.Context, endpoint string, target any) error {
-	if err := provider.health.before("SubDL"); err != nil {
-		return err
-	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
-	if err != nil {
-		return err
-	}
-	request.Header.Set("User-Agent", "Kinosail Subtitles/0.1")
-	request.Header.Set("Content-Type", "application/json")
-	response, err := provider.client.Do(request)
-	if err != nil {
-		provider.health.observe("SubDL", nil, err)
-		return err
-	}
-	defer response.Body.Close()
-	if response.StatusCode < 200 || response.StatusCode > 299 {
-		provider.health.observe("SubDL", response, errors.New("request failed"))
-		return errors.New("subtitle provider rejected request")
-	}
-	err = decodeExternalJSON(response.Body, 1<<20, target)
-	provider.health.observe("SubDL", response, err)
-	return err
-}
-
-func (provider *subtitleProvider) download(ctx context.Context, link string) ([]byte, error) {
-	if err := provider.health.before("SubDL"); err != nil {
-		return nil, err
-	}
-	link = provider.resolve(link)
-	if !provider.allowed(link) {
-		return nil, errors.New("subtitle download link is not trusted")
-	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, link, nil)
-	if err != nil {
-		return nil, err
-	}
-	response, err := provider.client.Do(request)
-	if err != nil {
-		provider.health.observe("SubDL", nil, err)
-		return nil, err
-	}
-	defer response.Body.Close()
-	data, err := readSubtitle(response)
-	if err != nil {
-		provider.health.observeFile("SubDL", response, err)
-		return nil, err
-	}
-	provider.health.observeFile("SubDL", response, nil)
-	if archive, zipErr := zip.NewReader(bytes.NewReader(data), int64(len(data))); zipErr == nil {
-		return readArchivedSubtitle(ctx, archive)
-	}
-	if !validSubtitlePayload(data) {
-		return nil, errors.New("subtitle download is invalid")
-	}
-	return data, nil
-}
-
 func readSubtitle(response *http.Response) ([]byte, error) {
 	data, err := io.ReadAll(io.LimitReader(response.Body, (4<<20)+1))
 	if err != nil || response.StatusCode != http.StatusOK {
@@ -160,24 +102,4 @@ func validSubtitlePayload(data []byte) bool {
 		return bytes.Contains(decoded, []byte("-->"))
 	}
 	return len(data) > 0 && len(data) <= 4<<20 && !bytes.ContainsRune(data, 0) && bytes.Contains(data, []byte("-->"))
-}
-
-func (provider *subtitleProvider) allowed(link string) bool {
-	return trustedProviderLink(provider.config.URL, link, "subdl.com")
-}
-
-func (provider *subtitleProvider) resolve(link string) string {
-	download, err := url.Parse(link)
-	if err != nil || download.IsAbs() {
-		return link
-	}
-	base, err := url.Parse(provider.config.URL)
-	if err != nil {
-		return link
-	}
-	base.Path, base.RawQuery = "/", ""
-	if strings.HasSuffix(strings.ToLower(base.Hostname()), "subdl.com") {
-		base.Scheme, base.Host = "https", "dl.subdl.com"
-	}
-	return base.ResolveReference(download).String()
 }

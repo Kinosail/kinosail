@@ -32,31 +32,31 @@ func TestSubtitleProviderDownloadAndURLSafetyBranches(t *testing.T) {
 		return newSubtitleProvider(SubtitleConfig{URL: remote.URL + "/api/v1", APIKey: "key"}, t.TempDir(), t.TempDir(), nil, nil, "")
 	}
 	provider := newProvider()
-	if data, err := provider.download(t.Context(), "/ok"); err != nil || !bytes.Equal(data, valid) {
+	if data, err := provider.subdl.download(t.Context(), "/ok"); err != nil || !bytes.Equal(data, valid) {
 		t.Fatalf("plain download = %q, %v", data, err)
 	}
-	if _, err := provider.download(t.Context(), "https://untrusted.example/subtitle.srt"); err == nil {
+	if _, err := provider.subdl.download(t.Context(), "https://untrusted.example/subtitle.srt"); err == nil {
 		t.Fatal("untrusted download was accepted")
 	}
-	if _, err := newProvider().download(t.Context(), "/invalid"); err == nil {
+	if _, err := newProvider().subdl.download(t.Context(), "/invalid"); err == nil {
 		t.Fatal("invalid subtitle payload was accepted")
 	}
-	if _, err := newProvider().download(t.Context(), "/unavailable"); err == nil {
+	if _, err := newProvider().subdl.download(t.Context(), "/unavailable"); err == nil {
 		t.Fatal("failed subtitle response was accepted")
 	}
 	var response map[string]any
-	if err := newProvider().json(t.Context(), remote.URL+"/redirect", &response); err == nil {
+	if err := newProvider().subdl.client.json(t.Context(), providerCall{route: "test", method: http.MethodGet, endpoint: remote.URL + "/redirect"}, &response); err == nil {
 		t.Fatal("untrusted provider redirect was accepted")
 	}
 
-	if provider.resolve("://bad") != "://bad" || (&subtitleProvider{config: SubtitleConfig{URL: "://bad"}}).resolve("file.srt") != "file.srt" {
+	if provider.subdl.resolve("://bad") != "://bad" || newSubDLProvider("://bad", "", nil).resolve("file.srt") != "file.srt" {
 		t.Fatal("invalid URL resolution changed the input")
 	}
-	public := &subtitleProvider{config: SubtitleConfig{URL: "https://api.subdl.com/api/v1"}}
+	public := newSubDLProvider("https://api.subdl.com/api/v1", "", nil)
 	if resolved := public.resolve("downloads/file.srt"); resolved != "https://dl.subdl.com/downloads/file.srt" {
 		t.Fatalf("SubDL relative URL = %q", resolved)
 	}
-	if public.allowed("http://api.subdl.com/file") || !public.allowed("https://dl.subdl.com/file") || public.allowed("://bad") {
+	if public.client.allowed("http://api.subdl.com/file") || !public.client.allowed("https://dl.subdl.com/file") || public.client.allowed("://bad") {
 		t.Fatal("provider host policy accepted an unsafe URL")
 	}
 }
