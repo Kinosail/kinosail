@@ -20,7 +20,7 @@ Configure at least one provider for downloads. Keep credentials in Owner Setting
 1. Create your own account at the provider.
 2. Obtain its API key. For OpenSubtitles.com, create an API consumer in your account and use the account username/password along with that application key.
 3. Follow **Enter key in Kinosail** from the setup page, or open the provider section in Settings.
-4. Save the credentials and restart if requested.
+4. Save the credentials. They take effect immediately; no restart is needed.
 5. Fetch one wanted subtitle. A configured key does not guarantee that a match exists or that the account has quota remaining.
 
 Kinosail checks the configured providers and ranks candidates against the video, release, language, and subtitle role. Existing local and embedded text options are considered first.

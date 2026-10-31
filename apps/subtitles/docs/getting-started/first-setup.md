@@ -11,11 +11,15 @@ Open the local address from [installation]({{ '/getting-started/install/' | rela
 
 ## Configure the subtitle plan
 
-1. Follow **Connect a subtitle provider**. One provider is sufficient; use the linked account and key instructions.
-2. Enter credentials in Owner Settings. Restart when prompted and confirm that the provider is configured.
-3. Choose the primary language and subtitle role: standard dialogue or SDH/captions. Add more preferred languages and set their order in **Settings → Languages** after setup.
-4. Review **Choose where to save subtitle files**. Add folders inside the media mount, such as `Movies` or `Shows`.
-5. Choose a safety-scan schedule and save the plan.
+1. Follow **Connect a subtitle provider**. One provider is enough. Use the linked account and key instructions.
+2. Enter the credentials in Owner Settings. They take effect immediately. Check that the provider shows **Connected** or **Not tested yet** on the Overview.
+3. Review the defaults. They suit most households, so you can usually keep them:
+   - Languages: English plus the language of your browser at setup. Change the list and its order in **Settings → Languages**.
+   - Subtitle role: standard dialogue. Kinosail falls back to SDH/captions when no standard subtitle is found.
+   - Folders: the whole media mount. Add specific folders, such as `Movies` or `Shows`, only when you want to limit the scan.
+   - Schedule: new media is found automatically, with a safety scan every 10 minutes.
+   - Existing subtitle files that you or another app created are never replaced.
+4. Select **Finish**.
 
 Deployment-managed settings are read-only. Change the corresponding environment or YAML value when the interface says it is managed.
 

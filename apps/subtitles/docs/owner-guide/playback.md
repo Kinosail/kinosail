@@ -13,7 +13,7 @@ The dashboard checks coverage in every selected language. Existing embedded text
 
 ## Choose playback tracks
 
-**Playback subtitle choices** defaults to **Show every available track**. Select **Show preferred languages only** to show one regular track per selected language in the subtitle menu. **Off** remains available. If cleanup is confirmed with **Keep** for forced files, forced tracks remain in the limited menu only for selected languages. This setting hides choices; it does not rename or delete files.
+**Playback subtitle choices** defaults to **Show preferred languages only**: the subtitle menu shows one regular track per selected language. Select **Show every available track** to list every track. **Off** remains available. If cleanup is confirmed with **Keep** for forced files, forced tracks remain in the limited menu only for selected languages. This setting hides choices; it does not rename or delete files.
 
 ## Hide unwanted subtitle files
 
