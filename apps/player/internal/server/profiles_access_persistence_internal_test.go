@@ -61,15 +61,13 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) {
 		t.Fatalf("requests inside the retry window wrote state: %v", attempts)
 	}
 	failing = false
-	for file := range store.accessRetry {
-		store.accessRetry[file] = now - 1
-	}
+	store.accessState.ExpireRetries(now - 1)
 	if _, ok := store.access(accessStateRequest(t, "active-token")); !ok || attempts["sessions.json"] != 2 || attempts["api_keys.json"] != 1 {
 		t.Fatalf("request retried state writes: ok=%v attempts=%v", ok, attempts)
 	}
 	store.flushAccessState(t.Context())
-	if attempts["sessions.json"] != 3 || attempts["api_keys.json"] != 2 || len(store.accessRetry) != 0 {
-		t.Fatalf("retry attempts=%v pending=%v", attempts, store.accessRetry)
+	if attempts["sessions.json"] != 3 || attempts["api_keys.json"] != 2 || store.accessState.Pending() != 0 {
+		t.Fatalf("retry attempts=%v pending=%d", attempts, store.accessState.Pending())
 	}
 	if strings.Contains(persisted["sessions.json"], sessionKey("expired-token")) || strings.Contains(persisted["sessions.json"], sessionKey("stale-public-token")) || persisted["api_keys.json"] != "{}" {
 		t.Fatalf("retried deletions were not durable: %v", persisted)

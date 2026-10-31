@@ -24,13 +24,13 @@ func TestManagementIdentityRequiresBoundSecuredRecentlyAuthenticatedOwner(t *tes
 	request := httptest.NewRequestWithContext(t.Context(), "POST", "/settings", nil)
 	request.AddCookie(sessionCookie(token))
 	auth := &authentication{profiles: store}
-	if !auth.managementIdentityAllowed(tokenAccess{profile: profile}, request, profile.ID) {
+	if !auth.managementIdentityAllowed(tokenAccess{Profile: profile}, request, profile.ID) {
 		t.Fatal("authorized management owner rejected")
 	}
 	for _, kind := range []string{"binding", "viewer", "api key", "unsecured", "stale"} {
 		t.Run(kind, func(t *testing.T) {
 			candidate, bound := managementIdentityVariant(kind, profile, store, token)
-			if auth.managementIdentityAllowed(tokenAccess{profile: candidate}, request, bound) {
+			if auth.managementIdentityAllowed(tokenAccess{Profile: candidate}, request, bound) {
 				t.Fatalf("%s identity authorized", kind)
 			}
 		})

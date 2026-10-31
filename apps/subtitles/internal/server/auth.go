@@ -91,7 +91,7 @@ func (auth *authentication) redirectToSignIn(writer http.ResponseWriter, request
 }
 
 func (auth *authentication) viewerAccess(access tokenAccess, request *http.Request, matched string) identitycore.Denial {
-	profile := access.profile
+	profile := access.Profile
 	input := identitycore.AccessInput{
 		EnrollmentRoute: mfaEnrollmentRoute(matched), Secured: profile.Secured(), MFARequired: auth.settings.requireMFA(), LocalOwner: profile.ID == "local-owner",
 		APIKeyAllowed: profileAllowsAPI(profile, matched), ScheduleAllowed: profile.Allowed(publicInternetRequest(request), time.Now()), RemoteRouteAllowed: publicViewerRouteAllowed(matched),
@@ -135,7 +135,7 @@ func (auth *authentication) identity(request *http.Request) (tokenAccess, bool) 
 		return access, true
 	}
 	open := !auth.required && !auth.profiles.hasProfiles()
-	return tokenAccess{profile: viewerProfile{ID: "local-owner", Name: "Owner", Owner: true}}, open
+	return tokenAccess{Profile: viewerProfile{ID: "local-owner", Name: "Owner", Owner: true}}, open
 }
 
 func (auth *authentication) signInPath() string {
@@ -203,7 +203,7 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 	if !found {
 		return false
 	}
-	profile := access.profile
+	profile := access.Profile
 	if bound := owneraccess.ProfileID(request); bound != "" && !auth.managementIdentityAllowed(access, request, bound) {
 		if authenticationErrorRequest(request) {
 			localizedError(writer, request, "sign in as the Owner paired to this device using two-step sign-in", http.StatusForbidden)
@@ -224,6 +224,6 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 }
 
 func (auth *authentication) managementIdentityAllowed(access tokenAccess, request *http.Request, bound string) bool {
-	profile := access.profile
+	profile := access.Profile
 	return profile.ID == bound && profile.Owner && !profile.APIKey && profile.Secured() && !auth.profiles.accessPublic(request, access) && auth.profiles.accessRecentlyAuthenticated(request, access, 8*time.Hour)
 }
