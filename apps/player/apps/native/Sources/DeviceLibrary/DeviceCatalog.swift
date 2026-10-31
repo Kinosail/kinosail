@@ -11,6 +11,7 @@ actor DeviceCatalog {
     private var items: [String: DeviceItem] = [:]
     private var episodes: [String: (loaded: Date, items: [DeviceItem])] = [:]
     private var activity: (loaded: Date, items: [DeviceItem])?
+    private var people: [String: (refs: [SourceRef], portrait: (item: String, index: Int)?)] = [:]
     private let index: DeviceIndexStore
 
     init(index: DeviceIndexStore) {
@@ -103,8 +104,31 @@ actor DeviceCatalog {
         item.id = identifier
         item.versions = versions.isEmpty ? [item.ref] : versions
         items[id] = item
+        remember(item)
         await index.store([item])
         return item
+    }
+
+    func credits(_ name: String) async throws -> (items: [DeviceItem], image: String) {
+        guard let person = people[name], !person.refs.isEmpty else { throw DeviceFailure.notFound }
+        _ = try await library()
+        var rows: [DeviceItem] = []
+        for ref in person.refs {
+            guard let client = clients[ref.source] else { continue }
+            rows += try await client.credits(person: ref.item)
+        }
+        return (merge(rows.map(enrich)), person.portrait.map { "/person/\($0.item)/\($0.index)" } ?? "")
+    }
+
+    private func remember(_ item: DeviceItem) {
+        for (index, person) in item.cast.enumerated() {
+            guard let id = person.id else { continue }
+            var entry = people[person.name] ?? (refs: [], portrait: nil)
+            let ref = SourceRef(source: item.ref.source, item: id)
+            if !entry.refs.contains(ref) { entry.refs.append(ref) }
+            if entry.portrait == nil, person.image != nil { entry.portrait = (item.id, index) }
+            people[person.name] = entry
+        }
     }
 
     func client(for ref: SourceRef) throws -> MediaSourceClient {

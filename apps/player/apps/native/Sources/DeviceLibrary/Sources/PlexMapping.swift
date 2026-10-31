@@ -47,7 +47,7 @@ enum PlexMapping {
         item.cast = ((raw["Role"] as? [[String: Any]]) ?? []).prefix(24).compactMap { person in
             let name = SourceHTTP.text(person["tag"], max: 256)
             guard !name.isEmpty else { return nil }
-            return DevicePerson(name: name, role: SourceHTTP.text(person["role"], max: 256), image: portrait(person["thumb"]).map { SourceRef(source: source, item: $0) })
+            return DevicePerson(name: name, role: SourceHTTP.text(person["role"], max: 256), image: portrait(person["thumb"]).map { SourceRef(source: source, item: $0) }, id: SourceHTTP.identifier(person["id"]))
         }
         return item
     }

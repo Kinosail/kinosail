@@ -10,6 +10,7 @@ struct DevicePerson: Codable, Hashable, Sendable {
     let name: String
     let role: String
     let image: SourceRef?
+    var id: String?
 }
 
 struct DeviceUserState: Codable, Hashable, Sendable {
@@ -138,6 +139,7 @@ protocol MediaSourceClient: Sendable {
     func playback(_ id: String, capabilities: DeviceCapabilities, start: Double) async throws -> DevicePlaybackInfo
     func report(_ id: String, seconds: Double, watched: Bool, event: DeviceProgressEvent, session: String) async throws
     func setFavorite(_ id: String, favorite: Bool) async throws
+    func credits(person: String) async throws -> [DeviceItem]
     func setPosition(_ id: String, seconds: Double, watched: Bool) async throws
 }
 

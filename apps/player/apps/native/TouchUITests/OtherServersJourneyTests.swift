@@ -33,6 +33,7 @@ final class OtherServersJourneyTests: XCTestCase {
         title("Sintel", in: app).tap()
         try play(app, record: "j8 converted playback")
         app.navigationBars.buttons.firstMatch.tap()
+        try openActor(app, from: "Sintel", record: "j8a actor")
 
         tourTab("Shows", in: app).tap()
         let show = title("Pioneer One", in: app)

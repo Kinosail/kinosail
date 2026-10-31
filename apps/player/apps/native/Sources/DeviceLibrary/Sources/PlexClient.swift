@@ -61,6 +61,15 @@ struct PlexClient: MediaSourceClient {
         return items
     }
 
+    func credits(person: String) async throws -> [DeviceItem] {
+        guard let id = SourceHTTP.identifier(person) else { throw DeviceFailure.notFound }
+        var items: [DeviceItem] = []
+        for section in try await sections() {
+            items += try await paged("/library/sections/\(section.key)/all", ["actor": id, "includeGuids": "1"])
+        }
+        return items
+    }
+
     func episodes(series: String) async throws -> [DeviceItem] {
         guard let id = SourceHTTP.identifier(series) else { throw DeviceFailure.notFound }
         return try await paged("/library/metadata/\(id)/allLeaves", ["includeGuids": "1"])

@@ -48,7 +48,7 @@ enum JellyfinMapping {
             let name = SourceHTTP.text(person["Name"], max: 256)
             guard !name.isEmpty else { return nil }
             let image = person["PrimaryImageTag"] != nil ? SourceHTTP.identifier(person["Id"]).map { SourceRef(source: source, item: $0) } : nil
-            return DevicePerson(name: name, role: SourceHTTP.text(person["Role"], max: 256), image: image)
+            return DevicePerson(name: name, role: SourceHTTP.text(person["Role"], max: 256), image: image, id: SourceHTTP.identifier(person["Id"]))
         }
         if let sources = raw["MediaSources"] as? [[String: Any]], let first = sources.first {
             item.size = (first["Size"] as? Int64) ?? Int64(first["Size"] as? Int ?? 0)

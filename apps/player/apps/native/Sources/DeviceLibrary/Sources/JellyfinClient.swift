@@ -55,6 +55,12 @@ struct JellyfinClient: MediaSourceClient {
             .compactMap { JellyfinMapping.item($0, source: account.id) }
     }
 
+    func credits(person: String) async throws -> [DeviceItem] {
+        guard let id = SourceHTTP.identifier(person) else { throw DeviceFailure.notFound }
+        return try await items("/Users/\(user)/Items", ["Recursive": "true", "IncludeItemTypes": "Movie,Series", "PersonIds": id, "SortBy": "SortName"])
+            .compactMap { JellyfinMapping.item($0, source: account.id) }
+    }
+
     func episodes(series: String) async throws -> [DeviceItem] {
         try await items("/Shows/\(SourceHTTP.identifier(series) ?? "")/Episodes", ["UserId": user])
             .compactMap { JellyfinMapping.item($0, source: account.id) }

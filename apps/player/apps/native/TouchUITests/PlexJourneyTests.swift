@@ -50,6 +50,7 @@ final class PlexJourneyTests: XCTestCase {
         title("Tears of Steel", in: app).tap()
         try play(app, record: "p7 converted playback", conversionOn: plex)
         app.navigationBars.buttons.firstMatch.tap()
+        try openActor(app, from: "Sintel", record: "p7a actor")
 
         tourTab("Shows", in: app).tap()
         let show = title("Pioneer One", in: app)

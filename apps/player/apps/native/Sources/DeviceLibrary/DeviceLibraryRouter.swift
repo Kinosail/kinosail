@@ -59,7 +59,8 @@ struct DeviceLibraryRouter: DeviceRequestHandler {
         case (_, 3, "items"): return try await itemAction(method, id: tail[1], action: tail[2], request: request)
         case ("PUT", 4, "items") where tail[2] == "progress" && tail[3] == "sync":
             return try await DeviceLibraryPlayback(catalog: catalog, state: state, streams: streams).sync(id(tail[1]), request: request)
-        case ("GET", 1, "collections"), ("GET", 1, "albums"), ("GET", 1, "actor"), ("GET", 1, "remote-players"):
+        case ("GET", 1, "actor"): return try await DeviceLibraryActor(catalog: catalog).page(request)
+        case ("GET", 1, "collections"), ("GET", 1, "albums"), ("GET", 1, "remote-players"):
             throw DeviceFailure.unsupported
         default: throw DeviceFailure.notFound
         }

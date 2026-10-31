@@ -579,3 +579,12 @@ Branch `mikeo/mark-watched` at `29d5d371`. Xcode 27.1, the tvOS 27.0 "KinoQA 108
 | `episode-more-menu.png` | `8aff2ff5ec22f59eec40b92349a764618854ee76517348b61ae9297914865ea9` |
 
 Not verified here: the iPhone and iPad menus in a UI test (build only), the Plex, Jellyfin and Emby paths against live servers, and Apple TV hardware.
+
+## Installed on Owner devices — 2026-10-31
+
+| Build | Revision | Devices | Method |
+| --- | --- | --- | --- |
+| 5025 | `9aa88b28` | Living Room Apple TV 4K, iPhone 16 Pro Max | GUI-session launchd one-shot (`deploy-once.py`), installs confirmed by `devicectl` |
+| 5051 | `d26339a4` | Living Room Apple TV 4K, iPhone 16 Pro Max | Same |
+
+Installation is not a feature check on the devices.
