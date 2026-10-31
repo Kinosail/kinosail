@@ -527,6 +527,17 @@ Not verified here: frame time on Apple TV HD (A8) and Apple TV 4K hardware. That
 | `after-1080p-slow.mp4` | `df6cd2854f116eee259e7b2aee156b1e892807128a437be23da6695552b46bf2` |
 | `after-1080p-reducemotion.mp4` | `e29f2cdf91c13826e3a0d8ec706c9e424d7f1673379d8c7ec0dd6b5ff04694b5` |
 
+## Apple TV display matching — 2026-10-31
+
+Branch `mikeo/tvos-match-content` at `83e1d1e2`. Xcode 27.1, the tvOS 27.0 "KinoQA 1080p" simulator, the loopback navigation fixture and a seeded session, as in the launch check above.
+
+- `./scripts/build-apple.sh ios` succeeded.
+- `Kinosail-tvOSTests/DisplayMatchingTests` passed (5 tests): criteria are applied and playback waits for the mode switch; Match Content off or no criteria leaves the display alone; a switch that never ends stops waiting after the timeout; closing the player resets the display.
+- `RemotePlaybackCrashTests/testHeldRemoteInputAndRepeatedPlaybackRemainUsable` passed. The simulator log recorded `operation=display-match outcome=disabled` and `operation=playback-start outcome=ready` three times each: the simulator has Match Content off, so start time is unchanged.
+- The Server already writes `FRAME-RATE` and `VIDEO-RANGE` in each HLS variant (`packages/playback/hls_playlist.go`), which AVFoundation reads as the stream's display criteria.
+
+Not verified here: the frame-rate and SDR/HDR switch on Apple TV hardware connected to a TV with Match Content on. That needs a physical-device check.
+
 ## Apple TV detail actions — 2026-10-31
 
 Branch `mikeo/tvos-detail-actions` at `9d4eb82a`; baseline `main` with only the new test at `caff8d3b`. Xcode 27.1, the tvOS 27.0 "KinoQA 1080p" simulator, the loopback navigation fixture and a seeded session, as in the launch check above.

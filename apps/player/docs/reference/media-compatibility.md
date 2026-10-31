@@ -54,7 +54,7 @@ The playback decision can select:
 
 1. `direct` when the container, codecs, size, bitrate, HDR mode, subtitles, and policy are compatible;
 2. `remux` when the container is unsupported but the client accepts a remux;
-3. `audio-transcode` when only the audio codec needs conversion;
+3. `audio-transcode` when only the audio codec needs conversion. Surround sources such as DTS, DTS-HD, and TrueHD become 5.1 E-AC-3 at 640 kb/s when the client plays E-AC-3 and reports at least six output channels; other clients, and streams with Dialogue boost or Night mode, get stereo AAC;
 4. `transcode` when video, size, bitrate, HDR, or subtitle burn-in needs conversion; or
 5. `denied` when the Profile cannot play or cannot use transcoding.
 

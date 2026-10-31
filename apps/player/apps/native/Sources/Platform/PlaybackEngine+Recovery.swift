@@ -97,6 +97,7 @@ extension PlaybackEngine {
             try check(attempt, installation: installation)
             throw failure ?? nextItem.error ?? ClientError.unavailable
         }
+        try await matchDisplay(for: item, playerItem: nextItem, attempt: attempt, installation: installation)
         let (mode, reason) = usingCompatibility ? (source?.compatible?.mode ?? "unknown", source?.compatible?.reason ?? "unknown") : ("direct", "compatible")
         recoveryLog.info("operation=playback-install outcome=ready compatible=\(self.usingCompatibility, privacy: .public) mode=\(mode, privacy: .public) reason=\(reason, privacy: .public) live=\(nextItem.duration.isIndefinite, privacy: .public) session=\(attempt.uuidString, privacy: .public)")
         let actual = nextItem.duration.seconds
