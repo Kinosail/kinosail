@@ -57,6 +57,8 @@ final class RemoteShowActionsTests: RemoteTestCase {
         remote.press(.select)
         XCTAssertTrue(app.buttons["My List"].waitForExistence(timeout: 10), "My List should remove the show")
         remote.press(.right)
+        choose("Mark show as watched", in: app)
+        settle()
         choose("Mark show as unwatched", in: app)
     }
 
