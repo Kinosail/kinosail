@@ -18,7 +18,7 @@ Kinosail is server-assisted. The Server probes each file, the client reports its
 
 Best-in-class players decode on the device with a software decoder when the platform decoder cannot. Kinosail reaches the same files through the Server. The gap is therefore smaller for files on a Kinosail Server and largest for sources without a Kinosail Server (Plex/Jellyfin/Emby direct, network shares).
 
-This matters more under the business model. A Plex, Jellyfin or Emby server can remux or transcode for the app, so those sources work today. A network share has no server at all: AVFoundation cannot open MKV (93% of the library's video files), DTS or TrueHD audio, or PGS and ASS subtitles. **Network shares therefore need an on-device playback engine, which makes decision D1 a blocker for the share track.**
+This matters more under the business model. A Plex, Jellyfin or Emby server can remux or transcode for the app, so those sources work today. A network share has no server at all: AVFoundation cannot open MKV (93% of the library's video files), DTS or TrueHD audio, or PGS and ASS subtitles. **Network shares therefore need an on-device playback engine.** The measured list under D1 shows that 75% of files need only an on-device demuxer, with no third-party decoder.
 
 ## The real library (Nox, 2026-10-31)
 
@@ -87,9 +87,9 @@ A buyer with only a NAS or files on a drive still expects a full library: artwor
 | Dolby Vision profile 7 (dual layer, FEL/MEL) | Base layer used; some conversions rejected ("this Dolby Vision conversion is unsupported") | Partial | `DolbyVisionBaseLayer`, `dolbyVisionNeedsConversion`; target: P7 → P8.1 RPU conversion, else HDR10 base layer |
 | HDR10, HLG | Probed and passed through | Verify | `packages/mediaprobe/facts.go` |
 | HDR10+ | Probed | Verify | 3 Server references; Apple TV shows HDR10+ only on supported TVs |
-| tvOS match frame rate and dynamic range | Applies the stream's display criteria when Match Content is on and waits for the TV to switch before playback | Have (simulator, in review) | #820, `Sources/Platform/DisplayMatching.swift`. Works for every source, because it runs in the app. Needs an Apple TV hardware check. |
+| tvOS match frame rate and dynamic range | Applies the stream's display criteria when Match Content is on and waits for the TV to switch before playback | Have (simulator; hardware check pending) | #820, `Sources/Platform/DisplayMatching.swift`. Works for every source, because it runs in the app. Needs an Apple TV hardware check. |
 | Dolby Digital (AC-3), Dolby Digital Plus (E-AC-3) incl. Atmos (JOC) | Passed through | Verify | `packages/playback/http.go` lists ac3/eac3 |
-| TrueHD, DTS, DTS-HD MA, DTS:X | E-AC-3 5.1 at 640 kb/s when the client reports six or more channels; stereo AAC otherwise | Have (Kinosail Server, merging) | #819, `packages/playback/audio_conversion.go`; a real DTS-HD MA 7.1 file converted with the Nox Player image's FFmpeg. 7.1 becomes 5.1 (E-AC-3 encoder limit). Plex/Jellyfin/Emby sources still get AAC: the app must ask those servers for E-AC-3. |
+| TrueHD, DTS, DTS-HD MA, DTS:X | E-AC-3 5.1 at 640 kb/s when the client reports six or more channels; stereo AAC otherwise | Have (Kinosail Server, deployed) | #819, `packages/playback/audio_conversion.go`; a real DTS-HD MA 7.1 file converted with the Nox Player image's FFmpeg. 7.1 becomes 5.1 (E-AC-3 encoder limit). Plex/Jellyfin/Emby sources still get AAC: the app must ask those servers for E-AC-3. |
 | Fast start | Prepare step, loopback capability, direct-first | Verify | Needs a measured start-time budget (see Quality) |
 | Resume (incl. across devices) | Server progress with compare-and-set | Have | `IMPLEMENTATION.md` Progress row |
 | Transcode only as last resort; bitrate choice | Direct first; quality choices for downloads | Partial | No user-visible stream quality cap on Apple TV |
@@ -237,7 +237,7 @@ Each item needs the Owner. Engineering will not set prices, create App Store Con
 | M2 | What stays free in the app | Keep Kinosail Server playback free in the apps, so the README promise for current households stays true and the free Server keeps working as the funnel. Charge for Plex, Jellyfin, Emby, network shares and pro playback features. Alternative: one price for every source, with the web Player as the free path. |
 | M3 | App Store Connect record, bundle IDs, Paid Apps agreement, tax and banking | Owner action. One app record with iOS and tvOS (universal purchase) under `com.kinosail.player`. |
 | M4 | Metadata provider for network shares | Pick a provider whose terms allow use in a paid app, and confirm any commercial license or fee before work starts. Show the provider's attribution in the app. |
-| M5 | D1, on-device playback engine | Now blocking the share track. Recommendation: an LGPL-only FFmpeg build as a dynamic framework that demuxes MKV and decodes only what Apple cannot (DTS, TrueHD, VC-1, MPEG-2, PGS, styled ASS), with legal review of the patent position for DTS and TrueHD decode before the first release. |
+| M5 | D1 engine stage 2: DTS and TrueHD decode on the device | Stage 1 (demux, repackage, bitmap subtitles) needs no decision and covers 75% of files plus subtitles. Stage 2 affects 17.3% of files. Recommendation: an LGPL-only FFmpeg build as a dynamic framework limited to the DTS and TrueHD decoders, after counsel reviews the patent position (M12). Until then these files play through a server, or through a native alternate audio track when the file has one. |
 | M6 | Demo access for App Review and screenshots | A small, internet-reachable demo server with public-domain films only, separate from the household Server. Opening anything to the internet is a security change and needs the Owner. |
 | M7 | Terms for app binaries and app source | Use Apple's standard App Store licence for the binaries. Decide whether the native app source stays public under PolyForm Perimeter (see F2). |
 | M8 | README and site wording | Approve the wording changes in F1 and F6 before launch. |
@@ -264,30 +264,59 @@ Checked against the model "free Server, paid apps, source under PolyForm Perimet
 
 ## Decisions needed (engineering)
 
-- **D1, on-device software decoding.** Best-in-class players bundle a software decoder (typically FFmpeg-based) for VC-1, MPEG-2, unusual audio and styled subtitles. Kinosail is source-available under PolyForm Perimeter. FFmpeg can be used only in an LGPL-only build, shipped as a dynamic framework with notices and relinking materials; GPL builds are not compatible. This is a licensing decision for the Owner (M5). Under the business model it is no longer optional: network shares cannot play most files without it.
+- **D1, on-device playback engine.** Best-in-class players play files on the device that the platform cannot open. Kinosail is source-available under PolyForm Perimeter, so any FFmpeg use must be an LGPL-only build shipped as a dynamic framework with notices and relinking materials; GPL builds are not compatible. The measured list below shows that most of the engine needs no third-party decoder at all. The decoder part is the Owner's decision (M5).
 - **D2, Apple TV lossless audio.** Apple TV cannot pass TrueHD or DTS bitstreams to a receiver. Kinosail converts to multichannel E-AC-3 instead of AAC. This is a platform limit, not a choice.
+
+### Measured list for D1 (Nox library, 2026-10-31)
+
+A random sample of 600 of the 4,084 movie and TV files, probed read-only with ffprobe inside the Player container. Only codec and container names were kept, no file names. Each file is counted once, by its default audio track.
+
+| Group | Files | Share | What serverless playback needs |
+| --- | --- | --- | --- |
+| A. MP4/MOV with H.264 or HEVC and native audio | 23 | 3.8% | Nothing: AVFoundation plays it as-is |
+| B. MKV or AVI with H.264 or HEVC and native audio (AAC, AC-3, E-AC-3, FLAC, Opus) | 426 | 71.0% | An on-device demuxer that repackages to fragmented MP4 for AVFoundation. No decoding, so no codec license question. |
+| C. H.264 or HEVC with DTS (126) or TrueHD (17) default audio | 143 | 23.8% | An audio decoder plus an E-AC-3 or LPCM encode on the device. 39 of these files also have a native alternate audio track, which can play instead. The other 104 (17.3%) need the decoder. |
+| D. Video Apple cannot decode on Apple TV 4K: AV1 (5), VC-1, MPEG-2, MPEG-4 Part 2 (1 each) | 8 | 1.3% | A software video decoder. AV1 plays in hardware on recent iPhones. |
+| Files with PGS, VobSub or DVB bitmap subtitles (any group) | 198 | 33.0% | A bitmap subtitle renderer. PGS is a simple image format, not a codec with patent pools. |
+| Files with ASS/SSA subtitles | 10 | 1.7% | A styled subtitle renderer (text works today as plain WebVTT) |
+
+Engine stages that follow from this:
+
+1. **Stage 1, no third-party decoders:** Matroska/AVI demuxer, fragmented-MP4 repackager into the existing loopback player path, and a PGS/VobSub renderer. Covers groups A and B (75%), the 39 group C files with a native alternate track, and bitmap subtitles. It can be written in Swift without FFmpeg, which avoids the LGPL question for this stage.
+2. **Stage 2, audio decoders (needs M5):** DTS and TrueHD decode for the remaining 17.3%. This is the licensing and patent decision for the Owner (R1).
+3. **Stage 3, video decoders (optional):** AV1, VC-1 and MPEG-2 software decode for 1.3%. Recommendation: skip, and point these files to a server.
 
 ## Phase plan
 
-Ranked by what sells the player to a buyer without a Kinosail Server. Each phase ships as reviewable pull requests with tests and recorded verification.
+Ranked by what sells the player to a buyer without a Kinosail Server. Work that helps every user (frame-rate and HDR match, surround sound) is interleaved with the source work instead of finishing first. Each step ships as reviewable pull requests with tests and recorded verification.
 
-1. **Phase 1, picture and sound on Apple TV (in progress).** In review: match frame rate and dynamic range (#820, simulator-verified, works for all sources) and E-AC-3 5.1 for DTS-HD and TrueHD on a Kinosail Server (#819, in the merge queue; FFmpeg in the Nox Player image converted a real DTS-HD MA 7.1 file to E-AC-3 5.1). Next: ask Plex, Jellyfin and Emby for E-AC-3 surround in their device profiles; Dolby Vision P5/P8 and P7 fallback; a stream quality cap.
-2. **Phase 2, Plex, Jellyfin and Emby as first-class sources.** MKV through the remote server's remux without needless transcodes; music, audiobooks and photos; collections and people; offline downloads from these servers (after the R3 check); per-show audio and subtitle memory; Trakt.
-3. **Phase 3, the serverless library and local playback.** The on-device playback engine (needs M5); an on-device library with artwork, seasons, Continue watching and Up Next (metadata needs M4); watch state and progress synced through the CloudKit private database; files on the device, Files app, iCloud Drive and USB/SSD drives; "Open in Kinosail" from the Share Sheet and AirDrop.
-4. **Phase 4, network sources.** SMB with automatic discovery first (most NAS units), then WebDAV, NFS, DLNA/UPnP servers, FTP and SFTP, all feeding the phase 3 library; offline downloads from shares.
-5. **Phase 5, subtitles.** Original PGS bitmaps and styled ASS (on the phase 3 engine); offset; size, color, background and position; automatic forced tracks; in-app online search for buyers without Kinosail Subtitles.
-6. **Phase 6, Apple ecosystem polish.** App Intents and Shortcuts phrases; widgets and Live Activities; SharePlay tied to Watch Rooms; the iPhone as an Apple TV remote and keyboard; tvOS multi-user profiles.
-7. **Phase 7, player experience.** Next-episode countdown with cancel; chapters in the transport bar; audio delay; video sleep timer; thumbnails for direct play.
-8. **Phase 8, iPad.** Split View, Slide Over, Stage Manager and external display checks, with fixes.
-9. **Phase 9, cloud drives.** Dropbox and OneDrive, then Box and pCloud, then Google Drive (after M10).
-10. **Phase 10, measurement.** Time-to-first-frame and memory budgets, and a playback test matrix of real files.
+| Step | Work | Who it sells to | Status or dependency |
+| --- | --- | --- | --- |
+| 1 | Match frame rate and dynamic range on Apple TV | Everyone, every source | Done (#820); hardware check pending |
+| 2 | E-AC-3 5.1 instead of stereo for DTS-HD and TrueHD on a Kinosail Server | Kinosail Server users | Done (#819), deployed to Nox |
+| 3 | Plex, Jellyfin and Emby playback quality: ask these servers for E-AC-3 surround instead of AAC, and for MKV remux instead of a transcode | Plex/Jellyfin/Emby users (largest group) | Next |
+| 4 | Plex, Jellyfin and Emby library completeness: music, audiobooks, photos, collections, people; per-show audio and subtitle memory | Plex/Jellyfin/Emby users | After 3 |
+| 5 | Engine stage 1: on-device MKV demux and repackage, PGS/VobSub renderer | Serverless users; also removes remote remuxes for Plex/Jellyfin/Emby | No Owner decision needed |
+| 6 | Local playback: Files app, iCloud Drive, USB/SSD drives, "Open in Kinosail" from the Share Sheet and AirDrop | Serverless users | Needs 5 |
+| 7 | Serverless library: on-device index with artwork, seasons, Continue watching, Up Next; CloudKit private-database sync | Serverless users | Metadata needs M4 |
+| 8 | SMB with automatic discovery, then WebDAV and NFS | NAS owners | Needs 5 and 7 |
+| 9 | Offline downloads from Plex, Jellyfin, Emby and shares | Everyone on iPhone/iPad | Plex/Jellyfin/Emby downloads need the R3 check (M12) |
+| 10 | Engine stage 2: DTS and TrueHD decode on the device | Serverless users with DTS/TrueHD files (17.3% of files) | Needs M5 |
+| 11 | Subtitles: styled ASS, offset, size/color/background/position, automatic forced tracks, in-app online search | Everyone | Bitmap rendering arrives in 5 |
+| 12 | Dolby Vision P5/P8 and P7 fallback; stream quality cap | Owners of HDR libraries | No HDR or Dolby Vision files in the Nox sample, so lower |
+| 13 | Trakt; DLNA/UPnP servers; FTP and SFTP | Enthusiasts | After 8 |
+| 14 | Apple ecosystem: App Intents and Shortcuts, widgets and Live Activities, SharePlay with Watch Rooms, iPhone as Apple TV remote and keyboard, tvOS multi-user | Everyone | Any time after 4 |
+| 15 | Player experience: next-episode countdown, chapters, audio delay, video sleep timer, direct-play thumbnails | Everyone | Any time |
+| 16 | iPad: Split View, Slide Over, Stage Manager, external displays | iPad users | Any time |
+| 17 | Cloud drives: Dropbox and OneDrive, then Box and pCloud, then Google Drive | Serverless users | Needs M10 |
+| 18 | Measurement: time-to-first-frame, memory budgets, real-file playback matrix | Quality | Any time |
 
-**Runs in parallel with every phase:**
+**Runs in parallel with every step:**
 
 - **App Store readiness.** Localization and the native notices file now; StoreKit 2 entitlements, paywall and trial behind a build flag next; MetricKit reporting; then TestFlight once M3 and M6 are done.
-- **Accessibility (P6).** A VoiceOver, Dynamic Type and caption-style pass recorded for each release; audio-description tracks in phase 2.
+- **Accessibility (P6).** A VoiceOver, Dynamic Type and caption-style pass recorded for each release; audio-description tracks with step 4.
 
-Skipped on purpose: lossless TrueHD/DTS passthrough on Apple TV (platform limit, D2); Google Cast on Apple clients (no native sender SDK, already documented); Apple TV app integration until M11. Phases 3 and 4 cannot ship playback of MKV, DTS, TrueHD or PGS until M5 is decided, and their metadata needs M4; the browsers, scanners and CloudKit sync can be built first.
+Skipped on purpose: lossless TrueHD/DTS passthrough on Apple TV (platform limit, D2); Google Cast on Apple clients (no native sender SDK, already documented); Apple TV app integration until M11; engine stage 3 (1.3% of files).
 
 ## Later, not planned
 
