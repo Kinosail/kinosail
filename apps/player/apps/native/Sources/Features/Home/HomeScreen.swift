@@ -32,20 +32,21 @@ struct HomeScreen: View {
                         ScrollViewReader { proxy in
                             VStack(alignment: .leading, spacing: 32) {
                                 if selection.featured != nil {
-                                    TVHomeSpotlightHeader(spotlight: spotlight, fallback: selection.featured).id(Self.topID)
+                                    TVHomeSpotlightHeader(spotlight: spotlight, fallback: selection.featured).id(Self.topID).launchArrival(0)
                                 }
                                 if !selection.tvWatchingRail.isEmpty {
                                     MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
                                                resumesPlayback: true, onQuickPlay: { session.open($0) { quickPlay = $0 } },
                                                onFocus: { showWatching($0, proxy: proxy) },
                                                takesFocus: takesLaunchFocus, onTookFocus: { launchFocusPending = false })
+                                    .launchArrival(1)
                                 }
                             }
                         }
                     } else if !selection.featuredAndContinuation.isEmpty {
-                        ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
+                        ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false).launchArrival(1)
                     }
-                    TVHomeBrowse(selectTab: selectTab)
+                    TVHomeBrowse(selectTab: selectTab).launchArrival(2)
                     #else
                     if let featured = selection.featured, !featured.spotlightArtwork.isEmpty {
                         CinemaSpotlight(item: featured, artwork: featured.spotlightArtwork, eyebrow: featuredHeading(selection),
@@ -207,6 +208,7 @@ struct HomeScreen: View {
             #if os(tvOS)
             MediaShelf(title: title, items: items, onQuickPlay: { session.open($0) { quickPlay = $0 } }, opensShows: opensShows,
                        takesFocus: leads && takesLaunchFocus, onTookFocus: { launchFocusPending = false })
+                .launchArrival(3)
             #else
             MediaShelf(title: title, items: items, opensShows: opensShows)
             #endif
