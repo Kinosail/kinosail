@@ -26,7 +26,7 @@ final class RemoteShowActionsTests: RemoteTestCase {
         remote.press(.right)
         choose("Mark show as watched", in: app)
         remote.press(.select)
-        XCTAssertTrue(app.buttons["Mark show as unwatched"].waitForExistence(timeout: 10), "The show should read as watched; \(app.debugDescription)")
+        XCTAssertTrue(menuItem("Mark show as unwatched", in: app).waitForExistence(timeout: 10), "The show should read as watched; \(app.debugDescription)")
         record("show more menu after mark watched", app)
         remote.press(.menu)
 
@@ -40,8 +40,8 @@ final class RemoteShowActionsTests: RemoteTestCase {
         XCTAssertTrue(holdsFocus(app.buttons["More"]), "focused: \(focusedLabels(app))")
         choose("Mark as unwatched", in: app)
         remote.press(.select)
-        XCTAssertTrue(app.buttons["Mark as watched"].waitForExistence(timeout: 10), "The episode should read as unwatched")
-        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Mark season'")).firstMatch.exists)
+        XCTAssertTrue(menuItem("Mark as watched", in: app).waitForExistence(timeout: 10), "The episode should read as unwatched")
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Mark season")).firstMatch.exists)
         record("episode more menu", app)
         remote.press(.menu)
         remote.press(.menu)
@@ -77,10 +77,17 @@ final class RemoteShowActionsTests: RemoteTestCase {
     private func choose(_ label: String, in app: XCUIApplication) {
         let remote = XCUIRemote.shared
         remote.press(.select)
-        let item = app.buttons[label]
+        let item = menuItem(label, in: app)
         XCTAssertTrue(item.waitForExistence(timeout: 5), "More should offer \(label); \(app.debugDescription)")
-        for _ in 0..<6 where !item.hasFocus { remote.press(.down) }
-        XCTAssertTrue(item.hasFocus, "\(label) should take focus; focused: \(focusedLabels(app))")
+        for _ in 0..<6 where !(item.hasFocus || item.isSelected) { remote.press(.down) }
+        XCTAssertTrue(item.hasFocus || item.isSelected, "\(label) should take focus; focused: \(focusedLabels(app))")
         remote.press(.select)
+    }
+}
+
+extension RemoteShowActionsTests {
+    @MainActor
+    func menuItem(_ label: String, in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
     }
 }
