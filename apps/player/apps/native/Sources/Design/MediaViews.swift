@@ -209,7 +209,7 @@ struct MediaShelf: View {
     var takesFocus = false
     var onTookFocus: (() -> Void)?
     var preferredFocusID: String?
-    @Namespace private var shelfFocus
+    @FocusState private var focusedCard: String?
     #endif
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -231,7 +231,7 @@ struct MediaShelf: View {
                                   onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows,
                                   reservesSubtitle: reservesSubtitle, playsOnSelect: playsOnSelect,
                                   takesFocus: takesFocus && index == 0, onTookFocus: onTookFocus).frame(width: width)
-                            .prefersDefaultFocus(item.id == preferredFocusID, in: shelfFocus)
+                            .modifier(ShelfCardFocus(active: preferredFocusID != nil, id: item.id, focusedCard: $focusedCard))
                             .id(item.id)
                             .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
                         #else
@@ -252,8 +252,7 @@ struct MediaShelf: View {
             #if os(tvOS)
             .scrollClipDisabled()
             .padding(.horizontal, -24)
-            .focusScope(shelfFocus)
-            .modifier(ShelfStartPosition(itemID: preferredFocusID))
+            .modifier(ShelfStartPosition(itemID: preferredFocusID, focusedCard: $focusedCard))
             #endif
             #if os(iOS)
             .scrollBounceBehavior(.basedOnSize, axes: .vertical)
@@ -285,16 +284,30 @@ struct MediaShelf: View {
 #if os(tvOS)
 private struct ShelfStartPosition: ViewModifier {
     let itemID: String?
+    let focusedCard: FocusState<String?>.Binding
     @State private var position: String?
 
     func body(content: Content) -> some View {
         if let itemID {
             content
                 .scrollPosition(id: $position, anchor: .leading)
+                .defaultFocus(focusedCard, itemID, priority: .userInitiated)
                 .onAppear { if position == nil { position = itemID } }
         } else {
             content
         }
+    }
+}
+#endif
+
+#if os(tvOS)
+private struct ShelfCardFocus: ViewModifier {
+    let active: Bool
+    let id: String
+    let focusedCard: FocusState<String?>.Binding
+
+    func body(content: Content) -> some View {
+        if active { content.focused(focusedCard, equals: id) } else { content }
     }
 }
 #endif
