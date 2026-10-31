@@ -34,7 +34,7 @@ Use `docker compose logs --tail 100 kinosail` for Docker. Do not publish a full 
 
 ## A Show or season is grouped incorrectly
 
-Use stable folder and file names. Kinosail derives Show and episode identity from the scanned path and metadata. Keep episodes for one Show under a common Show folder. Avoid two unrelated Shows with the same title and year in one ambiguous folder.
+Use stable folder and file names. Kinosail derives Show and episode identity from the scanned path and metadata. Keep episodes for one Show under a common Show folder. A category folder such as `Shows/` above the Show folders is fine when each Show keeps its episodes in `Season 01`, `S01`, or `Specials` folders. Kinosail then names the Show from the folder above the season folder. Avoid two unrelated Shows with the same title and year in one ambiguous folder.
 
 If local metadata contains a provider identifier, use the supported NFO `uniqueid` types `tmdb`, `tvdb`, or `imdb`. Values for other types are ignored. After changing the file, run **Run library scan now**.
 

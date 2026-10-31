@@ -141,7 +141,8 @@ func (view scanView) item(root, namespace, path, kind string, file mediaFile) It
 	logo := view.firstArtwork(base+"-clearlogo", base+"-logo", filepath.Join(directory, "clearlogo"), filepath.Join(directory, "logo"))
 	showArtwork, showBackdrop, showLogo, seasonArtwork := "", "", "", ""
 	if show != "" {
-		showDirectory := filepath.Join(root, strings.Split(filepath.ToSlash(relative), "/")[0])
+		parts := strings.Split(filepath.ToSlash(relative), "/")
+		showDirectory := filepath.Join(append([]string{root}, parts[:showFolderDepth(parts)+1]...)...)
 		artwork = view.firstArtwork(base+"-thumb", base)
 		showArtwork = view.firstArtwork(filepath.Join(showDirectory, "poster"), filepath.Join(showDirectory, "folder"))
 		showBackdrop = view.firstArtwork(filepath.Join(showDirectory, "fanart"), filepath.Join(showDirectory, "backdrop"))
@@ -171,7 +172,7 @@ func episode(relative, title string) (string, int, int, string) {
 	}
 	show := clean(match[1])
 	if parts := strings.Split(filepath.ToSlash(relative), "/"); len(parts) > 1 {
-		show = clean(parts[0])
+		show = clean(parts[showFolderDepth(parts)])
 	}
 	episodeTitle := "S" + match[2] + "E" + match[3]
 	if match[2] == "" && show == "" {
@@ -237,4 +238,15 @@ func audiobookPath(namespace, relative string) bool {
 		}
 	}
 	return false
+}
+
+var seasonFolder = regexp.MustCompile(`(?i)^(season[ ._-]*\d{1,4}|s\d{1,4}|specials)$`)
+
+func showFolderDepth(parts []string) int {
+	for index := 1; index < len(parts)-1; index++ {
+		if seasonFolder.MatchString(strings.TrimSpace(parts[index])) {
+			return index - 1
+		}
+	}
+	return 0
 }
