@@ -3,9 +3,11 @@ package server
 import (
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
@@ -101,4 +103,10 @@ func subtitleSearchIdentity(item library.Item) (string, string) {
 		return item.Title, item.Year
 	}
 	return strings.Join(parts, " "), year
+}
+
+func forcedSubtitleRelease(release string) bool {
+	return slices.Contains(strings.FieldsFunc(strings.ToLower(release), func(character rune) bool {
+		return !unicode.IsLetter(character) && !unicode.IsDigit(character)
+	}), "forced")
 }

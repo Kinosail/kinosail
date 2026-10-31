@@ -191,7 +191,7 @@ func subDLCandidateBonus(candidate subtitleCandidate) int {
 }
 
 func validSubtitleCandidate(item library.Item, language string, candidate subtitleCandidate) bool {
-	if !validSubDLURL(candidate.URL) || !subtitleProviderLanguageMatches(language, candidate.Language, subtitlelanguage.SubDL) {
+	if !validSubDLURL(candidate.URL) || forcedSubtitleRelease(candidate.Release) || !subtitleProviderLanguageMatches(language, candidate.Language, subtitlelanguage.SubDL) {
 		return false
 	}
 	return item.Show == "" || (candidate.Season == 0 || candidate.Season == item.Season) && (candidate.Episode == 0 || candidate.Episode == item.Episode)

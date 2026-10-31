@@ -21,40 +21,40 @@ Each finding has a status: **fixed** (with the pull request), **planned** (with 
   - Scoring rules differ between providers.
   - The provider list is hard-coded in at least 7 places.
   - **Planned:** one `subtitleSource` interface with one HTTP client.
-- Five call sites repeat the sidecar install steps by hand: keep the original, back up, write, record history, roll back. The rollback errors are discarded. **Planned:** one install transaction.
-- Dead code: five empty files, test-only aliases, and variadic "optional" dependencies that only tests omit. **Planned.**
-- Provider and sidecar code writes no logs, so provider failures are invisible. **Planned** with the provider work.
+- Five call sites repeat the sidecar install steps by hand: keep the original, back up, write, record history, roll back. The rollback errors are discarded. **Fixed** (#798): one `installSidecar` transaction with logged rollback.
+- Dead code: five empty files, test-only aliases, and variadic "optional" dependencies that only tests omit. **Partly fixed** (#797): empty files and test-only aliases removed. The variadic dependencies remain.
+- Provider and sidecar code writes no logs, so provider failures are invisible. **Partly fixed** (#798): every sidecar write and failed rollback is logged. Provider request logging is planned with the provider abstraction.
 
 ## Correctness bugs
 
 | # | Bug | Status |
 |---|---|---|
-| 1 | An untagged `Movie.srt` counted as every preferred language. Automation never fetched the second language, and the manual view disagreed with it. | **Fixed** (this PR) |
-| 2 | With the SDH preference and a standard `Movie.en.srt` present, automation retried every 15 minutes and recorded no backoff. | **Fixed** (this PR): an occupied sidecar records an `exists` backoff. The SDH naming is planned with the defaults work. |
-| 3 | Legacy codepage subtitles (cp1250 Czech, cp1256 Farsi) are rejected before language-aware decoding runs. SubSource rejects every file that is not UTF-8. | Planned |
-| 4 | New sidecars are created with mode 0600, and upgrades replace a 0644 file with a 0600 one. Media servers running as another user cannot read them. | Planned |
-| 5 | A 404 or 5xx on one download link blocks the whole provider, so the remaining candidates are skipped. | Planned |
-| 6 | A partial provider outage is recorded as "no result", which gives a 6-hour to 7-day backoff instead of minutes. | Planned |
-| 7 | Candidates are cut to 3 before the SDH preference and the SubDL quota check run. | Planned |
-| 8 | SubDL episode searches send the episode's year and IDs instead of the show's. | Planned |
-| 9 | An OpenSubtitles response with more than 50 results is rejected completely. | Planned (needs an API check) |
-| 10 | Exclusive writes need hard links. They fail on SMB, exFAT, and some FUSE mounts, and leftover temporary files are never cleaned up. | Planned |
-| 11 | Sidecars the household created can be replaced automatically. CONTEXT.md says they never are. | Planned with the defaults: never replace by default |
-| 12 | SubDL has no forced-subtitle filter. | Planned |
-| 13 | SubSource episode names raise the release match enough to skip sync validation. | Planned |
-| 14 | Full language names such as `Movie.English.srt` were not recognized, so a duplicate `Movie.en.srt` was added. | **Fixed** (this PR) |
-| 15 | The OpenSubtitles 406 download quota gets a 1-minute backoff, and a stale token is not cleared. | Planned |
+| 1 | An untagged `Movie.srt` counted as every preferred language. Automation never fetched the second language, and the manual view disagreed with it. | **Fixed** (#793) |
+| 2 | With the SDH preference and a standard `Movie.en.srt` present, automation retried every 15 minutes and recorded no backoff. | **Fixed** (#793): an occupied sidecar records an `exists` backoff. The SDH naming is planned with the defaults work. |
+| 3 | Legacy codepage subtitles (cp1250 Czech, cp1256 Farsi) are rejected before language-aware decoding runs. SubSource rejects every file that is not UTF-8. | **Fixed** (#794) |
+| 4 | New sidecars are created with mode 0600, and upgrades replace a 0644 file with a 0600 one. Media servers running as another user cannot read them. | **Fixed** (#794) |
+| 5 | A 404 or 5xx on one download link blocks the whole provider, so the remaining candidates are skipped. | **Fixed** (#795) |
+| 6 | A partial provider outage is recorded as "no result", which gives a 6-hour to 7-day backoff instead of minutes. | **Fixed** (#795) |
+| 7 | Candidates are cut to 3 before the SDH preference and the SubDL quota check run. | **Fixed** (#795) |
+| 8 | SubDL episode searches send the episode's year and IDs instead of the show's. | **Fixed** (#795) |
+| 9 | An OpenSubtitles response with more than 50 results is rejected completely. | **Fixed** (#801): the first 50 results are ranked instead of rejecting the page |
+| 10 | Exclusive writes need hard links. They fail on SMB, exFAT, and some FUSE mounts, and leftover temporary files are never cleaned up. | **Fixed** (#794 temporary-file cleanup, #798 fallback without hard links) |
+| 11 | Sidecars the household created can be replaced automatically. CONTEXT.md says they never are. | **Fixed** (#799): household files are never replaced |
+| 12 | SubDL has no forced-subtitle filter. | **Fixed** (#801): SubDL releases named `forced` are skipped |
+| 13 | SubSource episode names raise the release match enough to skip sync validation. | **Kept by design**: an exact episode name may install as `unverified`; the SubSource acquisition tests require it. Planned: show unverified installs on the dashboard. |
+| 14 | Full language names such as `Movie.English.srt` were not recognized, so a duplicate `Movie.en.srt` was added. | **Fixed** (#793) |
+| 15 | The OpenSubtitles 406 download quota gets a 1-minute backoff, and a stale token is not cleared. | **Fixed** (#795) |
 
 ## UI and defaults
 
-- The CSS is Player's stylesheet plus a patch with dead rules. Five rules conflict, colors are hard-coded, and breakpoints differ from Player's. Planned.
-- The dashboard does not show running work, the next automation run, provider errors as problems, or subtitles installed with unverified timing. Planned.
+- The CSS is Player's stylesheet plus a patch with dead rules. Five rules conflict, colors are hard-coded, and breakpoints differ from Player's. **Partly fixed** (#800): state styles are defined once. Planned: remove dead patch rules.
+- The dashboard does not show running work, the next automation run, provider errors as problems, or subtitles installed with unverified timing. **Partly fixed** (#800): the last and next automatic check, and readable provider states. Planned: unverified installs and running operations.
 - Defaults that differ from the Owner's target:
-  - Languages are English only and ignore the UI language.
+  - Languages are English only and ignore the UI language. **Fixed** (#799): English plus the Owner's interface language.
   - The SDH preference is strict, with no fallback.
   - There is no provider order, and no provider works without a key.
-  - Sidecars the household created can be replaced.
-  - Planned.
+  - Sidecars the household created can be replaced. **Fixed** (#799).
+  - The SDH fallback and provider order are planned.
 - Docs drift: the picker default, "restart when prompted", first-setup steps, and doc file names left over from Player. Planned.
 
 ## Live state on Nox (2026-10-30)

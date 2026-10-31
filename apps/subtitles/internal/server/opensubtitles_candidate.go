@@ -89,12 +89,15 @@ type openSubtitlesCandidate struct {
 	HI           bool
 }
 
+const openSubtitlesRankedResults = 50
+
 func rankOpenSubtitlesCandidates(item library.Item, language string, response openSubtitlesResponse) []openSubtitlesCandidate {
-	if len(response.Data) == 0 || len(response.Data) > 50 || response.TotalCount < len(response.Data) {
+	if len(response.Data) == 0 || response.TotalCount < len(response.Data) {
 		return nil
 	}
-	candidates := make([]openSubtitlesCandidate, 0, len(response.Data))
-	for _, result := range response.Data {
+	results := response.Data[:min(len(response.Data), openSubtitlesRankedResults)]
+	candidates := make([]openSubtitlesCandidate, 0, len(results))
+	for _, result := range results {
 		if result.Type != "subtitle" || len(result.Attributes.Files) != 1 || result.Attributes.NbCD > 1 || result.Attributes.ForeignPartsOnly {
 			continue
 		}
