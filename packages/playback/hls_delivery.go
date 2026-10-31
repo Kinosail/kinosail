@@ -79,6 +79,8 @@ type HLSCodecInput struct {
 	Policy                                    HLSRecipePolicy
 }
 
+const surroundAudioRate = "640000"
+
 func HLSCodecArguments(input HLSCodecInput) ([]string, error) {
 	if input.AudioRate == "" || input.CopyInput != "0" && input.CopyInput != "1" {
 		return nil, errors.New("HLS codec input is invalid")
@@ -93,7 +95,12 @@ func HLSCodecArguments(input HLSCodecInput) ([]string, error) {
 	case "audio-transcode":
 		arguments = append(arguments, "-map", input.CopyInput+":v:0", "-map", "0:a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn")
 		arguments = append(arguments, AudioFilterArguments(input.Recipe, input.Policy)...)
-		arguments = append(append(arguments, copiedVideoArguments(input)...), "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate)
+		arguments = append(arguments, copiedVideoArguments(input)...)
+		if input.Recipe.Surround && !input.Recipe.DialogueBoost && !input.Recipe.NormalizeLoudness {
+			arguments = append(arguments, "-c:a", "eac3", "-ac", "6", "-b:a", surroundAudioRate)
+		} else {
+			arguments = append(arguments, "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate)
+		}
 	case "transcode":
 		return transcodeCodecArguments(input, arguments)
 	default:

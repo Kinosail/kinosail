@@ -177,7 +177,7 @@ func applyPlaybackConversion(plan *PlaybackPlan, facts MediaFacts, client Client
 		}
 		plan.Qualities = AdaptiveQualities(plan.Width, plan.Height, min(60, facts.Video.FrameRate), limit)
 	case "audio-transcode":
-		plan.AudioCodec = "aac"
+		plan.AudioCodec = convertedAudioCodec(facts, plan.AudioIndex, client)
 	}
 }
 

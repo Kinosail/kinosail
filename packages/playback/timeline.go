@@ -140,7 +140,7 @@ func DecideWithAutomaticSkip(facts MediaFacts, client ClientCapabilities, policy
 		plan := Decide(facts, client, policy, intent, product)
 		if plan.Mode == "direct" || plan.Mode == "remux" || plan.Mode == "audio-transcode" {
 			if len(facts.Audio) > 0 {
-				plan.Mode, plan.AudioCodec = "audio-transcode", "aac"
+				plan.Mode, plan.AudioCodec = "audio-transcode", convertedAudioCodec(facts, plan.AudioIndex, client)
 			} else {
 				plan.Mode = "remux"
 			}
