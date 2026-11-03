@@ -53,12 +53,20 @@ struct PlexClient: MediaSourceClient {
         }
     }
 
-    func topLevel() async throws -> [DeviceItem] {
-        var items: [DeviceItem] = []
-        for section in try await sections() {
-            items += try await paged("/library/sections/\(section.key)/all", ["includeGuids": "1"])
+    private func eachSection(_ load: @escaping @Sendable (PlexClient, (key: String, type: String)) async throws -> [DeviceItem]) async throws -> [DeviceItem] {
+        let sections = try await sections()
+        return try await withThrowingTaskGroup(of: (Int, [DeviceItem]).self) { group in
+            for (index, section) in sections.enumerated() { group.addTask { (index, try await load(self, section)) } }
+            var rows = Array(repeating: [DeviceItem](), count: sections.count)
+            for try await (index, batch) in group { rows[index] = batch }
+            return rows.flatMap { $0 }
         }
-        return items
+    }
+
+    func topLevel() async throws -> [DeviceItem] {
+        try await eachSection { client, section in
+            try await client.paged("/library/sections/\(section.key)/all", ["includeGuids": "1"])
+        }
     }
 
     func episodes(series: String) async throws -> [DeviceItem] {
@@ -80,14 +88,12 @@ struct PlexClient: MediaSourceClient {
     }
 
     func inProgress() async throws -> [DeviceItem] {
-        var items: [DeviceItem] = []
-        for section in try await sections() {
-            let value = try await container("/library/sections/\(section.key)/all", [
+        try await eachSection { client, section in
+            let value = try await client.container("/library/sections/\(section.key)/all", [
                 "type": section.type == "movie" ? "1" : "4", "sort": "lastViewedAt:desc", "includeGuids": "1",
                 "X-Plex-Container-Start": "0", "X-Plex-Container-Size": "100"])
-            items += map(value["Metadata"]).filter { $0.state.lastPlayed != nil || $0.state.seconds > 0 }
+            return client.map(value["Metadata"]).filter { $0.state.lastPlayed != nil || $0.state.seconds > 0 }
         }
-        return items
     }
 
     func search(_ query: String) async throws -> [DeviceItem] {

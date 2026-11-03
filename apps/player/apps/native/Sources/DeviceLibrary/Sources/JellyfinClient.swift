@@ -70,11 +70,13 @@ struct JellyfinClient: MediaSourceClient {
     }
 
     func inProgress() async throws -> [DeviceItem] {
-        let resume = try await SourceHTTP.json(request("/Users/\(user)/Items/Resume", ["MediaTypes": "Video", "Limit": "100", "Fields": Self.fields]))
-        let played = try await SourceHTTP.json(request("/Users/\(user)/Items", [
+        let resumeRequest = try request("/Users/\(user)/Items/Resume", ["MediaTypes": "Video", "Limit": "100", "Fields": Self.fields])
+        let playedRequest = try request("/Users/\(user)/Items", [
             "Recursive": "true", "IncludeItemTypes": "Movie,Episode", "SortBy": "DatePlayed", "SortOrder": "Descending",
-            "Filters": "IsPlayed", "Limit": "100", "Fields": Self.fields]))
-        let rows = (resume["Items"] as? [[String: Any]] ?? []) + (played["Items"] as? [[String: Any]] ?? [])
+            "Filters": "IsPlayed", "Limit": "100", "Fields": Self.fields])
+        async let resume = SourceHTTP.json(resumeRequest)
+        async let played = SourceHTTP.json(playedRequest)
+        let rows = (try await resume["Items"] as? [[String: Any]] ?? []) + (try await played["Items"] as? [[String: Any]] ?? [])
         return rows.compactMap { JellyfinMapping.item($0, source: account.id) }
     }
 

@@ -28,6 +28,8 @@ import java.util.concurrent.CancellationException
 import kotlin.math.abs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -135,7 +137,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     ?: throw IllegalStateException("No saved connection")
                 val progressApi = ProgressApi(saved.server)
                 val savedJournal = ProgressJournal.forViewer(getApplication(), saved.server, viewer)
-                val current = withContext(Dispatchers.IO) {
+                withContext(Dispatchers.IO) {
                     val identity = saved.viewer ?: ServerApi(saved.server).viewer(saved.token)
                     require(identity.id == viewer.id && identity.serverId == viewer.serverId) {
                         "The Viewer Profile changed. Reconnect to continue."
@@ -143,18 +145,25 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     try { syncPending(savedJournal, saved, viewer, attempt) }
                     catch (error: CancellationException) { throw error }
                     catch (error: Exception) { if (!isTransientRequestFailure(error)) throw error }
-                    try { progressApi.current(item.id, saved.token, viewer.id) }
-                    catch (error: CancellationException) { throw error }
-                    catch (error: Exception) { if (isTransientRequestFailure(error)) item.progress else throw error }
                 }
-                val plan = loadPlan(saved, viewer, item.id, capabilities, attempt)
-                rateSave?.join()
-                val loadedPreferences = try {
-                    withContext(Dispatchers.IO) {
-                        PlaybackPreferencesApi(saved.server).load(item.id, saved.token, viewer.id)
+                val (current, plan, loadedPreferences) = coroutineScope {
+                    val current = async(Dispatchers.IO) {
+                        try { progressApi.current(item.id, saved.token, viewer.id) }
+                        catch (error: CancellationException) { throw error }
+                        catch (error: Exception) { if (isTransientRequestFailure(error)) item.progress else throw error }
                     }
-                } catch (error: CancellationException) { throw error }
-                catch (_: Exception) { null }
+                    val plan = async { loadPlan(saved, viewer, item.id, capabilities, attempt) }
+                    val preferences = async {
+                        rateSave?.join()
+                        try {
+                            withContext(Dispatchers.IO) {
+                                PlaybackPreferencesApi(saved.server).load(item.id, saved.token, viewer.id)
+                            }
+                        } catch (error: CancellationException) { throw error }
+                        catch (_: Exception) { null }
+                    }
+                    Triple(current.await(), plan.await(), preferences.await())
+                }
                 if (attempt != generation) return@launch
                 val allowed = MediaUriPolicy(saved.server, item.id)
                 plan.direct?.let { allowed.requireAllowed(URL(saved.server.url, it).toString()) }
