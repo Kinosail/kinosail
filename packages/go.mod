@@ -9,14 +9,14 @@ require (
 	github.com/crewjam/saml v0.5.1
 	github.com/fsnotify/fsnotify v1.10.1
 	github.com/fxamacker/cbor/v2 v2.10.0
-	github.com/go-jose/go-jose/v4 v4.1.6
+	github.com/go-jose/go-jose/v4 v4.1.7
 	github.com/go-webauthn/webauthn v0.18.2
 	github.com/libp2p/zeroconf/v2 v2.2.0
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/ncruces/go-sqlite3 v0.36.0
 	github.com/nicksnyder/go-i18n/v2 v2.7.0
 	github.com/russellhaering/goxmldsig v1.6.1
-	go.yaml.in/yaml/v3 v3.0.5
+	go.yaml.in/yaml/v3 v3.0.6
 	golang.org/x/crypto v0.58.0
 	golang.org/x/net v0.62.0
 	golang.org/x/oauth2 v0.37.0
