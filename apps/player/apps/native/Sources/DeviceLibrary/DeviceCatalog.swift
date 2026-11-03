@@ -54,18 +54,18 @@ actor DeviceCatalog {
 
     func recentActivity() async throws -> [DeviceItem] {
         if let activity, Date().timeIntervalSince(activity.loaded) < Self.activityLifetime { return activity.items }
+        async let rows = Self.collect(Array(clients.values)) { try await $0.inProgress() }
         _ = try await library()
-        let rows = try await Self.collect(Array(clients.values)) { try await $0.inProgress() }
-        let merged = merge(rows.map(enrich)).filter { $0.state.lastPlayed != nil || $0.state.seconds > 0 }
+        let merged = merge(try await rows.map(enrich)).filter { $0.state.lastPlayed != nil || $0.state.seconds > 0 }
             .sorted { ($0.state.lastPlayed ?? .distantPast) > ($1.state.lastPlayed ?? .distantPast) }
         activity = (Date(), merged)
         return merged
     }
 
     func search(_ query: String) async throws -> [DeviceItem] {
+        async let rows = Self.collect(Array(clients.values)) { try await $0.search(query) }
         _ = try await library()
-        let rows = try await Self.collect(Array(clients.values)) { try await $0.search(query) }
-        return merge(rows.map(enrich))
+        return merge(try await rows.map(enrich))
     }
 
     func show(_ showID: String) async throws -> (series: DeviceItem, episodes: [DeviceItem]) {
