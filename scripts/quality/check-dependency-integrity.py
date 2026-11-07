@@ -13,11 +13,11 @@ import sys
 GOVAD_VERSION = "v0.0.0-20260330155402-74750eabf3a4"
 BROWSER_HASHES = {
     "player": {
-        "hls.min.js": "a12e7ee1cd64a69dcdb314157e45dafcba705bfb0b1440b7935cb265d374423e",
-        "htmx.min.js": "e484d9171a9db30a39c8f16e3d709d4137f3211c659f8e6125816635033d593f",
+        "hls.min.js": "cfc70cc9e9fc63d071919e087670abc760c8fd1bc889b88588026e4d22193bbe",
+        "htmx.min.js": "a0abb04f2f45a1f89d1d4844023245537e5e6014c87b144553e0607b4cc32130",
     },
     "subtitles": {
-        "htmx.min.js": "e484d9171a9db30a39c8f16e3d709d4137f3211c659f8e6125816635033d593f",
+        "htmx.min.js": "a0abb04f2f45a1f89d1d4844023245537e5e6014c87b144553e0607b4cc32130",
     },
 }
 MODEL_HASHES = {
