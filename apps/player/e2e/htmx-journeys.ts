@@ -96,7 +96,7 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: "reduce" });
       await open(page);
-      expect(await page.evaluate(() => (window as Window & {htmx: {version: string; config: {timeout: number}; trigger: (element: Element | null, name: string) => void}}).htmx.version)).toBe("4.0.0");
+      expect(await page.evaluate(() => (window as Window & {htmx: {version: string; config: {timeout: number}; trigger: (element: Element | null, name: string) => void}}).htmx.version)).toBe("4.0.1");
       for (const [label, body] of [["Loaded", content("Loaded")], ["Empty", '<main id="main" class="library-shell"><p role="status">No results</p></main>']]) {
         let release!: () => void;
         const held = new Promise<void>(resolve => { release = resolve; });
