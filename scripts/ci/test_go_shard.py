@@ -93,8 +93,11 @@ class GoShardTests(unittest.TestCase):
         log = ["2026-11-09T22:45:59.1Z === RUN   TestSerial", "2026-11-09T22:46:59.1Z --- PASS: TestSerial (60.04s)",
                "2026-11-09T22:46:59.1Z === PAUSE TestWide", "2026-11-09T22:47:59.1Z --- PASS: TestWide (40.00s)",
                "2026-11-09T22:47:59.1Z     --- PASS: TestSerial/case (55.00s)", "2026-11-09T22:47:59.1Z --- FAIL: TestBroken (30.00s)",
-               "2026-11-09T22:47:59.1Z --- PASS: TestTiny (0.20s)", "2026-11-09T22:47:59.1Z --- SKIP: TestSkipped (9.00s)"]
+               "2026-11-09T22:47:59.1Z --- PASS: TestTiny (0.20s)", "2026-11-09T22:47:59.1Z --- SKIP: TestSkipped (9.00s)",
+               "2026-11-09T22:48:00.1Z --- SKIP: TestGated (0.00s)", "2026-11-09T22:52:00.1Z --- PASS: TestGated (28.00s)"]
         self.assertEqual(go_shard.record(log), {"TestSerial": 60.0, "TestWide": 10.0})
+        gated = [json.dumps({"Action": "skip", "Test": "TestGated", "Elapsed": 0}), json.dumps({"Action": "pass", "Test": "TestGated", "Elapsed": 28})]
+        self.assertEqual(go_shard.record(gated), {})
 
     def test_timing_mode_adds_verbose_output_to_the_heavy_package_only(self):
         for value, verbose in (("1", True), ("", False), ("true", False)):

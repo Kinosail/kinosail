@@ -19,7 +19,7 @@ NAME = re.compile(r"^(Test|Example|Fuzz)[A-Za-z0-9_]*$")
 WEIGHTS = Path(__file__).with_name("go_test_weights.json")
 DEFAULT_WEIGHT = 0.3
 RECORD_MINIMUM = 1.0
-VERBOSE = re.compile(r"(?:^|\s)(=== PAUSE|--- PASS:) ((?:Test|Example|Fuzz)[A-Za-z0-9_]*)(?: \((\d+(?:\.\d+)?)s\))?\s*$")
+VERBOSE = re.compile(r"(?:^|\s)(=== PAUSE|--- PASS:|--- SKIP:) ((?:Test|Example|Fuzz)[A-Za-z0-9_]*)(?: \((\d+(?:\.\d+)?)s\))?\s*$")
 
 
 def parse_shard(value):
@@ -75,7 +75,7 @@ def record(lines, cores=4):
             if match.group(1) == "=== PAUSE":
                 parallel.add(match.group(2))
             elif match.group(3):
-                seconds[match.group(2)] = float(match.group(3))
+                seconds.setdefault(match.group(2), 0.0 if match.group(1) == "--- SKIP:" else float(match.group(3)))
             continue
         try:
             event = json.loads(line)
@@ -85,8 +85,8 @@ def record(lines, cores=4):
             continue
         if event.get("Action") == "pause":
             parallel.add(event["Test"])
-        elif event.get("Action") == "pass":
-            seconds[event["Test"]] = float(event.get("Elapsed", 0))
+        elif event.get("Action") in ("pass", "skip"):
+            seconds.setdefault(event["Test"], 0.0 if event["Action"] == "skip" else float(event.get("Elapsed", 0)))
     weights = {name: round(value / (cores if name in parallel else 1), 1) for name, value in seconds.items()}
     return {name: value for name, value in sorted(weights.items()) if value >= RECORD_MINIMUM}
 
