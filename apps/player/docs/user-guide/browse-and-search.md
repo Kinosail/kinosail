@@ -37,6 +37,14 @@ Use the library view to choose **All**, **My List**, **Unwatched**, **History**,
 
 Use the sort control to choose **Title**, **Added**, or **Year**. Title is the default. **Added** shows newest additions first. **Year** shows newer years first. Search ranking remains the first ordering when a search is active.
 
+Use the filter controls to narrow a view:
+
+1. Choose a **Genre**, **Decade**, **Rating**, or **Watched** value. Each value shows how many titles have it.
+2. Select **Apply**. The count and the list show only the titles that match every chosen filter.
+3. Select **Clear filters** to see the complete view again.
+
+A filter control appears only when titles in the view have that information. **Watched** appears for Movies and Shows. A show matches a filter when one of its episodes matches. If no title matches, the page says so and offers **Clear filters**. Filters do not apply to History, Collections, Playlists, or Photos.
+
 When the view is sorted by title without a search, use the letter navigation to jump to a title group. A letter jump is not available with a search or with another sort order.
 
 ## Move through a long library

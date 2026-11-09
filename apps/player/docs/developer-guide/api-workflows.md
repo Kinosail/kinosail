@@ -13,8 +13,9 @@ Use these sequences as integration shapes. Read the live OpenAPI document for th
 
 1. Call `GET /api/v1` to discover the API.
 2. Call `GET /api/v1/library` with `limit`, `offset`, `sort`, and an optional `q` or `view`.
-3. Follow an item identifier with `GET /api/v1/items/{id}`.
-4. Use the returned item type to choose the next action.
+3. To narrow the result, add `genre`, `decade` (for example `1990`), `rating`, or `watched` (`watched` or `unwatched`). The response lists the available values and counts in `facets` and the applied values in `filters`. An invalid filter returns HTTP 400.
+4. Follow an item identifier with `GET /api/v1/items/{id}`.
+5. Use the returned item type to choose the next action.
 
 Keep pagination bounded. Do not assume that every Profile sees the same items or fields.
 
