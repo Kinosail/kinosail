@@ -29,6 +29,25 @@ These shortcuts apply outside text-entry controls and where the corresponding ac
 
 Use Tab and Shift+Tab to move through links and controls, and Enter or Space to activate the focused control. The actions menu shows the destinations available to your Profile.
 
+## Control video with the keyboard
+
+These shortcuts apply on a video page when the page or the player has focus. They do not apply while you type in a field.
+
+| Shortcut | Action |
+| --- | --- |
+| Space or `K` | Play or pause. |
+| Left and Right arrows, or `J` and `L` | Go back or forward 10 seconds. |
+| `0` to `9` | Go to 0% to 90% of the video. |
+| Home | Go to the start. |
+| Up and Down arrows | Change the volume. Click or focus the player first. |
+| `M` | Mute or unmute. |
+| `F` | Enter or leave fullscreen. |
+| `C` | Turn subtitles on or off. |
+| `I` | Open or close Picture-in-Picture. |
+| `<` and `>` | Play slower or faster. |
+
+Double-click the video to enter or leave fullscreen. The browser remembers your volume and mute choice for the next video.
+
 ## Appearance, language, and navigation
 
 Use the theme control to choose the appearance you prefer. Language choices apply to supported interface translations; media titles and descriptions come from your library metadata.
@@ -43,4 +62,4 @@ During playback, choose **Play on another device**. Use your browser's AirPlay o
 
 If no device is offered, check that the receiver is on the appropriate network and can reach the Server's media URL. Browser and TV support varies by model. This is separate from [Watch Rooms]({{ '/user-guide/sharing/' | relative_url }}), where people watch through their own connected browsers.
 
-Source of truth: `packages/webassets/static/pwa.js`, `shortcuts.js`, `player-devices.js`, `player-tv.js`, and the Player web templates.
+Source of truth: `packages/webassets/static/pwa.js`, `shortcuts.js`, `player-shortcuts.js`, `player-devices.js`, `player-tv.js`, and the Player web templates.
