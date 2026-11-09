@@ -21,6 +21,8 @@ test("player keyboard shortcuts seek, change volume and speed, and keep volume a
   try {
     await stage.focus();
     await expect(notice).toBeHidden();
+    await page.keyboard.press("Home");
+    await expect.poll(async () => (await state()).time).toBeCloseTo(0, 0);
     await page.keyboard.press("l");
     await expect.poll(async () => (await state()).time).toBeCloseTo(10, 0);
     await page.keyboard.press("j");
@@ -65,7 +67,7 @@ test("player keyboard shortcuts seek, change volume and speed, and keep volume a
     expect(restored.volume).toBeCloseTo(0.05, 2);
     expect(restored.muted).toBe(false);
     await info.attach("player-shortcuts", { body: JSON.stringify({ revision: process.env.KINOSAIL_TEST_REVISION, browser: info.project.name, watch, duration,
-      keys: ["l", "j", "5", "Home", "Control+m", "m", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "Shift+>", "Shift+<", "f"], restored,
+      keys: ["Home", "l", "j", "5", "Home", "Control+m", "m", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "Shift+>", "Shift+<", "f"], restored,
       data: "Real populated Server movie; keyboard events on the focused player stage", result: "passed" }), contentType: "application/json" });
   } finally {
     await page.evaluate(() => { localStorage.removeItem("kinosail.player.volume"); localStorage.removeItem("kinosail.player.muted"); });
