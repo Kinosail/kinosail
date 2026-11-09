@@ -1,13 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { configureTestInstance, firstPlayable, login } from "./test-instance-helpers";
+import { configureTestInstance, login } from "./test-instance-helpers";
 
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
 
 test("player keyboard shortcuts seek, change volume and speed, and keep volume after reload", { tag: "@smoke" }, async ({ page }, info) => {
   await login(page);
-  const watch = await firstPlayable(page);
   await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/?view=movies");
+  const direct = page.locator('a.card[href^="/watch/"]').filter({ hasText: /Example Movie|Checkpoint Example|Direct Retry Control/ }).first();
+  const watch = (await direct.getAttribute("href"))!;
   await page.goto(watch);
   const video = page.locator("video");
   const stage = page.locator(".media-stage");
