@@ -150,6 +150,7 @@ jobs:
           MODULE: ${{ matrix.module }}
           KINOSAIL_GO_TEST_MODE: quick
           KINOSAIL_GO_SHARD: ${{ matrix.shard }}
+          KINOSAIL_GO_TEST_TIMINGS: ${{ github.event_name == 'workflow_dispatch' && '1' || '' }}
         run: ./scripts/ci/test-go.sh "$MODULE"
       - name: Verify certified first-fragment regeneration and cold reopen
         if: matrix.fragment == 'true'
@@ -192,7 +193,7 @@ jobs:
               file: apps/${{ matrix.app }}/Containerfile
               platforms: linux/amd64
               cache-from: type=gha,scope=${{ matrix.app }}-linux/amd64
-              cache-to: type=gha,mode=max,scope=${{ matrix.app }}-linux/amd64
+              cache-to: ${{ github.ref == 'refs/heads/main' && format('type=gha,mode=max,scope={0}-linux/amd64', matrix.app) || '' }}
               load: true
               push: false
               tags: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
@@ -305,7 +306,7 @@ jobs:
           file: apps/${{ matrix.app }}/Containerfile
           platforms: linux/arm64
           cache-from: type=gha,scope=${{ matrix.app }}-linux/arm64
-          cache-to: type=gha,mode=max,scope=${{ matrix.app }}-linux/arm64
+          cache-to: ${{ github.ref == 'refs/heads/main' && format('type=gha,mode=max,scope={0}-linux/arm64', matrix.app) || '' }}
           load: true
           push: false
           tags: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
