@@ -68,14 +68,16 @@ def partition(tests, index, count, weights=None):
 
 
 def record(lines, cores=4):
-    seconds, parallel = {}, set()
+    seconds, parallel, skipped = {}, set(), set()
     for line in lines:
         match = VERBOSE.search(line)
         if match:
             if match.group(1) == "=== PAUSE":
                 parallel.add(match.group(2))
+            elif match.group(1) == "--- SKIP:":
+                skipped.add(match.group(2))
             elif match.group(3):
-                seconds.setdefault(match.group(2), 0.0 if match.group(1) == "--- SKIP:" else float(match.group(3)))
+                seconds[match.group(2)] = float(match.group(3))
             continue
         try:
             event = json.loads(line)
@@ -85,9 +87,11 @@ def record(lines, cores=4):
             continue
         if event.get("Action") == "pause":
             parallel.add(event["Test"])
-        elif event.get("Action") in ("pass", "skip"):
-            seconds.setdefault(event["Test"], 0.0 if event["Action"] == "skip" else float(event.get("Elapsed", 0)))
-    weights = {name: round(value / (cores if name in parallel else 1), 1) for name, value in seconds.items()}
+        elif event.get("Action") == "skip":
+            skipped.add(event["Test"])
+        elif event.get("Action") == "pass":
+            seconds[event["Test"]] = float(event.get("Elapsed", 0))
+    weights = {name: round(value / (cores if name in parallel else 1), 1) for name, value in seconds.items() if name not in skipped}
     return {name: value for name, value in sorted(weights.items()) if value >= RECORD_MINIMUM}
 
 

@@ -6,7 +6,6 @@
   "TestCopiedHLSEOFHTTPRejectsUnsafeProbeAndAssetInputs": 1.3,
   "TestCopiedHLSPlaylistsReuseVerifiedTimelineAndRetryWhenVerificationIsBusy": 8.0,
   "TestCopiedPlaybackSeeksToListedSegmentsBeforeTheCopyReachesThem": 34.4,
-  "TestCopiedRecoveryRealFirstFragmentRegenerationReopens": 28.0,
   "TestCoreJourneysInRepresentativeBrowserViewports": 21.3,
   "TestCustomizedNavigationInRepresentativeBrowserViewports": 9.0,
   "TestDTSSurroundReachesEAC3ClientsAsFiveOne": 1.8,
