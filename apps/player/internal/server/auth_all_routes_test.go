@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "dab11f0afa4aaa6c6d8c14db32d5258a78f1f91e08ffd101d5316ddf1e81cafa"
+const reviewedRouteInventorySHA256 = "aded50252e6178a7f4f43ceffc97d647258379684c834a76f8cff614493ae625"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -104,7 +104,7 @@ var expectedLibraryScopeRoutes = routeSet(
 	"GET /api/v1/history", "GET /api/v1/audio/{id}/queue", "GET /api/v1/books/{id}/reader", "GET /api/v1/books/{id}/reader/progress", "GET /api/v1/playlists", "GET /api/v1/playlists/{name}",
 	"GET /api/v1/collections", "GET /api/v1/collections/{name}", "GET /api/v1/actor", "GET /api/v1/shows", "GET /api/v1/shows/{id}", "GET /api/v1/shows/{id}/list", "GET /api/v1/albums", "GET /api/v1/albums/{id}",
 	"GET /api/v1/watch-rooms/{id}", "GET /art/{id}", "GET /episode-art/{id}", "GET /backdrop/{id}", "GET /person/{id}/{person}", "GET /System/Info", "GET /Library/MediaFolders", "GET /Users", "GET /Users/Me", "GET /Users/{id}",
-	"GET /UserViews", "GET /Users/{user}/Views", "GET /Items", "GET /Users/{user}/Items", "GET /Items/Latest", "GET /Users/{user}/Items/Latest", "GET /Persons", "GET /Items/{id}", "GET /Users/{user}/Items/{id}", "GET /Shows/{id}/Seasons", "GET /Shows/{id}/Episodes", "GET /Items/{id}/Images/{type}", "GET /Items/{id}/Images/{type}/{index}",
+	"GET /UserViews", "GET /Users/{user}/Views", "GET /Items", "GET /Users/{user}/Items", "GET /Items/Latest", "GET /Users/{user}/Items/Latest", "GET /Persons", "GET /Genres", "GET /Items/Filters", "GET /Items/{id}", "GET /Users/{user}/Items/{id}", "GET /Shows/{id}/Seasons", "GET /Shows/{id}/Episodes", "GET /Items/{id}/Images/{type}", "GET /Items/{id}/Images/{type}/{index}",
 )
 
 var expectedWriteScopeRoutes = routeSet(
@@ -138,7 +138,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 487, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 489, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }

@@ -39,3 +39,18 @@ func (api *jellyfinAPI) nextUp(writer http.ResponseWriter, request *http.Request
 func jellyfinPlaySessionQuery(request *http.Request) string {
 	return sharedjellyfin.Query(request.URL.Query(), "playSessionId")
 }
+
+func (api *jellyfinAPI) genres(writer http.ResponseWriter, request *http.Request) {
+	view, _ := visibleView(request, api.index)
+	result, err := api.listing(request, view).Genres(request.URL.Query())
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+	sharedjellyfin.Listing(writer, request, result)
+}
+
+func (api *jellyfinAPI) filters(writer http.ResponseWriter, request *http.Request) {
+	view, _ := visibleView(request, api.index)
+	sharedjellyfin.Listing(writer, request, api.listing(request, view).Filters(request.URL.Query()))
+}

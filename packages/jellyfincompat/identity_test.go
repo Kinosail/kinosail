@@ -57,7 +57,7 @@ func TestEnsureIDValidatesBeforeGeneration(t *testing.T) {
 
 func TestLibraryRoutesAreFreshAndComplete(t *testing.T) {
 	routes := LibraryRoutes()
-	if len(routes) != 18 || routes[0] != "GET /System/Info" || routes[17] != "GET /Items/{id}/Images/{type}/{index}" {
+	if len(routes) != 20 || routes[0] != "GET /System/Info" || routes[19] != "GET /Items/{id}/Images/{type}/{index}" {
 		t.Fatalf("library routes = %v", routes)
 	}
 	routes[0] = "changed"

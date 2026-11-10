@@ -100,7 +100,7 @@ func publicViewerRouteAllowed(pattern string) bool {
 		"POST /continue-watching/{id}/remove", "POST /list/{id}",
 		"POST /playlist/{name}/delete", "POST /playlist/{name}/items/{id}", "POST /playlist/{name}/order", "POST /playlist/{name}/{id}", "POST /playlists", "POST /progress/{id}", "POST /read/{id}/progress", "POST /smart-playlists", "POST /watch-together", "POST /watched/{id}",
 		"DELETE /UserFavoriteItems/{id}", "DELETE /UserPlayedItems/{id}", "DELETE /Users/{user}/PlayedItems/{id}",
-		"GET /Items", "GET /Items/Latest", "GET /Items/{id}", "GET /Items/{id}/Download", "GET /Items/{id}/File", "GET /Items/{id}/Images/{type}", "GET /Items/{id}/Images/{type}/{index}", "GET /Items/{id}/PlaybackInfo", "GET /Videos/{id}/{stream...}",
+		"GET /Genres", "GET /Items", "GET /Items/Filters", "GET /Items/Latest", "GET /Items/{id}", "GET /Items/{id}/Download", "GET /Items/{id}/File", "GET /Items/{id}/Images/{type}", "GET /Items/{id}/Images/{type}/{index}", "GET /Items/{id}/PlaybackInfo", "GET /Videos/{id}/{stream...}",
 		"GET /MediaSegments/{id}", "GET /Playback/BitrateTest", "GET /Shows/NextUp", "GET /Shows/{id}/Episodes", "GET /Shows/{id}/Seasons", "GET /System/Info",
 		"GET /UserItems/Resume", "GET /UserItems/{id}/UserData", "GET /UserViews", "GET /Users/Me", "GET /Users/{id}", "GET /Users/{user}/Items", "GET /Users/{user}/Items/Latest", "GET /Users/{user}/Items/{id}", "GET /Users/{user}/Views",
 		"POST /Items/{id}/PlaybackInfo", "POST /Sessions/Capabilities", "POST /Sessions/Capabilities/Full", "POST /Sessions/Logout", "POST /Sessions/Playing", "POST /Sessions/Playing/Progress", "POST /Sessions/Playing/Stopped",

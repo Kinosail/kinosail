@@ -32,11 +32,11 @@ func TestRegisterItemsMapsEveryRoute(t *testing.T) {
 		return func(http.ResponseWriter, *http.Request) { called[name]++ }
 	}
 	RegisterItems(mux, ItemHandlers{
-		Views: handler("views"), Items: handler("items"), Latest: handler("latest"), Persons: handler("persons"), Item: handler("item"),
+		Views: handler("views"), Items: handler("items"), Latest: handler("latest"), Persons: handler("persons"), Genres: handler("genres"), Filters: handler("filters"), Item: handler("item"),
 		Seasons: handler("seasons"), Episodes: handler("episodes"), NextUp: handler("next-up"), Resume: handler("resume"),
 	})
 	for _, path := range []string{
-		"/UserViews", "/Users/user/Views", "/Items", "/Users/user/Items", "/Items/Latest", "/Users/user/Items/Latest", "/Persons",
+		"/UserViews", "/Users/user/Views", "/Items", "/Users/user/Items", "/Items/Latest", "/Users/user/Items/Latest", "/Persons", "/Genres", "/Items/Filters",
 		"/Items/id", "/Users/user/Items/id", "/Shows/id/Seasons", "/Shows/id/Episodes", "/Shows/NextUp", "/UserItems/Resume",
 	} {
 		response := httptest.NewRecorder()
@@ -45,7 +45,7 @@ func TestRegisterItemsMapsEveryRoute(t *testing.T) {
 			t.Fatalf("GET %s = %d", path, response.Code)
 		}
 	}
-	want := map[string]int{"views": 2, "items": 2, "latest": 2, "persons": 1, "item": 2, "seasons": 1, "episodes": 1, "next-up": 1, "resume": 1}
+	want := map[string]int{"views": 2, "items": 2, "latest": 2, "persons": 1, "genres": 1, "filters": 1, "item": 2, "seasons": 1, "episodes": 1, "next-up": 1, "resume": 1}
 	if !reflect.DeepEqual(called, want) {
 		t.Fatalf("calls = %#v, want %#v", called, want)
 	}

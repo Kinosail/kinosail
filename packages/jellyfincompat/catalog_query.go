@@ -15,10 +15,11 @@ const (
 	maximumSortText  = 256
 )
 
-var errInvalidListQuery = errors.New("sortOrder, years, genres, nameStartsWith, sortBy, filters, isPlayed or isFavorite is invalid")
+var errInvalidListQuery = errors.New("sortOrder, years, genres, genreIds, nameStartsWith, sortBy, searchTerm, filters, isPlayed or isFavorite is invalid")
 
 type listQuery struct {
 	genres     []string
+	genreIDs   []string
 	years      []string
 	prefix     string
 	sort       []string
@@ -47,25 +48,27 @@ func parseListQuery(values url.Values) (listQuery, error) {
 			query.sort = append(query.sort, "year")
 		}
 	}
-	if text := Query(values, "years"); text != "" {
-		query.years = strings.Split(text, ",")
-		if len(query.years) > maximumListYears || slices.ContainsFunc(query.years, func(year string) bool {
-			return len(year) != 4 || strings.Trim(year, "0123456789") != ""
-		}) {
-			return listQuery{}, errInvalidListQuery
-		}
+	years, validYears := boundedList(Query(values, "years"), ",", maximumListYears, func(year string) bool {
+		return len(year) == 4 && strings.Trim(year, "0123456789") == ""
+	})
+	genres, validGenres := boundedList(strings.ToLower(Query(values, "genres")), "|", maximumListNames, func(genre string) bool { return len(genre) <= maximumListText })
+	ids, validIDs := boundedList(Query(values, "genreIds"), "|,", maximumListNames, func(id string) bool {
+		return len(id) == 32 && strings.Trim(id, "0123456789abcdef") == ""
+	})
+	if !validYears || !validGenres || !validIDs {
+		return listQuery{}, errInvalidListQuery
 	}
-	if text := Query(values, "genres"); text != "" {
-		query.genres = strings.Split(strings.ToLower(text), "|")
-		if len(query.genres) > maximumListNames || slices.ContainsFunc(query.genres, func(genre string) bool { return len(genre) > maximumListText }) {
-			return listQuery{}, errInvalidListQuery
-		}
-	}
+	query.years, query.genres, query.genreIDs = years, genres, ids
 	return query, nil
 }
 
+func boundedList(text, separators string, limit int, valid func(string) bool) ([]string, bool) {
+	parts := strings.FieldsFunc(text, func(separator rune) bool { return strings.ContainsRune(separators, separator) })
+	return parts, len(parts) <= limit && !slices.ContainsFunc(parts, func(part string) bool { return !valid(part) })
+}
+
 func (query listQuery) filters() bool {
-	return len(query.genres) > 0 || len(query.years) > 0 || query.prefix != "" || query.state.filters()
+	return len(query.genres) > 0 || len(query.genreIDs) > 0 || len(query.years) > 0 || query.prefix != "" || query.state.filters()
 }
 
 func (query listQuery) matches(entry catalogEntry) bool {
@@ -75,15 +78,14 @@ func (query listQuery) matches(entry catalogEntry) bool {
 	if len(query.years) > 0 && !slices.Contains(query.years, entry.year()) {
 		return false
 	}
-	if len(query.genres) == 0 {
-		return query.state.matches(entry)
-	}
+	names, ids := len(query.genres) == 0, len(query.genreIDs) == 0
 	for genre := range strings.SplitSeq(strings.ToLower(entry.genres()), " · ") {
-		if genre != "" && slices.Contains(query.genres, genre) {
-			return query.state.matches(entry)
+		if genre != "" && (!names || !ids) {
+			names = names || slices.Contains(query.genres, genre)
+			ids = ids || slices.Contains(query.genreIDs, GenreID(genre))
 		}
 	}
-	return false
+	return names && ids && query.state.matches(entry)
 }
 
 func (query listQuery) order(entries []catalogEntry) []catalogEntry {
