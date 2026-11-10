@@ -66,6 +66,7 @@ type ttmlParser struct {
 	content strings.Builder
 	depth   int
 	root    bool
+	space   []bool
 }
 
 func parseTTMLSubtitle(data []byte) ([]subtitleCue, error) {
@@ -97,7 +98,7 @@ func (p *ttmlParser) consume(token xml.Token) error {
 		return p.start(element)
 	case xml.CharData:
 		if p.cue != nil {
-			p.content.Write(element)
+			p.content.WriteString(p.text(string(element)))
 		}
 	case xml.EndElement:
 		if element.Name.Local == "p" && p.cue != nil {
@@ -108,6 +109,7 @@ func (p *ttmlParser) consume(token xml.Token) error {
 			p.cue = nil
 		}
 		p.depth--
+		p.space = p.space[:max(len(p.space)-1, 0)]
 	}
 	return nil
 }
@@ -124,6 +126,11 @@ func (p *ttmlParser) start(element xml.StartElement) error {
 	if err != nil {
 		return err
 	}
+	preserve := len(p.space) > 0 && p.space[len(p.space)-1]
+	if value, set := attributes["space"]; set {
+		preserve = value == "preserve"
+	}
+	p.space = append(p.space, preserve)
 	if element.Name.Local == "p" {
 		if p.cue != nil || len(p.cues) >= maximumSubtitleCues {
 			return errors.New("subtitle XML cues are invalid")
@@ -138,6 +145,13 @@ func (p *ttmlParser) start(element xml.StartElement) error {
 		p.content.WriteByte('\n')
 	}
 	return nil
+}
+
+func (p *ttmlParser) text(value string) string {
+	if len(p.space) > 0 && p.space[len(p.space)-1] {
+		return value
+	}
+	return strings.NewReplacer("\r", " ", "\n", " ").Replace(value)
 }
 
 func parseTTMLTime(value string) (time.Duration, bool) {
