@@ -109,6 +109,13 @@ class SelectionTests(unittest.TestCase):
             self.assertTrue(plan["subtitles_tools"])
             self.assertTrue(plan["supply"])
 
+    def test_dependabot_configuration_selects_only_the_always_run_checks(self):
+        self.assertFalse(any(affected([".github/dependabot.yml"]).values()))
+        self.assertTrue(affected([".github/dependabot.yml", "apps/player/go.sum"])["player"])
+        for path in (".github/dependabot.yaml", ".github/workflows/dependabot.yml", "dependabot.yml", ".github/dependabot.yml/extra"):
+            with self.subTest(path=path):
+                self.assertTrue(all(affected([path]).values()))
+
     def test_documentation_selects_its_build_without_server_suites(self):
         for path in ("engineering/documentation/index.md", "engineering/documentation/site.js",
                      "apps/player/docs/architecture-explorer/index.html",

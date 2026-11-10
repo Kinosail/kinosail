@@ -48,7 +48,7 @@ def affected(paths):
                 or (len(parts) == 3 and parts[0] == "apps" and parts[-1] in ("README.md", "AGENTS.md", "DESIGN.md", "CONTEXT.md"))
                 or (len(parts) > 3 and parts[0] == "apps" and parts[2] == "docs" and path.endswith(".md"))):
             continue
-        if path == "apps/player/apps/native/AGENTS.md":
+        if path in ("apps/player/apps/native/AGENTS.md", ".github/dependabot.yml"):
             continue
         if path.startswith("apps/player/apps/native/"):
             selected["client"] = True
