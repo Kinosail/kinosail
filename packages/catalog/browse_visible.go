@@ -21,6 +21,7 @@ type browseSource struct {
 type visibleOrder struct {
 	items   []*library.Item
 	letters []letterBucket
+	facets  Facets
 	used    uint64
 }
 
@@ -32,7 +33,7 @@ func (source browseSource) references() []*library.Item {
 }
 
 func (browse Browse) policyOnly() bool {
-	return browse.titleOrdered && browse.query == "" && normalizeSort(browse.order) == "title" && !oneOf(browse.view, "list", "unwatched", "history")
+	return browse.titleOrdered && browse.query == "" && normalizeSort(browse.order) == "title" && !oneOf(browse.view, "list", "unwatched", "history") && !browse.filters.Active()
 }
 
 func (index *Index) titleSource(order *titleOrder) browseSource {
@@ -86,11 +87,12 @@ func buildVisibleOrder(ctx context.Context, ordered []*library.Item, browse Brow
 			selected = append(selected, item)
 		}
 	}
+	facets := itemFacets(selected)
 	items, err := browseReferences(ctx, selected, browse)
 	if err != nil {
 		return nil, err
 	}
-	return &visibleOrder{items: slices.Clip(items), letters: letterBuckets(items, browse.locale)}, nil
+	return &visibleOrder{items: slices.Clip(items), letters: letterBuckets(items, browse.locale), facets: facets}, nil
 }
 
 func visibleOrderCapacity(items, orders int) int {
