@@ -23,6 +23,30 @@ class SelectionTests(unittest.TestCase):
                 self.assertFalse(plan["packages"])
                 self.assertFalse(plan[f"{app}_browsers"])
 
+    def test_media_flag_follows_playback_paths_and_every_unknown_input(self):
+        media = ("apps/player/internal/server/hls_manager.go", "apps/player/internal/server/playback_session.go",
+                 "apps/player/internal/server/player.go", "apps/player/internal/server/watch_progress.go",
+                 "apps/player/internal/server/static/hls.min.js", "apps/player/internal/server/subtitle_tracks.go",
+                 "apps/player/internal/server/AudioTranscode.go", "apps/player/scripts/hls_resume_audio.py",
+                 "apps/player/Containerfile", "apps/player/compose.yaml", "apps/player/Makefile", "apps/player/go.sum",
+                 "apps/player/go.mod", "packages/webassets/static/player-controls.js", "packages/playerweb/page.go",
+                 "packages/go.sum", "packages/go.mod", "packages/media/probe.go", "scripts/ci/proofs.json",
+                 "scripts/ci/proof_shard.py", ".github/workflows/ci.yml", "go.work")
+        for path in media:
+            with self.subTest(path=path):
+                self.assertTrue(affected([path])["media"])
+        other = ("apps/player/internal/server/home.go", "apps/player/internal/server/static/home.css",
+                 "apps/player/internal/server/library_filter_test.go", "apps/player/e2e/library-history.spec.ts",
+                 "packages/catalog/browse_filter.go", "packages/library/library.go", "packages/home/handler.go",
+                 "apps/subtitles/internal/server/subtitle_clean.go", "apps/subtitles/scripts/test-container.sh",
+                 "apps/player/apps/native/Sources/Player.swift", "apps/player/apps/android/app/Player.kt",
+                 "apps/player/docs/user-guide/playback.md", "README.md")
+        for path in other:
+            with self.subTest(path=path):
+                self.assertFalse(affected([path])["media"])
+        self.assertTrue(affected(None)["media"])
+        self.assertTrue(affected(["packages/catalog/item.go", "apps/player/internal/server/hls.go"])["media"])
+
     def test_architecture_inputs_select_snapshot_verification(self):
         paths = ("apps/player/internal/server/show.go", "apps/subtitles/cmd/kinosail/main.go",
                  "apps/player/internal/server/show_test.go", "packages/httpguard/limiter.go",

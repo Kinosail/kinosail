@@ -50,7 +50,7 @@ def expected(plan, event_name):
         "docs": plan["docs"] and (live or event_name == "push"),
         "go": live and bool(derived["modules"]),
         "e2e": live and bool(derived["apps"]),
-        "proofs": live and plan["player"],
+        "proofs": live and plan["player"] and (plan["media"] or event_name != "pull_request"),
         "arm": live and bool(derived["arm"]),
         "tools": live and bool(derived["tools"]),
         "client": live and plan["client"],
