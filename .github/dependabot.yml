@@ -1,62 +1,49 @@
 version: 2
 updates:
   - package-ecosystem: gomod
-    directory: /packages
+    directories:
+      - /packages
+      - /apps/player
+      - /apps/subtitles
+      - /scripts/quality/metrics
     schedule:
       interval: weekly
+      day: monday
     open-pull-requests-limit: 1
     groups:
       dependencies:
         patterns: ["*"]
-  - package-ecosystem: gomod
-    directory: /apps/player
+  - package-ecosystem: npm
+    directories:
+      - /apps/player/e2e
+      - /apps/subtitles/e2e
+      - /engineering/documentation
     schedule:
       interval: weekly
+      day: tuesday
     open-pull-requests-limit: 1
     groups:
       dependencies:
         patterns: ["*"]
-  - package-ecosystem: gomod
-    directory: /apps/subtitles
+  - package-ecosystem: npm
+    directory: /scripts/quality
     schedule:
       interval: weekly
+      day: wednesday
     open-pull-requests-limit: 1
-    groups:
-      dependencies:
-        patterns: ["*"]
-  - package-ecosystem: gomod
-    directory: /scripts/quality/metrics
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 1
-    groups:
-      dependencies:
-        patterns: ["*"]
-  - package-ecosystem: gradle
-    directory: /apps/player/apps/android
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 1
-    groups:
-      dependencies:
-        patterns: ["*"]
     ignore:
-      - dependency-name: org.jetbrains.kotlinx:kotlinx-coroutines-play-services
-        versions: ["1.12.0"]
-  - package-ecosystem: docker
-    directory: /apps/player
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 1
-    exclude-paths:
-      - Containerfile.test
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
     groups:
       dependencies:
         patterns: ["*"]
   - package-ecosystem: docker
-    directory: /apps/subtitles
+    directories:
+      - /apps/player
+      - /apps/subtitles
     schedule:
       interval: weekly
+      day: wednesday
     open-pull-requests-limit: 1
     exclude-paths:
       - Containerfile.test
@@ -67,41 +54,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 1
-    groups:
-      dependencies:
-        patterns: ["*"]
-  - package-ecosystem: npm
-    directory: /apps/player/e2e
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 1
-    groups:
-      dependencies:
-        patterns: ["*"]
-  - package-ecosystem: npm
-    directory: /scripts/quality
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 1
-    ignore:
-      - dependency-name: typescript
-        update-types: ["version-update:semver-major"]
-    groups:
-      dependencies:
-        patterns: ["*"]
-  - package-ecosystem: npm
-    directory: /apps/subtitles/e2e
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 1
-    groups:
-      dependencies:
-        patterns: ["*"]
-  - package-ecosystem: npm
-    directory: /engineering/documentation
-    schedule:
-      interval: weekly
+      day: thursday
     open-pull-requests-limit: 1
     groups:
       dependencies:
@@ -110,7 +63,20 @@ updates:
     directory: /engineering/documentation
     schedule:
       interval: weekly
+      day: thursday
     open-pull-requests-limit: 1
     groups:
       dependencies:
         patterns: ["*"]
+  - package-ecosystem: gradle
+    directory: /apps/player/apps/android
+    schedule:
+      interval: weekly
+      day: friday
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: org.jetbrains.kotlinx:kotlinx-coroutines-play-services
+        versions: ["1.12.0"]
