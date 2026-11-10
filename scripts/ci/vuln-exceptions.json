@@ -1,0 +1,9 @@
+[
+ {
+  "id": "GO-2026-6909",
+  "module": "github.com/crewjam/saml",
+  "fixed": "v0.5.2",
+  "expires": "2026-12-09",
+  "reason": "The advisory text says github.com/crewjam/saml through v0.5.1 is affected, but the Go vulnerability database record lists no fixed version, so govulncheck reports every release. Remove this entry when the record names the fix."
+ }
+]
