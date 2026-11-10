@@ -32,7 +32,7 @@ func TestHLSPlaylistLifecycle(t *testing.T) {
 		}
 	}
 	quality := PlaybackQuality{Label: "360p", Width: 640, Height: 360, Bitrate: 493_000, FrameRate: 23.976}
-	if !VariantReady(source, directory) || !variantsReady(source, filepath.Dir(directory), []PlaybackQuality{quality}) || !FinalizedVariant(directory) {
+	if !VariantReady(source, directory) || !VariantsReady(source, filepath.Dir(directory), []PlaybackQuality{quality}) || !FinalizedVariant(directory) {
 		t.Fatal("complete variant was not ready")
 	}
 	average, peak := VariantBandwidth(directory, 1)
@@ -68,7 +68,7 @@ func TestHLSPlaylistRejectsIncompleteAndUnsafeInputs(t *testing.T) {
 		t.Fatal(err)
 	}
 	writeTestFile(t, filepath.Join(directory, "index.m3u8"), "#EXTM3U\n")
-	if VariantReady(source, directory) || FinalizedVariant(directory) || FinalizePlaylist(filepath.Join(directory, "index.m3u8")) == nil || variantsReady(source, root, nil) {
+	if VariantReady(source, directory) || FinalizedVariant(directory) || FinalizePlaylist(filepath.Join(directory, "index.m3u8")) == nil || VariantsReady(source, root, nil) {
 		t.Fatal("incomplete playlist was accepted")
 	}
 	if average, peak := VariantBandwidth(filepath.Join(root, "missing"), 100); average != 100 || peak != 110 {

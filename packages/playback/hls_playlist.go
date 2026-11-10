@@ -15,7 +15,7 @@ const maximumHLSPlaylistBytes = 1 << 20
 
 const HLSBandwidthPolicyMarker = "#KINOSAIL-BANDWIDTH:2"
 
-func variantsReady(source, directory string, qualities []PlaybackQuality) bool {
+func VariantsReady(source, directory string, qualities []PlaybackQuality) bool {
 	if len(qualities) == 0 {
 		return false
 	}

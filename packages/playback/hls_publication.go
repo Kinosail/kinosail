@@ -16,7 +16,7 @@ func PublishVariantsObserved(ctx context.Context, source, directory, transcoder 
 	defer changes.Close()
 	completed, published, wake := 0, false, changes.changed
 	for completed < expected {
-		if !published && variantsReady(source, directory, qualities) {
+		if !published && VariantsReady(source, directory, qualities) {
 			if err := WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, qualities, independent, write); err != nil {
 				return err
 			}
@@ -34,7 +34,7 @@ func PublishVariantsObserved(ctx context.Context, source, directory, transcoder 
 			return err
 		}
 	}
-	if !variantsReady(source, directory, qualities) {
+	if !VariantsReady(source, directory, qualities) {
 		return errors.New("transcoder produced no playable variants")
 	}
 	if err := WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, qualities, independent, write); err != nil {
