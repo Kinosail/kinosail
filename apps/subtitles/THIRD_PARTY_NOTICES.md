@@ -5,7 +5,7 @@ listed license files control. Kinosail's license does not replace them.
 
 | Component | Version | License or terms | Notice |
 | --- | --- | --- | --- |
-| HTMX | 4.0.0 | Zero-Clause BSD | [`third_party/htmx/LICENSE`](third_party/htmx/LICENSE) |
+| HTMX | 4.0.1 | Zero-Clause BSD | [`third_party/htmx/LICENSE`](third_party/htmx/LICENSE) |
 | Manrope | Bundled web font | SIL Open Font License 1.1 | [`../../packages/webassets/static/fonts/OFL-Manrope.txt`](../../packages/webassets/static/fonts/OFL-Manrope.txt) |
 | TMDB logo | Approved logo by Travis Bell | CC BY-SA 4.0 and TMDB brand rules | [Logo source and credit](https://commons.wikimedia.org/wiki/File:Tmdb.new.logo.svg), [license](https://creativecommons.org/licenses/by-sa/4.0/), [TMDB rules](https://developer.themoviedb.org/docs/faq) |
 | govad | 2026-03-30 revision | MIT | [`third_party/govad.LICENSE`](third_party/govad.LICENSE) |
