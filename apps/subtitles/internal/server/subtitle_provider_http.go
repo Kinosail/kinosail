@@ -51,9 +51,8 @@ func readArchivedSubtitle(ctx context.Context, archive *zip.Reader) ([]byte, err
 		if err := ctx.Err(); err != nil {
 			return nil, err
 		}
-		extension := strings.ToLower(filepath.Ext(file.Name))
-		styled := oneOf(extension, ".ass", ".ssa")
-		if file.FileInfo().IsDir() || !styled && !oneOf(extension, ".srt", ".vtt") || file.UncompressedSize64 > 4<<20 {
+		styled, wanted := archivedSubtitleKind(file)
+		if !wanted {
 			continue
 		}
 		if int64(file.UncompressedSize64) > remaining {
@@ -72,11 +71,27 @@ func readArchivedSubtitle(ctx context.Context, archive *zip.Reader) ([]byte, err
 		if remaining < 0 {
 			return nil, errors.New("subtitle archive exceeds its decompression budget")
 		}
-		if readErr == nil && len(data) <= 4<<20 && (styled && validStyledSubtitlePayload(data) || !styled && validSubtitlePayload(data)) {
+		if readErr == nil && validArchivedSubtitle(data, styled) {
 			found[styled] = append(found[styled], data)
 		}
 	}
 	return archivedSubtitleChoice(found[false], found[true])
+}
+
+func archivedSubtitleKind(file *zip.File) (styled, wanted bool) {
+	extension := strings.ToLower(filepath.Ext(file.Name))
+	styled = oneOf(extension, ".ass", ".ssa")
+	return styled, !file.FileInfo().IsDir() && (styled || oneOf(extension, ".srt", ".vtt")) && file.UncompressedSize64 <= 4<<20
+}
+
+func validArchivedSubtitle(data []byte, styled bool) bool {
+	if len(data) > 4<<20 {
+		return false
+	}
+	if styled {
+		return validStyledSubtitlePayload(data)
+	}
+	return validSubtitlePayload(data)
 }
 
 func archivedSubtitleChoice(text, styled [][]byte) ([]byte, error) {
