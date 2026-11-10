@@ -181,7 +181,7 @@ function inspectorHarness() {
     nodes.set(id,value); return value;
   }
   const form = node("subtitle-edit-form");
-  form.elements = Object.fromEntries(["role","language","encoding","offset","automaticSync","removeCredits","mergeRepeated","file","text"]
+  form.elements = Object.fromEntries(["role","language","encoding","offset","automaticSync","removeCredits","mergeRepeated","removeHearingImpaired","file","text"]
     .map(name => [name,node("field-"+name)]));
   form.elements.language.value = "en"; form.elements.offset.value = "0";
   form.querySelectorAll = () => [...Object.values(form.elements),node("subtitle-edit-form-child")];
