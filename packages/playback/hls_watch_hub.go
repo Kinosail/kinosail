@@ -91,6 +91,9 @@ func (hub *hlsWatchHub) count(table map[string]map[*hlsChanges]int, directory st
 }
 
 func (hub *hlsWatchHub) ready(ctx context.Context) bool {
+	if !HLSFileEvents {
+		return false
+	}
 	if hub.watcher != nil {
 		return true
 	}

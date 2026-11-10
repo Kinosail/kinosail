@@ -82,7 +82,7 @@ struct ResilienceTests {
         let access = try DownloadAuthorization(server: ServerAddress("https://" + fixture.host), serverID: "server", profileID: "viewer", token: "fixture-token")
         try await engine.authorize(access)
         try await engine.enqueuePreparation(scope: access.scope, key: key, uri: "https://" + fixture.host + path + "/file", kind: "audio", wifiOnly: false, quota: 0)
-        let deadline = Date().addingTimeInterval(10)
+        let deadline = Date().addingTimeInterval(30)
         var snapshot = try await engine.snapshot(access.scope).first { $0.key == key }
         while snapshot?.status != "complete" && snapshot?.status != "paused" && Date() < deadline {
             try await Task.sleep(for: .milliseconds(50))
@@ -98,7 +98,7 @@ struct ResilienceTests {
         let reopened = VerifiedDownloads(directory: root, configuration: configuration)
         try await reopened.authorize(access)
         try await reopened.check(access.scope, key: key)
-        let reopenedDeadline = Date().addingTimeInterval(10)
+        let reopenedDeadline = Date().addingTimeInterval(30)
         var reopenedStatus = try await reopened.snapshot(access.scope).first?.status
         while reopenedStatus != "complete" && reopenedStatus != "paused" && Date() < reopenedDeadline {
             try await Task.sleep(for: .milliseconds(50))

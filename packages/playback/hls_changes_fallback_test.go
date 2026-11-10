@@ -16,6 +16,9 @@ import (
 )
 
 func TestWaitHLSChangePollsAndWarnsWhenWatchesAreExhausted(t *testing.T) {
+	if !HLSFileEvents {
+		t.Skip("watch exhaustion needs file events; this host polls")
+	}
 	directory := filepath.Join(t.TempDir(), "private-title", "360p")
 	if err := os.MkdirAll(directory, 0o700); err != nil {
 		t.Fatal(err)

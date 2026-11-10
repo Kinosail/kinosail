@@ -20,10 +20,6 @@ type (
 
 var sessionCookie = identitycore.SessionCookie
 
-func compatibilityProfile(profile viewerProfile) viewerProfile {
-	return identitycore.CompatibilityProfile(profile)
-}
-
 func (store *profileStore) sessionProfiles() []identitycore.SessionProfile {
 	profiles := make([]identitycore.SessionProfile, len(store.profiles))
 	for index, profile := range store.profiles {

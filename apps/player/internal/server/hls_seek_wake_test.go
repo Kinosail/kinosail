@@ -14,10 +14,14 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
+	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
 func TestCompatiblePlaybackSeekRespondsWhenTheRequestedSegmentIsPublished(t *testing.T) {
+	if !playback.HLSFileEvents {
+		t.Skip("prompt seek wake needs file events; this host polls")
+	}
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
