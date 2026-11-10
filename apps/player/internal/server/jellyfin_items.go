@@ -41,7 +41,10 @@ func (api *jellyfinAPI) items(writer http.ResponseWriter, request *http.Request)
 		http.Error(writer, "library is unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	result, err := api.listing(request, view).Items(request.URL.Query())
+	result, err := api.listing(request, view).WithState(func(item library.Item) sharedjellyfin.ItemState {
+		state := api.progress.Get(request, item.ID)
+		return sharedjellyfin.ItemState{Seconds: state.Seconds, Watched: state.Watched, Favorite: api.lists.Has(request, item.ID)}
+	}).Items(request.URL.Query())
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return

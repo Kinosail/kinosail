@@ -18,6 +18,7 @@ type ProjectItem func(library.Item) ItemRecord
 type Catalog struct {
 	view    *library.View
 	project ProjectItem
+	state   func(library.Item) ItemState
 }
 
 func NewCatalog(view *library.View, project ProjectItem) Catalog {
@@ -88,6 +89,7 @@ func (catalog Catalog) Items(values url.Values) (Page, error) {
 	if entries == nil {
 		return Page{Items: catalog.records(nil)}, nil
 	}
+	query.state.lookup = catalog.state
 	filter := newEntryFilter(values, ids)
 	filter.query = query
 	page, start, total := filter.page(query.order(entries), max(0, Int(values, "startIndex")), limit)

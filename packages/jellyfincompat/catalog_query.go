@@ -15,7 +15,7 @@ const (
 	maximumSortText  = 256
 )
 
-var errInvalidListQuery = errors.New("sortOrder, years, genres, nameStartsWith or sortBy is invalid")
+var errInvalidListQuery = errors.New("sortOrder, years, genres, nameStartsWith, sortBy, filters, isPlayed or isFavorite is invalid")
 
 type listQuery struct {
 	genres     []string
@@ -23,10 +23,15 @@ type listQuery struct {
 	prefix     string
 	sort       []string
 	descending bool
+	state      stateQuery
 }
 
 func parseListQuery(values url.Values) (listQuery, error) {
-	query := listQuery{prefix: strings.ToLower(Query(values, "nameStartsWith"))}
+	state, err := parseStateQuery(values)
+	if err != nil {
+		return listQuery{}, err
+	}
+	query := listQuery{prefix: strings.ToLower(Query(values, "nameStartsWith")), state: state}
 	order, sortBy := strings.ToLower(Query(values, "sortOrder")), Query(values, "sortBy")
 	if len(query.prefix) > maximumListText || len(sortBy) > maximumSortText || (order != "" && order != "ascending" && order != "descending") {
 		return listQuery{}, errInvalidListQuery
@@ -60,7 +65,7 @@ func parseListQuery(values url.Values) (listQuery, error) {
 }
 
 func (query listQuery) filters() bool {
-	return len(query.genres) > 0 || len(query.years) > 0 || query.prefix != ""
+	return len(query.genres) > 0 || len(query.years) > 0 || query.prefix != "" || query.state.filters()
 }
 
 func (query listQuery) matches(entry catalogEntry) bool {
@@ -71,11 +76,11 @@ func (query listQuery) matches(entry catalogEntry) bool {
 		return false
 	}
 	if len(query.genres) == 0 {
-		return true
+		return query.state.matches(entry)
 	}
 	for genre := range strings.SplitSeq(strings.ToLower(entry.genres()), " · ") {
 		if genre != "" && slices.Contains(query.genres, genre) {
-			return true
+			return query.state.matches(entry)
 		}
 	}
 	return false
