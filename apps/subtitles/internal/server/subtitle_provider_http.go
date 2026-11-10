@@ -46,13 +46,14 @@ func readArchivedSubtitle(ctx context.Context, archive *zip.Reader) ([]byte, err
 		return nil, errors.New("subtitle archive has too many entries")
 	}
 	remaining := int64(16 << 20)
-	var subtitle []byte
+	found := map[bool][][]byte{}
 	for _, file := range archive.File {
 		if err := ctx.Err(); err != nil {
 			return nil, err
 		}
 		extension := strings.ToLower(filepath.Ext(file.Name))
-		if file.FileInfo().IsDir() || !oneOf(extension, ".srt", ".vtt") || file.UncompressedSize64 > 4<<20 {
+		styled := oneOf(extension, ".ass", ".ssa")
+		if file.FileInfo().IsDir() || !styled && !oneOf(extension, ".srt", ".vtt") || file.UncompressedSize64 > 4<<20 {
 			continue
 		}
 		if int64(file.UncompressedSize64) > remaining {
@@ -71,18 +72,29 @@ func readArchivedSubtitle(ctx context.Context, archive *zip.Reader) ([]byte, err
 		if remaining < 0 {
 			return nil, errors.New("subtitle archive exceeds its decompression budget")
 		}
-		if readErr != nil || len(data) > 4<<20 || !validSubtitlePayload(data) {
-			continue
+		if readErr == nil && len(data) <= 4<<20 && (styled && validStyledSubtitlePayload(data) || !styled && validSubtitlePayload(data)) {
+			found[styled] = append(found[styled], data)
 		}
-		if subtitle != nil {
-			return nil, errors.New("subtitle archive is ambiguous")
-		}
-		subtitle = data
 	}
-	if subtitle != nil {
-		return subtitle, nil
+	return archivedSubtitleChoice(found[false], found[true])
+}
+
+func archivedSubtitleChoice(text, styled [][]byte) ([]byte, error) {
+	if len(text) == 0 {
+		text = styled
 	}
-	return nil, errors.New("subtitle archive is invalid")
+	switch len(text) {
+	case 0:
+		return nil, errors.New("subtitle archive is invalid")
+	case 1:
+		return text[0], nil
+	}
+	return nil, errors.New("subtitle archive is ambiguous")
+}
+
+func validStyledSubtitlePayload(data []byte) bool {
+	decoded, err := decodeSubtitleText(data)
+	return err == nil && bytes.HasPrefix(bytes.TrimSpace(decoded), []byte("[Script Info]")) && bytes.Contains(decoded, []byte("Dialogue:"))
 }
 
 type subtitleContextReader struct {
