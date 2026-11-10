@@ -106,7 +106,7 @@ class FastPathContracts(unittest.TestCase):
         self.assertIn("if: matrix.fragment == 'true'", go)
         self.assertIn("name: Go (${{ matrix.module }}${{ matrix.shard && format(' {0}', matrix.shard) || '' }})", go)
         self.assertIn('path: ~/.cache/golangci-lint', repository)
-        self.assertIn('golang.org/x/vuln/cmd/govulncheck@v1.9.0', repository)
+        self.assertIn('python3 scripts/ci/vuln_check.py "$directory" golang.org/x/vuln/cmd/govulncheck@v1.9.0', repository)
         self.assertIn("jq -r '.[].directory'", repository)
 
 if __name__ == '__main__':
