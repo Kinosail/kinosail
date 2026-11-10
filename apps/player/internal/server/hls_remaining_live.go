@@ -10,14 +10,20 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-const hlsStableReadAttempts = 5
+const (
+	hlsStableReadAttempts   = 5
+	hlsReplacedReadAttempts = 16
+)
 
 func hlsStableRead[T any](read func() (T, error), retryable ...error) (T, error) {
 	var value T
 	var err error
-	for range hlsStableReadAttempts {
+	for attempt := range hlsReplacedReadAttempts {
 		value, err = read()
 		if !slices.ContainsFunc(retryable, func(target error) bool { return errors.Is(err, target) }) {
+			return value, err
+		}
+		if attempt+1 >= hlsStableReadAttempts && !errors.Is(err, errCopiedHLSReplaced) {
 			return value, err
 		}
 	}
