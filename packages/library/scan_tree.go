@@ -21,6 +21,8 @@ type scanDir struct {
 	media    map[string]struct{}
 	files    map[string]mediaFile
 	items    map[string]Item
+	show     localMetadata
+	showFile sidecarStamp
 }
 
 type scanEntry struct {
@@ -119,6 +121,7 @@ func (directory *scanDir) statMedia(path string, listed []fs.DirEntry, previous 
 	for _, entry := range listed {
 		byName[entry.Name()] = entry
 	}
+	directory.showFile, directory.show = directory.showMetadata(path, byName, previous)
 	results := make([]statResult, len(directory.entries))
 	stat := func(position int) {
 		entry := directory.entries[position]
