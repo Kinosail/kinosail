@@ -6,11 +6,17 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
+
+type libraryFacetValue struct {
+	Value string `json:"value"`
+	Count int    `json:"count"`
+}
 
 type filteredLibrary struct {
 	Items   []struct{ ID, Title string } `json:"items"`
@@ -19,10 +25,7 @@ type filteredLibrary struct {
 		Genre, Decade, Rating, Watched string
 	} `json:"filters"`
 	Facets struct {
-		Genres, Decades, Ratings []struct {
-			Value string `json:"value"`
-			Count int    `json:"count"`
-		}
+		Genres, Decades, Ratings []libraryFacetValue
 	} `json:"facets"`
 }
 
@@ -110,13 +113,10 @@ func TestLibraryFiltersNarrowMoviesAndShowsThroughTheAPI(t *testing.T) {
 func TestLibraryFacetsCountVisibleTitlesAndIgnoreTheActiveFilter(t *testing.T) {
 	t.Parallel()
 	handler := libraryFilterHandler(t)
-	facet := func(values []struct {
-		Value string `json:"value"`
-		Count int    `json:"count"`
-	}) string {
+	facet := func(values []libraryFacetValue) string {
 		parts := make([]string, 0, len(values))
 		for _, value := range values {
-			parts = append(parts, value.Value+"="+string(rune('0'+value.Count)))
+			parts = append(parts, value.Value+"="+strconv.Itoa(value.Count))
 		}
 		return strings.Join(parts, ",")
 	}
