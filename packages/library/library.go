@@ -20,55 +20,56 @@ var (
 )
 
 type Item struct {
-	ID              string
-	Library         string
-	LibraryType     string
-	Kind            string
-	Title           string
-	SortTitle       string
-	Year            string
-	Plot            string
-	Rating          string
-	Tagline         string
-	Genres          string
-	Director        string
-	Studio          string
-	Collection      string
-	Artist          string
-	AlbumArtist     string
-	Album           string
-	Disc            int
-	Track           int
-	Lyrics          string
-	Folder          string
-	DateTaken       time.Time
-	Container       string
-	Size            int64
-	Path            string
-	Artwork         string
-	Backdrop        string
-	Logo            string
-	ShowTitle       string
-	ShowYear        string
-	ShowPlot        string
-	ShowGenres      string
-	ShowStudio      string
-	ShowArtwork     string
-	ShowBackdrop    string
-	ShowLogo        string
-	SeasonArtwork   string
-	ShowProviderIDs map[string]string
-	Subtitle        string
-	Subtitles       []string
-	Show            string
-	Season          int
-	Episode         int
-	Added           time.Time
-	Cast            []Person
-	ShowCast        []Person
-	LocalTitle      bool
-	LocalMetadata   bool
-	ProviderIDs     map[string]string
+	ID                string
+	Library           string
+	LibraryType       string
+	Kind              string
+	Title             string
+	SortTitle         string
+	Year              string
+	Plot              string
+	Rating            string
+	Tagline           string
+	Genres            string
+	Director          string
+	Studio            string
+	Collection        string
+	Artist            string
+	AlbumArtist       string
+	Album             string
+	Disc              int
+	Track             int
+	Lyrics            string
+	Folder            string
+	DateTaken         time.Time
+	Container         string
+	Size              int64
+	Path              string
+	Artwork           string
+	Backdrop          string
+	Logo              string
+	ShowTitle         string
+	ShowYear          string
+	ShowPlot          string
+	ShowGenres        string
+	ShowStudio        string
+	ShowArtwork       string
+	ShowBackdrop      string
+	ShowLogo          string
+	SeasonArtwork     string
+	ShowProviderIDs   map[string]string
+	Subtitle          string
+	Subtitles         []string
+	Show              string
+	Season            int
+	Episode           int
+	Added             time.Time
+	Cast              []Person
+	ShowCast          []Person
+	LocalTitle        bool
+	LocalMetadata     bool
+	LocalShowMetadata bool
+	ProviderIDs       map[string]string
 }
 
 type Person struct {
@@ -140,6 +141,7 @@ func (view scanView) item(root, namespace, path, kind string, file mediaFile) It
 	backdrop := view.firstArtwork(base+"-fanart", base+"-backdrop", filepath.Join(directory, "fanart"), filepath.Join(directory, "backdrop"))
 	logo := view.firstArtwork(base+"-clearlogo", base+"-logo", filepath.Join(directory, "clearlogo"), filepath.Join(directory, "logo"))
 	showArtwork, showBackdrop, showLogo, seasonArtwork := "", "", "", ""
+	var showMetadata localMetadata
 	if show != "" {
 		parts := strings.Split(filepath.ToSlash(relative), "/")
 		showDirectory := filepath.Join(append([]string{root}, parts[:showFolderDepth(parts)+1]...)...)
@@ -149,6 +151,9 @@ func (view scanView) item(root, namespace, path, kind string, file mediaFile) It
 		showLogo = view.firstArtwork(filepath.Join(showDirectory, "clearlogo"), filepath.Join(showDirectory, "logo"))
 		seasonArtwork = view.firstArtwork(filepath.Join(directory, "poster"), filepath.Join(directory, "folder"))
 		backdrop, logo = "", ""
+		if listed := view.dirs[showDirectory]; listed != nil {
+			showMetadata = listed.show
+		}
 	}
 	if kind == "photo" {
 		artwork = path
@@ -162,7 +167,9 @@ func (view scanView) item(root, namespace, path, kind string, file mediaFile) It
 	if len(subtitles) > 0 {
 		primary = subtitles[0]
 	}
-	return Item{ID: hex.EncodeToString(sum[:8]), Library: namespace, Kind: kind, Title: title, SortTitle: metadata.SortTitle, Year: year, Plot: metadata.Plot, Rating: rating, Tagline: metadata.Tagline, Genres: strings.Join(metadata.Genres, " · "), Director: metadata.Director, Studio: metadata.Studio, Artist: metadata.Artist, AlbumArtist: metadata.AlbumArtist, Album: metadata.Album, Disc: metadata.Disc, Track: metadata.Track, Lyrics: view.first(base+".lrc", base+".txt"), Folder: filepath.ToSlash(filepath.Dir(relative)), DateTaken: file.modified, Container: strings.ToUpper(strings.TrimPrefix(filepath.Ext(path), ".")), Size: file.size, Path: path, Artwork: artwork, Backdrop: backdrop, Logo: logo, ShowTitle: showTitle, ShowYear: showYear, ShowArtwork: showArtwork, ShowBackdrop: showBackdrop, ShowLogo: showLogo, SeasonArtwork: seasonArtwork, ShowProviderIDs: showProviderIDs, Subtitle: primary, Subtitles: subtitles, Show: show, Season: season, Episode: episodeNumber, Added: file.modified, LocalTitle: metadata.Title != "", LocalMetadata: file.sidecar.present, ProviderIDs: providerIDs}
+	item := Item{ID: hex.EncodeToString(sum[:8]), Library: namespace, Kind: kind, Title: title, SortTitle: metadata.SortTitle, Year: year, Plot: metadata.Plot, Rating: rating, Tagline: metadata.Tagline, Genres: strings.Join(metadata.Genres, " · "), Director: metadata.Director, Studio: metadata.Studio, Artist: metadata.Artist, AlbumArtist: metadata.AlbumArtist, Album: metadata.Album, Disc: metadata.Disc, Track: metadata.Track, Lyrics: view.first(base+".lrc", base+".txt"), Folder: filepath.ToSlash(filepath.Dir(relative)), DateTaken: file.modified, Container: strings.ToUpper(strings.TrimPrefix(filepath.Ext(path), ".")), Size: file.size, Path: path, Artwork: artwork, Backdrop: backdrop, Logo: logo, ShowTitle: showTitle, ShowYear: showYear, ShowArtwork: showArtwork, ShowBackdrop: showBackdrop, ShowLogo: showLogo, SeasonArtwork: seasonArtwork, ShowProviderIDs: showProviderIDs, Subtitle: primary, Subtitles: subtitles, Show: show, Season: season, Episode: episodeNumber, Added: file.modified, LocalTitle: metadata.Title != "", LocalMetadata: file.sidecar.present, ProviderIDs: providerIDs}
+	showMetadata.applyShow(&item)
+	return item
 }
 
 func episode(relative, title string) (string, int, int, string) {

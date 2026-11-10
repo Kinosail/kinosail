@@ -9,9 +9,12 @@ import subprocess
 
 APPS = ("player", "subtitles")
 LANGUAGES = ("go", "java-kotlin", "javascript-typescript", "python", "actions")
-FLAGS = (*APPS, "packages", "tooling", "web", "docs", "client", "android", "supply",
+FLAGS = (*APPS, "packages", "tooling", "web", "docs", "client", "android", "supply", "media",
          *LANGUAGES,
          *(f"{app}_{kind}" for app in APPS for kind in ("tools", "browsers", "arm")))
+
+
+MEDIA = re.compile(r"hls|play|transcod|ffmpeg|media|stream|segment|audio|video|subtit|caption|remux|proof|watch|progress|resume|codec|timeline", re.I)
 
 
 def affected(paths):
@@ -60,6 +63,9 @@ def affected(paths):
                 return dict.fromkeys(FLAGS, True)
             selected[app] = selected["go"] = True
             relative = "/".join(parts[2:])
+            if app == "player" and (MEDIA.search(relative) or relative.startswith("scripts/") or relative in ("Makefile", "go.sum")
+                                    or parts[-1].startswith(("Containerfile", "compose"))):
+                selected["media"] = True
             if relative.endswith(".go") or relative == "go.sum":
                 selected["tooling"] = True
             if relative.startswith(("internal/server/", "e2e/")):
@@ -86,6 +92,8 @@ def affected(paths):
                 selected[app] = True
             if path.endswith(("go.mod", "go.sum")):
                 selected["supply"] = True
+            if MEDIA.search(path.removeprefix("packages/")) or path.endswith(("go.mod", "go.sum")):
+                selected["media"] = True
             if path.startswith(("packages/webassets/", "packages/playerweb/", "packages/servertest/")):
                 selected["web"] = selected["javascript-typescript"] = True
                 for app in APPS:

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"net/url"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/library"
@@ -43,7 +44,7 @@ func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resu
 			ServerName: shell.ServerName, Owner: shell.Owner, ViewerName: shell.ViewerName, ViewerID: shell.ViewerID, CanLogout: shell.CanLogout,
 			Items: movies, Music: music, Audiobooks: Media(page.Items, "audiobook"), Albums: albums, Books: Media(page.Items, "book"), Photos: Media(page.Items, "photo"), Shows: cards.Shows,
 			Query: page.Query, View: page.View, Sort: page.Sort, PlaylistCards: cards.PlaylistCards, CustomCollectionCards: cards.CustomCollectionCards, DefaultCollectionCards: cards.DefaultCollectionCards,
-			TMDB: tmdb, Total: page.Total, Previous: page.PreviousURL(), Next: page.NextURL(), Letter: page.Letter, Letters: page.Letters, SearchClear: ClearSearchURL(request),
+			TMDB: tmdb, Total: page.Total, Previous: page.PreviousURL(), Next: page.NextURL(), Letter: page.Letter, Letters: page.Letters, SearchClear: ClearSearchURL(request), Filters: page.Filters, Facets: page.Facets, FiltersClear: clearFiltersURL(page),
 			NavigationPrimary: shell.NavigationPrimary, NavigationMore: shell.NavigationMore, UpdateAvailable: shell.UpdateAvailable, CommandMenu: true,
 		}
 		if !fragment && page.Query == "" && page.View == "all" && page.Offset == 0 {
@@ -72,4 +73,18 @@ func render(view View, writer http.ResponseWriter, request *http.Request, data a
 		return view.ExecuteTemplate(writer, request, "libraryResults", data)
 	}
 	return view.Execute(writer, request, data)
+}
+
+func clearFiltersURL(page catalog.Result) string {
+	if !page.Filters.Active() {
+		return ""
+	}
+	query := url.Values{"view": {page.View}}
+	if page.Query != "" {
+		query.Set("q", page.Query)
+	}
+	if page.Sort != "" && page.Sort != "title" {
+		query.Set("sort", page.Sort)
+	}
+	return "/?" + query.Encode()
 }

@@ -32,7 +32,7 @@ func Library(browse func(*http.Request) (catalog.Result, error), project func(*h
 		serveListing(writer, request, map[string]any{
 			"items": items, "view": page.View, "sort": page.Sort, "query": page.Query,
 			"letter": page.Letter, "letters": page.Letters, "total": page.Total,
-			"offset": page.Offset, "limit": page.Limit,
+			"offset": page.Offset, "limit": page.Limit, "filters": page.Filters, "facets": page.Facets,
 		})
 	}
 }

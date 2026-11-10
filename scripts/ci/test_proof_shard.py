@@ -48,7 +48,7 @@ class ManifestTests(unittest.TestCase):
                 self.assertIn('if: always()', upload)
                 self.assertIn('if-no-files-found: error', upload)
                 self.assertIn('name: player-proof-${{ matrix.shard }}-evidence', upload)
-        self.assertIn("if: needs.plan.outputs.verified != 'true' && fromJSON(needs.plan.outputs.plan).player",
+        self.assertIn("if: needs.plan.outputs.verified != 'true' && fromJSON(needs.plan.outputs.plan).player && (fromJSON(needs.plan.outputs.plan).media || github.event_name != 'pull_request')",
                       (ROOT / '.github/workflows/ci.yml').read_text().split('  proofs:\n', 1)[1])
         startup = proof_shard.load()['player']['startup']
         scripts = [command['argv'][1] for command in startup['commands']]
