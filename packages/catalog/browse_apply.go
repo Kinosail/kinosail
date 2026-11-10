@@ -46,7 +46,7 @@ func (browse Browse) result(ctx context.Context, items []*library.Item, buckets 
 	if err != nil {
 		return Result{}, err
 	}
-	result := Result{Query: browse.query, View: browse.view, Sort: normalizeSort(browse.order), Letter: browse.letter, Letters: letters, Total: len(items), Offset: offset, Limit: browse.limit, Filters: browse.filters, Facets: facets, references: items, pageStart: pageStart, pageEnd: pageEnd, values: cloneValues(browse.values)}
+	result := Result{Query: browse.query, View: browse.view, Sort: normalizeSort(browse.order), Letter: browse.letter, Letters: letters, Total: len(items), Offset: offset, Limit: browse.limit, Filters: browse.filters, Facets: facets, Described: browse.described, references: items, pageStart: pageStart, pageEnd: pageEnd, values: cloneValues(browse.values)}
 	result.Items = browsePage(items, offset, pageEnd, browse.limit)
 	return result, nil
 }

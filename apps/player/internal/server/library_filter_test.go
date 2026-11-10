@@ -61,7 +61,7 @@ func libraryFilterHandler(t *testing.T) http.Handler {
 
 func filteredTitles(t *testing.T, handler http.Handler, query string) (filteredLibrary, []string) {
 	t.Helper()
-	response := apiCall(t, handler, "", http.MethodGet, "/api/v1/library?"+query, nil)
+	response := apiCall(t, handler, "", http.MethodGet, "/api/v1/library?facets=true&"+query, nil)
 	if response.Code != http.StatusOK {
 		t.Fatalf("GET library?%s = %d %q", query, response.Code, response.Body.String())
 	}
