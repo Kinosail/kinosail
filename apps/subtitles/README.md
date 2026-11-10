@@ -20,6 +20,7 @@ The application uses the same foundation as Kinosail Player: a Go API-driven mon
 - Ranks exact IDs, the OpenSubtitles file hash, release names, episodes, language, accessibility, and translation source.
 - Cleans safe SRT or WebVTT, rejects invalid timing, and aligns weak release matches against local speech before writing. SubSource files stay unchanged under its terms.
 - Validates provider responses, download hosts, archive cardinality, file size, subtitle timing content, and null bytes.
+- Converts a SubDL archive that holds one ASS or SSA subtitle and no SRT or WebVTT file to SRT. Styling and positions are removed; a file with vector drawings is rejected.
 - Writes `Title.en.srt` atomically beside the source video.
 - Protects unknown sidecars unless an exact OpenSubtitles hash proves a better release match.
 - Automatically fills missing subtitles and upgrades managed files after scans, with a 15-minute minimum between bounded cycles.
