@@ -137,7 +137,7 @@ func TestBrowseViewsSortsLettersAndShows(t *testing.T) {
 
 func TestSearchListAndProgressRules(t *testing.T) {
 	items := []library.Item{{ID: "b", Title: "B"}, {ID: "a", Title: "A", SortTitle: "Z", Plot: "Café", ShowCast: []library.Person{{Name: "Zoë"}}}}
-	if len(Filter(items, "cafe")) != 1 || !Matches(items[1], "zoe") || len(Filter(items, "")) != 2 {
+	if len(Filter(items, "cafe")) != 1 || !matches(items[1], "zoe") || len(Filter(items, "")) != 2 {
 		t.Fatal("normalized search did not match metadata")
 	}
 	if Sort(append([]library.Item(nil), items...), "title")[0].ID != "b" || Sort(append([]library.Item(nil), items...), "year")[0].ID != "a" {
@@ -145,7 +145,7 @@ func TestSearchListAndProgressRules(t *testing.T) {
 	}
 
 	state := CloneListState(nil, map[string]map[string]bool{"viewer:Queue": {"a": true}}, map[string][]string{"viewer:Queue": {"a"}}, nil)
-	if err := ValidateListState(state); err != nil {
+	if err := validateListState(state); err != nil {
 		t.Fatal(err)
 	}
 	if got := ListAdditions(state, "viewer", "b", true, map[string]int{"Queue": 1, "bad/name": 2}); got != 2 {
@@ -158,7 +158,7 @@ func TestSearchListAndProgressRules(t *testing.T) {
 		{Smart: map[string]PlaylistRule{"v:q": {Kind: "invalid", Sort: "title"}}},
 	}
 	for _, candidate := range invalid {
-		if ValidateListState(CloneListState(candidate.Values, candidate.Playlists, candidate.PlaylistOrder, candidate.Smart)) == nil {
+		if validateListState(CloneListState(candidate.Values, candidate.Playlists, candidate.PlaylistOrder, candidate.Smart)) == nil {
 			t.Fatalf("invalid list state accepted: %#v", candidate)
 		}
 	}
@@ -177,7 +177,7 @@ func TestSearchListAndProgressRules(t *testing.T) {
 	if _, _, changed, err := progressChange(progress, "x", func(state PlaybackState) (PlaybackState, bool, error) { return state, false, errors.New("stop") }); changed || err == nil {
 		t.Fatal("rejected progress change was not preserved")
 	}
-	if ValidateStoredProgress(map[string]PlaybackState{"x": {Seconds: math.NaN()}}) == nil || !ValidPlaybackState(PlaybackState{Seconds: 1, ReaderPage: 1, Session: "s"}) {
+	if validateStoredProgress(map[string]PlaybackState{"x": {Seconds: math.NaN()}}) == nil || !validPlaybackState(PlaybackState{Seconds: 1, ReaderPage: 1, Session: "s"}) {
 		t.Fatal("progress validation did not enforce finite bounds")
 	}
 }
@@ -198,10 +198,10 @@ func TestStatePersistenceAndShowSelection(t *testing.T) {
 
 	writes := 0
 	state := CloneListState(map[string]bool{"v:i": true}, nil, nil, nil)
-	if err := CommitListState(t.Context(), nil, ListPaths{Values: "lists.json"}, func(file string, value any) error { writes++; return nil }, state, 1); err != nil || writes != 1 {
+	if err := commitListState(t.Context(), nil, ListPaths{Values: "lists.json"}, func(file string, value any) error { writes++; return nil }, state, 1); err != nil || writes != 1 {
 		t.Fatalf("list commit writes = %d, error = %v", writes, err)
 	}
-	if len(ListDocuments(state, 15)) != 4 {
+	if len(listDocuments(state, 15)) != 4 {
 		t.Fatal("selected list documents were incomplete")
 	}
 

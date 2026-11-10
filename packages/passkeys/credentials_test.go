@@ -42,11 +42,11 @@ func TestCredentialValidationRejectsEveryBoundWithoutSideEffects(t *testing.T) {
 		{ID: []byte("id"), PublicKey: []byte("key"), Attestation: webauthn.CredentialAttestation{Object: make([]byte, maxAttestation+1)}},
 	}
 	for index, item := range invalid {
-		if err := ValidateCredential(item); !errors.Is(err, ErrInvalidCredential) {
+		if err := validateCredential(item); !errors.Is(err, errInvalidCredential) {
 			t.Fatalf("invalid credential %d = %v", index, err)
 		}
 	}
-	if err := ValidateCredential(&valid); err != nil {
+	if err := validateCredential(&valid); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -56,16 +56,16 @@ func TestCredentialCollectionsValidateCloneAndFind(t *testing.T) {
 	if err := ValidateCredentials([]webauthn.Credential{first, second}); err != nil {
 		t.Fatal(err)
 	}
-	if err := ValidateCredentials([]webauthn.Credential{first, first}); !errors.Is(err, ErrDuplicate) {
+	if err := ValidateCredentials([]webauthn.Credential{first, first}); !errors.Is(err, errDuplicate) {
 		t.Fatalf("duplicate = %v", err)
 	}
-	tooMany := make([]webauthn.Credential, MaxCredentials+1)
-	if err := ValidateCredentials(tooMany); !errors.Is(err, ErrLimit) {
+	tooMany := make([]webauthn.Credential, maxCredentials+1)
+	if err := ValidateCredentials(tooMany); !errors.Is(err, errLimit) {
 		t.Fatalf("limit = %v", err)
 	}
 	invalid := credential("invalid")
 	invalid.PublicKey = nil
-	if err := ValidateCredentials([]webauthn.Credential{invalid}); !errors.Is(err, ErrInvalidCredential) {
+	if err := ValidateCredentials([]webauthn.Credential{invalid}); !errors.Is(err, errInvalidCredential) {
 		t.Fatalf("invalid list = %v", err)
 	}
 	if Index([]webauthn.Credential{first, second}, second.ID) != 1 || Index(nil, second.ID) != -1 {
@@ -80,7 +80,7 @@ func TestCredentialCollectionsValidateCloneAndFind(t *testing.T) {
 	if string(first.ID) != "first" || string(first.PublicKey) != "public-key" || first.Transport[0] != protocol.USB || first.Authenticator.AAGUID[0] != 1 || first.Attestation.ClientDataJSON[0] != 'c' || first.Attestation.ClientDataHash[0] != 'h' || first.Attestation.AuthenticatorData[0] != 'a' || first.Attestation.Object[0] != 'o' {
 		t.Fatal("credential clone aliases source data")
 	}
-	user := NewUser(42, "owner-id", "Owner", []webauthn.Credential{first})
+	user := newUser(42, "owner-id", "Owner", []webauthn.Credential{first})
 	user.Credentials[0].ID[0] = 'Z'
 	if user.Value != 42 || string(user.WebAuthnID()) != "owner-id" || user.WebAuthnName() != "Owner" || user.WebAuthnDisplayName() != "Owner" || len(user.WebAuthnCredentials()) != 1 || string(first.ID) != "first" {
 		t.Fatalf("user = %#v", user)
@@ -94,19 +94,19 @@ func TestCredentialLookupAndRedactedIDs(t *testing.T) {
 		{make([]byte, maxCredentialID+1), []byte("user")},
 		{[]byte("id"), make([]byte, maxUserHandle+1)},
 	} {
-		if err := ValidateLookup(input.rawID, input.handle); !errors.Is(err, ErrInvalidCredential) {
+		if err := validateLookup(input.rawID, input.handle); !errors.Is(err, errInvalidCredential) {
 			t.Fatalf("lookup = %v", err)
 		}
 	}
-	if err := ValidateLookup([]byte("id"), []byte("user")); err != nil {
+	if err := validateLookup([]byte("id"), []byte("user")); err != nil {
 		t.Fatal(err)
 	}
 	id := ID([]byte("credential"))
-	if len(id) != 64 || ValidateID(id) != nil {
+	if len(id) != 64 || validateID(id) != nil {
 		t.Fatalf("id = %q", id)
 	}
 	for _, invalid := range []string{"", id + "0", string(bytes.Repeat([]byte("g"), 64)), "ABCDEF" + id[6:]} {
-		if !errors.Is(ValidateID(invalid), ErrInvalidID) {
+		if !errors.Is(validateID(invalid), ErrInvalidID) {
 			t.Fatalf("invalid id accepted: %q", invalid)
 		}
 	}
@@ -118,24 +118,24 @@ func TestInventoryAndUpdatePreserveRedactedMetadata(t *testing.T) {
 	first.Authenticator.SignCount, first.Authenticator.CloneWarning = 7, true
 	firstID, secondID := ID(first.ID), ID(second.ID)
 	usage := map[string]Usage{firstID: {Tracked: true, LastUsed: 100}, secondID: {Tracked: true, LastUsed: 200}}
-	items := Inventory([]webauthn.Credential{first, second}, usage)
+	items := inventory([]webauthn.Credential{first, second}, usage)
 	if len(items) != 2 || items[0].Display != firstID[:12] || !items[0].UsageTracked || items[0].LastUsedLabel == "" || items[0].MostRecent || !items[0].BackupEligible || !items[0].BackedUp || !items[0].CloneWarning || items[0].SignCount != 7 || !items[1].MostRecent {
 		t.Fatalf("inventory = %#v", items)
 	}
 	credentials := []webauthn.Credential{first}
 	updated := Clone(first)
 	updated.Authenticator.SignCount = 9
-	if Update(credentials, usage, &updated, time.Unix(300, 0)) != true || credentials[0].Authenticator.SignCount != 9 || usage[firstID].LastUsed != 300 {
+	if update(credentials, usage, &updated, time.Unix(300, 0)) != true || credentials[0].Authenticator.SignCount != 9 || usage[firstID].LastUsed != 300 {
 		t.Fatalf("update = %#v %#v", credentials, usage)
 	}
-	if Update(credentials, usage, &updated, time.Unix(250, 0)) != true || usage[firstID].LastUsed != 300 {
+	if update(credentials, usage, &updated, time.Unix(250, 0)) != true || usage[firstID].LastUsed != 300 {
 		t.Fatal("older use replaced the latest timestamp")
 	}
 	unknown := credential("unknown")
-	if Update(credentials, usage, &unknown, time.Now()) || Update(credentials, nil, &updated, time.Now()) || Update(credentials, usage, nil, time.Now()) {
+	if update(credentials, usage, &unknown, time.Now()) || update(credentials, nil, &updated, time.Now()) || update(credentials, usage, nil, time.Now()) {
 		t.Fatal("invalid update changed state")
 	}
-	if got := Inventory(nil, nil); got == nil || len(got) != 0 {
+	if got := inventory(nil, nil); got == nil || len(got) != 0 {
 		t.Fatalf("empty inventory = %#v", got)
 	}
 }

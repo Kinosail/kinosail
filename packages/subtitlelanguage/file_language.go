@@ -13,7 +13,7 @@ func FileLanguage(media, subtitle string) string {
 		_, suffix, _ = strings.Cut(name, ".")
 	}
 	for part := range strings.SplitSeq(strings.TrimPrefix(suffix, "."), ".") {
-		if canonical, ok := NormalizeFileName(part); ok {
+		if canonical, ok := normalizeFileName(part); ok {
 			return canonical
 		}
 	}

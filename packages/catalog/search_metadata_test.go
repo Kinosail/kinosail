@@ -17,12 +17,12 @@ func TestMetadataSearchPreservesFieldBoundariesAndNormalization(t *testing.T) {
 		"the signal", "signal northern", "lights 2026 a quiet", "journey drama mystery",
 		"mystery alex", "north harbor isla", "after rain sam reed", "captain morgan vale guide", "SIGNAL!!!", "ＳＩＧＮＡＬ",
 	} {
-		if !Matches(item, query) {
+		if !matches(item, query) {
 			t.Errorf("metadata query %q did not match", query)
 		}
 	}
 	for _, query := range []string{"", "!!!", "signal2026", "signal harbor", "rain captain", "signal cafe", "café"} {
-		if Matches(item, query) {
+		if matches(item, query) {
 			t.Errorf("unmatched query %q matched", query)
 		}
 	}
@@ -43,7 +43,7 @@ func TestMetadataSearchNormalizesEveryUnicodeField(t *testing.T) {
 		"show-cast": {ShowCast: []library.Person{{Name: "Café", Role: "Other"}}},
 	} {
 		t.Run(field, func(t *testing.T) {
-			if !Matches(unicodeItem, "CAFE") || Matches(unicodeItem, "cafe missing") {
+			if !matches(unicodeItem, "CAFE") || matches(unicodeItem, "cafe missing") {
 				t.Fatal("Unicode metadata changed matching behavior")
 			}
 		})
@@ -52,7 +52,7 @@ func TestMetadataSearchNormalizesEveryUnicodeField(t *testing.T) {
 
 func TestMetadataSearchPreservesLargeAndCompatibilityValues(t *testing.T) {
 	long := library.Item{Title: strings.Repeat("Long-Title ", 100), Plot: "Ends_here"}
-	if !Matches(long, "title ends here") || Matches(long, "title ends nowhere") {
+	if !matches(long, "title ends here") || matches(long, "title ends nowhere") {
 		t.Fatal("large metadata lost its tail or matched an absent value")
 	}
 	for _, test := range []struct{ title, query string }{
@@ -63,11 +63,11 @@ func TestMetadataSearchPreservesLargeAndCompatibilityValues(t *testing.T) {
 		{"℉", "℉"},
 		{"𝐀", "𝐀"},
 	} {
-		if !Matches(library.Item{Title: test.title}, test.query) || Matches(library.Item{Title: test.title}, "absent token") {
+		if !matches(library.Item{Title: test.title}, test.query) || matches(library.Item{Title: test.title}, "absent token") {
 			t.Errorf("normalization failed for query %q", test.query)
 		}
 	}
-	if Matches(library.Item{Title: "℉"}, "F") || Matches(library.Item{Title: "𝐀"}, "A") {
+	if matches(library.Item{Title: "℉"}, "F") || matches(library.Item{Title: "𝐀"}, "A") {
 		t.Fatal("compatibility characters changed the lowercase-before-decomposition contract")
 	}
 }

@@ -10,7 +10,7 @@ import (
 
 func (broker *Broker) Cancel(secret string) error {
 	if secret == "" || strings.TrimSpace(secret) != secret || !validField(secret, 128) {
-		return ErrInvalidRequest
+		return errInvalidRequest
 	}
 	broker.mu.Lock()
 	defer broker.mu.Unlock()

@@ -53,7 +53,7 @@ func ownerFixture(t *testing.T) (Config, *identitycore.Profile, *sync.Mutex) {
 
 func TestManagementDefaultsOffAndInvalidInputHasNoEffects(t *testing.T) {
 	config, _, _ := ownerFixture(t)
-	m, err := Open(config)
+	m, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -86,7 +86,7 @@ func TestManagementRejectsInvalidPersistedStateWithoutChangingIt(t *testing.T) {
 		if err := privatefile.Write(path, []byte(raw)); err != nil {
 			t.Fatal(err)
 		}
-		if _, err := Open(config); err == nil {
+		if _, err := open(config); err == nil {
 			t.Fatalf("accepted state %q", raw[:min(100, len(raw))])
 		}
 		data, err := os.ReadFile(path)
@@ -97,7 +97,7 @@ func TestManagementRejectsInvalidPersistedStateWithoutChangingIt(t *testing.T) {
 	if err := Recover(config.Directory); err != nil {
 		t.Fatal(err)
 	}
-	m, err := Open(config)
+	m, err := open(config)
 	if err != nil || m.Status().Enabled {
 		t.Fatalf("local recovery = %v", err)
 	}
@@ -105,7 +105,7 @@ func TestManagementRejectsInvalidPersistedStateWithoutChangingIt(t *testing.T) {
 
 func TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary(t *testing.T) {
 	config, p, lock := ownerFixture(t)
-	m, err := Open(config)
+	m, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -206,7 +206,7 @@ func TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary(t
 	if err = m.Disable(); err != nil {
 		t.Fatal(err)
 	}
-	reopened, err := Open(config)
+	reopened, err := open(config)
 	if err != nil || reopened.Status().Enabled || len(reopened.Status().Devices) != 0 {
 		t.Fatalf("restart restored disabled peers: %v", err)
 	}

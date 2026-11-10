@@ -58,7 +58,7 @@ func TestTaskHandlersTranslateFailuresAndSelections(t *testing.T) {
 		errorValue, errorStatus = err, status
 	}
 	failed := httptest.NewRecorder()
-	TaskHandler(func(context.Context) error { return failure }, writeError).ServeHTTP(failed, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil))
+	taskHandler(func(context.Context) error { return failure }, writeError).ServeHTTP(failed, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil))
 	if !errors.Is(errorValue, failure) || errorStatus != http.StatusBadGateway || failed.Code != http.StatusOK {
 		t.Fatalf("web failure = %v, %d, %d", errorValue, errorStatus, failed.Code)
 	}
@@ -93,13 +93,13 @@ func TestMetricsHandlerWritesEveryPlayerMetric(t *testing.T) {
 	t.Parallel()
 	value := fullMetrics()
 	response := httptest.NewRecorder()
-	MetricsHandler(func() Metrics { return value }).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
+	metricsHandler(func() Metrics { return value }).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 	want := "kinosail_health 1\nkinosail_library_items 1\nkinosail_library_monitoring 1\nkinosail_sessions 2\nkinosail_transcode_cache_bytes 3\nkinosail_http_requests_total 4\nkinosail_http_errors_total 5\nkinosail_http_panics_total 6\nkinosail_audit_write_failures_total 7\nkinosail_workload_capacity 8\nkinosail_workload_background_capacity 9\nkinosail_workload_active{class=\"playback\"} 10\nkinosail_workload_active{class=\"background\"} 11\nkinosail_workload_waiting{class=\"playback\"} 12\nkinosail_workload_waiting{class=\"background\"} 13\nkinosail_workload_active{class=\"interactive\"} 31\nkinosail_workload_waiting{class=\"interactive\"} 32\nkinosail_notification_queue_depth 14\nkinosail_notification_dropped_total 15\nkinosail_viewing_sync_active 16\nkinosail_viewing_sync_deferred_total 17\nkinosail_live_event_subscribers 18\nkinosail_live_events_published_total 19\nkinosail_live_event_reconnects_total 20\nkinosail_live_event_rejected_total 21\nkinosail_live_event_slow_drops_total 22\nkinosail_watch_room_connections 23\nkinosail_watch_room_joins_total 24\nkinosail_watch_room_reconnects_total 25\nkinosail_watch_room_slow_drops_total 26\nkinosail_watch_room_drift_observations_total 27\nkinosail_watch_room_drift_seconds 28.5\n"
 	if response.Header().Get("Content-Type") != "text/plain; version=0.0.4" || !strings.HasPrefix(response.Body.String(), want) || !strings.Contains(response.Body.String(), "\nkinosail_go_goroutines ") {
 		t.Fatalf("metrics headers=%v\n%s", response.Header(), response.Body.String())
 	}
 	response = httptest.NewRecorder()
-	MetricsHandler(func() Metrics { return Metrics{} }).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
+	metricsHandler(func() Metrics { return Metrics{} }).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 	if !strings.HasPrefix(response.Body.String(), "kinosail_health 0\nkinosail_library_items 0\nkinosail_library_monitoring 0\n") {
 		t.Fatalf("false metrics = %q", response.Body.String())
 	}
@@ -108,7 +108,7 @@ func TestMetricsHandlerWritesEveryPlayerMetric(t *testing.T) {
 func TestDiagnosticsHandlerWritesDownloadHeadersAndJSON(t *testing.T) {
 	t.Parallel()
 	response := httptest.NewRecorder()
-	DiagnosticsHandler(func() DiagnosticReport { return DiagnosticReport{Version: "v9", Healthy: true} }).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
+	diagnosticsHandler(func() DiagnosticReport { return DiagnosticReport{Version: "v9", Healthy: true} }).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 	if response.Header().Get("Content-Type") != "application/json" || response.Header().Get("Content-Disposition") != `attachment; filename="kinosail-diagnostics.json"` || response.Body.String() != `{"version":"v9","generated":"","uptimeSeconds":0,"lastScan":"","playbackMode":"","transcoder":"","scanFrequency":"","libraryMonitoring":"","healthy":true,"scanError":false,"libraryItems":0,"sessions":0,"transcodeCacheBytes":0,"httpRequests":0,"httpErrors":0,"httpPanics":0,"activityFailures":0,"activityHealthy":false}`+"\n" {
 		t.Fatalf("diagnostics headers=%v body=%q", response.Header(), response.Body.String())
 	}

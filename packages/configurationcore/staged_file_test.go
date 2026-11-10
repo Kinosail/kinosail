@@ -23,7 +23,7 @@ func (file *stagedFileStub) Close() error { file.closed = true; return file.clos
 func TestWriteStagedFilePropagatesEveryDurabilityFailure(t *testing.T) {
 	want := errors.New("blocked")
 	for _, file := range []*stagedFileStub{{chmodErr: want}, {writeErr: want}, {syncErr: want}, {closeErr: want}, {}} {
-		err := WriteStagedFile(file, []byte("value"), 0o600)
+		err := writeStagedFile(file, []byte("value"), 0o600)
 		wantErr := file.chmodErr != nil || file.writeErr != nil || file.syncErr != nil || file.closeErr != nil
 		if (err != nil) != wantErr || !file.closed {
 			t.Fatalf("staged write error=%v closed=%t file=%#v", err, file.closed, file)

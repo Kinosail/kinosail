@@ -134,7 +134,7 @@ func TestInstallRequestRequiresAvailableReleaseAndWritableManager(t *testing.T) 
 	manager, _ := New(nil, PlayerPolicy(1, 1))
 	manager.random = errorReader{}
 	checker.manager = manager
-	checker.status = Status{State: "available", CurrentVersion: "v1.0.0", LatestVersion: "v1.1.0", ReleaseURL: GitHubReleasesURL}
+	checker.status = Status{State: "available", CurrentVersion: "v1.0.0", LatestVersion: "v1.1.0", ReleaseURL: gitHubReleasesURL}
 	response = httptest.NewRecorder()
 	handlers.Request(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/updates", nil))
 	if response.Code != http.StatusInternalServerError {

@@ -90,7 +90,7 @@ func TestReplayGainRemainingFormats(t *testing.T) {
 		"r128":     {map[string]string{"r128_track_gain": "256", "r128_album_gain": "-256"}, 1, -1, true},
 	} {
 		t.Run(name, func(t *testing.T) {
-			result := ParseReplayGain(test.tags)
+			result := parseReplayGain(test.tags)
 			if result.Track != test.track || result.Album != test.album || result.TrackSet != test.set || result.AlbumSet != test.set {
 				t.Fatalf("gain = %#v", result)
 			}

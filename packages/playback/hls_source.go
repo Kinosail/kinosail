@@ -44,7 +44,7 @@ func SourceTranscoding(options transcodepolicy.Settings, facts MediaFacts, recip
 		if options.ToneMapInput == "hdr10+" {
 			options.ToneMapInput = "hdr10"
 		}
-		if base := DolbyVisionBaseLayer(facts.Video); base != "" {
+		if base := dolbyVisionBaseLayer(facts.Video); base != "" {
 			options.ToneMapInput = base
 		}
 	}

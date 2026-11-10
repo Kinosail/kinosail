@@ -178,10 +178,10 @@ func TestRunFailurePaths(t *testing.T) {
 
 func TestAccessConfigurationUsesPlayerPolicy(t *testing.T) {
 	t.Parallel()
-	if remote, err := RemoteAccess(testSettings{"remote.mode": "off"}); err != nil || remote == nil {
+	if remote, err := remoteAccess(testSettings{"remote.mode": "off"}); err != nil || remote == nil {
 		t.Fatalf("disabled remote access = %#v, %v", remote, err)
 	}
-	if remote, err := RemoteAccess(testSettings{"remote.mode": "https"}); err == nil || remote != nil {
+	if remote, err := remoteAccess(testSettings{"remote.mode": "https"}); err == nil || remote != nil {
 		t.Fatalf("unsafe remote access = %#v, %v", remote, err)
 	}
 	if trusted, err := TrustedHTTPS(testSettings{}); err != nil || trusted != nil {

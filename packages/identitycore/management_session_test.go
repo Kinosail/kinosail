@@ -40,7 +40,7 @@ func TestManagementSessionCannotBeReplayedOnLANPublicOrAnotherDevice(t *testing.
 			request = WithManagementDevice(request, "other", key)
 		}
 		before := fixture.writes
-		if SessionMatchesRequest(value, request) || sessions.RecentlyAuthenticated(request, time.Hour) || sessions.MarkStrong(request) == nil {
+		if sessionMatchesRequest(value, request) || sessions.RecentlyAuthenticated(request, time.Hour) || sessions.MarkStrong(request) == nil {
 			t.Fatalf("cookie replay through %s", kind)
 		}
 		if err := sessions.SignOut(request); err != nil || fixture.writes != before {

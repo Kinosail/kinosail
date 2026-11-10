@@ -146,7 +146,7 @@ func TestPlaybackHTTPMapsSessionAndSourceFailures(t *testing.T) {
 			t.Fatalf("%s failure = %d %q", name, response.Code, response.Body.String())
 		}
 	}
-	if _, err := MediaSource(item, playback.MediaFacts{}, playback.PlaybackPlan{}, MediaSourcePolicy{}, "", strings.Repeat("x", 257)); err == nil {
+	if _, err := mediaSource(item, playback.MediaFacts{}, playback.PlaybackPlan{}, MediaSourcePolicy{}, "", strings.Repeat("x", 257)); err == nil {
 		t.Fatal("oversized source token was accepted")
 	}
 	effects := make([]string, 0)
@@ -198,7 +198,7 @@ func TestPlaybackHTTPSelectsAndServesArtwork(t *testing.T) {
 	if item, found := secondary.ArtworkItem(request, showID); !found || item.Artwork != art {
 		t.Fatalf("show artwork = %#v, %t", item, found)
 	}
-	if item, found := secondary.ArtworkItem(request, SeasonID(ShowID("Series"), 1)); !found || item.Artwork != art {
+	if item, found := secondary.ArtworkItem(request, seasonID(ShowID("Series"), 1)); !found || item.Artwork != art {
 		t.Fatalf("season artwork = %#v, %t", item, found)
 	}
 	if _, found := secondary.ArtworkItem(request, "missing"); found {

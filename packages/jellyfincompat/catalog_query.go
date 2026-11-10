@@ -82,7 +82,7 @@ func (query listQuery) matches(entry catalogEntry) bool {
 	for genre := range strings.SplitSeq(strings.ToLower(entry.genres()), " · ") {
 		if genre != "" && (!names || !ids) {
 			names = names || slices.Contains(query.genres, genre)
-			ids = ids || slices.Contains(query.genreIDs, GenreID(genre))
+			ids = ids || slices.Contains(query.genreIDs, genreID(genre))
 		}
 	}
 	return names && ids && query.state.matches(entry)

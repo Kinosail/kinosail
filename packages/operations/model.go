@@ -91,7 +91,7 @@ type DiagnosticReport struct {
 	RecentFailures      []FailureEvent `json:"recentFailures,omitempty"`
 }
 
-func BuildDiagnosticReport(version string, started, now time.Time, snapshot DiagnosticSnapshot) DiagnosticReport {
+func buildDiagnosticReport(version string, started, now time.Time, snapshot DiagnosticSnapshot) DiagnosticReport {
 	monitoring := "polling"
 	if snapshot.LibraryMonitoring {
 		monitoring = "watching"
@@ -105,7 +105,7 @@ func BuildDiagnosticReport(version string, started, now time.Time, snapshot Diag
 }
 
 func projectDiagnosticReport(version string, started, now time.Time, snapshot runtimeSnapshot) DiagnosticReport {
-	return BuildDiagnosticReport(version, started, now, DiagnosticSnapshot{
+	return buildDiagnosticReport(version, started, now, DiagnosticSnapshot{
 		LastScan: snapshot.LastScan, PlaybackMode: snapshot.PlaybackMode, Transcoder: snapshot.Transcoder, ScanFrequency: snapshot.ScanFrequency, LibraryMonitoring: snapshot.LibraryMonitoring,
 		Healthy: snapshot.ScanError == nil && snapshot.CacheError == nil && snapshot.Activity.Healthy, ScanError: snapshot.ScanError != nil, LibraryItems: snapshot.LibraryItems, Sessions: snapshot.Sessions, TranscodeCacheBytes: snapshot.TranscodeCacheBytes,
 		HTTPRequests: snapshot.HTTPRequests, HTTPErrors: snapshot.HTTPErrors, HTTPPanics: snapshot.HTTPPanics, ActivityFailures: snapshot.Activity.WriteFailures, ActivityHealthy: snapshot.Activity.Healthy,

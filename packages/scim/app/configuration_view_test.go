@@ -48,7 +48,7 @@ func TestConfigurationExpiryAndEndpoint(t *testing.T) {
 	}
 	request := httptest.NewRequestWithContext(context.Background(), "GET", "http://ignored.example", nil)
 	request.Host = "fallback.example"
-	if Endpoint("https://configured.example///", request) != "https://configured.example/scim/v2" || Endpoint("", request) != "http://fallback.example/scim/v2" {
+	if endpoint("https://configured.example///", request) != "https://configured.example/scim/v2" || endpoint("", request) != "http://fallback.example/scim/v2" {
 		t.Fatal("endpoint derivation is invalid")
 	}
 }

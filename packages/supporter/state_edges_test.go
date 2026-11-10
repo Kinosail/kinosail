@@ -58,7 +58,7 @@ func TestRaiseLevelsIncludesValidLivingGrant(t *testing.T) {
 
 func TestRotatePublicKeyRejectsEveryInvalidPrecondition(t *testing.T) {
 	service := testServiceAt(t, App{}, testNow())
-	if _, err := service.RotatePublicKey(State{}, RotationInput{}); !errors.Is(err, ErrInvalid) {
+	if _, err := service.RotatePublicKey(State{}, RotationInput{}); !errors.Is(err, errInvalid) {
 		t.Fatalf("unconfirmed rotation = %v", err)
 	}
 	public, _, err := ed25519.GenerateKey(rand.Reader)
@@ -67,14 +67,14 @@ func TestRotatePublicKeyRejectsEveryInvalidPrecondition(t *testing.T) {
 	}
 	encoded := base64.RawURLEncoding.EncodeToString(public)
 	confirmed := RotationInput{Version: 1, PublicKey: encoded, Confirm: true}
-	if _, err = service.RotatePublicKey(State{}, confirmed); !errors.Is(err, ErrConflict) {
+	if _, err = service.RotatePublicKey(State{}, confirmed); !errors.Is(err, errConflict) {
 		t.Fatalf("unprepared rotation = %v", err)
 	}
 	state := State{InstallationKey: base64.RawURLEncoding.EncodeToString(make([]byte, 32)), PublicKey: encoded}
-	if _, err = service.RotatePublicKey(state, RotationInput{Version: 1, PublicKey: "invalid", Confirm: true}); !errors.Is(err, ErrInvalid) {
+	if _, err = service.RotatePublicKey(state, RotationInput{Version: 1, PublicKey: "invalid", Confirm: true}); !errors.Is(err, errInvalid) {
 		t.Fatalf("malformed key rotation = %v", err)
 	}
-	if _, err = service.RotatePublicKey(state, confirmed); !errors.Is(err, ErrInvalid) {
+	if _, err = service.RotatePublicKey(state, confirmed); !errors.Is(err, errInvalid) {
 		t.Fatalf("same key rotation = %v", err)
 	}
 }

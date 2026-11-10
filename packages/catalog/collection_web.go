@@ -58,7 +58,7 @@ type CollectionWebApp struct {
 
 type CollectionWebHandlers struct{ config CollectionWebHandlersConfig }
 
-func NewCollectionWebHandlers(config CollectionWebHandlersConfig) CollectionWebHandlers {
+func newCollectionWebHandlers(config CollectionWebHandlersConfig) CollectionWebHandlers {
 	if !validCollectionWebHandlersConfig(config) {
 		panic("invalid Collection HTTP dependencies")
 	}
@@ -66,7 +66,7 @@ func NewCollectionWebHandlers(config CollectionWebHandlersConfig) CollectionWebH
 }
 
 func NewCollectionWebHandlersForStore(store CollectionWebStore, app CollectionWebApp) CollectionWebHandlers {
-	return NewCollectionWebHandlers(CollectionWebHandlersConfig{
+	return newCollectionWebHandlers(CollectionWebHandlersConfig{
 		VisibleLibrary: func(request *http.Request) ([]library.Item, error) {
 			return app.Index.VisibleLibrary(request), nil
 		},
@@ -91,12 +91,12 @@ func (handlers CollectionWebHandlers) ManageItem(writer http.ResponseWriter, req
 		handlers.config.Failure(writer, request, "invalid Collection state", http.StatusBadRequest)
 		return
 	}
-	if err := request.ParseForm(); err != nil || !ValidCurationItemForm(request.PostForm) {
+	if err := request.ParseForm(); err != nil || !validCurationItemForm(request.PostForm) {
 		handlers.config.Failure(writer, request, "invalid Collection state", http.StatusBadRequest)
 		return
 	}
 	name, id := request.PathValue("name"), request.PathValue("id")
-	if !ValidCollectionPathName(name) || !ValidCurationItemID(id) {
+	if !validCollectionPathName(name) || !validCurationItemID(id) {
 		handlers.config.Failure(writer, request, "invalid Collection state", http.StatusBadRequest)
 		return
 	}
@@ -135,7 +135,7 @@ func (handlers CollectionWebHandlers) Create(writer http.ResponseWriter, request
 
 func (handlers CollectionWebHandlers) Save(writer http.ResponseWriter, request *http.Request) {
 	name, id := request.PathValue("name"), request.PathValue("id")
-	if !ValidListName(name) || !ValidCurationItemID(id) {
+	if !ValidListName(name) || !validCurationItemID(id) {
 		handlers.config.Failure(writer, request, "invalid Collection state", http.StatusBadRequest)
 		return
 	}
@@ -176,7 +176,7 @@ func (handlers CollectionWebHandlers) Delete(writer http.ResponseWriter, request
 }
 
 func (handlers CollectionWebHandlers) Browse(writer http.ResponseWriter, request *http.Request) {
-	query, err := ParseCurationQuery(request.URL.Query())
+	query, err := parseCurationQuery(request.URL.Query())
 	if err != nil {
 		handlers.config.Failure(writer, request, "invalid Collection state", http.StatusBadRequest)
 		return
@@ -190,7 +190,7 @@ func (handlers CollectionWebHandlers) Browse(writer http.ResponseWriter, request
 	members := handlers.config.Collection(name, items)
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := handlers.config.Render(writer, request, CollectionWebPage{
-		Name: name, Query: query, Items: members, Candidates: CurationCandidates(items, members, query), ItemCount: len(members), Owner: handlers.config.Owner(request),
+		Name: name, Query: query, Items: members, Candidates: curationCandidates(items, members, query), ItemCount: len(members), Owner: handlers.config.Owner(request),
 	}); err != nil {
 		handlers.config.Failure(writer, request, err.Error(), http.StatusInternalServerError)
 	}

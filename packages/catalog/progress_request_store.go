@@ -48,7 +48,7 @@ func NewRequestProgressStore(dataDir string, database *documentdb.Store, load fu
 	if _, err := load(store.file, &store.values); err != nil {
 		store.err = err
 	} else {
-		store.err = ValidateStoredProgress(store.values)
+		store.err = validateStoredProgress(store.values)
 	}
 	if store.err == nil && database != nil {
 		store.err = database.EnableEntries(progressDocument)
@@ -112,7 +112,7 @@ func (store *RequestProgressStore) Get(request *http.Request, id string) Playbac
 func (store *RequestProgressStore) GetFor(profile string, owner bool, id string) PlaybackState {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
-	return ViewerProgress(store.values, profile, owner, id)
+	return viewerProgress(store.values, profile, owner, id)
 }
 
 func (store *RequestProgressStore) ClientItem(request *http.Request, item library.Item) any {
@@ -159,7 +159,7 @@ func (store *RequestProgressStore) History(request *http.Request, items []librar
 	store.mu.RLock()
 	defer store.mu.RUnlock()
 	viewer := store.viewer(request)
-	return ProgressHistoryPage(store.values, viewer.ID, viewer.Owner, items, page)
+	return progressHistoryPage(store.values, viewer.ID, viewer.Owner, items, page)
 }
 
 func (store *RequestProgressStore) Dismiss(request *http.Request, id string) error {
@@ -174,7 +174,7 @@ func (store *RequestProgressStore) Dismiss(request *http.Request, id string) err
 func (store *RequestProgressStore) RecentAdmin(items []library.Item, names map[string]string) []PlaybackView {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
-	return RecentAdminProgress(store.values, items, names)
+	return recentAdminProgress(store.values, items, names)
 }
 
 func (store *RequestProgressStore) Set(request *http.Request, id string, seconds float64, watched *bool) error {
@@ -185,7 +185,7 @@ func (store *RequestProgressStore) Set(request *http.Request, id string, seconds
 func (store *RequestProgressStore) SetRevision(request *http.Request, id string, seconds float64, watched *bool, session string, revision uint64) (bool, error) {
 	key := store.viewer(request).ID + ":" + id
 	previous, state, accepted, err := store.Update(key, ProgressRevision(seconds, watched, session, revision, time.Now()))
-	started, completed := ProgressAudit(previous, state, seconds, watched, accepted, err)
+	started, completed := progressAudit(previous, state, seconds, watched, accepted, err)
 	if started {
 		store.audit(request, "playback.started", id, seconds, false)
 	}

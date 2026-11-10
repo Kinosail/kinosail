@@ -54,7 +54,7 @@ func TestMalformedCreditFramesPreserveLastGoodMarkers(t *testing.T) {
 	item := library.Item{ID: "movie", Kind: "video", Size: 1, Added: time.Unix(1, 0)}
 	marker := Marker{Type: "credits", Label: "Credits", Start: 7000, End: 7200, Source: "visual"}
 	analyzer := NewAnalyzer(Config{})
-	analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion, Markers: []Marker{marker}}
+	analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: detectorVersion, Markers: []Marker{marker}}
 	analyzer.extractCredits = func(_ context.Context, _ library.Item, _, _ float64) ([]byte, error) { return []byte{1}, nil }
 	analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{Duration: 7200} })
 	if err := analyzer.analyzeBatch(t.Context(), []library.Item{item}, nil); err != nil || analyzer.records[item.ID].Failed == 0 {

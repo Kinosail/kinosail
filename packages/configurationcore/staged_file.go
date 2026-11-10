@@ -10,7 +10,7 @@ type StagedFile interface {
 	Close() error
 }
 
-func WriteStagedFile(file StagedFile, data []byte, mode os.FileMode) error {
+func writeStagedFile(file StagedFile, data []byte, mode os.FileMode) error {
 	if err := file.Chmod(mode); err != nil {
 		_ = file.Close()
 		return err

@@ -33,13 +33,13 @@ func (manager *Manager) CreateSync(previewID, interval string) (SyncView, error)
 	sync := Sync{ID: rand.Text(), Source: preview.Input.Source, URL: preview.Input.URL, Token: preview.Input.Token, SourceUser: preview.Input.SourceUser, ProfileID: preview.Input.ProfileID, Interval: interval, NextRun: now, Seen: make(map[string]Observation), Pending: &SyncPending{Summary: preview.Summary, Changes: preview.Changes, ListChanges: preview.ListChanges}}
 	items, _ := manager.config.Snapshot()
 	for _, activity := range preview.Activities {
-		if target, status, _ := Match(activity, items); status == "matched" && (activity.Watched || activity.Seconds > 0) {
-			sync.Seen[ActivityKey(activity)] = Observation{TargetID: target.ID, Signature: Signature(activity)}
+		if target, status, _ := match(activity, items); status == "matched" && (activity.Watched || activity.Seconds > 0) {
+			sync.Seen[activityKey(activity)] = Observation{TargetID: target.ID, Signature: Signature(activity)}
 		}
 	}
 	sync.LastRun, sync.LastResult = now, preview.Summary
 	sync.LastResult.Applied, sync.LastResult.ListsApplied = len(preview.Changes), preview.Summary.Importable-len(preview.Changes)
-	previous, syncs := CloneSyncs(manager.syncs), CloneSyncs(manager.syncs)
+	previous, syncs := cloneSyncs(manager.syncs), cloneSyncs(manager.syncs)
 	syncs[sync.ID] = sync
 	if err := manager.save(syncs); err != nil {
 		manager.mu.Unlock()
@@ -94,7 +94,7 @@ func (manager *Manager) RunSync(ctx context.Context, id string) (SyncView, error
 	case <-ctx.Done():
 		return SyncView{}, errors.New("viewing activity sync was canceled")
 	default:
-		return SyncView{}, ErrSyncCapacity
+		return SyncView{}, errSyncCapacity
 	}
 	return manager.runReserved(ctx, id)
 }
@@ -104,11 +104,11 @@ func (manager *Manager) runReserved(ctx context.Context, id string) (SyncView, e
 	sync, found := manager.syncs[id]
 	if !found {
 		manager.mu.Unlock()
-		return SyncView{}, ErrSyncNotFound
+		return SyncView{}, errSyncNotFound
 	}
 	if sync.Running {
 		manager.mu.Unlock()
-		return SyncView{}, ErrSyncRunning
+		return SyncView{}, errSyncRunning
 	}
 	sync.Running, sync.Queued = true, false
 	manager.syncs[id] = sync
@@ -120,7 +120,7 @@ func (manager *Manager) runReserved(ctx context.Context, id string) (SyncView, e
 		result, runErr = manager.applyPending(sync)
 	} else {
 		input := Input{Source: sync.Source, URL: sync.URL, Token: sync.Token, SourceUser: sync.SourceUser, ProfileID: sync.ProfileID}
-		activities, fetchErr := Fetch(ctx, manager.config.Client, input, false)
+		activities, fetchErr := fetch(ctx, manager.config.Client, input, false)
 		runErr = fetchErr
 		if fetchErr == nil {
 			result, seen, runErr = manager.pull(sync, activities, time.Now().UTC())
@@ -133,7 +133,7 @@ func (manager *Manager) runReserved(ctx context.Context, id string) (SyncView, e
 		stored.Running, stored.LastRun, stored.NextRun = false, time.Now().UTC(), time.Now().UTC().Add(syncIntervals[stored.Interval])
 		stored.LastResult = result
 		if runErr != nil {
-			stored.LastError = SafeError(runErr)
+			stored.LastError = safeError(runErr)
 		} else {
 			stored.LastError, stored.Seen = "", seen
 		}
@@ -159,7 +159,7 @@ func (manager *Manager) applyPending(sync Sync) (Summary, error) {
 		return result, err
 	}
 	manager.mu.Lock()
-	syncs := CloneSyncs(manager.syncs)
+	syncs := cloneSyncs(manager.syncs)
 	stored := syncs[sync.ID]
 	stored.Pending = nil
 	syncs[sync.ID] = stored
@@ -181,7 +181,7 @@ func (manager *Manager) pull(sync Sync, activities []Activity, now time.Time) (S
 	if err != nil {
 		return Summary{}, sync.Seen, errors.New("Kinosail Library is unavailable")
 	}
-	result, changes, seen := Summary{SourceItems: len(activities)}, make([]ProgressChange, 0), CloneObservations(sync.Seen)
+	result, changes, seen := Summary{SourceItems: len(activities)}, make([]ProgressChange, 0), cloneObservations(sync.Seen)
 	for _, activity := range activities {
 		manager.pullActivity(profile, sync, items, activity, now, &result, &changes, seen)
 	}
@@ -191,7 +191,7 @@ func (manager *Manager) pull(sync Sync, activities []Activity, now time.Time) (S
 }
 
 func (manager *Manager) pullActivity(profile Profile, sync Sync, items []library.Item, activity Activity, now time.Time, result *Summary, changes *[]ProgressChange, seen map[string]Observation) {
-	key, signature := ActivityKey(activity), Signature(activity)
+	key, signature := activityKey(activity), Signature(activity)
 	previous, observed := sync.Seen[key]
 	if !activity.Watched && activity.Seconds <= 0 && !observed {
 		return
@@ -217,9 +217,9 @@ func (manager *Manager) pullActivity(profile Profile, sync Sync, items []library
 	}
 	destination := manager.config.Progress(profile, target.ID)
 	switch {
-	case SameState(destination, state):
+	case sameState(destination, state):
 		result.Unchanged++
-	case Conflict(destination, state):
+	case conflict(destination, state):
 		result.Conflicts++
 	default:
 		*changes = append(*changes, ProgressChange{TargetID: target.ID, State: state, Expected: destination})
@@ -229,7 +229,7 @@ func (manager *Manager) pullActivity(profile Profile, sync Sync, items []library
 }
 
 func pullTarget(activity Activity, items []library.Item, previous Observation, observed bool) (library.Item, string) {
-	target, status, _ := Match(activity, items)
+	target, status, _ := match(activity, items)
 	if observed {
 		if prior, exists := findLibraryItem(items, previous.TargetID); exists {
 			return prior, "matched"
@@ -274,9 +274,9 @@ func (manager *Manager) RemoveSync(id string) error {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
 	if _, found := manager.syncs[id]; !found {
-		return ErrSyncNotFound
+		return errSyncNotFound
 	}
-	syncs := CloneSyncs(manager.syncs)
+	syncs := cloneSyncs(manager.syncs)
 	delete(syncs, id)
 	if err := manager.save(syncs); err != nil {
 		return err

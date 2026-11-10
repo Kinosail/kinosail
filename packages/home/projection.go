@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func MediaPresentation(items []library.Item, hasArtwork func(library.Item) bool) (map[string]string, map[string]string) {
+func mediaPresentation(items []library.Item, hasArtwork func(library.Item) bool) (map[string]string, map[string]string) {
 	artwork, titles := make(map[string]string), make(map[string]string)
 	for _, item := range items {
 		if hasArtwork(item) {
@@ -26,7 +26,7 @@ func MediaPresentation(items []library.Item, hasArtwork func(library.Item) bool)
 	return artwork, titles
 }
 
-func ClearSearchURL(request *http.Request) string {
+func clearSearchURL(request *http.Request) string {
 	query := request.URL.Query()
 	query.Del("q")
 	query.Del("offset")
@@ -37,14 +37,14 @@ func ClearSearchURL(request *http.Request) string {
 	return "/?" + query.Encode()
 }
 
-func FragmentRequest(request *http.Request) (bool, error) {
-	values := request.Header.Values(InfiniteLibraryHeader)
+func fragmentRequest(request *http.Request) (bool, error) {
+	values := request.Header.Values(infiniteLibraryHeader)
 	if len(values) > 1 || len(values) == 1 && values[0] != "1" {
 		return false, catalog.ErrInvalidBrowse
 	}
 	return len(values) == 1, nil
 }
 
-func Media(items []library.Item, kind string) []library.Item {
+func media(items []library.Item, kind string) []library.Item {
 	return catalog.Media(items, kind)
 }

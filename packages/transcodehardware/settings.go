@@ -30,7 +30,7 @@ func NormalizeCodec(codec string) string {
 	return codec
 }
 
-func ValidAccelerator(accelerator string) bool {
+func validAccelerator(accelerator string) bool {
 	switch accelerator {
 	case "", "none", "auto", "vaapi", "qsv", "cuda", "videotoolbox", "rkmpp", "v4l2m2m", "amf", "mf":
 		return true
@@ -50,7 +50,7 @@ func (capabilities Capabilities) ValidateSelection(selection Selection) (Selecti
 	if !capabilities.SupportsCodec(selection.Codec) {
 		return Selection{}, errors.New("video codec is not available on this Server")
 	}
-	if !ValidAccelerator(selection.Accelerator) {
+	if !validAccelerator(selection.Accelerator) {
 		return Selection{}, errors.New("hardware accelerator is invalid")
 	}
 	if !capabilities.Supports(selection.Accelerator) {

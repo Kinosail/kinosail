@@ -151,8 +151,8 @@ func browseLibrary(ctx context.Context, values url.Values, locale string, load f
 	return browse.ApplyAccess(ctx, source.references(), grant)
 }
 
-func ProfileProgress(values map[string]PlaybackState, profileID string, owner bool, itemID string) PlaybackState {
-	return ViewerProgress(values, profileID, owner, itemID)
+func profileProgress(values map[string]PlaybackState, profileID string, owner bool, itemID string) PlaybackState {
+	return viewerProgress(values, profileID, owner, itemID)
 }
 
 func (result Result) AllItems() []library.Item {

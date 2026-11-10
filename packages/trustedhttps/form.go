@@ -31,7 +31,7 @@ type SettingsForm struct {
 }
 
 func (form SettingsForm) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	input, err := ParseSettingsForm(writer, request)
+	input, err := parseSettingsForm(writer, request)
 	if err != nil {
 		form.Error(writer, request, err.Error(), http.StatusBadRequest)
 		return
@@ -49,7 +49,7 @@ func (form SettingsForm) ServeHTTP(writer http.ResponseWriter, request *http.Req
 	http.Redirect(writer, request, form.Redirect, http.StatusSeeOther)
 }
 
-func ParseSettingsForm(writer http.ResponseWriter, request *http.Request) (SettingsInput, error) {
+func parseSettingsForm(writer http.ResponseWriter, request *http.Request) (SettingsInput, error) {
 	if err := httpguard.DecodeForm(writer, request, settingsFormMaxBody, "provider", "domain", "token", "address", "termsAccepted", "_csrf"); err != nil {
 		return SettingsInput{}, errors.New("invalid trusted HTTPS form")
 	}

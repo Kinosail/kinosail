@@ -31,16 +31,16 @@ type TMDBCandidates struct {
 	TVResults    []TMDBCandidate `json:"tv_results"`
 }
 
-func ValidTMDBPath(path string) bool {
+func validTMDBPath(path string) bool {
 	return path == "" || len(path) <= 2048 && strings.HasPrefix(path, "/") && !strings.HasPrefix(path, "//") && pathpkg.Clean(path) == path && !strings.ContainsAny(path, `\?#%`) && !hasControlText(path)
 }
 
-func ValidTMDBCast(cast []TMDBCastMember) bool {
+func validTMDBCast(cast []TMDBCastMember) bool {
 	if len(cast) > 1000 {
 		return false
 	}
 	for _, person := range cast {
-		if len(person.Name) > 200 || len(person.Character) > 200 || hasControlText(person.Name+person.Character) || !ValidTMDBPath(person.ProfilePath) {
+		if len(person.Name) > 200 || len(person.Character) > 200 || hasControlText(person.Name+person.Character) || !validTMDBPath(person.ProfilePath) {
 			return false
 		}
 	}
@@ -113,4 +113,4 @@ func MovieIdentity(item library.Item) (string, string) {
 	return title, year
 }
 
-func ValidIMDbID(value string) bool { return imdbProviderID.MatchString(value) }
+func validIMDbID(value string) bool { return imdbProviderID.MatchString(value) }

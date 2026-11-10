@@ -39,7 +39,7 @@ func (coordinator CheckCoordinator) Current() CheckResult {
 	coordinator.dependencies.Lock.RUnlock()
 	if result.Status == "" {
 		options := coordinator.dependencies.Pending()
-		return PendingCheck(options, coordinator.dependencies.BackendName(options.Accelerator))
+		return pendingCheck(options, coordinator.dependencies.BackendName(options.Accelerator))
 	}
 	return result
 }

@@ -55,7 +55,7 @@ func TestFinalizeSelectsDeferredSourceAndAddsSession(t *testing.T) {
 			t.Fatalf("adaptive = %s", data.AdaptiveSource)
 		}
 	}
-	if SessionURL("%zz", "s") != "%zz" {
+	if sessionURL("%zz", "s") != "%zz" {
 		t.Fatal("malformed source changed")
 	}
 }

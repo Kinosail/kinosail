@@ -25,7 +25,7 @@ type PrincipalAdapterConfig[P any] struct {
 
 type principalAdapter[P any] struct{ PrincipalAdapterConfig[P] }
 
-func NewPrincipalAdapter[P any](config PrincipalAdapterConfig[P]) PrincipalRepository {
+func newPrincipalAdapter[P any](config PrincipalAdapterConfig[P]) PrincipalRepository {
 	if config.CurrentProfile == nil || config.FindProfile == nil || config.FederatedProfiles == nil || config.AllowProfile == nil || config.RecentAuthentication == nil || config.Profiles == nil || config.StateError == nil || config.AttributeProfile == nil || config.ConvertProfile == nil {
 		return nil
 	}
@@ -109,7 +109,7 @@ func (adapter apiAdapter[P, ViewerKey, OwnerKey]) Invoke(writer http.ResponseWri
 }
 
 func RegisterApplication(mux *http.ServeMux, config GatewayConfig, connections *Connections) *Gateway {
-	gateway, err := Register(mux, config, connections)
+	gateway, err := register(mux, config, connections)
 	if err != nil {
 		slog.Error("MCP gateway unavailable", "error", err)
 	}

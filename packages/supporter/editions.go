@@ -1,11 +1,11 @@
 package supporter
 
 func validEdition(edition string) bool {
-	return edition == EditionOnce || edition == EditionMonthly || edition == EditionYearly
+	return edition == editionOnce || edition == editionMonthly || edition == editionYearly
 }
 
 func earnedEditionLevel(level int, badge *Badge) int {
-	if level < 0 || level > MaximumLevel {
+	if level < 0 || level > maximumLevel {
 		level = 0
 	}
 	if badge != nil {
@@ -31,9 +31,9 @@ func preferredBadge(badges ...*Badge) *Badge {
 func applyRecurring(state *State, grant *Grant, certificate Certificate) {
 	rank := Rank(certificate.Tier)
 	switch certificate.Edition {
-	case EditionMonthly:
+	case editionMonthly:
 		state.Monthly, state.MonthlyLevel = grant, max(state.MonthlyLevel, rank)
-	case EditionYearly:
+	case editionYearly:
 		state.Yearly, state.YearlyLevel = grant, max(state.YearlyLevel, rank)
 	default:
 		state.LivingStandard, state.LivingLevel = grant, max(state.LivingLevel, rank)
@@ -41,6 +41,6 @@ func applyRecurring(state *State, grant *Grant, certificate Certificate) {
 }
 
 func (service *Service) validEditionGrants(state State) bool {
-	return (state.Monthly == nil || service.decodeGrant(state, state.Monthly, EditionMonthly, true).valid) &&
-		(state.Yearly == nil || service.decodeGrant(state, state.Yearly, EditionYearly, true).valid)
+	return (state.Monthly == nil || service.decodeGrant(state, state.Monthly, editionMonthly, true).valid) &&
+		(state.Yearly == nil || service.decodeGrant(state, state.Yearly, editionYearly, true).valid)
 }

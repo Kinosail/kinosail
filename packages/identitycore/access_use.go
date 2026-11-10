@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	SessionUseInterval = 60
-	APIKeyUseInterval  = 3600
+	sessionUseInterval = 60
+	apiKeyUseInterval  = 3600
 )
 
 type AccessUse struct {
@@ -17,7 +17,7 @@ type AccessUse struct {
 }
 
 func (use *AccessUse) Session(key string, session Session, now int64) Session {
-	if !session.Browser || session.LastSeen+SessionUseInterval > now {
+	if !session.Browser || session.LastSeen+sessionUseInterval > now {
 		return session
 	}
 	use.mu.RLock()
@@ -39,7 +39,7 @@ func (use *AccessUse) APIKey(key string, api APIKey, now int64) APIKey {
 }
 
 func (use *AccessUse) Record(key string, session Session, sessionFound bool, api APIKey, apiFound bool, now int64) {
-	sessionDue := sessionFound && session.Browser && session.LastSeen+SessionUseInterval <= now
+	sessionDue := sessionFound && session.Browser && session.LastSeen+sessionUseInterval <= now
 	apiDue := apiFound && apiKeyUseDue(api, now)
 	if !sessionDue && !apiDue {
 		return
@@ -98,7 +98,7 @@ func (use *AccessUse) APIKeys(keys map[string]APIKey) map[string]APIKey {
 }
 
 func apiKeyUseDue(api APIKey, now int64) bool {
-	return api.LastUsed == 0 || api.LastUsed+APIKeyUseInterval <= now
+	return api.LastUsed == 0 || api.LastUsed+apiKeyUseInterval <= now
 }
 
 func SessionTimeouts(session Session, timeouts, publicTimeouts func() (time.Duration, time.Duration)) (time.Duration, time.Duration) {

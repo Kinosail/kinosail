@@ -20,15 +20,15 @@ func RespondDenial(writer http.ResponseWriter, request *http.Request, denial Den
 		return
 	}
 	config.Denied(request, denial.Reason())
-	if denial == RemoteRouteDenied {
+	if denial == remoteRouteDenied {
 		config.NotFound(writer, request)
 		return
 	}
-	if denial == MFAEnrollmentRequired && !config.AuthenticationError(request) {
+	if denial == mfaEnrollmentRequired && !config.AuthenticationError(request) {
 		http.Redirect(writer, request, "/account?mfa=required", http.StatusSeeOther)
 		return
 	}
-	if denial == MFAEnrollmentRequired {
+	if denial == mfaEnrollmentRequired {
 		config.JSON(writer, map[string]any{"error": denial.Message(), "mfaEnrollmentRequired": true}, denial.Status())
 		return
 	}
@@ -73,16 +73,16 @@ func ownerHandler(next http.Handler, config OwnerConfig, sensitive bool) http.Ha
 		}
 		safe := !sensitive && (request.Method == http.MethodGet || request.Method == http.MethodHead)
 		recent := local || managed || safe || config.RecentlyAuthenticated(request, 10*time.Minute)
-		switch EvaluateOwner(owner, local, managed, safe, recent) { //nolint:exhaustive // EvaluateOwner returns only the three handled Owner denials.
+		switch evaluateOwner(owner, local, managed, safe, recent) { //nolint:exhaustive // EvaluateOwner returns only the three handled Owner denials.
 		case Allowed:
 			next.ServeHTTP(writer, request)
-		case OwnerStepUpRequired:
+		case ownerStepUpRequired:
 			if config.AuthenticationError(request) {
 				config.JSON(writer, map[string]any{"error": "recent authentication required", "stepUpRequired": true}, http.StatusForbidden)
 			} else {
 				http.Redirect(writer, request, config.StepUpPath(request), http.StatusSeeOther)
 			}
-		case OwnerRequired:
+		case ownerRequired:
 			config.Error(writer, request, "Owner access required", http.StatusForbidden)
 		}
 	})
@@ -111,19 +111,19 @@ func Login[T any](writer http.ResponseWriter, request *http.Request, next string
 		_ = render(writer, request, next)
 		return
 	}
-	PasswordLoginRequest(writer, request, next, config)
+	passwordLoginRequest(writer, request, next, config)
 }
 
-func PasswordLoginRequest[T any](writer http.ResponseWriter, request *http.Request, next string, config PasswordLoginConfig[T]) {
+func passwordLoginRequest[T any](writer http.ResponseWriter, request *http.Request, next string, config PasswordLoginConfig[T]) {
 	if config.Authenticate == nil || config.ProfileID == nil || config.SignIn == nil || config.SetAudit == nil || config.ReturnPath == nil || config.Error == nil {
 		http.Error(writer, "password login is unavailable", http.StatusInternalServerError)
 		return
 	}
-	profile, err := PasswordLogin(request.FormValue("name"), request.FormValue("password"), config.Authenticate, func(profile T) error {
+	profile, err := passwordLogin(request.FormValue("name"), request.FormValue("password"), config.Authenticate, func(profile T) error {
 		return config.SignIn(writer, request, config.ProfileID(profile))
 	})
 	if err != nil {
-		if errors.Is(err, ErrInvalidCredentials) {
+		if errors.Is(err, errInvalidCredentials) {
 			config.Error(writer, request, "invalid credentials", http.StatusUnauthorized)
 		} else {
 			config.Error(writer, request, "could not create session", http.StatusInternalServerError)
@@ -155,7 +155,7 @@ type MFAHandlers struct {
 
 func NewMFAHandlers(config MFAHTTPConfig) (MFAHandlers, error) {
 	if !validMFAHTTPConfig(config) {
-		return MFAHandlers{}, ErrInvalidConfig
+		return MFAHandlers{}, errInvalidConfig
 	}
 	return MFAHandlers{Setup: mfaSetupHandler(config), Confirm: mfaConfirmHandler(config), Disable: mfaDisableHandler(config), WebConfirm: mfaWebConfirmHandler(config), WebDisable: mfaWebDisableHandler(config)}, nil
 }

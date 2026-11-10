@@ -134,7 +134,7 @@ func assertSearchNormalization(t *testing.T) {
 			t.Fatalf("searchText(%q) = %q, want %q", input, got, want)
 		}
 	}
-	if Matches(library.Item{Title: "Café"}, "") || Matches(library.Item{Title: "Café"}, "!!!") {
+	if matches(library.Item{Title: "Café"}, "") || matches(library.Item{Title: "Café"}, "!!!") {
 		t.Fatal("empty normalized search matched an item")
 	}
 }

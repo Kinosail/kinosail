@@ -49,14 +49,14 @@ func ReadJellyfinPlaybackRequest(request *http.Request) (JellyfinPlaybackRequest
 	}
 	var input JellyfinPlaybackRequest
 	decoder := json.NewDecoder(bytes.NewReader(data))
-	if decoder.Decode(&input) != nil || decoder.Decode(&struct{}{}) != io.EOF || !ValidJellyfinPlaybackRequest(input) {
+	if decoder.Decode(&input) != nil || decoder.Decode(&struct{}{}) != io.EOF || !validJellyfinPlaybackRequest(input) {
 		return JellyfinPlaybackRequest{}, false, false
 	}
 	provided := len(input.DeviceProfile.DirectPlayProfiles) > 0 || len(input.DeviceProfile.TranscodingProfiles) > 0 || len(input.DeviceProfile.DirectStreamProfiles) > 0
 	return input, provided, true
 }
 
-func ValidJellyfinPlaybackRequest(input JellyfinPlaybackRequest) bool {
+func validJellyfinPlaybackRequest(input JellyfinPlaybackRequest) bool {
 	return input.MaxStreamingBitrate >= 0 && input.MaxStreamingBitrate <= maximumJellyfinStreamingBitrate && validJellyfinTrack(input.AudioStreamIndex) &&
 		validJellyfinTrack(input.SubtitleStreamIndex) && validJellyfinDeviceProfile(input.DeviceProfile)
 }
@@ -98,27 +98,27 @@ func JellyfinCapabilities(profile JellyfinDeviceProfile, facts MediaFacts) Clien
 		if !strings.EqualFold(value.Type, facts.Kind) && (facts.Kind != "video" || !strings.EqualFold(value.Type, "Video")) {
 			continue
 		}
-		capabilities.Containers = AppendCSV(capabilities.Containers, value.Container, true)
-		capabilities.VideoCodecs = AppendCSV(capabilities.VideoCodecs, value.VideoCodec, false)
-		capabilities.AudioCodecs = AppendCSV(capabilities.AudioCodecs, value.AudioCodec, false)
+		capabilities.Containers = appendCSV(capabilities.Containers, value.Container, true)
+		capabilities.VideoCodecs = appendCSV(capabilities.VideoCodecs, value.VideoCodec, false)
+		capabilities.AudioCodecs = appendCSV(capabilities.AudioCodecs, value.AudioCodec, false)
 	}
 	if facts.Video.HDR != "" && explicitHDRSupport(profile.CodecProfiles, facts.Video) {
 		capabilities.HDRFormats = append(capabilities.HDRFormats, facts.Video.HDR)
 	}
 	capabilities.SupportsRemux = len(profile.DirectStreamProfiles) > 0
 	for _, value := range profile.TranscodingProfiles {
-		capabilities.TranscodeVideoCodecs = AppendCSV(capabilities.TranscodeVideoCodecs, value.VideoCodec, false)
+		capabilities.TranscodeVideoCodecs = appendCSV(capabilities.TranscodeVideoCodecs, value.VideoCodec, false)
 	}
 	for _, value := range profile.SubtitleProfiles {
 		if strings.EqualFold(value.Method, "External") || strings.EqualFold(value.Method, "Embed") {
-			capabilities.TextSubtitleCodecs = AppendCSV(capabilities.TextSubtitleCodecs, value.Format, false)
+			capabilities.TextSubtitleCodecs = appendCSV(capabilities.TextSubtitleCodecs, value.Format, false)
 			capabilities.SupportsExternalSubtitles = capabilities.SupportsExternalSubtitles || strings.EqualFold(value.Method, "External")
 		}
 	}
 	return capabilities
 }
 
-func AppendCSV(target []string, value string, containers bool) []string {
+func appendCSV(target []string, value string, containers bool) []string {
 	for part := range strings.SplitSeq(value, ",") {
 		part = Lower(part)
 		if containers {
@@ -153,7 +153,7 @@ func JellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan,
 	if query != "" {
 		query = "?" + query
 	}
-	streams := append(JellyfinMediaStreams(item, facts, options.SubtitleFormat, query), jellyfinSidecarStreams(item, facts, options.SubtitleFormat, query)...)
+	streams := append(jellyfinMediaStreams(item, facts, options.SubtitleFormat, query), jellyfinSidecarStreams(item, facts, options.SubtitleFormat, query)...)
 	direct, transcode := plan.Mode == "direct", plan.Allowed && plan.Mode != "direct"
 	directStream := plan.Mode == "remux" || plan.Mode == "audio-transcode"
 	defaultAudio := -1
@@ -168,8 +168,8 @@ func JellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan,
 		pathQuery = query
 	}
 	result := map[string]any{
-		"Id": JellyfinID(item.ID), "ETag": JellyfinID(item.ID), "Name": item.Title, "Protocol": "Http", "Type": "Default",
-		"Path": "/Videos/" + JellyfinID(item.ID) + "/stream" + pathQuery, "Container": facts.Container, "Size": item.Size,
+		"Id": jellyfinID(item.ID), "ETag": jellyfinID(item.ID), "Name": item.Title, "Protocol": "Http", "Type": "Default",
+		"Path": "/Videos/" + jellyfinID(item.ID) + "/stream" + pathQuery, "Container": facts.Container, "Size": item.Size,
 		"SupportsDirectPlay": direct, "SupportsDirectStream": directStream, "SupportsTranscoding": transcode, "MediaStreams": streams,
 		"DefaultAudioStreamIndex": defaultAudio,
 	}
@@ -180,12 +180,12 @@ func JellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan,
 	result["RunTimeTicks"] = int64(duration * 1e7)
 	if transcode {
 		result["TranscodingContainer"], result[options.TranscodingProtocolField] = "mp4", "hls"
-		result["TranscodingUrl"] = "/Videos/" + JellyfinID(item.ID) + "/p/" + RecipeFor(plan).Token() + "/index.m3u8" + query
+		result["TranscodingUrl"] = "/Videos/" + jellyfinID(item.ID) + "/p/" + RecipeFor(plan).Token() + "/index.m3u8" + query
 	}
 	return result, nil
 }
 
-func JellyfinMediaStreams(item library.Item, facts MediaFacts, subtitleFormat, query string) []any {
+func jellyfinMediaStreams(item library.Item, facts MediaFacts, subtitleFormat, query string) []any {
 	streams := make([]any, 0, 1+len(facts.Audio)+len(facts.Subtitles))
 	if facts.Video.Codec != "" {
 		stream := map[string]any{"Index": 0, "Type": "Video", "Codec": facts.Video.Codec, "Profile": facts.Video.Profile, "Width": facts.Video.Width, "Height": facts.Video.Height, "BitDepth": facts.Video.BitDepth, "VideoRangeType": map[bool]string{true: "SDR", false: strings.ToUpper(facts.Video.HDR)}[facts.Video.HDR == ""], "IsDefault": true}
@@ -215,7 +215,7 @@ func JellyfinMediaStreams(item library.Item, facts MediaFacts, subtitleFormat, q
 	return streams
 }
 
-func JellyfinID(id string) string { return id + "0000000000000000" }
+func jellyfinID(id string) string { return id + "0000000000000000" }
 
 type JellyfinPlaybackHandlers struct {
 	PlaybackInfo, Image, Stream, Subtitle, Progress, UserData, Played, Favorite http.HandlerFunc

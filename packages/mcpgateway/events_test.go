@@ -25,7 +25,7 @@ func TestEventsRPCDiscovery(t *testing.T) {
 	connections.clients["client"] = mcpOAuthClient{ID: "client", Name: "Agent", RedirectURIs: []string{"http://127.0.0.1/callback"}, CreatedAt: time.Now().Unix()}
 	connections.grants["grant"] = mcpOAuthGrant{ID: "grant", ClientID: "client", ClientName: "Agent", ProfileID: principal.ID, ProfileRevision: principal.Revision, Scopes: []string{ReadScope}, CreatedAt: time.Now().Unix(), AccessHash: secretHash("token"), AccessExpires: time.Now().Add(time.Hour).Unix(), RefreshHash: secretHash("refresh"), RefreshExpires: time.Now().Add(time.Hour).Unix()}
 	mux := http.NewServeMux()
-	_, err := Register(mux, testGatewayConfig(OAuthConfig{}, principals, &testAPI{}, testRoutes{}), connections)
+	_, err := register(mux, testGatewayConfig(OAuthConfig{}, principals, &testAPI{}, testRoutes{}), connections)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -126,7 +126,7 @@ func newEventFixture(t *testing.T) *eventFixture {
 	fixture.connections.client = &http.Client{Transport: eventTestTransport{destination, receiver.Client().Transport}, Timeout: 5 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	fixture.mux = http.NewServeMux()
 	var err error
-	fixture.gateway, err = Register(fixture.mux, testGatewayConfig(OAuthConfig{}, fixture.principals, &testAPI{}, testRoutes{}), fixture.connections)
+	fixture.gateway, err = register(fixture.mux, testGatewayConfig(OAuthConfig{}, fixture.principals, &testAPI{}, testRoutes{}), fixture.connections)
 	if err != nil {
 		t.Fatal(err)
 	}

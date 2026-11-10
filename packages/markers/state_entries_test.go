@@ -26,7 +26,7 @@ func TestDatabaseMarkersMigrateToEntriesAndSurviveRestart(t *testing.T) {
 	directory := t.TempDir()
 	open := markerStore(t, directory)
 	items := movieItems(3)
-	legacy := map[string]Record{items[0].ID: {Revision: mediaRevision(items[0]), DetectorVersion: DetectorVersion, Markers: []Marker{{Type: "intro", Label: "Intro", Start: 1, End: 9, Source: "manual"}}}}
+	legacy := map[string]Record{items[0].ID: {Revision: mediaRevision(items[0]), DetectorVersion: detectorVersion, Markers: []Marker{{Type: "intro", Label: "Intro", Start: 1, End: 9, Source: "manual"}}}}
 	if err := open().SaveJSON("playback_markers.json", legacy); err != nil {
 		t.Fatal(err)
 	}
@@ -62,7 +62,7 @@ func TestDatabaseMarkerBatchCommitsAllOrNothing(t *testing.T) {
 		return nil, errors.New("visual unavailable")
 	}
 	analyzer.extractCredits = func(context.Context, library.Item, float64, float64) ([]byte, error) { return nil, nil }
-	if err := analyzer.analyzeBatch(t.Context(), items, nil); !errors.Is(err, ErrPersistence) {
+	if err := analyzer.analyzeBatch(t.Context(), items, nil); !errors.Is(err, errPersistence) {
 		t.Fatalf("rejected batch error = %v", err)
 	}
 	reloaded := NewAnalyzer(Config{DataDir: directory, Database: open()})

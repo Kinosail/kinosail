@@ -34,7 +34,7 @@ func TestCollectionReadRejectsInvalidAndUnknownNamesWithoutProjection(t *testing
 	for _, name := range []string{"", " ", ".", "..", "../private", "a/../b", "a/./b", "a\\b", " padded", "bad\nname", strings.Repeat("a", 65), "unknown"} {
 		t.Run(name, func(t *testing.T) {
 			projected := false
-			action := CollectionAPI(name, func() []library.Item { return nil }, func([]library.Item) []string { return []string{"Visible"} },
+			action := collectionAPI(name, func() []library.Item { return nil }, func([]library.Item) []string { return []string{"Visible"} },
 				func(string, []library.Item) []library.Item { t.Fatal("unexpected collection lookup"); return nil },
 				func([]library.Item) any { projected = true; return nil })
 			if !action.NotFound || projected {

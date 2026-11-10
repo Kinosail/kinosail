@@ -50,7 +50,7 @@ func NewPlaylistHandlers(config PlaylistHandlersConfig) PlaylistHandlers {
 }
 
 func (handlers PlaylistHandlers) Browse(writer http.ResponseWriter, request *http.Request) {
-	query, err := ParseCurationQuery(request.URL.Query())
+	query, err := parseCurationQuery(request.URL.Query())
 	if err != nil {
 		handlers.config.Failure(writer, request, "invalid playlist state", http.StatusBadRequest)
 		return
@@ -70,9 +70,9 @@ func (handlers PlaylistHandlers) Browse(writer http.ResponseWriter, request *htt
 	mode, description := "Manual", ""
 	candidates := []library.Item(nil)
 	if smart {
-		mode, description = "Smart", DescribePlaylistRule(rule)
+		mode, description = "Smart", describePlaylistRule(rule)
 	} else {
-		candidates = CurationCandidates(items, members, query)
+		candidates = curationCandidates(items, members, query)
 	}
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := handlers.config.Render(writer, request, PlaylistPage{
@@ -89,7 +89,7 @@ func (handlers PlaylistHandlers) Order(writer http.ResponseWriter, request *http
 		return
 	}
 	name, id, direction := request.PathValue("name"), request.PostForm.Get("id"), request.PostForm.Get("direction")
-	if !ValidListName(name) || !ValidCurationItemID(id) || !oneOf(direction, "up", "down") {
+	if !ValidListName(name) || !validCurationItemID(id) || !oneOf(direction, "up", "down") {
 		handlers.config.Failure(writer, request, "invalid playlist order", http.StatusBadRequest)
 		return
 	}
@@ -121,12 +121,12 @@ func (handlers PlaylistHandlers) ManageItem(writer http.ResponseWriter, request 
 		handlers.config.Failure(writer, request, "invalid playlist state", http.StatusBadRequest)
 		return
 	}
-	if err := request.ParseForm(); err != nil || !ValidCurationItemForm(request.PostForm) {
+	if err := request.ParseForm(); err != nil || !validCurationItemForm(request.PostForm) {
 		handlers.config.Failure(writer, request, "invalid playlist state", http.StatusBadRequest)
 		return
 	}
 	name, id := request.PathValue("name"), request.PathValue("id")
-	if !ValidListName(name) || !ValidCurationItemID(id) {
+	if !ValidListName(name) || !validCurationItemID(id) {
 		handlers.config.Failure(writer, request, "invalid playlist state", http.StatusBadRequest)
 		return
 	}
@@ -150,7 +150,7 @@ func (handlers PlaylistHandlers) ManageItem(writer http.ResponseWriter, request 
 	http.Redirect(writer, request, target, http.StatusSeeOther)
 }
 
-func ParseCurationQuery(values url.Values) (string, error) {
+func parseCurationQuery(values url.Values) (string, error) {
 	for key := range values {
 		if key != "q" && key != "lang" {
 			return "", ErrInvalidBrowse
@@ -159,7 +159,7 @@ func ParseCurationQuery(values url.Values) (string, error) {
 	return SingleValue(values, "q", 200)
 }
 
-func CurationCandidates(items, members []library.Item, query string) []library.Item {
+func curationCandidates(items, members []library.Item, query string) []library.Item {
 	if query == "" {
 		return nil
 	}

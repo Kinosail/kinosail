@@ -14,17 +14,17 @@ const (
 type Kind string
 
 const (
-	Text    Kind = "text"
-	Boolean Kind = "boolean"
-	Number  Kind = "number"
-	List    Kind = "list"
+	text    Kind = "text"
+	boolean Kind = "boolean"
+	number  Kind = "number"
+	list    Kind = "list"
 )
 
 type Source string
 
 const (
 	Default     Source = "default"
-	GUI         Source = "gui"
+	gui         Source = "gui"
 	YAML        Source = "yaml"
 	Environment Source = "environment"
 )
@@ -112,7 +112,7 @@ func (loader Loader) applyStored(values map[string]Value, regular, secrets map[s
 			if err := loader.Schema.Validate(key, raw); err != nil {
 				return err
 			}
-			values[key] = Value{Raw: raw, Source: GUI}
+			values[key] = Value{Raw: raw, Source: gui}
 		}
 	}
 	return nil

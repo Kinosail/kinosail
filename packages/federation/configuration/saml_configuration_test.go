@@ -31,14 +31,14 @@ func TestSAMLConfigurationKeysAndView(t *testing.T) {
 		value      string
 		configured bool
 	}{
-		SAMLMetadataURLKey: {"https://identity.example/metadata", true}, SAMLMetadataXMLKey: {"", false}, SAMLIdentityKey: {"objectGUID", false},
+		SAMLMetadataURLKey: {"https://identity.example/metadata", true}, samlMetadataXMLKey: {"", false}, samlIdentityKey: {"objectGUID", false},
 	}
 	value := func(key string) (string, bool) { item := values[key]; return item.value, item.configured }
 	view := NewSAMLConfigurationView(value, "https://media.example", "control")
 	if view.ProviderMetadataURL != values[SAMLMetadataURLKey].value || view.ProviderMetadataXML != "" || view.SPMetadataURL != "https://media.example/login/saml/metadata" || view.ACSURL != "https://media.example/login/saml/acs" || view.IdentityAttribute != "objectGUID" || !view.Configured || view.Control != "control" {
 		t.Fatalf("view = %#v", view)
 	}
-	values[SAMLMetadataURLKey], values[SAMLMetadataXMLKey] = struct {
+	values[SAMLMetadataURLKey], values[samlMetadataXMLKey] = struct {
 		value      string
 		configured bool
 	}{"", false}, struct {
@@ -48,7 +48,7 @@ func TestSAMLConfigurationKeysAndView(t *testing.T) {
 	if !NewSAMLConfigurationView(value, "http://local", 1).Configured {
 		t.Fatal("XML configuration was not detected")
 	}
-	values[SAMLMetadataXMLKey] = struct {
+	values[samlMetadataXMLKey] = struct {
 		value      string
 		configured bool
 	}{"", false}
@@ -66,7 +66,7 @@ func TestSAMLConfigurationKeysAndView(t *testing.T) {
 	if !SAMLConfigured(stringsByKey) {
 		t.Fatal("SAML URL was not configured")
 	}
-	values[SAMLMetadataURLKey], values[SAMLMetadataXMLKey] = struct {
+	values[SAMLMetadataURLKey], values[samlMetadataXMLKey] = struct {
 		value      string
 		configured bool
 	}{"", false}, struct {
@@ -86,7 +86,7 @@ func TestSAMLConfigurationStoreLifecycle(t *testing.T) {
 	if err := store.Change(SAMLConfig{}, false); err == nil || effects.sets != 0 {
 		t.Fatalf("missing storage = %v %#v", err, effects)
 	}
-	store.File, effects.managed, effects.source = "/data/settings.json", SAMLMetadataXMLKey, "environment"
+	store.File, effects.managed, effects.source = "/data/settings.json", samlMetadataXMLKey, "environment"
 	if err := store.Change(SAMLConfig{}, false); err == nil || !strings.Contains(err.Error(), "environment") || effects.sets != 0 {
 		t.Fatalf("managed = %v %#v", err, effects)
 	}
@@ -96,7 +96,7 @@ func TestSAMLConfigurationStoreLifecycle(t *testing.T) {
 	}
 	effects.setErr = nil
 	config := SAMLConfig{MetadataURL: "https://identity.example/metadata", IdentityAttribute: "NameID"}
-	if err := store.Change(config, false); err != nil || effects.directory != "/data" || effects.config != config || effects.updates[SAMLMetadataURLKey] != config.MetadataURL || effects.updates[SAMLMetadataXMLKey] != "" || effects.updates[SAMLIdentityKey] != "NameID" || len(effects.deleted) != 3 {
+	if err := store.Change(config, false); err != nil || effects.directory != "/data" || effects.config != config || effects.updates[SAMLMetadataURLKey] != config.MetadataURL || effects.updates[samlMetadataXMLKey] != "" || effects.updates[samlIdentityKey] != "NameID" || len(effects.deleted) != 3 {
 		t.Fatalf("set = %v %#v", err, effects)
 	}
 	effects.updates, effects.deleted, effects.deleteErr = map[string]string{}, map[string]bool{}, errors.New("delete")
@@ -131,13 +131,13 @@ func testSAMLConfigurationStore(effects *samlConfigurationEffects) SAMLConfigura
 func TestParseSAMLConfigurationForm(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{"key": {SAMLConfigurationKey}, "metadataUrl": {"https://identity.example/metadata"}, "metadataXml": {""}, "identityAttribute": {"NameID"}}
-	config, err := ParseSAMLConfigurationForm(httptest.NewRecorder(), samlFormRequest(valid))
+	config, err := parseSAMLConfigurationForm(httptest.NewRecorder(), samlFormRequest(valid))
 	if err != nil || config.MetadataURL != valid.Get("metadataUrl") || config.MetadataXML != "" || config.IdentityAttribute != "NameID" {
 		t.Fatalf("valid = %#v %v", config, err)
 	}
 	withXML := cloneOIDCFormValues(valid)
 	withXML.Set("metadataXml", "x")
-	if config, parseErr := ParseSAMLConfigurationForm(httptest.NewRecorder(), samlFormRequest(withXML)); parseErr != nil || config.MetadataXML != "x" {
+	if config, parseErr := parseSAMLConfigurationForm(httptest.NewRecorder(), samlFormRequest(withXML)); parseErr != nil || config.MetadataXML != "x" {
 		t.Fatalf("XML = %#v %v", config, parseErr)
 	}
 	tests := map[string]func(url.Values, *http.Request){
@@ -155,7 +155,7 @@ func TestParseSAMLConfigurationForm(t *testing.T) {
 		if request.URL.RawQuery == "" && request.Header.Get("Content-Type") != "text/plain" {
 			request = samlFormRequest(values)
 		}
-		if _, parseErr := ParseSAMLConfigurationForm(httptest.NewRecorder(), request); parseErr == nil {
+		if _, parseErr := parseSAMLConfigurationForm(httptest.NewRecorder(), request); parseErr == nil {
 			t.Fatalf("%s accepted", name)
 		}
 	}

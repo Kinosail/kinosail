@@ -8,7 +8,7 @@ import (
 
 func TestBadgeCaseClampsMalformedPersistedLevels(t *testing.T) {
 	service := testServiceAt(t, App{}, testNow())
-	badgeCase := service.badgeCase(State{LivingLevel: -1, PatronLevel: MaximumLevel + 1}, nil, nil)
+	badgeCase := service.badgeCase(State{LivingLevel: -1, PatronLevel: maximumLevel + 1}, nil, nil)
 	if badgeCase.LivingLevel != 0 || badgeCase.PatronLevel != 0 || badgeCase.Unlocked != 0 {
 		t.Fatalf("clamped badge case = %#v", badgeCase)
 	}

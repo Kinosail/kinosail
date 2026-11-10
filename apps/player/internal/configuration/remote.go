@@ -1,13 +1,13 @@
 package configuration
 
 import (
-	sharedvalidation "github.com/MikeO7/kinosail/packages/validation"
+	"github.com/MikeO7/kinosail/packages/configurationcore"
 )
 
 func validateRemoteAccess(configured Snapshot) error {
-	return sharedvalidation.ValidateRemoteAccess(configured.String)
+	return configurationcore.ValidateRemoteAccess(configured.String)
 }
 
-func validRemoteToken(token string) bool { return sharedvalidation.ValidRemoteToken(token) }
+func validRemoteToken(token string) bool { return configurationcore.ValidRemoteToken(token) }
 
-func validSCIMToken(token string) bool { return sharedvalidation.ValidSCIMToken(token) }
+func validSCIMToken(token string) bool { return configurationcore.ValidSCIMToken(token) }

@@ -13,7 +13,7 @@ import (
 
 const (
 	githubReleasesAPIURL = "https://api.github.com/repos/Kinosail/kinosail/releases?per_page=100"
-	GitHubReleasesURL    = "https://github.com/Kinosail/kinosail/releases"
+	gitHubReleasesURL    = "https://github.com/Kinosail/kinosail/releases"
 	githubAPIVersion     = "2026-03-10"
 	maxReleaseResponse   = 1 << 20
 	maxReleaseCount      = 100
@@ -143,7 +143,7 @@ func publicGitHubRelease(releases []githubRelease, tagPrefix string) (string, er
 			continue
 		}
 		version := strings.TrimPrefix(*release.Tag, tagPrefix)
-		if !ValidReleaseVersion(version) {
+		if !validReleaseVersion(version) {
 			return "", errors.New("GitHub returned an invalid release version")
 		}
 		return version, nil

@@ -86,7 +86,7 @@ func finalizedVariantFiles(directory string, manifest []byte) bool {
 		} else {
 			name, segments = line, segments+1
 		}
-		if !VariantFile(name) || name != "init.mp4" && !strings.HasPrefix(name, "segment-") {
+		if !variantFile(name) || name != "init.mp4" && !strings.HasPrefix(name, "segment-") {
 			return false
 		}
 		info, statErr := os.Lstat(filepath.Join(directory, name))

@@ -29,13 +29,13 @@ func (engine Engine[P]) Preview(ctx context.Context, input Input) (Preview, erro
 	if err != nil {
 		return Preview{}, err
 	}
-	return Prepare(ctx, engine.Store, func(ctx context.Context) ([]Activity, error) { return engine.Fetch(ctx, input) }, engine.Snapshot, func(activities []Activity, items []library.Item) Preview {
+	return prepare(ctx, engine.Store, func(ctx context.Context) ([]Activity, error) { return engine.Fetch(ctx, input) }, engine.Snapshot, func(activities []Activity, items []library.Item) Preview {
 		return engine.Build(input, profile, activities, items)
 	})
 }
 
 func (engine Engine[P]) Build(input Input, profile P, activities []Activity, items []library.Item) Preview {
-	return NewPreview(rand.Text(), time.Now().Add(engine.TTL), input, engine.ProfileID(profile), engine.ProfileName(profile), activities, items, func(id string) catalog.PlaybackState {
+	return newPreview(rand.Text(), time.Now().Add(engine.TTL), input, engine.ProfileID(profile), engine.ProfileName(profile), activities, items, func(id string) catalog.PlaybackState {
 		return engine.Progress(profile, id)
 	}, func(id string, favorite bool, playlists map[string]int) int {
 		return engine.ListAdditions(profile, id, favorite, playlists)
@@ -43,7 +43,7 @@ func (engine Engine[P]) Build(input Input, profile P, activities []Activity, ite
 }
 
 func (engine Engine[P]) Apply(id string) (Summary, error) {
-	return ApplyPreview(engine.Store, id, func(preview Preview) (int, int, int, error) {
+	return applyPreview(engine.Store, id, func(preview Preview) (int, int, int, error) {
 		profile, found := engine.Profile(preview.ProfileID)
 		if !found {
 			return 0, 0, 0, errors.New("destination Viewer Profile was not found")

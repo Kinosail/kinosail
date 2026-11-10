@@ -17,7 +17,7 @@ import (
 
 func gatewayFront(tb testing.TB, path string) *httptest.Server {
 	tb.Helper()
-	gateway := Handler("family.example", path)
+	gateway := handler("family.example", path)
 	front := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.TLS = &tls.ConnectionState{Version: tls.VersionTLS13, HandshakeComplete: true}
 		r.Host = "family.example"

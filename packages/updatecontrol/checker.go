@@ -67,7 +67,7 @@ func NewChecker(config CheckerConfig) (*Checker, error) {
 	}
 	return &Checker{
 		manager: config.Manager, source: config.Source, current: config.CurrentVersion,
-		status:  Status{State: "not-checked", CurrentVersion: config.CurrentVersion, ReleaseURL: GitHubReleasesURL},
+		status:  Status{State: "not-checked", CurrentVersion: config.CurrentVersion, ReleaseURL: gitHubReleasesURL},
 		trigger: make(chan struct{}, 1), automatic: config.Automatic, saveAutomatic: config.SaveAutomatic,
 		now: time.Now, random: rand.Reader, delay: randomUpdateDelay,
 	}, nil
@@ -119,7 +119,7 @@ func (checker *Checker) Check(ctx context.Context) Status {
 			err = errors.New("GitHub returned an empty cached release")
 		}
 	}
-	status := Status{State: "unavailable", CurrentVersion: checker.current, ReleaseURL: GitHubReleasesURL, CheckedAt: checker.now().UTC().Format(time.RFC3339)}
+	status := Status{State: "unavailable", CurrentVersion: checker.current, ReleaseURL: gitHubReleasesURL, CheckedAt: checker.now().UTC().Format(time.RFC3339)}
 	if errors.Is(err, errNoPublicRelease) {
 		status.State = "no-release"
 	}

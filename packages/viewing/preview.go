@@ -18,7 +18,7 @@ type PreviewInput struct {
 	ListAdditions func(string, bool, map[string]int) int
 }
 
-func BuildPreview(input PreviewInput) Plan {
+func buildPreview(input PreviewInput) Plan {
 	preview := Plan{}
 	preview.Summary.SourceItems = len(input.Activities)
 	for _, activity := range input.Activities {
@@ -49,8 +49,8 @@ func buildPreviewItem(input PreviewInput, activity Activity, hasProgress bool, p
 		playlistNames = append(playlistNames, name)
 	}
 	sort.Strings(playlistNames)
-	item := Item{SourceTitle: Label(activity), Seconds: activity.Seconds, Watched: activity.Watched, Favorite: activity.Favorite, Playlists: playlistNames}
-	target, status, reason := Match(activity, input.Items)
+	item := Item{SourceTitle: label(activity), Seconds: activity.Seconds, Watched: activity.Watched, Favorite: activity.Favorite, Playlists: playlistNames}
+	target, status, reason := match(activity, input.Items)
 	item.Status, item.Reason = status, reason
 	if status == "ambiguous" {
 		preview.Summary.Ambiguous++
@@ -90,7 +90,7 @@ func previewProgressChange(input PreviewInput, activity Activity, targetID strin
 	}
 	destination := input.Progress(targetID)
 	state := catalog.PlaybackState{Seconds: activity.Seconds, Watched: activity.Watched, Updated: activity.Updated}
-	if SameState(destination, state) {
+	if sameState(destination, state) {
 		return false, false
 	}
 	if !input.Overwrite && destination != (catalog.PlaybackState{}) {
@@ -109,7 +109,7 @@ func appendPreviewItem(preview *Plan, item Item) {
 	preview.Truncated = true
 }
 
-func NewPreview(id string, expires time.Time, input Input, profileID, profileName string, activities []Activity, items []library.Item, progress func(string) catalog.PlaybackState, listAdditions func(string, bool, map[string]int) int) Preview {
-	plan := BuildPreview(PreviewInput{Overwrite: input.Overwrite, Activities: activities, Items: items, Progress: progress, ListAdditions: listAdditions})
+func newPreview(id string, expires time.Time, input Input, profileID, profileName string, activities []Activity, items []library.Item, progress func(string) catalog.PlaybackState, listAdditions func(string, bool, map[string]int) int) Preview {
+	plan := buildPreview(PreviewInput{Overwrite: input.Overwrite, Activities: activities, Items: items, Progress: progress, ListAdditions: listAdditions})
 	return Preview{ID: id, Source: input.Source, ProfileID: profileID, ProfileName: profileName, ExpiresAt: expires, Summary: plan.Summary, Items: plan.Items, Truncated: plan.Truncated, Input: input, Activities: activities, Changes: plan.Changes, ListChanges: plan.ListChanges}
 }

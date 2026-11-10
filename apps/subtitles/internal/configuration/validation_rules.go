@@ -87,7 +87,7 @@ var configurationValidators = map[string]func(string) error{
 	"playback.subtitles":                   allowed("", "auto", "on", "off"),
 	"transcoding.quality":                  allowed("", "automatic", "speed", "quality"),
 	"transcoding.codec":                    allowed("", "auto", "h264", "hevc", "av1", "vp9"),
-	"transcoding.accelerator":              requiredValid(ValidTranscodingAccelerator, "unsupported value"),
+	"transcoding.accelerator":              requiredValid(validTranscodingAccelerator, "unsupported value"),
 	"scanning.frequency":                   allowed("", "default", "off", "5m", "15m", "1h"),
 	"subtitles.language":                   requiredValid(func(raw string) bool { return raw == "" || validSubtitleLanguage(raw) }, "must be a supported BCP 47 subtitle language"),
 	"logging.audit_retention":              validatePositiveDuration,
@@ -172,7 +172,7 @@ func validatePositiveDuration(raw string) error {
 	return nil
 }
 
-func ValidTranscodingAccelerator(value string) bool {
+func validTranscodingAccelerator(value string) bool {
 	return oneOf(value, "", "none", "auto", "vaapi", "qsv", "cuda", "videotoolbox", "rkmpp", "v4l2m2m", "amf", "mf") == nil
 }
 

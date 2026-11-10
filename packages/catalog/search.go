@@ -24,7 +24,7 @@ func Filter(items []library.Item, query string) []library.Item {
 	return matched
 }
 
-func Matches(item library.Item, query string) bool {
+func matches(item library.Item, query string) bool {
 	return matchesNormalized(item, searchText(query))
 }
 

@@ -24,9 +24,9 @@ const (
 )
 
 var (
-	ErrInvalidConfig     = errors.New("invalid identity configuration")
-	ErrInvalidInput      = errors.New("invalid identity input")
-	ErrInvalidEnrollment = errors.New("authentication code is invalid or enrollment expired")
+	errInvalidConfig     = errors.New("invalid identity configuration")
+	errInvalidInput      = errors.New("invalid identity input")
+	errInvalidEnrollment = errors.New("authentication code is invalid or enrollment expired")
 )
 
 type Enrollment struct {
@@ -48,7 +48,7 @@ func NewMFA() *MFA {
 
 func (mfa *MFA) Setup(identity, name string) (Enrollment, error) {
 	if !validIdentity(identity, name) || mfa == nil || mfa.now == nil || mfa.random == nil {
-		return Enrollment{}, ErrInvalidInput
+		return Enrollment{}, errInvalidInput
 	}
 	secretBytes := make([]byte, 20)
 	if _, err := io.ReadFull(mfa.random, secretBytes); err != nil {
@@ -74,14 +74,14 @@ func (mfa *MFA) Setup(identity, name string) (Enrollment, error) {
 
 func (mfa *MFA) Confirm(identity, code string) (Enrollment, error) {
 	if mfa == nil || mfa.now == nil || identity == "" || len(identity) > maxIdentityLength || len(code) > 32 {
-		return Enrollment{}, ErrInvalidEnrollment
+		return Enrollment{}, errInvalidEnrollment
 	}
 	mfa.mu.Lock()
 	defer mfa.mu.Unlock()
 	enrollment, found := mfa.pending[identity]
 	now := mfa.now()
-	if !found || now.After(enrollment.Expires) || !ValidTOTP(enrollment.Secret, code, now) {
-		return Enrollment{}, ErrInvalidEnrollment
+	if !found || now.After(enrollment.Expires) || !validTOTP(enrollment.Secret, code, now) {
+		return Enrollment{}, errInvalidEnrollment
 	}
 	delete(mfa.pending, identity)
 	return cloneEnrollment(enrollment), nil
@@ -105,12 +105,12 @@ func (mfa *MFA) PendingCount() int {
 	return len(mfa.pending)
 }
 
-func ValidTOTP(secret, code string, now time.Time) bool {
-	_, valid := TOTPCounter(secret, code, now)
+func validTOTP(secret, code string, now time.Time) bool {
+	_, valid := totpCounter(secret, code, now)
 	return valid
 }
 
-func TOTPCounter(secret, code string, now time.Time) (int64, bool) {
+func totpCounter(secret, code string, now time.Time) (int64, bool) {
 	code = strings.TrimSpace(code)
 	if len(secret) == 0 || len(secret) > maxSecretLength || len(code) != 6 || !decimal(code) {
 		return 0, false
@@ -128,7 +128,7 @@ func TOTPCounter(secret, code string, now time.Time) (int64, bool) {
 	return 0, false
 }
 
-func NormalizeRecovery(code string) string {
+func normalizeRecovery(code string) string {
 	if len(code) > 128 {
 		return ""
 	}

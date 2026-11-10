@@ -48,11 +48,11 @@ func TestMediaBrowserParsingAndSessionKeys(t *testing.T) {
 	t.Parallel()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	request.Header.Set("Authorization", `mediabrowser Device="TV", TOKEN="secret"`)
-	if MediaBrowserValue(request, "token") != "secret" || MediaBrowserValue(request, "missing") != "" || MediaBrowserValue(nil, "token") != "" {
+	if mediaBrowserValue(request, "token") != "secret" || mediaBrowserValue(request, "missing") != "" || mediaBrowserValue(nil, "token") != "" {
 		t.Fatal("MediaBrowser parsing failed")
 	}
 	key := SessionKey("secret")
-	if len(key) != 64 || SessionKeyIfNeeded(key) != key || SessionKeyIfNeeded("not-hex") != SessionKey("not-hex") || SessionKeyIfNeeded(strings.Repeat("z", 64)) != SessionKey(strings.Repeat("z", 64)) {
+	if len(key) != 64 || sessionKeyIfNeeded(key) != key || sessionKeyIfNeeded("not-hex") != SessionKey("not-hex") || sessionKeyIfNeeded(strings.Repeat("z", 64)) != SessionKey(strings.Repeat("z", 64)) {
 		t.Fatal("session key normalization failed")
 	}
 }
@@ -93,7 +93,7 @@ func assertSessionNormalization(t *testing.T, now time.Time) {
 	t.Helper()
 	hashed := SessionKey("hashed")
 	values := map[string]Session{"raw": {}, hashed: {Name: "Known", CreatedAt: 1}}
-	NormalizeSessions(values, func() time.Time { return now })
+	normalizeSessions(values, func() time.Time { return now })
 	if len(values) != 2 || values[SessionKey("raw")].Name != "Legacy device" || values[SessionKey("raw")].CreatedAt != now.Unix() || values[hashed].Name != "Known" || values[hashed].CreatedAt != 1 {
 		t.Fatalf("normalized = %#v", values)
 	}
@@ -103,7 +103,7 @@ func assertAutomaticSessionTimestamp(t *testing.T) {
 	t.Helper()
 	auto := map[string]Session{"raw": {}}
 	started := time.Now().Unix()
-	NormalizeSessions(auto, nil)
+	normalizeSessions(auto, nil)
 	if auto[SessionKey("raw")].CreatedAt < started {
 		t.Fatalf("automatic timestamp = %#v", auto)
 	}

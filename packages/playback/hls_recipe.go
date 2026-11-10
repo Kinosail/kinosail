@@ -245,7 +245,7 @@ func HLSRecipeKey(id string, recipe HLSRecipe) string {
 		return id + "-plan-" + recipe.Token() + "-single"
 	}
 	if recipe.Mode == "transcode" && transcodepolicy.NormalizeCodec(recipe.Codec) == "h264" && recipe.Burn == "" && !recipe.ToneMap && !recipe.DialogueBoost && !recipe.NormalizeLoudness && recipe.MaxBitrate == 0 && recipe.Width == 0 && recipe.Height == 0 && len(recipe.Omitted) == 0 && recipe.Offset == 0 {
-		return HLSCacheKey(id, recipe.Audio)
+		return hlsCacheKey(id, recipe.Audio)
 	}
 	return id + "-plan-" + recipe.Token()
 }

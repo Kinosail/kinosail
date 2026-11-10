@@ -58,7 +58,7 @@ func TestRecordValidationBoundsEveryPersistedField(t *testing.T) {
 
 func TestYearRequiresAtLeastFourCharacters(t *testing.T) {
 	t.Parallel()
-	if Year("2020-01-02") != "2020" || Year("202") != "" {
+	if year("2020-01-02") != "2020" || year("202") != "" {
 		t.Fatal("year normalization mismatch")
 	}
 }
@@ -115,7 +115,7 @@ func TestApplyMissingAndResolveTMDBEpisode(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "episode", Season: 1, Episode: 2, ProviderIDs: map[string]string{"tvdb": "123"}, Year: "local"}
 	record := Record{Year: "2020", Plot: "Plot", Artwork: "poster", Backdrop: "landscape", ShowTitle: "Show", ShowYear: "2019", ShowPlot: "Show plot", ShowArtwork: "show-poster", ShowBackdrop: "show-landscape", BackdropChecked: true, ShowProviderIDs: map[string]string{"tmdb": "42"}}
-	ApplyMissing(&item, record)
+	applyMissing(&item, record)
 	if item.Year != "local" || item.Plot != "Plot" || item.Backdrop != "landscape" || item.ShowBackdrop != "show-landscape" || item.ShowTitle != "Show" || item.ShowProviderIDs["tmdb"] != "42" {
 		t.Fatalf("missing metadata = %#v", item)
 	}
@@ -163,11 +163,11 @@ func TestApplyMissingAndResolveTMDBEpisode(t *testing.T) {
 func TestApplyOwnerMetadata(t *testing.T) {
 	t.Parallel()
 	item := library.Item{Title: "original", Year: "original", Plot: "original", Rating: "original", Tagline: "original", Genres: "original", Artwork: "original", ShowTitle: "original", ShowYear: "original", ShowPlot: "original", ShowArtwork: "original"}
-	Apply(&item, Record{Title: "title", Year: "2026", Plot: "plot", Rating: "PG", Tagline: "tagline", Genres: "genre", Artwork: "art", Collection: "collection", ProviderIDs: map[string]string{"tmdb": "1"}, ShowTitle: "show", ShowYear: "2025", ShowPlot: "show plot", ShowArtwork: "show art", ShowProviderIDs: map[string]string{"tmdb": "2"}})
+	apply(&item, Record{Title: "title", Year: "2026", Plot: "plot", Rating: "PG", Tagline: "tagline", Genres: "genre", Artwork: "art", Collection: "collection", ProviderIDs: map[string]string{"tmdb": "1"}, ShowTitle: "show", ShowYear: "2025", ShowPlot: "show plot", ShowArtwork: "show art", ShowProviderIDs: map[string]string{"tmdb": "2"}})
 	if item.Title != "title" || item.Year != "2026" || item.Plot != "plot" || item.Rating != "PG" || item.Tagline != "tagline" || item.Genres != "genre" || item.Artwork != "art" || item.Collection != "collection" || item.ProviderIDs["tmdb"] != "1" || item.ShowTitle != "show" || item.ShowYear != "2025" || item.ShowPlot != "show plot" || item.ShowArtwork != "show art" || item.ShowProviderIDs["tmdb"] != "2" {
 		t.Fatalf("applied item = %#v", item)
 	}
-	Apply(&item, Record{})
+	apply(&item, Record{})
 	if item.Title != "title" || item.Collection != "" {
 		t.Fatalf("empty overlay changed populated fields: %#v", item)
 	}

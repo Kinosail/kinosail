@@ -28,7 +28,7 @@ func resolveTMDBMovie(ctx context.Context, item library.Item, baseURL string, fe
 	if !validMetadataID(item.ID) {
 		return Result{}, errors.New("metadata identity is invalid")
 	}
-	candidate, err := FindTMDBCandidate(ctx, baseURL, "movie", library.Item{Title: item.Title, Year: item.Year}, item.ProviderIDs, fetch)
+	candidate, err := findTMDBCandidate(ctx, baseURL, "movie", library.Item{Title: item.Title, Year: item.Year}, item.ProviderIDs, fetch)
 	if err != nil {
 		return Result{}, err
 	}
@@ -36,7 +36,7 @@ func resolveTMDBMovie(ctx context.Context, item library.Item, baseURL string, fe
 	if err != nil {
 		return Result{}, err
 	}
-	record := Record{Title: candidate.Title, Plot: candidate.Overview, Year: Year(candidate.ReleaseDate), Rating: rating, RatingChecked: true, Collection: collection(ctx, candidate.ID), ProviderIDs: map[string]string{"tmdb": strconv.Itoa(candidate.ID)}, BackdropChecked: true}
+	record := Record{Title: candidate.Title, Plot: candidate.Overview, Year: year(candidate.ReleaseDate), Rating: rating, RatingChecked: true, Collection: collection(ctx, candidate.ID), ProviderIDs: map[string]string{"tmdb": strconv.Itoa(candidate.ID)}, BackdropChecked: true}
 	if candidate.PosterPath != "" {
 		record.Artwork = artwork(item.ID)
 	}
@@ -71,14 +71,14 @@ func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fet
 	if showTitle == "" {
 		showTitle = item.Show
 	}
-	show, err := FindTMDBCandidate(ctx, baseURL, "tv", library.Item{Title: showTitle, Year: item.ShowYear}, item.ShowProviderIDs, fetch)
+	show, err := findTMDBCandidate(ctx, baseURL, "tv", library.Item{Title: showTitle, Year: item.ShowYear}, item.ShowProviderIDs, fetch)
 	if err != nil {
 		return Result{}, err
 	}
-	record := Record{Title: show.Name, Year: Year(show.FirstAirDate), ShowTitle: show.Name, ShowYear: Year(show.FirstAirDate), ShowPlot: show.Overview, ShowProviderIDs: map[string]string{"tmdb": strconv.Itoa(show.ID)}, ProviderIDs: TVDBProviderID(item), BackdropChecked: true}
+	record := Record{Title: show.Name, Year: year(show.FirstAirDate), ShowTitle: show.Name, ShowYear: year(show.FirstAirDate), ShowPlot: show.Overview, ShowProviderIDs: map[string]string{"tmdb": strconv.Itoa(show.ID)}, ProviderIDs: tvdbProviderID(item), BackdropChecked: true}
 	poster := ""
 	details(ctx, item, show.ID, show.Name, show.FirstAirDate, &record, &poster)
-	if !ValidTMDBPath(poster) || !Valid(record) {
+	if !validTMDBPath(poster) || !Valid(record) {
 		return Result{}, errors.New("metadata provider returned invalid data")
 	}
 	result := Result{Record: record}
@@ -119,7 +119,7 @@ func addTMDBBackdrop(result *Result, source, id string, show bool, artwork func(
 	return nil
 }
 
-func FindTMDBCandidate(ctx context.Context, baseURL, kind string, identity library.Item, providerIDs map[string]string, fetch func(context.Context, string, any) error) (TMDBCandidate, error) {
+func findTMDBCandidate(ctx context.Context, baseURL, kind string, identity library.Item, providerIDs map[string]string, fetch func(context.Context, string, any) error) (TMDBCandidate, error) {
 	query, searchYear, err := validTMDBIdentity(ctx, baseURL, kind, identity, fetch)
 	if err != nil {
 		return TMDBCandidate{}, err
@@ -151,7 +151,7 @@ func validTMDBIdentity(ctx context.Context, baseURL, kind string, identity libra
 
 func findTMDBByIMDb(ctx context.Context, baseURL, kind string, providerIDs map[string]string, fetch func(context.Context, string, any) error) (TMDBCandidates, error) {
 	imdb := providerIDs["imdb"]
-	if !ValidIMDbID(imdb) {
+	if !validIMDbID(imdb) {
 		return TMDBCandidates{}, nil
 	}
 	endpoint := strings.TrimRight(baseURL, "/") + "/find/" + url.PathEscape(imdb) + "?" + url.Values{"external_source": {"imdb_id"}}.Encode()
@@ -189,7 +189,7 @@ func searchTMDBTVFallback(ctx context.Context, baseURL, kind, query, searchYear 
 }
 
 func validTMDBCandidate(candidates TMDBCandidates) (TMDBCandidate, error) {
-	if len(candidates.Results) == 0 || len(candidates.Results) > 100 || candidates.Results[0].ID <= 0 || !ValidTMDBPath(candidates.Results[0].PosterPath) || !ValidTMDBPath(candidates.Results[0].BackdropPath) {
+	if len(candidates.Results) == 0 || len(candidates.Results) > 100 || candidates.Results[0].ID <= 0 || !validTMDBPath(candidates.Results[0].PosterPath) || !validTMDBPath(candidates.Results[0].BackdropPath) {
 		return TMDBCandidate{}, errors.New("metadata was not found")
 	}
 	return candidates.Results[0], nil

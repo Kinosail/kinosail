@@ -235,9 +235,9 @@ func (manager *Manager) emit(job Job) {
 }
 
 func setRangeDigest(headers http.Header, requested string, size int64, job Job) {
-	if start, length, ranged := explicitRange(requested, size); ranged && start%ChunkSize == 0 && length == min(ChunkSize, size-start) {
-		if manifest, err := readManifest(job); err == nil && start/ChunkSize < int64(len(manifest.Chunks)) {
-			digest, _ := hex.DecodeString(manifest.Chunks[start/ChunkSize])
+	if start, length, ranged := explicitRange(requested, size); ranged && start%chunkSize == 0 && length == min(chunkSize, size-start) {
+		if manifest, err := readManifest(job); err == nil && start/chunkSize < int64(len(manifest.Chunks)) {
+			digest, _ := hex.DecodeString(manifest.Chunks[start/chunkSize])
 			headers.Set("Content-Digest", "sha-256=:"+base64.StdEncoding.EncodeToString(digest)+":")
 		}
 	}

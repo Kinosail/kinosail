@@ -25,7 +25,7 @@ func seriesEntry(show *library.Show) catalogEntry {
 
 func seasonEntry(show *library.Show, season int) catalogEntry {
 	name := "Season " + strconv.Itoa(season)
-	return catalogEntry{kind: "Season", lower: strings.ToLower(name), raw: RawID(SeasonID(show.ID, season)), show: show, season: season}
+	return catalogEntry{kind: "Season", lower: strings.ToLower(name), raw: RawID(seasonID(show.ID, season)), show: show, season: season}
 }
 
 func appendItemEntries(entries []catalogEntry, items []library.Item) []catalogEntry {

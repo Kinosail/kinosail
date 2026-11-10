@@ -16,25 +16,25 @@ import (
 func TestQuickConnectRequestRequiresAndNormalizesIdentity(t *testing.T) {
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/QuickConnect/Initiate", nil)
 	request.Header.Set("Authorization", `MediaBrowser Client="Swiftfin", Device="  Living   Room  ", DeviceId="tv-1", Version="1.2"`)
-	identity, valid := QuickConnectRequest(request, true)
+	identity, valid := quickConnectRequest(request, true)
 	want := quickconnect.Request{Device: "Living   Room", DeviceID: "tv-1", Client: "Swiftfin", Version: "1.2", Numeric: true, Remote: true}
 	if !valid || !reflect.DeepEqual(identity, want) {
 		t.Fatalf("identity = %#v, valid %t", identity, valid)
 	}
-	missing, valid := QuickConnectRequest(httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil), false)
+	missing, valid := quickConnectRequest(httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil), false)
 	if valid || missing.Numeric != true || missing.Remote {
 		t.Fatalf("missing identity = %#v, valid %t", missing, valid)
 	}
 	conflicting := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil)
 	conflicting.Header.Set("Authorization", `MediaBrowser Client="Swiftfin", Client="Other", Device="TV", DeviceId="tv-1", Version="1"`)
-	if _, valid := QuickConnectRequest(conflicting, false); valid {
+	if _, valid := quickConnectRequest(conflicting, false); valid {
 		t.Fatal("conflicting device identity was accepted")
 	}
 }
 
 func TestQuickConnectDTOProjectsEveryPlayerField(t *testing.T) {
 	created := time.Unix(2_000, 0).UTC()
-	dto := QuickConnectDTO("secret", quickconnect.Connection{Code: "123456", Device: "TV", DeviceID: "tv-1", Client: "Swiftfin", Version: "1", Created: created, Approved: true})
+	dto := quickConnectDTO("secret", quickconnect.Connection{Code: "123456", Device: "TV", DeviceID: "tv-1", Client: "Swiftfin", Version: "1", Created: created, Approved: true})
 	want := map[string]any{"Authenticated": true, "Secret": "secret", "Code": "123456", "DateAdded": created, "DeviceId": "tv-1", "DeviceName": "TV", "AppName": "Swiftfin", "AppVersion": "1"}
 	if !reflect.DeepEqual(dto, want) {
 		t.Fatalf("Quick Connect DTO = %#v", dto)
@@ -158,7 +158,7 @@ func TestAuthenticateQuickConnectPreservesJSONAndSessionContract(t *testing.T) {
 		{`{"Secret":"` + approvedSecret + `"}{}`, http.StatusBadRequest, "", "{\"error\":\"request must contain one JSON object\"}\n"},
 	} {
 		response := httptest.NewRecorder()
-		AuthenticateQuickConnect(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(test.body)), &httpguard.Limiter{}, callback)
+		authenticateQuickConnect(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(test.body)), &httpguard.Limiter{}, callback)
 		if response.Code != test.status || test.bodyExact != "" && response.Body.String() != test.bodyExact || test.bodyPart != "" && !strings.Contains(response.Body.String(), test.bodyPart) {
 			t.Errorf("body %q = %d %q", test.body, response.Code, response.Body.String())
 		}
@@ -170,7 +170,7 @@ func TestAuthenticateQuickConnectPreservesJSONAndSessionContract(t *testing.T) {
 	response := httptest.NewRecorder()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(`{`))
 	request.RemoteAddr = "192.0.2.1:1234"
-	AuthenticateQuickConnect(response, request, limiter, callback)
+	authenticateQuickConnect(response, request, limiter, callback)
 	if response.Code != http.StatusTooManyRequests || response.Body.String() != "too many Quick Connect polls\n" || response.Header().Get("Retry-After") != "60" {
 		t.Fatalf("rate-limited authentication = %d %q %v", response.Code, response.Body.String(), response.Header())
 	}
@@ -183,14 +183,14 @@ func TestWriteQuickConnectApprovalPreservesCanonicalResponses(t *testing.T) {
 		body   string
 	}{
 		{nil, http.StatusOK, "true\n"},
-		{ErrViewerUnavailable, http.StatusForbidden, ErrViewerUnavailable.Error() + "\n"},
+		{errViewerUnavailable, http.StatusForbidden, errViewerUnavailable.Error() + "\n"},
 		{quickconnect.ErrRemoteViewer, http.StatusForbidden, quickconnect.ErrRemoteViewer.Error() + "\n"},
-		{ErrPublicApproval, http.StatusNotFound, "404 page not found\n"},
+		{errPublicApproval, http.StatusNotFound, "404 page not found\n"},
 		{quickconnect.ErrInvalidCode, http.StatusNotFound, "404 page not found\n"},
 	} {
 		response := httptest.NewRecorder()
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/QuickConnect/Authorize", nil)
-		WriteQuickConnectApproval(response, request, test.err)
+		writeQuickConnectApproval(response, request, test.err)
 		if response.Code != test.status || response.Body.String() != test.body {
 			t.Errorf("approval %v = %d %q", test.err, response.Code, response.Body.String())
 		}

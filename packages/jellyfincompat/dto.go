@@ -33,7 +33,7 @@ func ShowID(name string) string {
 	return hex.EncodeToString(sum[:8])
 }
 
-func SeasonID(showID string, season int) string {
+func seasonID(showID string, season int) string {
 	if season == 0 {
 		return showID + specialsSeason
 	}
@@ -42,7 +42,7 @@ func SeasonID(showID string, season int) string {
 }
 
 func seasonMatches(showID string, season int, id string) bool {
-	return id == SeasonID(showID, season) || season == 0 && id == ID(showID)
+	return id == seasonID(showID, season) || season == 0 && id == ID(showID)
 }
 
 func HasMediaSources(item library.Item) bool {
@@ -62,20 +62,20 @@ func Seasons(show library.Show) []int {
 	return seasons
 }
 
-func FolderDTO(id, name, collection string) FolderRecord {
+func folderDTO(id, name, collection string) FolderRecord {
 	return FolderRecord{ID: id, Name: name, Type: "CollectionFolder", CollectionType: collection, IsFolder: true, SortName: name}
 }
 
 func itemClass(item library.Item) (string, string, string) {
 	switch {
 	case item.Show != "":
-		return "Episode", "Video", SeasonID(ShowID(item.Show), item.Season)
+		return "Episode", "Video", seasonID(ShowID(item.Show), item.Season)
 	case item.Kind == "audio":
 		return "Audio", "Audio", ""
 	case item.Kind == "photo":
 		return "Photo", "Photo", ""
 	}
-	return "Movie", "Video", MoviesID
+	return "Movie", "Video", moviesID
 }
 
 func ItemDTO(item library.Item, options ItemOptions) ItemRecord {
@@ -84,7 +84,7 @@ func ItemDTO(item library.Item, options ItemOptions) ItemRecord {
 	record := ItemRecord{
 		ID: id, Name: item.Title, SortName: item.Title, Type: kind, MediaType: mediaType, CanDownload: options.CanDownload,
 		Container: strings.ToLower(item.Container), ParentID: parent, Overview: item.Plot, OfficialRating: item.Rating,
-		DateCreated: item.Added.UTC().Format(time.RFC3339Nano), UserData: options.UserData, ProviderIDs: ProviderIDs(item.ProviderIDs),
+		DateCreated: item.Added.UTC().Format(time.RFC3339Nano), UserData: options.UserData, ProviderIDs: providerIDs(item.ProviderIDs),
 		LocationType: "FileSystem", HasSubtitles: len(item.Subtitles) > 0,
 	}
 	if options.MediaSource != nil {
@@ -104,16 +104,16 @@ func ItemDTO(item library.Item, options ItemOptions) ItemRecord {
 		if showName == "" {
 			showName = item.Show
 		}
-		record.EpisodeRecord = &EpisodeRecord{SeriesID: ID(showID), SeriesName: showName, SeasonID: SeasonID(showID, item.Season), ParentIndexNumber: item.Season, IndexNumber: item.Episode}
+		record.EpisodeRecord = &EpisodeRecord{SeriesID: ID(showID), SeriesName: showName, SeasonID: seasonID(showID, item.Season), ParentIndexNumber: item.Season, IndexNumber: item.Episode}
 	}
 	return record
 }
 
-func SeriesDTO(show library.Show) SeriesRecord {
+func seriesDTO(show library.Show) SeriesRecord {
 	id := ID(show.ID)
 	record := SeriesRecord{
-		ID: id, Name: show.Title, SortName: show.Title, Type: "Series", MediaType: "Video", ParentID: ShowsID, IsFolder: true,
-		ChildCount: len(show.Episodes), ProviderIDs: ShowProviderIDs(show.Episodes), LocationType: "FileSystem", UserData: FolderUserData{ItemID: id, Key: id},
+		ID: id, Name: show.Title, SortName: show.Title, Type: "Series", MediaType: "Video", ParentID: showsID, IsFolder: true,
+		ChildCount: len(show.Episodes), ProviderIDs: showProviderIDs(show.Episodes), LocationType: "FileSystem", UserData: FolderUserData{ItemID: id, Key: id},
 	}
 	if show.ArtworkID != "" {
 		record.ImageTags = &ImageTags{Primary: show.ArtworkID}
@@ -121,7 +121,7 @@ func SeriesDTO(show library.Show) SeriesRecord {
 	return record
 }
 
-func SeasonDTO(show library.Show, season int) SeasonRecord {
+func seasonDTO(show library.Show, season int) SeasonRecord {
 	count, art := 0, ""
 	for _, item := range show.Episodes {
 		if item.Season == season {
@@ -131,7 +131,7 @@ func SeasonDTO(show library.Show, season int) SeasonRecord {
 			}
 		}
 	}
-	id := SeasonID(show.ID, season)
+	id := seasonID(show.ID, season)
 	record := SeasonRecord{
 		ID: id, Name: "Season " + strconv.Itoa(season), Type: "Season", MediaType: "Video", SeriesID: ID(show.ID), SeriesName: show.Title,
 		ParentID: ID(show.ID), IndexNumber: season, IsFolder: true, ChildCount: count, UserData: FolderUserData{ItemID: id, Key: id},

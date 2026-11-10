@@ -17,7 +17,7 @@ type recordingSessionStore struct {
 }
 
 func (store *recordingSessionStore) sessions() *Sessions {
-	return NewSessions(SessionConfig{
+	return newSessions(SessionConfig{
 		Mutex: &sync.RWMutex{}, Values: &store.values, File: "sessions.json",
 		Persist: func(_ string, value any) error {
 			data, err := json.Marshal(value)

@@ -100,7 +100,7 @@ func TestProfileStoreDiscoverValidatesAndIsolates(t *testing.T) {
 	if string(fixture.profiles[0].Credentials[0].ID) != "first" || found.Name != "Viewer" {
 		t.Fatalf("discover aliases storage or loses identity: %#v", found)
 	}
-	if _, err := (&ProfileStore[storeProfile, storeSession, string]{}).Discover([]byte("first"), []byte("profile")); !errors.Is(err, ErrInvalidCredential) {
+	if _, err := (&ProfileStore[storeProfile, storeSession, string]{}).Discover([]byte("first"), []byte("profile")); !errors.Is(err, errInvalidCredential) {
 		t.Fatalf("invalid store = %v", err)
 	}
 }
@@ -112,7 +112,7 @@ func TestProfileStoreAddRejectsBeforeEffectsAndCommitsAtomically(t *testing.T) {
 		profile string
 		value   *webauthn.Credential
 		want    error
-	}{{"profile", nil, ErrInvalidCredential}, {"missing", &second, ErrNotFound}, {"profile", &first, ErrDuplicate}} {
+	}{{"profile", nil, errInvalidCredential}, {"missing", &second, ErrNotFound}, {"profile", &first, errDuplicate}} {
 		if err := store.Add(test.profile, test.value); !errors.Is(err, test.want) {
 			t.Fatalf("Add() = %v, want %v", err, test.want)
 		}
@@ -147,16 +147,16 @@ func TestProfileStoreAddRejectsGlobalDuplicateAndLimit(t *testing.T) {
 		storeProfile{ID: "profile"},
 		storeProfile{ID: "other", Credentials: []webauthn.Credential{duplicate}},
 	)
-	if err := store.Add("profile", &duplicate); !errors.Is(err, ErrDuplicate) || fixture.saveRelated != 0 {
+	if err := store.Add("profile", &duplicate); !errors.Is(err, errDuplicate) || fixture.saveRelated != 0 {
 		t.Fatalf("global duplicate = %v, effects %d", err, fixture.saveRelated)
 	}
-	full := make([]webauthn.Credential, MaxCredentials)
+	full := make([]webauthn.Credential, maxCredentials)
 	for index := range full {
 		full[index] = credential(string(rune(index + 1)))
 	}
 	fixture, store = newStoreFixture(storeProfile{ID: "profile", Credentials: full})
 	addition := credential("additional")
-	if err := store.Add("profile", &addition); !errors.Is(err, ErrLimit) || fixture.saveRelated != 0 {
+	if err := store.Add("profile", &addition); !errors.Is(err, errLimit) || fixture.saveRelated != 0 {
 		t.Fatalf("limit = %v, effects %d", err, fixture.saveRelated)
 	}
 }
@@ -234,7 +234,7 @@ func TestProfileStoreInventoryAndRemove(t *testing.T) {
 func TestProfileStoreInvalidConfigHasNoEffects(t *testing.T) {
 	store := NewProfileStore(ProfileStoreConfig[storeProfile, storeSession, string]{})
 	item := credential("first")
-	if store.valid() || store.Inventory("profile") == nil || !errors.Is(store.Add("profile", &item), ErrInvalidCredential) || !errors.Is(store.Update("profile", &item), ErrInvalidCredential) || !errors.Is(store.Remove("profile", ID(item.ID)), ErrInvalidID) {
+	if store.valid() || store.Inventory("profile") == nil || !errors.Is(store.Add("profile", &item), errInvalidCredential) || !errors.Is(store.Update("profile", &item), errInvalidCredential) || !errors.Is(store.Remove("profile", ID(item.ID)), ErrInvalidID) {
 		t.Fatal("invalid configuration was accepted")
 	}
 	var nilStore *ProfileStore[storeProfile, storeSession, string]

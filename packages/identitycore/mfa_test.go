@@ -36,7 +36,7 @@ func TestMFASetupValidatesBeforeRandomness(t *testing.T) {
 		{"owner", ""},
 		{"owner", strings.Repeat("n", maxNameLength+1)},
 	} {
-		if enrollment, err := engine.Setup(input.identity, input.name); !errors.Is(err, ErrInvalidInput) || enrollment.Secret != "" || enrollment.URI != "" || enrollment.RecoveryCodes != nil || !enrollment.Expires.IsZero() {
+		if enrollment, err := engine.Setup(input.identity, input.name); !errors.Is(err, errInvalidInput) || enrollment.Secret != "" || enrollment.URI != "" || enrollment.RecoveryCodes != nil || !enrollment.Expires.IsZero() {
 			t.Fatalf("Setup(%q, %q) = %#v, %v", input.identity, input.name, enrollment, err)
 		}
 	}
@@ -56,7 +56,7 @@ func TestMFASetupAcceptsExactIdentityBounds(t *testing.T) {
 		{pending: make(map[string]Enrollment), random: bytes.NewReader(make([]byte, 100))},
 		{pending: make(map[string]Enrollment), now: time.Now},
 	} {
-		if _, err := invalid.Setup("owner", "Owner"); !errors.Is(err, ErrInvalidInput) {
+		if _, err := invalid.Setup("owner", "Owner"); !errors.Is(err, errInvalidInput) {
 			t.Fatalf("invalid MFA dependency %d error = %v", index, err)
 		}
 	}
@@ -122,7 +122,7 @@ func TestMFAConfirmValidatesAndConsumesOnlyValidEnrollment(t *testing.T) {
 		{"owner", strings.Repeat("1", 33)},
 		{"owner", "not-a-code"},
 	} {
-		if _, err := engine.Confirm(input.identity, input.code); !errors.Is(err, ErrInvalidEnrollment) {
+		if _, err := engine.Confirm(input.identity, input.code); !errors.Is(err, errInvalidEnrollment) {
 			t.Fatalf("Confirm(%q, %q) error = %v", input.identity, input.code, err)
 		}
 		if engine.PendingCount() != 1 {
@@ -156,7 +156,7 @@ func TestMFAConfirmIsolatesMissingExpiredAndInvalidCodes(t *testing.T) {
 		if name == "invalid code" {
 			candidate = "000000"
 		}
-		if _, err := engine.Confirm("owner", candidate); !errors.Is(err, ErrInvalidEnrollment) {
+		if _, err := engine.Confirm("owner", candidate); !errors.Is(err, errInvalidEnrollment) {
 			t.Fatalf("%s confirmation error = %v", name, err)
 		}
 	}
@@ -172,7 +172,7 @@ func TestMFAExpiryDiscardAndNilEngine(t *testing.T) {
 	t.Parallel()
 	now := time.Now()
 	engine := &MFA{pending: map[string]Enrollment{"owner": {Secret: "A", Expires: now.Add(-time.Second)}}, now: func() time.Time { return now }, random: bytes.NewReader(nil)}
-	if _, err := engine.Confirm("owner", "000000"); !errors.Is(err, ErrInvalidEnrollment) || engine.PendingCount() != 1 {
+	if _, err := engine.Confirm("owner", "000000"); !errors.Is(err, errInvalidEnrollment) || engine.PendingCount() != 1 {
 		t.Fatalf("expired confirmation = %v, pending=%d", err, engine.PendingCount())
 	}
 	engine.Discard(strings.Repeat("i", maxIdentityLength+1))
@@ -194,10 +194,10 @@ func TestMFAExpiryDiscardAndNilEngine(t *testing.T) {
 	if missing.PendingCount() != 0 {
 		t.Fatal("nil engine reported pending state")
 	}
-	if _, err := missing.Setup("owner", "Owner"); !errors.Is(err, ErrInvalidInput) {
+	if _, err := missing.Setup("owner", "Owner"); !errors.Is(err, errInvalidInput) {
 		t.Fatalf("nil setup error = %v", err)
 	}
-	if _, err := missing.Confirm("owner", "000000"); !errors.Is(err, ErrInvalidEnrollment) {
+	if _, err := missing.Confirm("owner", "000000"); !errors.Is(err, errInvalidEnrollment) {
 		t.Fatalf("nil confirmation error = %v", err)
 	}
 }
@@ -205,7 +205,7 @@ func TestMFAExpiryDiscardAndNilEngine(t *testing.T) {
 func TestValidTOTPAndRecoveryNormalization(t *testing.T) {
 	t.Parallel()
 	totpKey := "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
-	if !ValidTOTP(totpKey, "287082", time.Unix(59, 0)) || !ValidTOTP(totpKey, "287082 ", time.Unix(89, 0)) {
+	if !validTOTP(totpKey, "287082", time.Unix(59, 0)) || !validTOTP(totpKey, "287082 ", time.Unix(89, 0)) {
 		t.Fatal("RFC 6238 code or adjacent time step was rejected")
 	}
 	key, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(totpKey)
@@ -213,12 +213,12 @@ func TestValidTOTPAndRecoveryNormalization(t *testing.T) {
 		t.Fatal(err)
 	}
 	when := time.Unix(59, 0)
-	if !ValidTOTP(totpKey, totp(key, when.Unix()/30+1), when) {
+	if !validTOTP(totpKey, totp(key, when.Unix()/30+1), when) {
 		t.Fatal("next adjacent TOTP step was rejected")
 	}
 	maxKey := bytes.Repeat([]byte{1}, 80)
 	maxSecret := base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(maxKey)
-	if len(maxSecret) != maxSecretLength || !ValidTOTP(maxSecret, totp(maxKey, when.Unix()/30), when) {
+	if len(maxSecret) != maxSecretLength || !validTOTP(maxSecret, totp(maxKey, when.Unix()/30), when) {
 		t.Fatal("maximum-length TOTP secret was rejected")
 	}
 	for _, invalid := range []struct{ secret, code string }{
@@ -235,17 +235,17 @@ func TestValidTOTPAndRecoveryNormalization(t *testing.T) {
 		if invalid.secret == totpKey && invalid.code == "287082" {
 			when = time.Unix(-31, 0)
 		}
-		if ValidTOTP(invalid.secret, invalid.code, when) {
+		if validTOTP(invalid.secret, invalid.code, when) {
 			t.Fatalf("invalid TOTP accepted: secret=%q code=%q", invalid.secret, invalid.code)
 		}
 	}
-	if got := NormalizeRecovery(" aa-bb cc-dd "); got != "AABBCCDD" {
+	if got := normalizeRecovery(" aa-bb cc-dd "); got != "AABBCCDD" {
 		t.Fatalf("normalized recovery code = %q", got)
 	}
-	if got := NormalizeRecovery(strings.Repeat("a", 129)); got != "" {
+	if got := normalizeRecovery(strings.Repeat("a", 129)); got != "" {
 		t.Fatalf("oversized recovery code = %q", got)
 	}
-	if got := NormalizeRecovery(strings.Repeat("a", 128)); len(got) != 128 {
+	if got := normalizeRecovery(strings.Repeat("a", 128)); len(got) != 128 {
 		t.Fatalf("bounded recovery code length = %d", len(got))
 	}
 	if totp([]byte("key"), 0) == "" || totp([]byte("key"), -1) != "" {

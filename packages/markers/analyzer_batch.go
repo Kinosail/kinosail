@@ -94,7 +94,7 @@ func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item
 		updates[item.ID] = record
 	}
 	if err := analyzer.persistLocked(updates); err != nil {
-		return ErrPersistence
+		return errPersistence
 	}
 	if len(staged.failed) > 0 || len(staged.deferred) > 0 {
 		slog.Warn("playback marker analysis skipped titles", "operation", "markers.analyze", "outcome", "partial", "failed", len(staged.failed), "deferred", len(staged.deferred), "titles", len(items))
@@ -112,7 +112,7 @@ func failedRecord(item library.Item, current Record) Record {
 }
 
 func analyzedRecord(item library.Item, current Record, detected []Marker) Record {
-	record := Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion, Suppressed: current.suppressed(item)}
+	record := Record{Revision: mediaRevision(item), DetectorVersion: detectorVersion, Suppressed: current.suppressed(item)}
 	if current.Revision == record.Revision {
 		for _, marker := range current.Markers {
 			if marker.Source == "manual" {

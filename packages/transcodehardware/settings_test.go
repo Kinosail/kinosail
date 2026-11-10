@@ -16,11 +16,11 @@ func TestSelectionNormalizationAndAcceleratorCatalog(t *testing.T) {
 		t.Fatal("codec normalization changed")
 	}
 	for _, accelerator := range []string{"", "none", "auto", "vaapi", "qsv", "cuda", "videotoolbox", "rkmpp", "v4l2m2m", "amf", "mf"} {
-		if !ValidAccelerator(accelerator) {
+		if !validAccelerator(accelerator) {
 			t.Errorf("valid accelerator rejected: %q", accelerator)
 		}
 	}
-	if ValidAccelerator("magic") || ValidAccelerator(strings.Repeat("x", 16<<10)) {
+	if validAccelerator("magic") || validAccelerator(strings.Repeat("x", 16<<10)) {
 		t.Fatal("invalid accelerator accepted")
 	}
 }

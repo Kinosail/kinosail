@@ -33,7 +33,7 @@ func VideoArguments(options Settings, width string) ([]string, []string) {
 		encoder = append(encoder, "-tag:v", "hvc1")
 	}
 	encoder = append(encoder, "-fpsmax", "60")
-	encoder = append(encoder, ColorArguments(options)...)
+	encoder = append(encoder, colorArguments(options)...)
 	return input, append([]string{"-vf", filter}, encoder...)
 }
 

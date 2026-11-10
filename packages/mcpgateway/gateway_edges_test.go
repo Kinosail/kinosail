@@ -32,7 +32,7 @@ func TestRegisterBuiltInOAuthAndRouteInventory(t *testing.T) {
 	api := &testAPI{respond: func(http.ResponseWriter, *http.Request) {}}
 	connections := testConnections("https://kino.test", principals, &memoryState{})
 	mux := http.NewServeMux()
-	adapter, err := Register(mux, testGatewayConfig(OAuthConfig{}, principals, api, testRoutes{}), connections)
+	adapter, err := register(mux, testGatewayConfig(OAuthConfig{}, principals, api, testRoutes{}), connections)
 	if err != nil || adapter == nil || adapter.config.ResourceURL != connections.resource || len(Patterns()) != 10 {
 		t.Fatalf("built-in registration = %#v, %v patterns=%d", adapter, err, len(Patterns()))
 	}

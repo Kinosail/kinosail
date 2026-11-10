@@ -37,7 +37,7 @@ func validateState(state State) error {
 }
 
 func invalidStateRequest(state State) bool {
-	return state.RequestID != "" && (len(state.RequestID) != 32 || !hexadecimal(state.RequestID) || parseTime(state.RequestedAt) != nil || !ValidReleaseVersion(state.TargetVersion))
+	return state.RequestID != "" && (len(state.RequestID) != 32 || !hexadecimal(state.RequestID) || parseTime(state.RequestedAt) != nil || !validReleaseVersion(state.TargetVersion))
 }
 
 func invalidStateStatus(state State) bool {

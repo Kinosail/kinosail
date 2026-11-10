@@ -13,7 +13,7 @@ import (
 func TestParseConfigurationForm(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{"key": {ConfigurationKey}, "token": {"token"}, "tokenExpiresOn": {"2026-09-06"}}
-	input, err := ParseConfigurationForm(httptest.NewRecorder(), scimFormRequest(valid))
+	input, err := parseConfigurationForm(httptest.NewRecorder(), scimFormRequest(valid))
 	if err != nil || input.Token != "token" || input.Expiration != "2026-09-06T23:59:59Z" {
 		t.Fatalf("valid form = %#v %v", input, err)
 	}
@@ -43,7 +43,7 @@ func TestParseConfigurationForm(t *testing.T) {
 			if request.Body != nil && request.Header.Get("Content-Type") != "text/plain" && request.URL.RawQuery == "" {
 				request = scimFormRequest(values)
 			}
-			if _, parseErr := ParseConfigurationForm(httptest.NewRecorder(), request); parseErr == nil {
+			if _, parseErr := parseConfigurationForm(httptest.NewRecorder(), request); parseErr == nil {
 				t.Fatal("invalid form was accepted")
 			}
 		})

@@ -144,7 +144,7 @@ func newCollectionWebFixture() *collectionWebFixture {
 			{ID: "8899aabbccddeeff", Title: "Other"},
 		},
 	}
-	fixture.handlers = NewCollectionWebHandlers(CollectionWebHandlersConfig{
+	fixture.handlers = newCollectionWebHandlers(CollectionWebHandlersConfig{
 		VisibleLibrary: func(*http.Request) ([]library.Item, error) { return fixture.items, nil },
 		Snapshot: func(*http.Request) ([]library.Item, error) {
 			fixture.snapshotCalls++

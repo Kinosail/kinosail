@@ -33,7 +33,7 @@ func New(config Config) (*Service, error) {
 		app.Legacy > LegacySubtitles ||
 		config.ActivationURL != "" && !ValidEndpoint(config.ActivationURL, true) || config.SupportURL != "" && !ValidEndpoint(config.SupportURL, false) ||
 		config.TrustedPublicKey != "" && !validTrustedPublicKey(config.TrustedPublicKey) {
-		return nil, ErrInvalid
+		return nil, errInvalid
 	}
 	if app.FamilyPatron == "" {
 		app.FamilyPatron = FamilyPatron
@@ -63,8 +63,8 @@ func validTrustedPublicKey(value string) bool {
 func (service *Service) ActivationAvailable() bool { return service.endpoint != "" }
 
 func (service *Service) ValidateInput(input ActivationInput) error {
-	if !keyPattern.MatchString(strings.TrimSpace(input.Key)) || input.RecognitionName != nil && !ValidRecognitionName(*input.RecognitionName, true) {
-		return ErrInvalid
+	if !keyPattern.MatchString(strings.TrimSpace(input.Key)) || input.RecognitionName != nil && !validRecognitionName(*input.RecognitionName, true) {
+		return errInvalid
 	}
 	return nil
 }
@@ -74,10 +74,10 @@ func (service *Service) Prepare(state State) (State, error) {
 		if _, ok := decodeValue(state.InstallationKey, 32, 64); ok {
 			return state, nil
 		}
-		return state, ErrInvalid
+		return state, errInvalid
 	}
 	if !emptyState(state) {
-		return state, ErrInvalid
+		return state, errInvalid
 	}
 	value := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, value); err != nil {
@@ -156,7 +156,7 @@ func (service *Service) applyActivation(original, state State, grant *Grant, dec
 					if service.app.TrackActivations {
 						state.Activations = rememberActivation(state.Activations, *grant)
 					}
-					return state, service.Status(original), ErrConflict
+					return state, service.Status(original), errConflict
 				}
 				return original, service.Status(original), nil
 			}
@@ -206,9 +206,9 @@ func grantKey(grant *Grant) string {
 	return grant.PublicKey
 }
 
-func invalid(message string) error     { return wrappedError{ErrInvalid, message} }
-func unavailable(message string) error { return wrappedError{ErrUnavailable, message} }
-func uncertain(message string) error   { return wrappedError{ErrUncertain, message} }
+func invalid(message string) error     { return wrappedError{errInvalid, message} }
+func unavailable(message string) error { return wrappedError{errUnavailable, message} }
+func uncertain(message string) error   { return wrappedError{errUncertain, message} }
 
 type wrappedError struct {
 	cause   error

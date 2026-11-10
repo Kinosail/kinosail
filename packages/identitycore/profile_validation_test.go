@@ -18,7 +18,7 @@ func validManagedProfile(id, userName string) Profile {
 }
 
 func TestValidateProfiles(t *testing.T) {
-	if err := ValidateProfiles(nil); err != nil {
+	if err := validateProfiles(nil); err != nil {
 		t.Fatal(err)
 	}
 	local := Profile{ID: "local", Name: "Local"}
@@ -30,7 +30,7 @@ func TestValidateProfiles(t *testing.T) {
 	linked.ID = "linked"
 	linked.OIDCIssuer, linked.OIDCSubject = "https://identity.example", "oidc-subject"
 	linked.SAMLIssuer, linked.SAMLSubject = "https://identity.example/saml", "saml-subject"
-	if err := ValidateProfiles([]Profile{local, managed, linked}); err != nil {
+	if err := validateProfiles([]Profile{local, managed, linked}); err != nil {
 		t.Fatalf("valid profiles: %v", err)
 	}
 
@@ -64,7 +64,7 @@ func TestValidateProfiles(t *testing.T) {
 	}
 	for name, profiles := range invalid {
 		t.Run(name, func(t *testing.T) {
-			if err := ValidateProfiles(profiles); err == nil {
+			if err := validateProfiles(profiles); err == nil {
 				t.Fatal("invalid profiles were accepted")
 			}
 		})

@@ -52,7 +52,7 @@ func (binding Binding) RefreshMetadata(ctx context.Context) error {
 
 func (binding Binding) Metrics() Metrics { return projectMetrics(binding.metricSnapshot()) }
 
-func (binding Binding) MetricsHandler() http.HandlerFunc { return MetricsHandler(binding.Metrics) }
+func (binding Binding) MetricsHandler() http.HandlerFunc { return metricsHandler(binding.Metrics) }
 
 func (binding Binding) DiagnosticReport() DiagnosticReport {
 	report := projectDiagnosticReport(binding.config.Version, binding.config.Started, binding.config.Now(), binding.diagnosticSnapshot())
@@ -63,7 +63,7 @@ func (binding Binding) DiagnosticReport() DiagnosticReport {
 }
 
 func (binding Binding) DiagnosticsHandler() http.HandlerFunc {
-	return DiagnosticsHandler(binding.DiagnosticReport)
+	return diagnosticsHandler(binding.DiagnosticReport)
 }
 
 func (binding Binding) metricSnapshot() runtimeSnapshot {

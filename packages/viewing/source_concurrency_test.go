@@ -44,7 +44,7 @@ func TestPlexSectionsAreBoundedAndOrdered(t *testing.T) {
 		err   error
 	}, 1)
 	go func() {
-		items, err := Fetch(t.Context(), server.Client(), Input{Source: "plex", URL: server.URL, Token: "token"}, false)
+		items, err := fetch(t.Context(), server.Client(), Input{Source: "plex", URL: server.URL, Token: "token"}, false)
 		done <- struct {
 			items []Activity
 			err   error
@@ -82,7 +82,7 @@ func TestPlexSectionsRejectInvalidDiscoveryBeforeChildRequests(t *testing.T) {
 		_, _ = writer.Write([]byte(`{"MediaContainer":{"TotalSize":0,"Metadata":[]}}`))
 	}))
 	defer server.Close()
-	if _, err := Fetch(t.Context(), server.Client(), Input{Source: "plex", URL: server.URL, Token: "token"}, false); err == nil || childRequests.Load() != 0 {
+	if _, err := fetch(t.Context(), server.Client(), Input{Source: "plex", URL: server.URL, Token: "token"}, false); err == nil || childRequests.Load() != 0 {
 		t.Fatalf("invalid section made %d child requests: %v", childRequests.Load(), err)
 	}
 }
@@ -104,7 +104,7 @@ func TestPlexSectionsStopOnCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	done := make(chan error, 1)
 	go func() {
-		_, err := Fetch(ctx, server.Client(), Input{Source: "plex", URL: server.URL, Token: "token"}, false)
+		_, err := fetch(ctx, server.Client(), Input{Source: "plex", URL: server.URL, Token: "token"}, false)
 		done <- err
 	}()
 	select {
@@ -145,7 +145,7 @@ func BenchmarkPlexSections(b *testing.B) {
 						}
 					}
 				} else {
-					activities, err = Fetch(b.Context(), client, input, false)
+					activities, err = fetch(b.Context(), client, input, false)
 				}
 				if err != nil || len(activities) != 4 {
 					b.Fatalf("Plex import = %d activities, %v", len(activities), err)

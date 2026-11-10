@@ -39,7 +39,7 @@ func BenchmarkProgressHistory50K(b *testing.B) {
 	values := benchmarkProgressValues(len(items), 1_000)
 	b.ReportAllocs()
 	for b.Loop() {
-		if history := ProgressHistory(values, benchmarkProfile, false, items); len(history) != 1_000 {
+		if history := progressHistory(values, benchmarkProfile, false, items); len(history) != 1_000 {
 			b.Fatalf("history = %d", len(history))
 		}
 	}

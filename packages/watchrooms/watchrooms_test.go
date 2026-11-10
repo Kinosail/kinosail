@@ -137,7 +137,7 @@ func TestRoomsRejectInvalidStateWithoutUsingCapacity(t *testing.T) {
 	for _, input := range []struct {
 		leader, media string
 		seconds       float64
-	}{{"", "movie", 0}, {strings.Repeat("l", 129), "movie", 0}, {"leader", "", 0}, {"leader", "movie\n", 0}, {"leader", "movie", -1}, {"leader", "movie", MaximumSeconds + 1}, {"leader", "movie", math.NaN()}, {"leader", "movie", math.Inf(1)}} {
+	}{{"", "movie", 0}, {strings.Repeat("l", 129), "movie", 0}, {"leader", "", 0}, {"leader", "movie\n", 0}, {"leader", "movie", -1}, {"leader", "movie", maximumSeconds + 1}, {"leader", "movie", math.NaN()}, {"leader", "movie", math.Inf(1)}} {
 		if _, ok := rooms.Create(input.leader, input.media, input.seconds); ok {
 			t.Fatalf("Create(%q, %q, %v) accepted invalid state", input.leader, input.media, input.seconds)
 		}
@@ -172,7 +172,7 @@ func TestRoomMetricsTrackReconnectsAndBoundedDrift(t *testing.T) {
 	if !rooms.ObserveDrift(resumed, 1.25) {
 		t.Fatal("valid drift observation was rejected")
 	}
-	for _, invalid := range []float64{-1, MaximumDriftSeconds + 1, math.NaN(), math.Inf(1)} {
+	for _, invalid := range []float64{-1, maximumDriftSeconds + 1, math.NaN(), math.Inf(1)} {
 		if rooms.ObserveDrift(resumed, invalid) {
 			t.Fatalf("invalid drift %v was accepted", invalid)
 		}

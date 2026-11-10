@@ -102,7 +102,7 @@ func entryValues(updates map[string]catalog.PlaybackState) map[string]any {
 	return values
 }
 
-func MergeLists(values map[string]bool, playlists map[string]map[string]bool, order map[string][]string, smart map[string]catalog.PlaylistRule, viewer string, changes []ListChange) (map[string]bool, map[string]map[string]bool, map[string][]string, int) {
+func mergeLists(values map[string]bool, playlists map[string]map[string]bool, order map[string][]string, smart map[string]catalog.PlaylistRule, viewer string, changes []ListChange) (map[string]bool, map[string]map[string]bool, map[string][]string, int) {
 	type positionedItem struct {
 		id       string
 		position int

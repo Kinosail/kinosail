@@ -115,7 +115,7 @@ func (store *Store) Plan(currentVersion string, automatic bool) (Plan, error) {
 }
 
 func (store *Store) Request(targetVersion string) (string, error) {
-	if !ValidReleaseVersion(targetVersion) {
+	if !validReleaseVersion(targetVersion) {
 		return "", errors.New("invalid update target")
 	}
 	store.mu.Lock()

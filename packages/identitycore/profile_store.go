@@ -85,7 +85,7 @@ func (store ProfileStore) AddProfile(name, password string, owner bool, policy P
 	if err != nil {
 		return "", err
 	}
-	ApplyProfilePolicy(&profile, policy)
+	applyProfilePolicy(&profile, policy)
 	store.config.Mutex.Lock()
 	defer store.config.Mutex.Unlock()
 	for _, existing := range *store.config.Profiles {
@@ -127,7 +127,7 @@ func (store ProfileStore) commitProfilePolicy(profiles []Profile, index int, own
 		return errors.New("at least one Owner Profile is required")
 	}
 	profiles[index].Owner = owner
-	ApplyProfilePolicy(&profiles[index], policy)
+	applyProfilePolicy(&profiles[index], policy)
 	profiles[index].Revision++
 	if !owner && policy.Remote {
 		if err := store.config.Persistence.Save(profiles); err != nil {
@@ -203,6 +203,6 @@ func (store ProfileStore) FederatedProfiles() federation.Profiles[Profile] {
 		Clone:   func() []Profile { return CloneProfiles(*store.config.Profiles) },
 		Persist: store.config.Persistence.Save,
 		Commit:  func(profiles []Profile) { *store.config.Profiles = profiles },
-		Inspect: FederatedProfile, Apply: ApplyFederatedIdentity,
+		Inspect: federatedProfile, Apply: applyFederatedIdentity,
 	}
 }

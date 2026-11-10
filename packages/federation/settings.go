@@ -175,7 +175,7 @@ func ValidIdentityURL(raw string) bool {
 		return false
 	}
 	endpoint, err := url.Parse(raw)
-	return err == nil && TrustedURL(endpoint)
+	return err == nil && trustedURL(endpoint)
 }
 
 func BoundedIdentityText(raw string, maximum int) bool {

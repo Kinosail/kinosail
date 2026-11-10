@@ -14,7 +14,7 @@ type TokenAccess struct {
 type TokenOutcome int
 
 const (
-	TokenDenied TokenOutcome = iota
+	tokenDenied TokenOutcome = iota
 	TokenAccepted
 	TokenSettle
 )
@@ -31,8 +31,8 @@ type TokenState struct {
 func EvaluateToken(state TokenState, request *http.Request, key string, now int64, settle bool) (TokenAccess, TokenOutcome) {
 	ctx := request.Context()
 	session, found := state.Sessions[key]
-	if found && !SessionMatchesRequest(session, request) || !found && ManagementDeviceKey(request) != "" {
-		return TokenAccess{}, TokenDenied
+	if found && !sessionMatchesRequest(session, request) || !found && ManagementDeviceKey(request) != "" {
+		return TokenAccess{}, tokenDenied
 	}
 	session = state.Use.Session(key, session, now)
 	api, apiFound := state.APIKeys[key]
@@ -52,7 +52,7 @@ func EvaluateToken(state TokenState, request *http.Request, key string, now int6
 			delete(state.Sessions, key)
 			state.Persist(ctx, "session-expire", false, now)
 		}
-		return TokenAccess{}, TokenDenied
+		return TokenAccess{}, tokenDenied
 	}
 	api = state.Use.APIKey(key, api, now)
 	profileID := session.ProfileID
@@ -65,7 +65,7 @@ func EvaluateToken(state TokenState, request *http.Request, key string, now int6
 func tokenProfile(ctx context.Context, state TokenState, now int64, profileID, key string, session Session, sessionFound bool, api APIKey, apiFound, settle bool) (TokenAccess, TokenOutcome) {
 	profile, exists := FindProfile(state.Profiles, profileID)
 	if !exists || profile.Disabled || profile.SCIMDeleted {
-		return TokenAccess{}, TokenDenied
+		return TokenAccess{}, tokenDenied
 	}
 	if sessionFound && (session.Channel == "public" || session.ManagementDevice != "") && session.ProfileRevision != profile.Revision {
 		if !settle {
@@ -73,7 +73,7 @@ func tokenProfile(ctx context.Context, state TokenState, now int64, profileID, k
 		}
 		delete(state.Sessions, key)
 		state.Persist(ctx, "session-revoke", false, now)
-		return TokenAccess{}, TokenDenied
+		return TokenAccess{}, tokenDenied
 	}
 	state.Use.Record(key, session, sessionFound, api, apiFound, now)
 	profile.APIKey, profile.Scopes = apiFound, append([]string(nil), api.Scopes...)

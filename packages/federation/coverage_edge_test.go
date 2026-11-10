@@ -122,7 +122,7 @@ func TestProtocolHelpersRejectRemainingMalformedValues(t *testing.T) {
 	if ValidIdentityURL("") {
 		t.Fatal("empty identity URL was accepted")
 	}
-	if err := validateOIDCProvider(rejectedOIDCMetadata{}); !errors.Is(err, ErrProviderUnavailable) {
+	if err := validateOIDCProvider(rejectedOIDCMetadata{}); !errors.Is(err, errProviderUnavailable) {
 		t.Fatalf("malformed provider metadata = %v", err)
 	}
 }
@@ -165,14 +165,14 @@ func TestOIDCProviderScopeAndStateCapacity(t *testing.T) {
 	for index := range maxPendingStates {
 		flow.pending[string(rune(index+1))] = oidcTransaction{expires: farFuture()}
 	}
-	if _, _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, ErrTooManyPending) {
+	if _, _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, errTooManyPending) {
 		t.Fatalf("OIDC pending limit = %v", err)
 	}
 }
 
 func TestOIDCCompletionMapsUnavailableExchangeAndTokenFailures(t *testing.T) {
 	flow, state := oidcFlowWithPending("")
-	if _, err := flow.Complete(t.Context(), "code=approved&state="+state, state, true); !errors.Is(err, ErrProviderUnavailable) {
+	if _, err := flow.Complete(t.Context(), "code=approved&state="+state, state, true); !errors.Is(err, errProviderUnavailable) {
 		t.Fatalf("unconfigured callback provider = %v", err)
 	}
 
@@ -181,14 +181,14 @@ func TestOIDCCompletionMapsUnavailableExchangeAndTokenFailures(t *testing.T) {
 	setNonce(nonce)
 	canceled, cancel := context.WithCancel(t.Context())
 	cancel()
-	if _, err := flow.Complete(canceled, "code=approved&state="+url.QueryEscape(state), state, true); !errors.Is(err, ErrCodeExchange) {
+	if _, err := flow.Complete(canceled, "code=approved&state="+url.QueryEscape(state), state, true); !errors.Is(err, errCodeExchange) {
 		t.Fatalf("canceled exchange = %v", err)
 	}
 
 	flow, _, setNonce = newOIDCTestFlow(t)
 	state, _ = mustBeginOIDC(t, flow)
 	setNonce("different")
-	if _, err := flow.Complete(t.Context(), "code=approved&state="+url.QueryEscape(state), state, true); !errors.Is(err, ErrTokenInvalid) {
+	if _, err := flow.Complete(t.Context(), "code=approved&state="+url.QueryEscape(state), state, true); !errors.Is(err, errTokenInvalid) {
 		t.Fatalf("nonce mismatch = %v", err)
 	}
 
@@ -200,7 +200,7 @@ func TestOIDCCompletionMapsUnavailableExchangeAndTokenFailures(t *testing.T) {
 		t.Fatalf("custom-claim OIDC begin = %v %v", err, parseErr)
 	}
 	setNonce(authorization.Query().Get("nonce"))
-	if _, err := flow.Complete(t.Context(), "code=approved&state="+url.QueryEscape(state), state, true); !errors.Is(err, ErrTokenInvalid) {
+	if _, err := flow.Complete(t.Context(), "code=approved&state="+url.QueryEscape(state), state, true); !errors.Is(err, errTokenInvalid) {
 		t.Fatalf("missing identity claim = %v", err)
 	}
 }

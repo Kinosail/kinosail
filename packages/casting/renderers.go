@@ -23,7 +23,7 @@ const (
 	rendererType  = "urn:schemas-upnp-org:device:MediaRenderer:1"
 )
 
-var ErrUnavailable = errors.New("TV is unavailable; check that it is on the same network as Kinosail Server")
+var errUnavailable = errors.New("TV is unavailable; check that it is on the same network as Kinosail Server")
 
 type Device struct {
 	ID       string `json:"id"`
@@ -59,7 +59,7 @@ func localDial(ctx context.Context, network, address string) (net.Conn, error) {
 	host, _, err := net.SplitHostPort(address)
 	ip, parseErr := netip.ParseAddr(host)
 	if err != nil || parseErr != nil || !localAddress(ip) {
-		return nil, ErrUnavailable
+		return nil, errUnavailable
 	}
 	return (&net.Dialer{Timeout: 3 * time.Second}).DialContext(ctx, network, address)
 }
@@ -88,7 +88,7 @@ func (r *Renderers) Discover(ctx context.Context) ([]Device, error) {
 	defer r.mu.Unlock()
 	r.scanning = false
 	if err != nil {
-		return nil, ErrUnavailable
+		return nil, errUnavailable
 	}
 	for id, device := range r.devices {
 		if !device.expires.After(r.now()) {
@@ -208,15 +208,15 @@ func validLocalURL(value *url.URL) bool {
 
 func sameDeviceURL(base *url.URL, ref string) (string, error) {
 	if ref == "" || len(ref) > 2048 || strings.ContainsAny(ref, "\r\n") {
-		return "", ErrUnavailable
+		return "", errUnavailable
 	}
 	parsed, err := url.Parse(ref)
 	if err != nil {
-		return "", ErrUnavailable
+		return "", errUnavailable
 	}
 	endpoint := base.ResolveReference(parsed)
 	if !validLocalURL(endpoint) || endpoint.Host != base.Host {
-		return "", ErrUnavailable
+		return "", errUnavailable
 	}
 	return endpoint.String(), nil
 }
@@ -224,11 +224,11 @@ func sameDeviceURL(base *url.URL, ref string) (string, error) {
 func (r *Renderers) request(ctx context.Context, method, target, action, body string) ([]byte, error) {
 	parsed, err := url.Parse(target)
 	if err != nil || !validLocalURL(parsed) {
-		return nil, ErrUnavailable
+		return nil, errUnavailable
 	}
 	request, err := http.NewRequestWithContext(ctx, method, target, strings.NewReader(body))
 	if err != nil {
-		return nil, ErrUnavailable
+		return nil, errUnavailable
 	}
 	if method == http.MethodPost {
 		request.Header.Set("Content-Type", "text/xml; charset=utf-8")
@@ -236,12 +236,12 @@ func (r *Renderers) request(ctx context.Context, method, target, action, body st
 	}
 	response, err := r.client.Do(request)
 	if err != nil {
-		return nil, ErrUnavailable
+		return nil, errUnavailable
 	}
 	defer response.Body.Close()
 	data, err := io.ReadAll(io.LimitReader(response.Body, 256*1024+1))
 	if err != nil || len(data) > 256*1024 || response.StatusCode != http.StatusOK {
-		return nil, ErrUnavailable
+		return nil, errUnavailable
 	}
 	return data, nil
 }

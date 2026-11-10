@@ -26,7 +26,7 @@ func TestListCommitRejectsStateThatCannotBeRestored(t *testing.T) {
 				}
 			}
 			writes := 0
-			err := CommitListState(t.Context(), nil, ListPaths{"values", "playlists", "order", "smart"}, func(string, any) error { writes++; return nil }, state, 15)
+			err := commitListState(t.Context(), nil, ListPaths{"values", "playlists", "order", "smart"}, func(string, any) error { writes++; return nil }, state, 15)
 			if err == nil || writes != 0 {
 				t.Fatalf("invalid state was persisted: %v, writes=%d", err, writes)
 			}

@@ -24,23 +24,23 @@ import (
 func TestSAMLCoreRejectsProviderCallbackRootAndKeyEdges(t *testing.T) {
 	certificate := samlMetadataCertificate(t)
 	metadataXML := samlMetadataDocument("https://identity.example", "/sso", certificate)
-	flow := NewSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
+	flow := newSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
 	flow.sp = &saml.ServiceProvider{IDPMetadata: &saml.EntityDescriptor{}}
-	if _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, ErrProviderUnavailable) {
+	if _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, errProviderUnavailable) {
 		t.Fatalf("invalid provider endpoint = %v", err)
 	}
 
 	request := samlRequest(t, "/login/saml/acs", "SAMLResponse=value&RelayState=relay")
-	if _, err := NewSAML(SAMLConfig{}).Complete(httptest.NewRecorder(), request); !errors.Is(err, ErrProviderUnavailable) {
+	if _, err := newSAML(SAMLConfig{}).Complete(httptest.NewRecorder(), request); !errors.Is(err, errProviderUnavailable) {
 		t.Fatalf("unavailable callback provider = %v", err)
 	}
-	flow = NewSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
+	flow = newSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
 	flow.pending["request"] = samlTransaction{relayState: "relay", expires: time.Now().Add(time.Minute)}
 	request = samlRequest(t, "/login/saml/acs", "SAMLResponse=value&RelayState=relay")
-	if _, err := flow.Complete(httptest.NewRecorder(), request); !errors.Is(err, ErrTokenInvalid) {
+	if _, err := flow.Complete(httptest.NewRecorder(), request); !errors.Is(err, errTokenInvalid) {
 		t.Fatalf("invalid signed response = %v", err)
 	}
-	if NewSAML(SAMLConfig{RootURL: "https://media.example/" + strings.Repeat("x", 2049)}).rootConfigured() {
+	if newSAML(SAMLConfig{RootURL: "https://media.example/" + strings.Repeat("x", 2049)}).rootConfigured() {
 		t.Fatal("oversized SAML root was accepted")
 	}
 
@@ -48,18 +48,18 @@ func TestSAMLCoreRejectsProviderCallbackRootAndKeyEdges(t *testing.T) {
 	if err := os.WriteFile(dataFile, []byte("data"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := NewSAML(SAMLConfig{RootURL: "http://localhost", DataDir: dataFile}).Metadata(t.Context()); err == nil {
+	if _, err := newSAML(SAMLConfig{RootURL: "http://localhost", DataDir: dataFile}).Metadata(t.Context()); err == nil {
 		t.Fatal("regular file data directory was accepted")
 	}
 	assertion := &saml.Assertion{Subject: &saml.Subject{NameID: &saml.NameID{Value: "bad\nsubject"}}}
-	if _, err := samlIdentityValue(assertion, "NameID"); !errors.Is(err, ErrTokenInvalid) {
+	if _, err := samlIdentityValue(assertion, "NameID"); !errors.Is(err, errTokenInvalid) {
 		t.Fatalf("invalid NameID = %v", err)
 	}
 	flow.pending["expired"] = samlTransaction{expires: time.Now().Add(-time.Minute)}
 	if _, found := flow.takeTransaction("expired"); found {
 		t.Fatal("expired SAML transaction was accepted")
 	}
-	if _, err := samlCallbackResult(&saml.Assertion{}, "subject", samlTransaction{}, false); !errors.Is(err, ErrInvalidState) {
+	if _, err := samlCallbackResult(&saml.Assertion{}, "subject", samlTransaction{}, false); !errors.Is(err, errInvalidState) {
 		t.Fatalf("missing SAML transaction = %v", err)
 	}
 	if _, err := marshalSAMLMetadataWith(&saml.EntityDescriptor{}, func(*saml.EntityDescriptor) ([]byte, error) { return nil, errors.New("marshal failed") }); err == nil {

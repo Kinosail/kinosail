@@ -74,29 +74,29 @@ func progressChange(values map[string]PlaybackState, key string, change Progress
 		return previous, current, changed, err
 	}
 	_, exists := values[key]
-	if !ValidProgressKey(key) || !ValidPlaybackState(current) || !exists && len(values) >= 1_000_000 {
+	if !validProgressKey(key) || !validPlaybackState(current) || !exists && len(values) >= 1_000_000 {
 		return previous, current, false, ErrInvalidProgressState
 	}
 	return previous, current, true, nil
 }
 
-func ValidateStoredProgress(values map[string]PlaybackState) error {
+func validateStoredProgress(values map[string]PlaybackState) error {
 	if len(values) > 1_000_000 {
 		return errors.New("too many persisted progress records")
 	}
 	for key, state := range values {
-		if !ValidProgressKey(key) || !ValidPlaybackState(state) {
+		if !validProgressKey(key) || !validPlaybackState(state) {
 			return errors.New("persisted progress is invalid")
 		}
 	}
 	return nil
 }
 
-func ValidProgressKey(key string) bool {
+func validProgressKey(key string) bool {
 	return key != "" && len(key) <= 256
 }
 
-func ValidPlaybackState(state PlaybackState) bool {
+func validPlaybackState(state PlaybackState) bool {
 	return progressRange(state.Seconds, 1e9) &&
 		progressRange(state.ReaderOffset, 1) && (state.ReaderPage > 0 || state.ReaderOffset == 0) &&
 		state.ReaderPage >= 0 && state.ReaderPage <= 10_000_000 && len(state.Session) <= 128

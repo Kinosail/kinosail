@@ -31,11 +31,11 @@ func TestPolicyRequestAndAdapterReportShareOneContract(t *testing.T) {
 	if err != nil || view.Status != "available" || view.RequestID != requestID || view.AvailableVersion != "v1.2.4" {
 		t.Fatalf("available view = %#v, %v", view, err)
 	}
-	if err := store.Report(Report{Adapter: "windows", State: "installing", Phase: PhaseDownloading, CurrentVersion: "v1.2.3", AvailableVersion: "v1.2.4", RequestID: requestID, CheckedAt: time.Date(2026, 8, 27, 12, 3, 0, 0, time.UTC)}); err != nil {
+	if err := store.Report(Report{Adapter: "windows", State: "installing", Phase: phaseDownloading, CurrentVersion: "v1.2.3", AvailableVersion: "v1.2.4", RequestID: requestID, CheckedAt: time.Date(2026, 8, 27, 12, 3, 0, 0, time.UTC)}); err != nil {
 		t.Fatal(err)
 	}
 	view, err = store.View("v1.2.3")
-	if err != nil || view.Status != "installing" || view.Phase != PhaseDownloading || view.RequestID != requestID {
+	if err != nil || view.Status != "installing" || view.Phase != phaseDownloading || view.RequestID != requestID {
 		t.Fatalf("installing view = %#v, %v", view, err)
 	}
 	if err := store.Report(Report{Adapter: "windows", State: "current", CurrentVersion: "v1.2.4", RequestID: requestID, CheckedAt: time.Date(2026, 8, 27, 12, 5, 0, 0, time.UTC)}); err != nil {
@@ -110,8 +110,8 @@ func TestInvalidReportsAndFailedPersistenceHaveNoSideEffects(t *testing.T) {
 		{Adapter: "linux", State: "failed", Message: string(bytes.Repeat([]byte{'x'}, 241)), CheckedAt: time.Now()},
 		{Adapter: "linux", State: "failed", Message: "network unavailable"},
 		{Adapter: "linux", State: "installing", Phase: "unknown", CheckedAt: time.Now()},
-		{Adapter: "linux", State: "installing", Phase: PhaseDownloading, ErrorCode: ErrorDownloadFailed, CheckedAt: time.Now()},
-		{Adapter: "linux", State: "current", CurrentVersion: "v1.0.0", Phase: PhaseStarting, CheckedAt: time.Now()},
+		{Adapter: "linux", State: "installing", Phase: phaseDownloading, ErrorCode: errorDownloadFailed, CheckedAt: time.Now()},
+		{Adapter: "linux", State: "current", CurrentVersion: "v1.0.0", Phase: phaseStarting, CheckedAt: time.Now()},
 		{Adapter: "linux", State: "failed", Message: "failed", ErrorCode: "unknown", CheckedAt: time.Now()},
 	} {
 		if err := store.Report(report); err == nil {
@@ -179,7 +179,7 @@ func TestPendingRequestRejectsMissingTargetAndOutOfOrderReports(t *testing.T) {
 	if view.Status != "requested" || view.TargetVersion != "v2.0.0" {
 		t.Fatalf("request changed: %#v", view)
 	}
-	if err := store.Report(Report{Adapter: "linux", State: "installing", Phase: PhaseBackingUp, AvailableVersion: "v2.0.0", RequestID: requestID, CheckedAt: now}); err != nil {
+	if err := store.Report(Report{Adapter: "linux", State: "installing", Phase: phaseBackingUp, AvailableVersion: "v2.0.0", RequestID: requestID, CheckedAt: now}); err != nil {
 		t.Fatal(err)
 	}
 	if err := store.Report(Report{Adapter: "linux", State: "checking", AvailableVersion: "v2.0.0", RequestID: requestID, CheckedAt: now}); err == nil {
@@ -192,17 +192,17 @@ func TestFailedInstallRemainsRecoverableUntilRollbackCompletes(t *testing.T) {
 	store.random = bytes.NewReader(bytes.Repeat([]byte{5}, 16))
 	requestID, _ := store.Request("v3.0.0")
 	now := time.Now()
-	if err := store.Report(Report{Adapter: "macos", State: "installing", Phase: PhaseCheckingHealth, CurrentVersion: "v2.0.0", AvailableVersion: "v3.0.0", RequestID: requestID, CheckedAt: now}); err != nil {
+	if err := store.Report(Report{Adapter: "macos", State: "installing", Phase: phaseCheckingHealth, CurrentVersion: "v2.0.0", AvailableVersion: "v3.0.0", RequestID: requestID, CheckedAt: now}); err != nil {
 		t.Fatal(err)
 	}
-	if err := store.Report(Report{Adapter: "macos", State: "failed", Phase: PhaseCheckingHealth, ErrorCode: ErrorHealthCheckFailed, CurrentVersion: "v2.0.0", AvailableVersion: "v3.0.0", Message: "health check failed", RequestID: requestID, CheckedAt: now}); err != nil {
+	if err := store.Report(Report{Adapter: "macos", State: "failed", Phase: phaseCheckingHealth, ErrorCode: errorHealthCheckFailed, CurrentVersion: "v2.0.0", AvailableVersion: "v3.0.0", Message: "health check failed", RequestID: requestID, CheckedAt: now}); err != nil {
 		t.Fatal(err)
 	}
 	failed, _ := store.View("v2.0.0")
-	if failed.Status != "failed" || failed.Phase != PhaseCheckingHealth || failed.ErrorCode != ErrorHealthCheckFailed || failed.RequestID != requestID || failed.TargetVersion != "v3.0.0" {
+	if failed.Status != "failed" || failed.Phase != phaseCheckingHealth || failed.ErrorCode != errorHealthCheckFailed || failed.RequestID != requestID || failed.TargetVersion != "v3.0.0" {
 		t.Fatalf("failed update lost recovery state: %#v", failed)
 	}
-	if err := store.Report(Report{Adapter: "macos", State: "rolled-back", ErrorCode: ErrorHealthCheckFailed, CurrentVersion: "v2.0.0", Message: "restored v2.0.0", RequestID: requestID, CheckedAt: now}); err != nil {
+	if err := store.Report(Report{Adapter: "macos", State: "rolled-back", ErrorCode: errorHealthCheckFailed, CurrentVersion: "v2.0.0", Message: "restored v2.0.0", RequestID: requestID, CheckedAt: now}); err != nil {
 		t.Fatal(err)
 	}
 	recovered, _ := store.View("v2.0.0")

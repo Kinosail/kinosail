@@ -81,7 +81,7 @@ func TestEvaluateTokenSettlesExpiredAndRevokedTokensUnderTheWriteLock(t *testing
 		if len(fixture.writes) != before {
 			t.Fatalf("%s changed state during the read pass", key)
 		}
-		if _, outcome := EvaluateToken(fixture.state, request, key, now, true); outcome != TokenDenied {
+		if _, outcome := EvaluateToken(fixture.state, request, key, now, true); outcome != tokenDenied {
 			t.Fatalf("%s settle pass = %v, want denied", key, outcome)
 		}
 		if last := fixture.writes[len(fixture.writes)-1]; last != operation {
@@ -94,10 +94,10 @@ func TestEvaluateTokenSettlesExpiredAndRevokedTokensUnderTheWriteLock(t *testing
 	if _, found := fixture.state.APIKeys["old-key"]; found {
 		t.Fatal("expired API key kept")
 	}
-	if _, outcome := evaluate(t, fixture.state, "gone"); outcome != TokenDenied {
+	if _, outcome := evaluate(t, fixture.state, "gone"); outcome != tokenDenied {
 		t.Fatal("a disabled profile was accepted")
 	}
-	if _, outcome := evaluate(t, fixture.state, "missing"); outcome != TokenDenied {
+	if _, outcome := evaluate(t, fixture.state, "missing"); outcome != tokenDenied {
 		t.Fatal("an unknown token was accepted")
 	}
 }

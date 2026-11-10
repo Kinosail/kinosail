@@ -25,7 +25,7 @@ func (service *Service) decodeGrant(state State, grant *Grant, expectedFamily st
 	if !ok || certificate.InstallationKey != state.InstallationKey {
 		return decodedGrant{}
 	}
-	if expectedFamily == EditionMonthly || expectedFamily == EditionYearly {
+	if expectedFamily == editionMonthly || expectedFamily == editionYearly {
 		if certificate.Edition != expectedFamily {
 			return decodedGrant{}
 		}
@@ -66,9 +66,9 @@ func (service *Service) decodeCertificate(record []byte, allowLegacy bool) (Cert
 	case 3, 4, 5:
 		valid = service.decodeCurrentCertificate(record, &certificate)
 	case 2:
-		valid = allowLegacy && service.app.Legacy != LegacyNone && service.decodeV2Certificate(record, &certificate)
+		valid = allowLegacy && service.app.Legacy != legacyNone && service.decodeV2Certificate(record, &certificate)
 	case 1:
-		valid = allowLegacy && service.app.Legacy != LegacyNone && service.decodeV1Certificate(record, &certificate)
+		valid = allowLegacy && service.app.Legacy != legacyNone && service.decodeV1Certificate(record, &certificate)
 	default:
 		valid = false
 	}
@@ -140,7 +140,7 @@ func validCertificateVersionFields(certificate Certificate, version int) bool {
 	if version >= 4 && (certificate.Level != Rank(certificate.Tier) || certificate.Family != map[bool]string{false: FamilyPatron, true: FamilyLiving}[certificate.Sustaining]) {
 		return false
 	}
-	return version != 5 || validEdition(certificate.Edition) && (certificate.Edition != EditionOnce) == certificate.Sustaining
+	return version != 5 || validEdition(certificate.Edition) && (certificate.Edition != editionOnce) == certificate.Sustaining
 }
 
 func validCurrentExpiry(certificate Certificate, raw json.RawMessage) bool {
@@ -162,7 +162,7 @@ func (service *Service) validCertificateIdentity(certificate Certificate, object
 	}
 	if raw, found := object["recognitionName"]; found {
 		name, ok := jsonString(raw)
-		if !ok || name == "" && !service.app.AllowEmptyRecognitionField || name != "" && (!ValidRecognitionName(name, true) || Rank(certificate.Tier) < 7) || name != certificate.RecognitionName {
+		if !ok || name == "" && !service.app.AllowEmptyRecognitionField || name != "" && (!validRecognitionName(name, true) || Rank(certificate.Tier) < 7) || name != certificate.RecognitionName {
 			return false
 		}
 	} else if certificate.RecognitionName != "" {
@@ -202,7 +202,7 @@ func validCertificateTimes(certificate Certificate, now time.Time, boundExpiry b
 	}
 	expiresAt, expiryOK := strictTime(certificate.ExpiresAt)
 	maximum := 45 * 24 * time.Hour
-	if certificate.Version == 5 && certificate.Edition == EditionYearly {
+	if certificate.Version == 5 && certificate.Edition == editionYearly {
 		maximum = 370 * 24 * time.Hour
 	}
 	return expiryOK && certificate.Sustaining && expiresAt.After(issuedAt) && (!boundExpiry || !expiresAt.After(issuedAt.Add(maximum)))

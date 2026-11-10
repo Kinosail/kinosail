@@ -32,7 +32,7 @@ func (r *Renderers) describe(ctx context.Context, location string) (Device, erro
 	}
 	var description description
 	if xml.Unmarshal(body, &description) != nil || description.Device.Type != rendererType || !validLabel(description.Device.Name, 128) || len(description.Device.Services) > 32 {
-		return Device{}, ErrUnavailable
+		return Device{}, errUnavailable
 	}
 	base, _ := url.Parse(location)
 	for _, service := range description.Device.Services {
@@ -45,7 +45,7 @@ func (r *Renderers) describe(ctx context.Context, location string) (Device, erro
 		}
 		return Device{ID: rendererID(control), Name: strings.TrimSpace(description.Device.Name), Protocol: "dlna", control: control, service: service.Type, expires: r.now().Add(10 * time.Minute)}, nil
 	}
-	return Device{}, ErrUnavailable
+	return Device{}, errUnavailable
 }
 
 func validLabel(value string, maximum int) bool {
@@ -103,7 +103,7 @@ func (r *Renderers) Command(ctx context.Context, id string, command Command) err
 	}
 	device, ok := r.Device(id)
 	if !ok {
-		return ErrUnavailable
+		return errUnavailable
 	}
 	name, args := "", ""
 	switch command.Action {
@@ -130,7 +130,7 @@ type Status struct {
 func (r *Renderers) Status(ctx context.Context, id string) (Status, error) {
 	device, ok := r.Device(id)
 	if !ok {
-		return Status{}, ErrUnavailable
+		return Status{}, errUnavailable
 	}
 	transport, err := r.action(ctx, device, "GetTransportInfo", "")
 	if err != nil {
@@ -140,12 +140,12 @@ func (r *Renderers) Status(ctx context.Context, id string) (Status, error) {
 		State string `xml:"Body>GetTransportInfoResponse>CurrentTransportState"`
 	}
 	if xml.Unmarshal(transport, &state) != nil {
-		return Status{}, ErrUnavailable
+		return Status{}, errUnavailable
 	}
 	value := Status{}
 	value.State = transportState(state.State)
 	if value.State == "" {
-		return Status{}, ErrUnavailable
+		return Status{}, errUnavailable
 	}
 	info, err := r.action(ctx, device, "GetPositionInfo", "")
 	if err != nil {
@@ -157,7 +157,7 @@ func (r *Renderers) Status(ctx context.Context, id string) (Status, error) {
 		Duration string `xml:"Body>GetPositionInfoResponse>TrackDuration"`
 	}
 	if xml.Unmarshal(info, &position) != nil {
-		return Status{}, ErrUnavailable
+		return Status{}, errUnavailable
 	}
 	if parsed, parseErr := url.Parse(position.URI); parseErr == nil {
 		value.Source = parsed.Scheme + "://" + parsed.Host + parsed.EscapedPath()

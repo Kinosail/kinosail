@@ -56,7 +56,7 @@ func TestSAMLRejectsInvalidExternalMetadataBeforeKeyCreation(t *testing.T) {
 	}))
 	t.Cleanup(metadataServer.Close)
 	directory := t.TempDir()
-	flow := NewSAML(SAMLConfig{MetadataURL: metadataServer.URL, RootURL: "http://localhost", DataDir: directory})
+	flow := newSAML(SAMLConfig{MetadataURL: metadataServer.URL, RootURL: "http://localhost", DataDir: directory})
 	if _, err := flow.Begin(t.Context(), "viewer", "session"); err == nil {
 		t.Fatal("invalid external metadata was accepted")
 	}
@@ -68,11 +68,11 @@ func TestSAMLRejectsInvalidExternalMetadataBeforeKeyCreation(t *testing.T) {
 func TestSAMLRejectsInvalidDataDirectoryBeforeKeyCreation(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
-	flow := NewSAML(SAMLConfig{MetadataURL: "https://identity.example/metadata", RootURL: "http://localhost", DataDir: directory + "\x00bad"})
+	flow := newSAML(SAMLConfig{MetadataURL: "https://identity.example/metadata", RootURL: "http://localhost", DataDir: directory + "\x00bad"})
 	if flow.Configured() {
 		t.Fatal("invalid data directory was accepted")
 	}
-	if _, err := flow.Metadata(t.Context()); !errors.Is(err, ErrNotConfigured) {
+	if _, err := flow.Metadata(t.Context()); !errors.Is(err, errNotConfigured) {
 		t.Fatalf("metadata with invalid data directory = %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(directory, "saml_sp.pem")); !errors.Is(err, os.ErrNotExist) {
@@ -84,14 +84,14 @@ func assertSAMLConfiguration(t *testing.T, config SAMLConfig, want bool) {
 	t.Helper()
 	directory := t.TempDir()
 	config.DataDir = directory
-	flow := NewSAML(config)
+	flow := newSAML(config)
 	if flow.Configured() != want {
 		t.Fatalf("Configured() = %v", !want)
 	}
 	if want {
 		return
 	}
-	if _, err := flow.Begin(t.Context(), "", ""); !errors.Is(err, ErrNotConfigured) {
+	if _, err := flow.Begin(t.Context(), "", ""); !errors.Is(err, errNotConfigured) {
 		t.Fatalf("invalid begin = %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(directory, "saml_sp.pem")); !errors.Is(err, os.ErrNotExist) {
@@ -103,8 +103,8 @@ func TestSAMLMetadataKeyIsStableAndPrivate(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	config := SAMLConfig{RootURL: "http://localhost", DataDir: directory}
-	first, err := NewSAML(config).Metadata(t.Context())
-	second, secondErr := NewSAML(config).Metadata(t.Context())
+	first, err := newSAML(config).Metadata(t.Context())
+	second, secondErr := newSAML(config).Metadata(t.Context())
 	firstDocument, firstParseErr := samlsp.ParseMetadata(first)
 	secondDocument, secondParseErr := samlsp.ParseMetadata(second)
 	firstCertificate := firstDocument.SPSSODescriptors[0].KeyDescriptors[0].KeyInfo.X509Data.X509Certificates[0].Data
@@ -170,7 +170,7 @@ func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) {
 	idp.MetadataURL = *idpOrigin.ResolveReference(&url.URL{Path: "/metadata"})
 	idp.SSOURL = *idpOrigin.ResolveReference(&url.URL{Path: "/sso"})
 	idp.LoginURL = *idpOrigin.ResolveReference(&url.URL{Path: "/login"})
-	flow := NewSAML(SAMLConfig{MetadataURL: idp.MetadataURL.String(), RootURL: "http://localhost", DataDir: t.TempDir(), IdentityAttribute: "objectGUID"})
+	flow := newSAML(SAMLConfig{MetadataURL: idp.MetadataURL.String(), RootURL: "http://localhost", DataDir: t.TempDir(), IdentityAttribute: "objectGUID"})
 	metadata, err := flow.Metadata(t.Context())
 	if err != nil {
 		t.Fatal(err)
@@ -202,7 +202,7 @@ func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) {
 	form := url.Values{"SAMLResponse": {html.UnescapeString(string(response[1]))}, "RelayState": {html.UnescapeString(string(relay[1]))}}
 	wrongRelay := url.Values{"SAMLResponse": form["SAMLResponse"], "RelayState": {"different"}}
 	invalidRelay := samlRequest(t, "/login/saml/acs", wrongRelay.Encode())
-	if _, err := flow.Complete(httptest.NewRecorder(), invalidRelay); !errors.Is(err, ErrInvalidState) {
+	if _, err := flow.Complete(httptest.NewRecorder(), invalidRelay); !errors.Is(err, errInvalidState) {
 		t.Fatalf("mismatched relay: %v", err)
 	}
 	if len(flow.pending) != 1 {
@@ -211,7 +211,7 @@ func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) {
 	flow.config.IdentityAttribute = "missing"
 	invalidIdentity := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login/saml/acs", strings.NewReader(form.Encode()))
 	invalidIdentity.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	if _, err := flow.Complete(httptest.NewRecorder(), invalidIdentity); !errors.Is(err, ErrTokenInvalid) {
+	if _, err := flow.Complete(httptest.NewRecorder(), invalidIdentity); !errors.Is(err, errTokenInvalid) {
 		t.Fatalf("missing signed identity = %v", err)
 	}
 	flow.config.IdentityAttribute = "objectGUID"
@@ -227,7 +227,7 @@ func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) {
 	}
 	replay := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login/saml/acs", strings.NewReader(form.Encode()))
 	replay.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	if _, err = flow.Complete(httptest.NewRecorder(), replay); !errors.Is(err, ErrInvalidState) {
+	if _, err = flow.Complete(httptest.NewRecorder(), replay); !errors.Is(err, errInvalidState) {
 		t.Fatalf("SAML replay = %v", err)
 	}
 }
@@ -243,8 +243,8 @@ func TestSAMLCallbackRejectsInputBeforeProviderEffects(t *testing.T) {
 	} {
 		t.Run(name, func(t *testing.T) {
 			directory := t.TempDir()
-			flow := NewSAML(SAMLConfig{MetadataURL: "https://127.0.0.1:1/metadata", RootURL: "http://localhost", DataDir: directory})
-			if _, err := flow.Complete(httptest.NewRecorder(), request); !errors.Is(err, ErrInvalidCallback) {
+			flow := newSAML(SAMLConfig{MetadataURL: "https://127.0.0.1:1/metadata", RootURL: "http://localhost", DataDir: directory})
+			if _, err := flow.Complete(httptest.NewRecorder(), request); !errors.Is(err, errInvalidCallback) {
 				t.Fatalf("invalid callback = %v", err)
 			}
 			if _, err := os.Stat(filepath.Join(directory, "saml_sp.pem")); !errors.Is(err, os.ErrNotExist) {

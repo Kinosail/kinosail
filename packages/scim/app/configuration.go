@@ -53,7 +53,7 @@ func configurationView[C any](state ConfigurationState, control C, request *http
 			suggested = base64.RawURLEncoding.EncodeToString(value)
 		}
 	}
-	return ConfigurationView[C]{Endpoint(state.Origin, request), expiresOn, now.Format(time.DateOnly), now.AddDate(0, 0, 90).Format(time.DateOnly), suggested, state.Configured, state.Configured && Expired(state.Expiration, now), control}
+	return ConfigurationView[C]{endpoint(state.Origin, request), expiresOn, now.Format(time.DateOnly), now.AddDate(0, 0, 90).Format(time.DateOnly), suggested, state.Configured, state.Configured && Expired(state.Expiration, now), control}
 }
 
 func Expired(raw string, now time.Time) bool {
@@ -61,7 +61,7 @@ func Expired(raw string, now time.Time) bool {
 	return raw != "" && (err != nil || !expires.After(now))
 }
 
-func Endpoint(configured string, request *http.Request) string {
+func endpoint(configured string, request *http.Request) string {
 	return federationconfig.RequestOrigin(configured, request) + "/scim/v2"
 }
 
@@ -110,7 +110,7 @@ func (store ConfigurationStore[S]) Change(token, expiration string, reset bool) 
 
 type ConfigurationInput struct{ Token, Expiration string }
 
-func ParseConfigurationForm(writer http.ResponseWriter, request *http.Request) (ConfigurationInput, error) {
+func parseConfigurationForm(writer http.ResponseWriter, request *http.Request) (ConfigurationInput, error) {
 	keys := []string{"key", "token", "tokenExpiresOn"}
 	if err := httpguard.DecodeForm(writer, request, 16<<10, keys...); err != nil || request.PostForm.Get("key") != ConfigurationKey {
 		return ConfigurationInput{}, errors.New("invalid configuration form")
@@ -125,7 +125,7 @@ func ParseConfigurationForm(writer http.ResponseWriter, request *http.Request) (
 }
 
 func SaveConfiguration(writer http.ResponseWriter, request *http.Request, change func(string, string, bool) error, writeError func(http.ResponseWriter, *http.Request, string, int)) {
-	input, err := ParseConfigurationForm(writer, request)
+	input, err := parseConfigurationForm(writer, request)
 	if err != nil {
 		writeError(writer, request, err.Error(), http.StatusBadRequest)
 		return

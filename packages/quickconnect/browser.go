@@ -53,7 +53,7 @@ func (application *Application) PollBrowser(writer http.ResponseWriter, request 
 		return
 	}
 	grant, err := application.broker.Consume(secret)
-	if errors.Is(err, ErrPending) {
+	if errors.Is(err, errPending) {
 		apihttp.WriteJSON(writer, map[string]string{"status": "pending"}, http.StatusAccepted)
 		return
 	}

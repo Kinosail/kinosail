@@ -42,7 +42,7 @@ type HTTP struct {
 	config HTTPConfig
 }
 
-func NewHTTP(config HTTPConfig) (*HTTP, error) {
+func newHTTP(config HTTPConfig) (*HTTP, error) {
 	if config.Rooms == nil || config.Index == nil || config.ViewerID == nil || config.CanView == nil || config.Reauthorize == nil || config.Failure == nil || config.NotFound == nil {
 		return nil, errors.New("watch room HTTP configuration is invalid")
 	}
@@ -50,7 +50,7 @@ func NewHTTP(config HTTPConfig) (*HTTP, error) {
 }
 
 func MustNewHTTP(config HTTPConfig) *HTTP {
-	handler, err := NewHTTP(config)
+	handler, err := newHTTP(config)
 	if err != nil {
 		panic(err)
 	}
@@ -250,7 +250,7 @@ func (handler *HTTP) validEvent(request *http.Request, event Event) bool {
 }
 
 func validHTTPSeconds(seconds float64) bool {
-	return seconds >= 0 && seconds <= MaximumSeconds && !math.IsNaN(seconds) && !math.IsInf(seconds, 0)
+	return seconds >= 0 && seconds <= maximumSeconds && !math.IsNaN(seconds) && !math.IsInf(seconds, 0)
 }
 
 func slicesContains(values []string, value string) bool {

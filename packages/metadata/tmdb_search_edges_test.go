@@ -62,7 +62,7 @@ func TestResolveTMDBShowRejectsProviderAndArtworkFailures(t *testing.T) {
 func TestFindTMDBCandidateReturnsSearchAndFallbackErrors(t *testing.T) {
 	t.Parallel()
 	identity := library.Item{Title: "Show", Year: "2020"}
-	if _, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", identity, nil, func(context.Context, string, any) error { return errors.New("offline") }); err == nil {
+	if _, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", identity, nil, func(context.Context, string, any) error { return errors.New("offline") }); err == nil {
 		t.Fatal("candidate search failure was ignored")
 	}
 	searches := 0
@@ -74,10 +74,10 @@ func TestFindTMDBCandidateReturnsSearchAndFallbackErrors(t *testing.T) {
 		}
 		return errors.New("offline")
 	}
-	if _, err := FindTMDBCandidate(t.Context(), "https://example.com", "tv", identity, nil, fallbackFailure); err == nil {
+	if _, err := findTMDBCandidate(t.Context(), "https://example.com", "tv", identity, nil, fallbackFailure); err == nil {
 		t.Fatal("TV fallback failure was ignored")
 	}
-	if _, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", identity, map[string]string{"imdb": "tt1234567"}, func(context.Context, string, any) error { return errors.New("offline") }); err == nil {
+	if _, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", identity, map[string]string{"imdb": "tt1234567"}, func(context.Context, string, any) error { return errors.New("offline") }); err == nil {
 		t.Fatal("IMDb lookup failure was ignored")
 	}
 }

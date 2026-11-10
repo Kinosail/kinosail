@@ -35,7 +35,7 @@ func (sessions *Sessions) Devices() []Device {
 func (sessions *Sessions) RevokeDevice(id string) error {
 	return sessions.remove(func(values map[string]Session) ([]string, error) {
 		if _, found := values[id]; !found {
-			return nil, ErrDeviceNotFound
+			return nil, errDeviceNotFound
 		}
 		return []string{id}, nil
 	})
@@ -47,7 +47,7 @@ func (sessions *Sessions) RevokeAll() error {
 
 func (sessions *Sessions) remove(selectKeys func(map[string]Session) ([]string, error)) error {
 	if !sessions.valid() {
-		return ErrCurrentSession
+		return errCurrentSession
 	}
 	sessions.config.Mutex.Lock()
 	keys, err := selectKeys(sessions.values())
@@ -65,7 +65,7 @@ func (sessions *Sessions) remove(selectKeys func(map[string]Session) ([]string, 
 
 func (sessions *Sessions) replace(next func(map[string]Session) (map[string]Session, error)) error {
 	if !sessions.valid() {
-		return ErrCurrentSession
+		return errCurrentSession
 	}
 	sessions.config.Mutex.Lock()
 	defer sessions.config.Mutex.Unlock()

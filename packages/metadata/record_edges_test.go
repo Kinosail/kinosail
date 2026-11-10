@@ -23,11 +23,11 @@ func TestResolveTMDBEpisodeRejectsOversizedArtworkTarget(t *testing.T) {
 
 func TestTVDBProviderIDReturnsIndependentOptionalIdentity(t *testing.T) {
 	t.Parallel()
-	if got := TVDBProviderID(library.Item{}); got != nil {
+	if got := tvdbProviderID(library.Item{}); got != nil {
 		t.Fatalf("missing TVDB identity = %#v", got)
 	}
 	item := library.Item{ProviderIDs: map[string]string{"tvdb": " 123 "}}
-	got := TVDBProviderID(item)
+	got := tvdbProviderID(item)
 	got["tvdb"] = "changed"
 	if item.ProviderIDs["tvdb"] != " 123 " {
 		t.Fatal("TVDB identity result aliases the item map")

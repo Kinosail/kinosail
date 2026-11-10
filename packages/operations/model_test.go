@@ -14,7 +14,7 @@ func TestBuildDiagnosticReportUsesSafeSnapshot(t *testing.T) {
 		LibraryMonitoring: true, Healthy: true, ScanError: true, ActivityHealthy: true, LibraryItems: 19, Sessions: 3, TranscodeCacheBytes: 42,
 		HTTPRequests: 51, HTTPErrors: 2, HTTPPanics: 1, ActivityFailures: 4,
 	}
-	report := BuildDiagnosticReport("v1.2.3", started, now, snapshot)
+	report := buildDiagnosticReport("v1.2.3", started, now, snapshot)
 	if report.Version != "v1.2.3" || report.Generated != "2026-09-04T18:01:35Z" || report.UptimeSeconds != 95 || report.LastScan != "2026-09-04T17:30:00Z" {
 		t.Fatalf("identity and time = %#v", report)
 	}
@@ -31,7 +31,7 @@ func TestBuildDiagnosticReportUsesSafeSnapshot(t *testing.T) {
 
 func TestBuildDiagnosticReportReportsPolling(t *testing.T) {
 	t.Parallel()
-	if report := BuildDiagnosticReport("dev", time.Time{}, time.Time{}, DiagnosticSnapshot{}); report.LibraryMonitoring != "polling" {
+	if report := buildDiagnosticReport("dev", time.Time{}, time.Time{}, DiagnosticSnapshot{}); report.LibraryMonitoring != "polling" {
 		t.Fatalf("monitoring = %q", report.LibraryMonitoring)
 	}
 }

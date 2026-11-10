@@ -48,7 +48,7 @@ func TestManagementHTTPUnavailableAndInvalidOperations(t *testing.T) {
 		t.Fatal("unavailable mutation accepted")
 	}
 	config, _, _ := ownerFixture(t)
-	manager, err := Open(config)
+	manager, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +77,7 @@ func TestManagementHTTPEnablePairRevokeAndDisable(t *testing.T) {
 func assertManagementHTTPLifecycle(t *testing.T, api bool) {
 	t.Helper()
 	config, _, _ := ownerFixture(t)
-	manager, err := Open(config)
+	manager, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}

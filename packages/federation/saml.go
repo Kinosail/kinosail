@@ -50,7 +50,7 @@ type SAMLCallback struct {
 	LinkSession string
 }
 
-func NewSAML(config SAMLConfig) *SAML {
+func newSAML(config SAMLConfig) *SAML {
 	if config.IdentityAttribute == "" {
 		config.IdentityAttribute = "NameID"
 	}
@@ -62,7 +62,7 @@ func (flow *SAML) Configured() bool {
 		return false
 	}
 	metadata, err := url.Parse(flow.config.MetadataURL)
-	metadataURLConfigured := boundedURLText(flow.config.MetadataURL) && err == nil && TrustedURL(metadata)
+	metadataURLConfigured := boundedURLText(flow.config.MetadataURL) && err == nil && trustedURL(metadata)
 	metadataXMLConfigured := validInlineMetadata(flow.config.MetadataXML)
 	return metadataURLConfigured != metadataXMLConfigured && flow.rootConfigured()
 }
@@ -78,14 +78,14 @@ func (flow *SAML) Begin(ctx context.Context, profileID, linkSession string) (SAM
 	}
 	authentication, err := sp.MakeAuthenticationRequest(idpURL, binding, saml.HTTPPostBinding)
 	if err != nil {
-		return SAMLStart{}, ErrProviderUnavailable
+		return SAMLStart{}, errProviderUnavailable
 	}
 	now := time.Now()
 	flow.mu.Lock()
 	prune(flow.pending, now, func(transaction samlTransaction) time.Time { return transaction.expires })
 	if len(flow.pending) >= maxPendingStates {
 		flow.mu.Unlock()
-		return SAMLStart{}, ErrTooManyPending
+		return SAMLStart{}, errTooManyPending
 	}
 	relayState := rand.Text()
 	flow.pending[authentication.ID] = samlTransaction{relayState: relayState, profileID: profileID, linkSession: linkSession, expires: now.Add(transactionTTL)}
@@ -97,7 +97,7 @@ func (flow *SAML) Begin(ctx context.Context, profileID, linkSession string) (SAM
 	}
 	destination, err := authentication.Redirect(relayState, sp)
 	if err != nil {
-		return SAMLStart{}, ErrProviderUnavailable
+		return SAMLStart{}, errProviderUnavailable
 	}
 	start.RedirectURL = destination.String()
 	return start, nil
@@ -106,11 +106,11 @@ func (flow *SAML) Begin(ctx context.Context, profileID, linkSession string) (SAM
 func (flow *SAML) Complete(writer http.ResponseWriter, request *http.Request) (SAMLCallback, error) {
 	request.Body = http.MaxBytesReader(writer, request.Body, maxSAMLBody)
 	if !formEncoded(request) || request.URL.RawQuery != "" || request.ParseForm() != nil || !validSAMLForm(request.PostForm) {
-		return SAMLCallback{}, ErrInvalidCallback
+		return SAMLCallback{}, errInvalidCallback
 	}
 	sp, err := flow.serviceProvider(request.Context(), true, false)
 	if err != nil {
-		return SAMLCallback{}, ErrProviderUnavailable
+		return SAMLCallback{}, errProviderUnavailable
 	}
 	flow.mu.Lock()
 	now := time.Now()
@@ -123,15 +123,15 @@ func (flow *SAML) Complete(writer http.ResponseWriter, request *http.Request) (S
 	}
 	flow.mu.Unlock()
 	if len(requestIDs) == 0 {
-		return SAMLCallback{}, ErrInvalidState
+		return SAMLCallback{}, errInvalidState
 	}
 	assertion, err := sp.ParseResponse(request, requestIDs)
 	if err != nil || assertion == nil || assertion.Subject == nil || assertion.Subject.NameID == nil || assertion.Issuer.Value != sp.IDPMetadata.EntityID {
-		return SAMLCallback{}, ErrTokenInvalid
+		return SAMLCallback{}, errTokenInvalid
 	}
 	subject, err := samlIdentityValue(assertion, flow.config.IdentityAttribute)
 	if err != nil {
-		return SAMLCallback{}, ErrTokenInvalid
+		return SAMLCallback{}, errTokenInvalid
 	}
 	transaction, found := flow.takeTransaction(samlAssertionRequestID(assertion))
 	return samlCallbackResult(assertion, subject, transaction, found)
@@ -139,7 +139,7 @@ func (flow *SAML) Complete(writer http.ResponseWriter, request *http.Request) (S
 
 func samlCallbackResult(assertion *saml.Assertion, subject string, transaction samlTransaction, found bool) (SAMLCallback, error) {
 	if !found {
-		return SAMLCallback{}, ErrInvalidState
+		return SAMLCallback{}, errInvalidState
 	}
 	return SAMLCallback{Identity: Identity{Issuer: assertion.Issuer.Value, Subject: subject}, ProfileID: transaction.profileID, LinkSession: transaction.linkSession}, nil
 }
@@ -181,14 +181,14 @@ func (flow *SAML) rootConfigured() bool {
 		return false
 	}
 	root, err := url.Parse(flow.config.RootURL)
-	return err == nil && TrustedURL(root) && (root.Path == "" || root.Path == "/")
+	return err == nil && trustedURL(root) && (root.Path == "" || root.Path == "/")
 }
 
 func (flow *SAML) serviceProvider(ctx context.Context, withIDP, refresh bool) (*saml.ServiceProvider, error) {
 	flow.mu.Lock()
 	defer flow.mu.Unlock()
 	if !flow.rootConfigured() || !validDataDirectory(flow.config.DataDir) || withIDP && !flow.Configured() {
-		return nil, ErrNotConfigured
+		return nil, errNotConfigured
 	}
 	var loadedMetadata *saml.EntityDescriptor
 	if withIDP && (flow.sp == nil || flow.sp.IDPMetadata == nil || refresh && flow.config.MetadataURL != "" && time.Since(flow.metadataLoadedAt) >= metadataRefreshInterval) {

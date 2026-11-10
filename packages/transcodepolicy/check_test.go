@@ -25,12 +25,12 @@ func TestCheckRunsBoundedSyntheticWorkflow(t *testing.T) {
 }
 
 func TestPendingCheckProjectsStableBackend(t *testing.T) {
-	software := PendingCheck(Settings{Codec: "h264", Accelerator: "none", Encoder: "libx264"}, "Software")
+	software := pendingCheck(Settings{Codec: "h264", Accelerator: "none", Encoder: "libx264"}, "Software")
 	want := CheckResult{Status: "not-run", Codec: "h264", CodecName: "AVC / H.264", Accelerator: "none", Backend: "Software (libx264)"}
 	if !reflect.DeepEqual(software, want) {
 		t.Fatalf("software pending check = %#v", software)
 	}
-	hardware := PendingCheck(Settings{Codec: "hevc", Accelerator: "qsv"}, "Intel")
+	hardware := pendingCheck(Settings{Codec: "hevc", Accelerator: "qsv"}, "Intel")
 	if hardware.Backend != "Intel" || hardware.CodecName != "HEVC / H.265" {
 		t.Fatalf("hardware pending check = %#v", hardware)
 	}

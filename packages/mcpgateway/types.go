@@ -12,7 +12,7 @@ const (
 	ReadScope       = "kinosail.read"
 	WriteScope      = "kinosail.write"
 	ManageScope     = "kinosail.manage"
-	StateFilename   = "agent_connections.json"
+	stateFilename   = "agent_connections.json"
 )
 
 type Principal struct {

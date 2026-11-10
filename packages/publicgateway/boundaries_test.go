@@ -33,7 +33,7 @@ func TestGatewayUnavailableDoesNotExposeSocket(t *testing.T) {
 	r.URL.Scheme = ""
 	r.URL.Host = ""
 	w := httptest.NewRecorder()
-	Handler("family.example", "/absent-private-socket").ServeHTTP(w, r)
+	handler("family.example", "/absent-private-socket").ServeHTTP(w, r)
 	if w.Code != http.StatusServiceUnavailable || strings.Contains(w.Body.String(), "absent-private") {
 		t.Fatalf("response %d %s", w.Code, w.Body.String())
 	}

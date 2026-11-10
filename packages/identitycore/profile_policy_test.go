@@ -83,7 +83,7 @@ func TestApplyProfilePolicy(t *testing.T) {
 		profile := Profile{}
 		libraries := []string{"movies"}
 		policy := ProfilePolicy{Downloads: true, Transcode: true, Remote: true, Rating: rating, Libraries: libraries, AccessStart: "09:00", AccessEnd: "17:00"}
-		ApplyProfilePolicy(&profile, policy)
+		applyProfilePolicy(&profile, policy)
 		libraries[0] = "changed"
 		if !profile.Downloads || !profile.Transcode || !profile.Remote || profile.Rating != want || profile.Libraries[0] != "movies" || profile.AccessStart != "09:00" || profile.AccessEnd != "17:00" {
 			t.Fatalf("ApplyProfilePolicy(%q) = %#v", rating, profile)

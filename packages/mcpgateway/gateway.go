@@ -55,7 +55,7 @@ type mcpAPIOutput struct {
 	Body   any `json:"body,omitempty"`
 }
 
-func Register(mux *http.ServeMux, config GatewayConfig, connections *Connections) (*Gateway, error) {
+func register(mux *http.ServeMux, config GatewayConfig, connections *Connections) (*Gateway, error) {
 	if mux == nil {
 		return nil, errors.New("MCP gateway requires an HTTP router")
 	}

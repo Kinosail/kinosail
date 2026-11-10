@@ -67,8 +67,8 @@ func TestParseRejectsInvalidSettingsLanguageState(t *testing.T) {
 		"unknown language":       `{"subtitleLanguages":["not-a-language"]}`,
 		"primary conflict":       `{"subtitleLanguage":"fr","subtitleLanguages":["en","fr"]}`,
 		"invalid UTF-8":          string([]byte{'{', '"', 'x', '"', ':', '"', 0xff, '"', '}'}),
-		"oversized":              `{"name":"` + strings.Repeat("x", MaximumDocumentSize) + `"}`,
-		"oversized grant":        `{"supporter":{"patronOrder":{"certificate":"` + strings.Repeat("x", MaximumDocumentSize) + `"}}}`,
+		"oversized":              `{"name":"` + strings.Repeat("x", maximumDocumentSize) + `"}`,
+		"oversized grant":        `{"supporter":{"patronOrder":{"certificate":"` + strings.Repeat("x", maximumDocumentSize) + `"}}}`,
 	} {
 		t.Run(name, func(t *testing.T) {
 			if _, err := Parse([]byte(data)); err == nil {

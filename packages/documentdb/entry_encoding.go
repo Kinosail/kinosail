@@ -21,7 +21,7 @@ func decodeEntries(data []byte) (map[string]json.RawMessage, error) {
 		return nil, errors.New("invalid record document")
 	}
 	var entries map[string]json.RawMessage
-	if err := json.Unmarshal(data, &entries); err != nil || len(entries) > EntryCountLimit {
+	if err := json.Unmarshal(data, &entries); err != nil || len(entries) > entryCountLimit {
 		return nil, errors.New("record document must be a bounded object")
 	}
 	return entries, nil
@@ -46,7 +46,7 @@ func uniqueJSONValue(decoder *json.Decoder, depth int) error {
 	count := 0
 	for decoder.More() {
 		count++
-		if count > EntryCountLimit {
+		if count > entryCountLimit {
 			return errors.New("record cardinality is too large")
 		}
 		if err := uniqueJSONKey(decoder, keys, delimiter == '{'); err != nil {
@@ -62,7 +62,7 @@ func uniqueJSONValue(decoder *json.Decoder, depth int) error {
 
 func entriesBudget(entries map[string]json.RawMessage) error {
 	for key, value := range entries {
-		if !validEntryKey(key) || len(value) > EntrySizeLimit {
+		if !validEntryKey(key) || len(value) > entrySizeLimit {
 			return errors.New("invalid record")
 		}
 	}

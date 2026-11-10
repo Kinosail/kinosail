@@ -73,7 +73,7 @@ func Validate(items []string) error {
 	return nil
 }
 
-func Links(items []string, view string, localize func(string) string) (primary, more []Link) {
+func links(items []string, view string, localize func(string) string) (primary, more []Link) {
 	for _, id := range items {
 		item := destinationByID(id)
 		link := Link{localize(item.name), item.href, item.group, item.icon, item.view == view || item.id == view}
@@ -87,10 +87,10 @@ func Links(items []string, view string, localize func(string) string) (primary, 
 }
 
 func (controller Controller) Links(view, language string) (primary, more []Link) {
-	return Links(controller.read(), view, func(name string) string { return controller.localize(language, name) })
+	return links(controller.read(), view, func(name string) string { return controller.localize(language, name) })
 }
 
-func Preferences(visible []string, localize func(string) string) []Preference {
+func preferences(visible []string, localize func(string) string) []Preference {
 	items := make([]Preference, 0, len(destinations))
 	for index, id := range visible {
 		destination := destinationByID(id)
@@ -105,7 +105,7 @@ func Preferences(visible []string, localize func(string) string) []Preference {
 }
 
 func (controller Controller) Preferences(language string) []Preference {
-	return Preferences(controller.read(), func(name string) string { return controller.localize(language, name) })
+	return preferences(controller.read(), func(name string) string { return controller.localize(language, name) })
 }
 
 func (controller Controller) Set(items []string) error {

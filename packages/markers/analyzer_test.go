@@ -189,7 +189,7 @@ func TestOwnerRemovalSuppressesDetectedMarkerAcrossRestart(t *testing.T) {
 func TestInvalidPersistedSuppressionDoesNotHideMarkers(t *testing.T) {
 	item := library.Item{ID: "movie", Size: 12, Added: time.Unix(3, 0)}
 	detected := []Marker{{Type: "credits", Start: 80, End: 100, Source: "visual"}}
-	record := Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion, Markers: detected, Suppressed: []string{"credits", "unknown"}}
+	record := Record{Revision: mediaRevision(item), DetectorVersion: detectorVersion, Markers: detected, Suppressed: []string{"credits", "unknown"}}
 	analyzer := NewAnalyzer(Config{})
 	analyzer.records[item.ID] = record
 	if got := analyzer.Markers(item, nil); !reflect.DeepEqual(got, detected) || !reflect.DeepEqual(analyzer.records[item.ID], record) {

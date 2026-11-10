@@ -48,7 +48,7 @@ func CollectionMatches(name string, items []library.Item, query string) bool {
 		return true
 	}
 	for _, item := range items {
-		if Matches(item, query) {
+		if matches(item, query) {
 			return true
 		}
 	}

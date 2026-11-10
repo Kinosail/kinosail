@@ -44,7 +44,7 @@ func validateRecords(records map[string]Record) error {
 		return errors.New("too many persisted marker records")
 	}
 	for id, record := range records {
-		if !validRecordID(id) || record.Revision == "" || len(record.Revision) > 128 || hasControl(record.Revision) || record.DetectorVersion < 0 || record.DetectorVersion > DetectorVersion || len(record.Markers) > 256 || len(record.Suppressed) > len(markerTypes) {
+		if !validRecordID(id) || record.Revision == "" || len(record.Revision) > 128 || hasControl(record.Revision) || record.DetectorVersion < 0 || record.DetectorVersion > detectorVersion || len(record.Markers) > 256 || len(record.Suppressed) > len(markerTypes) {
 			return errors.New("persisted marker record is invalid")
 		}
 		for _, marker := range record.Markers {

@@ -63,7 +63,7 @@ func TestInvalidLargeLegacyEntryDocumentsAreRejectedWithoutSideEffects(t *testin
 		"nested duplicate":   `,"viewer:nested":{"a":1,"a":2}`,
 		"invalid utf8 key":   ",\"viewer:\xff\":1",
 		"invalid utf8 value": ",\"viewer:bad\":\"\xc3\"",
-		"oversized entry":    `,"viewer:large":"` + strings.Repeat("x", EntrySizeLimit) + `"`,
+		"oversized entry":    `,"viewer:large":"` + strings.Repeat("x", entrySizeLimit) + `"`,
 		"empty key":          `,"":1`,
 		"trailing data":      "",
 	}

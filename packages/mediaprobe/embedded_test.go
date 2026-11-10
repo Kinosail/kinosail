@@ -67,7 +67,7 @@ func TestEmbeddedSubtitleExtractionCacheAndTimeline(t *testing.T) {
 	if raw, rawErr := probe.Embedded(t.Context(), item, 3, EmbeddedOptions{CacheDir: cache, Timeline: &zeroTimeline}); rawErr != nil || raw.Path != cached.Path {
 		t.Fatalf("unmapped cached subtitle = %#v, %v", raw, rawErr)
 	}
-	if _, tokenErr := probe.EmbeddedPlayback(t.Context(), item, 3, "invalid", playback.HLSRecipePolicy{}, EmbeddedOptions{CacheDir: cache}); !errors.Is(tokenErr, ErrEmbeddedSubtitleStream) {
+	if _, tokenErr := probe.EmbeddedPlayback(t.Context(), item, 3, "invalid", playback.HLSRecipePolicy{}, EmbeddedOptions{CacheDir: cache}); !errors.Is(tokenErr, errEmbeddedSubtitleStream) {
 		t.Fatalf("invalid playback token error = %v", tokenErr)
 	}
 	if played, playErr := probe.EmbeddedPlayback(t.Context(), item, 3, "", playback.HLSRecipePolicy{}, EmbeddedOptions{CacheDir: cache}); playErr != nil || played.Path != cached.Path {
@@ -95,7 +95,7 @@ func TestEmbeddedSubtitleRejectsUnsupportedStreamsWithoutExtraction(t *testing.T
 	probe := New("unused")
 	probe.cache[item.ID] = Result{SubtitleFacts: []SubtitleFacts{{SourceIndex: 3, Text: true}, {SourceIndex: 4, Codec: "pgs"}}}
 	for _, stream := range []int{-1, 4, 5, 65536} {
-		if _, err := probe.Embedded(t.Context(), item, stream, EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: cache}); !errors.Is(err, ErrEmbeddedSubtitleStream) {
+		if _, err := probe.Embedded(t.Context(), item, stream, EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: cache}); !errors.Is(err, errEmbeddedSubtitleStream) {
 			t.Errorf("stream %d error = %v", stream, err)
 		}
 	}

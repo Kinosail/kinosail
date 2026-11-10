@@ -37,7 +37,7 @@ func (handlers MediaHandlers) shows(writer http.ResponseWriter, request *http.Re
 			continue
 		}
 		play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
-		result = append(result, MediaGroup{ID: show.ID, Title: show.Title, Artwork: ArtworkURL(show.ArtworkID), Backdrop: BackdropURL(ShowBackdropID(show), show.Backdrop != ""), Play: play})
+		result = append(result, MediaGroup{ID: show.ID, Title: show.Title, Artwork: artworkURL(show.ArtworkID), Backdrop: backdropURL(ShowBackdropID(show), show.Backdrop != ""), Play: play})
 	}
 	serveListing(writer, request, map[string]any{"shows": result})
 }
@@ -49,7 +49,7 @@ func (handlers MediaHandlers) show(writer http.ResponseWriter, request *http.Req
 		return
 	}
 	play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
-	body := map[string]any{"id": show.ID, "title": show.Title, "backdrop": BackdropURL(ShowBackdropID(show), show.Backdrop != ""), "play": play, "episodes": handlers.Progress.ClientItems(request, show.Episodes), "cast": ShowCast(show), "year": show.Year, "plot": show.Plot, "genres": show.Genres, "studio": show.Studio}
+	body := map[string]any{"id": show.ID, "title": show.Title, "backdrop": backdropURL(ShowBackdropID(show), show.Backdrop != ""), "play": play, "episodes": handlers.Progress.ClientItems(request, show.Episodes), "cast": ShowCast(show), "year": show.Year, "plot": show.Plot, "genres": show.Genres, "studio": show.Studio}
 	serveListing(writer, request, body)
 }
 
@@ -57,7 +57,7 @@ func (handlers MediaHandlers) albums(writer http.ResponseWriter, request *http.R
 	albums := handlers.Index.VisibleView(request).Albums()
 	result := make([]MediaGroup, 0, len(albums))
 	for _, album := range albums {
-		result = append(result, MediaGroup{ID: album.ID, Title: album.Title, Artwork: ArtworkURL(album.ArtworkID), Artist: album.Artist})
+		result = append(result, MediaGroup{ID: album.ID, Title: album.Title, Artwork: artworkURL(album.ArtworkID), Artist: album.Artist})
 	}
 	serveListing(writer, request, map[string]any{"albums": result})
 }
@@ -72,14 +72,14 @@ func (handlers MediaHandlers) album(writer http.ResponseWriter, request *http.Re
 	serveListing(writer, request, body)
 }
 
-func ArtworkURL(id string) string {
+func artworkURL(id string) string {
 	if id == "" {
 		return ""
 	}
 	return "/art/" + id
 }
 
-func BackdropURL(id string, available bool) string {
+func backdropURL(id string, available bool) string {
 	if id == "" || !available {
 		return ""
 	}

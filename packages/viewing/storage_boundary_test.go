@@ -117,28 +117,28 @@ func TestNormalizeSyncRejectsEveryPersistedInvariant(t *testing.T) {
 
 func TestSyncStorageExactLimits(t *testing.T) {
 	for _, interval := range []string{"15m", "1h", "6h", "24h"} {
-		if !ValidSyncInterval(interval) {
+		if !validSyncInterval(interval) {
 			t.Fatalf("valid interval rejected: %q", interval)
 		}
 	}
-	if ValidSyncInterval("") {
+	if validSyncInterval("") {
 		t.Fatal("empty interval accepted")
 	}
-	if !ValidSummary(Summary{Applied: maximumSyncItems}) || ValidSummary(Summary{Applied: maximumSyncItems + 1}) {
+	if !validSummary(Summary{Applied: maximumSyncItems}) || validSummary(Summary{Applied: maximumSyncItems + 1}) {
 		t.Fatal("summary maximum changed")
 	}
 	exact := strings.Repeat("e", 1024)
-	if SafeError(errors.New(exact)) != exact || len(SafeError(errors.New(exact+"e"))) != 1024 {
+	if safeError(errors.New(exact)) != exact || len(safeError(errors.New(exact+"e"))) != 1024 {
 		t.Fatal("safe error boundary changed")
 	}
 
 	document := []byte(`{"ABCDEFGHIJKLMNOP234567":{"id":"ABCDEFGHIJKLMNOP234567","interval":"15m","lastResult":{}}}`)
-	document = append(document, bytes.Repeat([]byte{' '}, MaximumSyncStateSize-len(document))...)
+	document = append(document, bytes.Repeat([]byte{' '}, maximumSyncStateSize-len(document))...)
 	file := filepath.Join(t.TempDir(), "viewing_imports.json")
 	if err := os.WriteFile(file, document, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	syncs, err := LoadSyncs(file, func(input Input) (Input, error) { return input, nil })
+	syncs, err := loadSyncs(file, func(input Input) (Input, error) { return input, nil })
 	if err != nil || len(syncs) != 1 {
 		t.Fatalf("maximum-size state = %#v, %v", syncs, err)
 	}

@@ -20,28 +20,28 @@ func TestProjectItemUsesPlayerCanonicalPublicPaths(t *testing.T) {
 	added := time.Date(2026, time.September, 4, 1, 2, 3, 0, time.UTC)
 	item := library.Item{ID: "episode", Kind: "video", Title: "Pilot", SortTitle: "Pilot, The", Year: "2026", Plot: "Plot", Rating: "PG", Tagline: "Tagline", Genres: "Drama", Director: "Director", Studio: "Studio", Artist: "Artist", Album: "Album", Track: 2, Show: "Series", Season: 1, Episode: 2, Artwork: "episode.jpg", ShowBackdrop: "show.jpg", Subtitles: []string{"one", "two"}, Container: "MKV", Size: 42, Added: added, Cast: []library.Person{{Name: "Actor", Role: "Lead", Image: "actor.jpg"}, {Name: "Voice"}}}
 	progress := catalog.PlaybackState{Seconds: 12}
-	result := ProjectItem(item, progress, ItemAccess{Stream: true, Download: true})
+	result := projectItem(item, progress, ItemAccess{Stream: true, Download: true})
 	if result.Stream != "/media/episode" || result.Download != "/download/episode" || result.Artwork != "/art/episode?variant=episode" || result.Backdrop != "/backdrop/episode" || result.Progress != progress || result.Subtitles != 2 || result.Added != added {
 		t.Fatalf("projection = %#v", result)
 	}
 	if !reflect.DeepEqual(result.Cast, []ClientPerson{{Name: "Actor", Role: "Lead", Image: "/person/episode/0"}, {Name: "Voice"}}) {
 		t.Fatalf("cast = %#v", result.Cast)
 	}
-	plain := ProjectItem(library.Item{ID: "movie", Title: "Movie"}, catalog.PlaybackState{}, ItemAccess{})
-	if plain.Stream != "" || plain.Download != "" || plain.Artwork != "" || plain.Backdrop != "" || ArtworkURLForItem(library.Item{ID: "movie"}) != "/art/movie" {
+	plain := projectItem(library.Item{ID: "movie", Title: "Movie"}, catalog.PlaybackState{}, ItemAccess{})
+	if plain.Stream != "" || plain.Download != "" || plain.Artwork != "" || plain.Backdrop != "" || artworkURLForItem(library.Item{ID: "movie"}) != "/art/movie" {
 		t.Fatalf("plain projection = %#v", plain)
 	}
-	posterOnly := ProjectItem(library.Item{ID: "poster", Kind: "video", Artwork: "poster.jpg"}, catalog.PlaybackState{}, ItemAccess{})
+	posterOnly := projectItem(library.Item{ID: "poster", Kind: "video", Artwork: "poster.jpg"}, catalog.PlaybackState{}, ItemAccess{})
 	if posterOnly.Artwork != "/art/poster" || posterOnly.Backdrop != "" {
 		t.Fatalf("portrait poster advertised as landscape: %#v", posterOnly)
 	}
 }
 
 func TestBrowseProjectionHelpersCoverAvailableAndMissingMedia(t *testing.T) {
-	if ArtworkURL("") != "" || ArtworkURL("item") != "/art/item" {
+	if artworkURL("") != "" || artworkURL("item") != "/art/item" {
 		t.Fatal("artwork route selection changed")
 	}
-	if BackdropURL("", true) != "" || BackdropURL("item", false) != "" || BackdropURL("item", true) != "/backdrop/item" {
+	if backdropURL("", true) != "" || backdropURL("item", false) != "" || backdropURL("item", true) != "/backdrop/item" {
 		t.Fatal("backdrop route selection changed")
 	}
 	if id := ShowBackdropID(library.Show{ArtworkID: "art"}); id != "art" {
@@ -67,17 +67,17 @@ func TestBrowseProjectionHelpersCoverAvailableAndMissingMedia(t *testing.T) {
 
 func TestPlaylistDocumentValidationBoundaries(t *testing.T) {
 	valid := `{"format":"kinosail.playlist","version":1,"name":" Queue ","ids":["one"]}`
-	document, err := DecodePlaylistDocument(valid)
+	document, err := decodePlaylistDocument(valid)
 	if err != nil || document.Name != " Queue " {
 		t.Fatalf("decode = %#v, %v", document, err)
 	}
 	for _, raw := range []string{"", strings.Repeat("x", (1<<20)+1), "{", `{"name":"Queue","unknown":true}`, `{"name":"Queue"}{}`} {
-		if _, err := DecodePlaylistDocument(raw); err == nil {
+		if _, err := decodePlaylistDocument(raw); err == nil {
 			t.Fatalf("DecodePlaylistDocument(%q) succeeded", raw[:min(len(raw), 40)])
 		}
 	}
 
-	if name, err := ValidatePlaylist(" Queue ", []string{"one", "two"}); err != nil || name != "Queue" {
+	if name, err := validatePlaylist(" Queue ", []string{"one", "two"}); err != nil || name != "Queue" {
 		t.Fatalf("valid playlist = %q, %v", name, err)
 	}
 	invalid := []struct {
@@ -91,23 +91,23 @@ func TestPlaylistDocumentValidationBoundaries(t *testing.T) {
 		{"Queue", []string{"same", "same"}},
 	}
 	for _, test := range invalid {
-		if _, err := ValidatePlaylist(test.name, test.ids); err == nil {
+		if _, err := validatePlaylist(test.name, test.ids); err == nil {
 			t.Fatalf("ValidatePlaylist(%q, %d IDs) succeeded", test.name, len(test.ids))
 		}
 	}
-	if name, err := ValidatePlaylistDocument(PlaylistDocument{Name: "Legacy"}); err != nil || name != "Legacy" {
+	if name, err := validatePlaylistDocument(PlaylistDocument{Name: "Legacy"}); err != nil || name != "Legacy" {
 		t.Fatalf("legacy document = %q, %v", name, err)
 	}
-	if _, err := ValidatePlaylistDocument(PlaylistDocument{Format: PlaylistDocumentFormat, Version: 2, Name: "Queue"}); err == nil {
+	if _, err := validatePlaylistDocument(PlaylistDocument{Format: playlistDocumentFormat, Version: 2, Name: "Queue"}); err == nil {
 		t.Fatal("unsupported document version succeeded")
 	}
-	if name, err := ValidatePlaylistDocument(document); err != nil || name != "Queue" {
+	if name, err := validatePlaylistDocument(document); err != nil || name != "Queue" {
 		t.Fatalf("versioned document = %q, %v", name, err)
 	}
 }
 
 func TestCreatePlaylistDocumentValidatesBeforePersistence(t *testing.T) {
-	document := PlaylistDocument{Format: PlaylistDocumentFormat, Version: 1, Name: " Queue ", IDs: []string{"one"}}
+	document := PlaylistDocument{Format: playlistDocumentFormat, Version: 1, Name: " Queue ", IDs: []string{"one"}}
 	created := 0
 	visible := func(id string) (library.Item, bool) { return library.Item{ID: id}, id == "one" }
 	create := func(_ context.Context, viewer, name string, ids ...string) error {
@@ -117,19 +117,19 @@ func TestCreatePlaylistDocumentValidatesBeforePersistence(t *testing.T) {
 		}
 		return nil
 	}
-	if name, err := CreatePlaylistDocument(t.Context(), "viewer", document, visible, create); err != nil || name != "Queue" || created != 1 {
+	if name, err := createPlaylistDocument(t.Context(), "viewer", document, visible, create); err != nil || name != "Queue" || created != 1 {
 		t.Fatalf("create = %q, %v, calls=%d", name, err, created)
 	}
-	if _, err := CreatePlaylistDocument(t.Context(), "viewer", PlaylistDocument{}, visible, create); err == nil || created != 1 {
+	if _, err := createPlaylistDocument(t.Context(), "viewer", PlaylistDocument{}, visible, create); err == nil || created != 1 {
 		t.Fatalf("invalid create = %v, calls=%d", err, created)
 	}
 	unavailable := document
 	unavailable.IDs = []string{"missing"}
-	if _, err := CreatePlaylistDocument(t.Context(), "viewer", unavailable, visible, create); err == nil || created != 1 {
+	if _, err := createPlaylistDocument(t.Context(), "viewer", unavailable, visible, create); err == nil || created != 1 {
 		t.Fatalf("unavailable create = %v, calls=%d", err, created)
 	}
 	createErr := errors.New("disk")
-	if _, err := CreatePlaylistDocument(t.Context(), "viewer", document, visible, func(context.Context, string, string, ...string) error { return createErr }); !errors.Is(err, createErr) {
+	if _, err := createPlaylistDocument(t.Context(), "viewer", document, visible, func(context.Context, string, string, ...string) error { return createErr }); !errors.Is(err, createErr) {
 		t.Fatalf("create error = %v", err)
 	}
 }
@@ -164,7 +164,7 @@ func TestExportPlaylistDocumentPreservesManualOrder(t *testing.T) {
 		t.Fatalf("smart export = %v", err)
 	}
 	document, err := ExportPlaylistDocument("Queue", map[string]bool{"one": true, "two": true, "three": false}, []string{"two", "two"}, false)
-	if err != nil || !reflect.DeepEqual(document, PlaylistDocument{Format: PlaylistDocumentFormat, Version: 1, Name: "Queue", IDs: []string{"two", "one"}}) {
+	if err != nil || !reflect.DeepEqual(document, PlaylistDocument{Format: playlistDocumentFormat, Version: 1, Name: "Queue", IDs: []string{"two", "one"}}) {
 		t.Fatalf("export = %#v, %v", document, err)
 	}
 }

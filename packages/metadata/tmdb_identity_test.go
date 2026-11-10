@@ -19,19 +19,19 @@ func TestTMDBIdentityAndValidation(t *testing.T) {
 		t.Fatalf("numeric title identity = %q, %q", title, year)
 	}
 	for _, id := range []string{"tt1234567", "tt123456789"} {
-		if !ValidIMDbID(id) {
+		if !validIMDbID(id) {
 			t.Fatalf("valid IMDb ID %q rejected", id)
 		}
 	}
 	for _, id := range []string{"", "tt123", "nm1234567", "tt1234567890"} {
-		if ValidIMDbID(id) {
+		if validIMDbID(id) {
 			t.Fatalf("invalid IMDb ID %q accepted", id)
 		}
 	}
-	if !ValidTMDBPath("") || !ValidTMDBPath("/poster.jpg") || ValidTMDBPath("poster.jpg") || ValidTMDBPath("//host/path") || ValidTMDBPath("/../poster.jpg") || ValidTMDBPath("/%2e%2e/poster.jpg") || ValidTMDBPath("/"+strings.Repeat("a", 2048)) {
+	if !validTMDBPath("") || !validTMDBPath("/poster.jpg") || validTMDBPath("poster.jpg") || validTMDBPath("//host/path") || validTMDBPath("/../poster.jpg") || validTMDBPath("/%2e%2e/poster.jpg") || validTMDBPath("/"+strings.Repeat("a", 2048)) {
 		t.Fatal("TMDB path validation mismatch")
 	}
-	if !ValidTMDBCast([]TMDBCastMember{{Name: "Actor", ProfilePath: "/actor.jpg"}}) || ValidTMDBCast([]TMDBCastMember{{Name: strings.Repeat("x", 201)}}) {
+	if !validTMDBCast([]TMDBCastMember{{Name: "Actor", ProfilePath: "/actor.jpg"}}) || validTMDBCast([]TMDBCastMember{{Name: strings.Repeat("x", 201)}}) {
 		t.Fatal("TMDB cast validation mismatch")
 	}
 }

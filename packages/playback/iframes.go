@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	IFrameInterval     = 10
+	iFrameInterval     = 10
 	iframeWidth        = 320
 	iframeMaximumTime  = 43200
 	iframeStreamFormat = `#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=64000,CODECS="avc1.4d401e",RESOLUTION=%dx%d,URI="iframes/index.m3u8"`
@@ -61,12 +61,12 @@ func WithIFrameStream(manifest []byte, height int) []byte {
 	return append(result, []byte("\n"+fmt.Sprintf(iframeStreamFormat, iframeWidth, height)+"\n")...)
 }
 
-func IFramePlaylist(duration float64) []byte {
+func iFramePlaylist(duration float64) []byte {
 	var playlist strings.Builder
-	playlist.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:" + strconv.Itoa(IFrameInterval) + "\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-I-FRAMES-ONLY\n#EXT-X-INDEPENDENT-SEGMENTS\n#EXT-X-MAP:URI=\"init.mp4\"\n")
+	playlist.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:" + strconv.Itoa(iFrameInterval) + "\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-I-FRAMES-ONLY\n#EXT-X-INDEPENDENT-SEGMENTS\n#EXT-X-MAP:URI=\"init.mp4\"\n")
 	count := iframeCount(duration)
 	for index := range count {
-		second, length := index*IFrameInterval, float64(IFrameInterval)
+		second, length := index*iFrameInterval, float64(iFrameInterval)
 		if index == count-1 {
 			length = duration - float64(second)
 		}
@@ -77,7 +77,7 @@ func IFramePlaylist(duration float64) []byte {
 }
 
 func iframeCount(duration float64) int {
-	return max(1, int(math.Ceil((duration-1)/IFrameInterval)))
+	return max(1, int(math.Ceil((duration-1)/iFrameInterval)))
 }
 
 func (frames *IFrames) Serve(writer http.ResponseWriter, request *http.Request, target IFrameRequest) error {
@@ -88,18 +88,18 @@ func (frames *IFrames) Serve(writer http.ResponseWriter, request *http.Request, 
 	if target.File == "index.m3u8" {
 		writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 		writer.Header().Set("Cache-Control", "no-store")
-		_, err := writer.Write(IFramePlaylist(total))
+		_, err := writer.Write(iFramePlaylist(total))
 		return err
 	}
 	second, sequence := 0, uint32(0)
 	if target.File != "init.mp4" {
 		value, found := strings.CutSuffix(target.File, ".m4s")
 		parsed, err := strconv.Atoi(value)
-		if !found || err != nil || len(value) > 5 || parsed < 0 || parsed%IFrameInterval != 0 || parsed >= iframeCount(total)*IFrameInterval || strconv.Itoa(parsed) != value {
+		if !found || err != nil || len(value) > 5 || parsed < 0 || parsed%iFrameInterval != 0 || parsed >= iframeCount(total)*iFrameInterval || strconv.Itoa(parsed) != value {
 			return errIFrameRequest
 		}
-		index := parsed / IFrameInterval
-		if index < 0 || index > iframeMaximumTime/IFrameInterval {
+		index := parsed / iFrameInterval
+		if index < 0 || index > iframeMaximumTime/iFrameInterval {
 			return errIFrameRequest
 		}
 		second, sequence = parsed, uint32(index)+1

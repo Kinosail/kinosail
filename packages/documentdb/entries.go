@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	EntrySizeLimit         = 1 << 20
+	entrySizeLimit         = 1 << 20
 	EntryDocumentSizeLimit = 256 << 20
-	EntryCountLimit        = 1_000_000
+	entryCountLimit        = 1_000_000
 )
 
 const entrySchema = `

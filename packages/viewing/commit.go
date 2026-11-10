@@ -34,7 +34,7 @@ func (store CommitStore) Commit(profile Profile, progressChanges []ProgressChang
 	updates, applied, conflicts := progressUpdates(*store.Progress.Values, profile.ID, profile.Owner, progressChanges, time.Now())
 	oldLists := catalog.CloneListState(*store.Lists.Values, *store.Lists.Playlists, *store.Lists.PlaylistOrder, nil)
 	newLists := catalog.CloneListState(oldLists.Values, oldLists.Playlists, oldLists.PlaylistOrder, nil)
-	newValues, newPlaylists, newOrder, listsApplied := MergeLists(newLists.Values, newLists.Playlists, newLists.PlaylistOrder, *store.Lists.Smart, profile.ID, listChanges)
+	newValues, newPlaylists, newOrder, listsApplied := mergeLists(newLists.Values, newLists.Playlists, newLists.PlaylistOrder, *store.Lists.Smart, profile.ID, listChanges)
 	writes := make([]viewingWrite, 0, 3)
 	if listsApplied > 0 {
 		writes = append(writes,

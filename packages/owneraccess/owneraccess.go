@@ -75,7 +75,7 @@ type Manager struct {
 	endpointError bool
 }
 
-func Open(config Config) (*Manager, error) {
+func open(config Config) (*Manager, error) {
 	if !filepath.IsAbs(config.Directory) || filepath.Clean(config.Directory) != config.Directory || config.Profile == nil || config.Certificate == nil {
 		return nil, errors.New("private management configuration is invalid")
 	}

@@ -182,7 +182,7 @@ func TestHLSCacheNamesAndFilesAreBounded(t *testing.T) {
 			t.Errorf("track %q validity changed: %v", value, err)
 		}
 	}
-	if HLSCacheKey("id", 0) != "id" || HLSCacheKey("id", 2) != "id-audio-2" || SourceVersion("/missing") != "missing" {
+	if hlsCacheKey("id", 0) != "id" || hlsCacheKey("id", 2) != "id-audio-2" || SourceVersion("/missing") != "missing" {
 		t.Fatal("cache identifiers changed")
 	}
 }

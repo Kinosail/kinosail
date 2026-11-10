@@ -26,7 +26,7 @@ func TraceHTTP(config TraceHTTPConfig) http.HandlerFunc {
 			apihttp.NotFound(writer)
 			return
 		}
-		event, err := ReadTrace(writer, request, config.ValidSession)
+		event, err := readTrace(writer, request, config.ValidSession)
 		if err != nil {
 			apihttp.Error(writer, err, http.StatusBadRequest)
 			return

@@ -14,9 +14,9 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func NewID() (string, error) { return IDFrom(rand.Reader) }
+func NewID() (string, error) { return idFrom(rand.Reader) }
 
-func IDFrom(reader io.Reader) (string, error) {
+func idFrom(reader io.Reader) (string, error) {
 	data := make([]byte, 16)
 	if _, err := io.ReadFull(reader, data); err != nil {
 		return "", err
@@ -24,7 +24,7 @@ func IDFrom(reader io.Reader) (string, error) {
 	return hex.EncodeToString(data), nil
 }
 
-func ValidID(id string) bool {
+func validID(id string) bool {
 	if len(id) == 0 || len(id) > 128 {
 		return false
 	}
@@ -42,7 +42,7 @@ func validIDCharacter(character rune) bool {
 
 func EnsureID(current string, generate func() (string, error)) (string, bool, error) {
 	if current != "" {
-		if !ValidID(current) {
+		if !validID(current) {
 			return "", false, errors.New("jellyfin server identifier is invalid")
 		}
 		return current, false, nil
@@ -77,7 +77,7 @@ func App(values url.Values) (string, bool) {
 	}
 }
 
-func ProviderIDs(ids map[string]string) map[string]string {
+func providerIDs(ids map[string]string) map[string]string {
 	result := make(map[string]string)
 	for provider, id := range ids {
 		if strings.TrimSpace(id) != "" {
@@ -90,16 +90,16 @@ func ProviderIDs(ids map[string]string) map[string]string {
 	return result
 }
 
-func ShowProviderIDs(episodes []library.Item) map[string]string {
+func showProviderIDs(episodes []library.Item) map[string]string {
 	for _, episode := range episodes {
 		if len(episode.ShowProviderIDs) > 0 {
-			return ProviderIDs(episode.ShowProviderIDs)
+			return providerIDs(episode.ShowProviderIDs)
 		}
 	}
 	return map[string]string{}
 }
 
-func ItemIDs(values url.Values, normalize func(string) string) (map[string]bool, error) {
+func itemIDs(values url.Values, normalize func(string) string) (map[string]bool, error) {
 	candidates := foldedValues(values, "ids")
 	if len(candidates) == 0 {
 		return nil, nil

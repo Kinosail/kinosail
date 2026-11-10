@@ -14,7 +14,7 @@ func TestMarkerStoreSuppressionAndManualReplacement(t *testing.T) {
 	intro := Marker{Type: "intro", Label: "Intro", Start: 1, End: 2, Source: "manual"}
 	credits := Marker{Type: "credits", Label: "Credits", Start: 90, End: 100, Source: "manual"}
 	analyzer := NewAnalyzer(Config{})
-	analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion, Markers: []Marker{intro, credits}, Suppressed: []string{"intro"}}
+	analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: detectorVersion, Markers: []Marker{intro, credits}, Suppressed: []string{"intro"}}
 	chapters := []Marker{{Type: "intro", Label: "Intro", Start: 3, End: 4, Source: "chapter"}, credits}
 	if got := analyzer.Markers(item, chapters); !reflect.DeepEqual(got, []Marker{credits}) {
 		t.Fatalf("suppressed markers = %#v", got)

@@ -32,7 +32,7 @@ func parse(data []byte) (Result, bool) {
 	if len(audioFacts) > 0 {
 		audioCodec = audioFacts[0].Codec
 	}
-	result := Result{Summary: strings.Join(parts, " · "), Container: lower(container), Bitrate: bitrate, Video: video, VideoCodec: video.Codec, AudioCodec: audioCodec, Audio: audio, AudioFacts: audioFacts, SubtitleFacts: subtitleFacts, Duration: duration, Chapters: chapters, Markers: markers, Tags: Tags{tagValue(tags, "title"), tagValue(tags, "artist"), tagValue(tags, "album_artist"), tagValue(tags, "album"), tagValue(tags, "genre"), tagNumber(tags, "disc"), tagNumber(tags, "track")}, ReplayGain: ParseReplayGain(tags)}
+	result := Result{Summary: strings.Join(parts, " · "), Container: lower(container), Bitrate: bitrate, Video: video, VideoCodec: video.Codec, AudioCodec: audioCodec, Audio: audio, AudioFacts: audioFacts, SubtitleFacts: subtitleFacts, Duration: duration, Chapters: chapters, Markers: markers, Tags: Tags{tagValue(tags, "title"), tagValue(tags, "artist"), tagValue(tags, "album_artist"), tagValue(tags, "album"), tagValue(tags, "genre"), tagNumber(tags, "disc"), tagNumber(tags, "track")}, ReplayGain: parseReplayGain(tags)}
 	if !validProbeResult(result) {
 		return Result{}, false
 	}

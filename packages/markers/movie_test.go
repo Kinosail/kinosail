@@ -88,7 +88,7 @@ func TestMarkerCandidatePairsAndStaleDetectorVersion(t *testing.T) {
 	libraryItems := append(movieItems(2), library.Item{ID: "other", Kind: "video", Library: "Other", Size: 3, Added: time.Unix(3, 0)})
 	analyzer := NewAnalyzer(Config{})
 	for _, item := range libraryItems {
-		analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion}
+		analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: detectorVersion}
 	}
 	stale := analyzer.records[libraryItems[0].ID]
 	stale.DetectorVersion--

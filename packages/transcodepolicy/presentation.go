@@ -18,7 +18,7 @@ func PresentationFilterGraph(options Settings, widths []string) string {
 	if options.ToneMap {
 		shared = append(shared, softwareToneMapFilters()...)
 	}
-	shared = append(shared, "format="+PixelFormat(options))
+	shared = append(shared, "format="+pixelFormat(options))
 	var graph, branches strings.Builder
 	graph.WriteString("[0:v:0]" + strings.Join(shared, ",") + ",split=" + strconv.Itoa(len(widths)))
 	for index, width := range widths {

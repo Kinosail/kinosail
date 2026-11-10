@@ -43,20 +43,20 @@ func (handlers CollectionHandlers) List(writer http.ResponseWriter, request *htt
 }
 
 func (handlers CollectionHandlers) Create(writer http.ResponseWriter, request *http.Request) {
-	CreateCollectionAPI(request, handlers.Lists.CreateCollection).serve(writer)
+	createCollectionAPI(request, handlers.Lists.CreateCollection).serve(writer)
 }
 
 func (handlers CollectionHandlers) Get(writer http.ResponseWriter, request *http.Request) {
 	items, name := handlers.Index.VisibleLibrary(request), request.PathValue("name")
-	CollectionAPI(name, func() []library.Item { return items }, handlers.Lists.CollectionNames, handlers.Lists.Collection, func(values []library.Item) any { return handlers.Progress.ClientItems(request, values) }).serve(writer)
+	collectionAPI(name, func() []library.Item { return items }, handlers.Lists.CollectionNames, handlers.Lists.Collection, func(values []library.Item) any { return handlers.Progress.ClientItems(request, values) }).serve(writer)
 }
 
 func (handlers CollectionHandlers) Save(writer http.ResponseWriter, request *http.Request) {
-	SaveCollectionAPI(request, func(id string) (library.Item, bool) { return handlers.Index.VisibleItem(request, id) }, handlers.Lists.SetCollection, collectionStoreStatus).serve(writer)
+	saveCollectionAPI(request, func(id string) (library.Item, bool) { return handlers.Index.VisibleItem(request, id) }, handlers.Lists.SetCollection, collectionStoreStatus).serve(writer)
 }
 
 func (handlers CollectionHandlers) Delete(writer http.ResponseWriter, request *http.Request) {
-	DeleteCollectionAPI(request, func() []library.Item { return handlers.Index.VisibleLibrary(request) }, handlers.Lists.DeleteCollection).serve(writer)
+	deleteCollectionAPI(request, func() []library.Item { return handlers.Index.VisibleLibrary(request) }, handlers.Lists.DeleteCollection).serve(writer)
 }
 
 type APIAction struct {
@@ -94,7 +94,7 @@ func collectionStoreStatus(err error) int {
 	return http.StatusInternalServerError
 }
 
-func CreateCollectionAPI(request *http.Request, create func(context.Context, string) error) APIAction {
+func createCollectionAPI(request *http.Request, create func(context.Context, string) error) APIAction {
 	var input struct {
 		Name string `json:"name"`
 	}
@@ -111,7 +111,7 @@ func CreateCollectionAPI(request *http.Request, create func(context.Context, str
 	return APIAction{Body: map[string]string{"name": input.Name}, Status: http.StatusCreated}
 }
 
-func CollectionAPI(name string, items func() []library.Item, names func([]library.Item) []string, collection func(string, []library.Item) []library.Item, project func([]library.Item) any) APIAction {
+func collectionAPI(name string, items func() []library.Item, names func([]library.Item) []string, collection func(string, []library.Item) []library.Item, project func([]library.Item) any) APIAction {
 	if !validCollectionReadName(name) {
 		return APIAction{NotFound: true}
 	}
@@ -134,7 +134,7 @@ func validCollectionReadName(name string) bool {
 	return true
 }
 
-func SaveCollectionAPI(request *http.Request, visible func(string) (library.Item, bool), save func(context.Context, string, library.Item, bool) error, status func(error) int) APIAction {
+func saveCollectionAPI(request *http.Request, visible func(string) (library.Item, bool), save func(context.Context, string, library.Item, bool) error, status func(error) int) APIAction {
 	var input struct {
 		Included bool `json:"included"`
 	}
@@ -155,7 +155,7 @@ func SaveCollectionAPI(request *http.Request, visible func(string) (library.Item
 	return APIAction{Body: map[string]bool{"included": input.Included}, Status: http.StatusOK}
 }
 
-func DeleteCollectionAPI(request *http.Request, items func() []library.Item, remove func(context.Context, string, []library.Item) error) APIAction {
+func deleteCollectionAPI(request *http.Request, items func() []library.Item, remove func(context.Context, string, []library.Item) error) APIAction {
 	name := request.PathValue("name")
 	if !ValidListName(name) {
 		return APIAction{Err: errors.New("invalid collection state"), Status: http.StatusBadRequest}

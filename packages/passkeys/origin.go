@@ -10,20 +10,20 @@ import (
 
 const maxOriginLength = 2048
 
-var ErrInvalidOrigin = errors.New("passkey URL must be an HTTP origin")
+var errInvalidOrigin = errors.New("passkey URL must be an HTTP origin")
 
 type Origin struct {
 	rpID string
 	url  string
 }
 
-func ParseOrigin(rawURL string) (Origin, error) {
+func parseOrigin(rawURL string) (Origin, error) {
 	if len(rawURL) > maxOriginLength {
-		return Origin{}, ErrInvalidOrigin
+		return Origin{}, errInvalidOrigin
 	}
 	parsed, err := url.Parse(rawURL)
 	if err != nil || !validOrigin(parsed) {
-		return Origin{}, ErrInvalidOrigin
+		return Origin{}, errInvalidOrigin
 	}
 	return Origin{rpID: parsed.Hostname(), url: parsed.Scheme + "://" + parsed.Host}, nil
 }

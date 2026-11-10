@@ -103,7 +103,7 @@ type ServerBuilder func(context.Context, *sync.WaitGroup, *remoteaccess.Manager,
 const applicationDrainTimeout = 10 * time.Second
 
 func Run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHandler func(http.Handler) http.Handler) int {
-	return run(configured, signals, build, remoteHandler, RemoteAccess, TrustedHTTPS, servertransport.Serve)
+	return run(configured, signals, build, remoteHandler, remoteAccess, TrustedHTTPS, servertransport.Serve)
 }
 
 type (
@@ -198,7 +198,7 @@ func shutdownOnCancel(ctx context.Context, server *http.Server) {
 	}
 }
 
-func RemoteAccess(configured Settings) (*remoteaccess.Manager, error) {
+func remoteAccess(configured Settings) (*remoteaccess.Manager, error) {
 	mode := configured.String("remote.mode")
 	return remoteaccess.New(remoteaccess.Config{Enabled: mode != "off", PublicHTTPS: mode == "https", Gateway: configured.Bool("remote.gateway"), Domain: configured.String("remote.duckdns_domain"), Token: configured.String("remote.duckdns_token"), Listen: configured.String("remote.listen"), DataDir: configured.String("paths.data")})
 }

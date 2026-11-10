@@ -18,7 +18,7 @@ func TestNewActivationInputNormalizesAndValidatesFormValues(t *testing.T) {
 	if _, err = NewActivationInput("short", ""); !errors.Is(err, ErrInvalidKey) {
 		t.Fatalf("invalid key error = %v", err)
 	}
-	if _, err = NewActivationInput("VALID_SUPPORTER_KEY", " padded "); !errors.Is(err, ErrInvalidRecognitionName) {
+	if _, err = NewActivationInput("VALID_SUPPORTER_KEY", " padded "); !errors.Is(err, errInvalidRecognitionName) {
 		t.Fatalf("invalid recognition error = %v", err)
 	}
 }

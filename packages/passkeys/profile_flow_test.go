@@ -63,7 +63,7 @@ func newFlowFixture(t *testing.T) (*flowFixture, *ProfileFlow[flowProfile]) {
 }
 
 func TestProfileFlowRequiresCompleteConfiguration(t *testing.T) {
-	if _, err := NewProfileFlow(ProfileFlowConfig[flowProfile]{}); !errors.Is(err, ErrInvalidConfig) {
+	if _, err := NewProfileFlow(ProfileFlowConfig[flowProfile]{}); !errors.Is(err, errInvalidConfig) {
 		t.Fatalf("empty config = %v", err)
 	}
 	fixture, flow := newFlowFixture(t)

@@ -41,7 +41,7 @@ func enrichTMDBCast(ctx context.Context, baseURL, kind string, id int, fetch fun
 	if fetch(ctx, endpoint, &credits) != nil {
 		return result, nil //nolint:nilerr // Unavailable optional credits must not prevent title lookup.
 	}
-	if !ValidTMDBCast(credits.Cast) {
+	if !validTMDBCast(credits.Cast) {
 		return Result{}, errors.New("metadata cast is invalid")
 	}
 	result.Record.CastFetched = true

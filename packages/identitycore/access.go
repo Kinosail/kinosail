@@ -9,15 +9,15 @@ type Denial uint8
 
 const (
 	Allowed Denial = iota
-	OwnerRemoteDenied
-	StrongAuthenticationRequired
-	PublicSessionRequired
-	RemoteRouteDenied
-	ViewerScheduleDenied
-	APIKeyScopeDenied
-	MFAEnrollmentRequired
-	OwnerRequired
-	OwnerStepUpRequired
+	ownerRemoteDenied
+	strongAuthenticationRequired
+	publicSessionRequired
+	remoteRouteDenied
+	viewerScheduleDenied
+	apiKeyScopeDenied
+	mfaEnrollmentRequired
+	ownerRequired
+	ownerStepUpRequired
 )
 
 type AccessInput struct {
@@ -29,27 +29,27 @@ type AccessInput struct {
 func EvaluateAccess(input AccessInput) Denial {
 	if input.Public {
 		if input.Owner {
-			return OwnerRemoteDenied
+			return ownerRemoteDenied
 		}
 		if input.APIKey {
-			return OwnerRemoteDenied
+			return ownerRemoteDenied
 		}
 		if !input.RecentlyAuthenticated {
-			return StrongAuthenticationRequired
+			return strongAuthenticationRequired
 		}
 		if !input.PublicSession {
-			return PublicSessionRequired
+			return publicSessionRequired
 		}
 		if !input.RemoteRouteAllowed {
-			return RemoteRouteDenied
+			return remoteRouteDenied
 		}
 	}
 	if !input.ScheduleAllowed {
-		return ViewerScheduleDenied
+		return viewerScheduleDenied
 	}
 	if input.APIKey {
 		if !input.APIKeyAllowed {
-			return APIKeyScopeDenied
+			return apiKeyScopeDenied
 		}
 	}
 	if input.LocalOwner {
@@ -62,41 +62,41 @@ func EvaluateAccess(input AccessInput) Denial {
 		return Allowed
 	}
 	if input.Owner {
-		return MFAEnrollmentRequired
+		return mfaEnrollmentRequired
 	}
 	if input.MFARequired {
-		return MFAEnrollmentRequired
+		return mfaEnrollmentRequired
 	}
 	return Allowed
 }
 
-func EvaluateOwner(owner, localOwner, managed, safeMethod, recentlyAuthenticated bool) Denial {
+func evaluateOwner(owner, localOwner, managed, safeMethod, recentlyAuthenticated bool) Denial {
 	if !owner {
-		return OwnerRequired
+		return ownerRequired
 	}
 	if !localOwner && !managed && !safeMethod && !recentlyAuthenticated {
-		return OwnerStepUpRequired
+		return ownerStepUpRequired
 	}
 	return Allowed
 }
 
 func (denial Denial) Reason() string {
 	switch denial {
-	case OwnerRemoteDenied:
+	case ownerRemoteDenied:
 		return "Owner and API key access unavailable remotely"
-	case StrongAuthenticationRequired:
+	case strongAuthenticationRequired:
 		return "strong authentication required remotely"
-	case PublicSessionRequired:
+	case publicSessionRequired:
 		return "public session required remotely"
-	case RemoteRouteDenied:
+	case remoteRouteDenied:
 		return "route unavailable remotely"
-	case ViewerScheduleDenied:
+	case viewerScheduleDenied:
 		return "viewer access unavailable"
-	case APIKeyScopeDenied:
+	case apiKeyScopeDenied:
 		return "API key scope"
-	case MFAEnrollmentRequired:
+	case mfaEnrollmentRequired:
 		return "MFA enrollment required"
-	case Allowed, OwnerRequired, OwnerStepUpRequired:
+	case Allowed, ownerRequired, ownerStepUpRequired:
 		return "Owner access required"
 	}
 	return "Owner access required"
@@ -104,32 +104,32 @@ func (denial Denial) Reason() string {
 
 func (denial Denial) Message() string {
 	switch denial {
-	case OwnerRemoteDenied:
+	case ownerRemoteDenied:
 		return "Owner access is available only on the local network or WireGuard"
-	case StrongAuthenticationRequired:
+	case strongAuthenticationRequired:
 		return "strong authentication is required for public access"
-	case PublicSessionRequired:
+	case publicSessionRequired:
 		return "public sign-in is required for public access"
-	case ViewerScheduleDenied:
+	case viewerScheduleDenied:
 		return "Viewer access is not available"
-	case APIKeyScopeDenied:
+	case apiKeyScopeDenied:
 		return "API key scope does not allow this request"
-	case MFAEnrollmentRequired:
+	case mfaEnrollmentRequired:
 		return "MFA enrollment required"
-	case Allowed, RemoteRouteDenied, OwnerRequired, OwnerStepUpRequired:
+	case Allowed, remoteRouteDenied, ownerRequired, ownerStepUpRequired:
 		return "Owner access required"
 	}
 	return "Owner access required"
 }
 
 func (denial Denial) Status() int {
-	if denial == OwnerStepUpRequired || denial == OwnerRemoteDenied || denial == StrongAuthenticationRequired || denial == PublicSessionRequired || denial == ViewerScheduleDenied || denial == APIKeyScopeDenied || denial == MFAEnrollmentRequired || denial == OwnerRequired {
+	if denial == ownerStepUpRequired || denial == ownerRemoteDenied || denial == strongAuthenticationRequired || denial == publicSessionRequired || denial == viewerScheduleDenied || denial == apiKeyScopeDenied || denial == mfaEnrollmentRequired || denial == ownerRequired {
 		return http.StatusForbidden
 	}
 	return http.StatusNotFound
 }
 
-func Secured(secret string, passkeyCount int) bool { return secret != "" || passkeyCount > 0 }
+func secured(secret string, passkeyCount int) bool { return secret != "" || passkeyCount > 0 }
 
 func MFAEnrollmentRoute(pattern string) bool {
 	switch pattern {
@@ -144,7 +144,7 @@ type APIRoutes struct {
 	SessionOnly, JellyfinLibrary, Library, Write, Stream, Download map[string]bool
 }
 
-func AllowsAPI(scopes []string, pattern string, routes APIRoutes) bool {
+func allowsAPI(scopes []string, pattern string, routes APIRoutes) bool {
 	if hasScope(scopes, "home-assistant") {
 		return strings.Contains(pattern, " /api/v1/home-assistant/")
 	}

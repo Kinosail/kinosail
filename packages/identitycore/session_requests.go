@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-const MaxSessionTokenBytes = 256
+const maxSessionTokenBytes = 256
 
 var (
-	ErrSessionKind  = errors.New("session kind is invalid")
-	ErrSessionToken = errors.New("session token is invalid")
+	errSessionKind  = errors.New("session kind is invalid")
+	errSessionToken = errors.New("session token is invalid")
 )
 
 type RequestSessions struct {
@@ -24,7 +24,7 @@ func NewRequestSessions(config SessionConfig, token func(*http.Request) string, 
 	if len(sources) > 0 && sources[0] != nil {
 		source = sources[0]
 	}
-	return &RequestSessions{Sessions: NewSessions(config), token: token, source: source}
+	return &RequestSessions{Sessions: newSessions(config), token: token, source: source}
 }
 
 func (sessions *RequestSessions) CreateCompatibility(profileID, name string) (string, error) {
@@ -57,10 +57,10 @@ func (sessions *RequestSessions) SignInStrongPublic(writer http.ResponseWriter, 
 
 func (sessions *RequestSessions) SignInPublicGrant(writer http.ResponseWriter, request *http.Request, profileID string, revision uint64) error {
 	if writer == nil || request == nil {
-		return ErrInvalidConfig
+		return errInvalidConfig
 	}
 	if ManagementDeviceKey(request) != "" {
-		return ErrSessionKind
+		return errSessionKind
 	}
 	token, err := sessions.core().CreatePublicGrant(profileID, request.UserAgent(), true, revision)
 	if err != nil {
@@ -72,7 +72,7 @@ func (sessions *RequestSessions) SignInPublicGrant(writer http.ResponseWriter, r
 
 func (sessions *RequestSessions) signIn(writer http.ResponseWriter, request *http.Request, profileID string, strong, public bool) error {
 	if writer == nil || request == nil {
-		return ErrInvalidConfig
+		return errInvalidConfig
 	}
 	channel := ""
 	if public {
@@ -102,7 +102,7 @@ func (sessions *RequestSessions) issuedBrowserCookie(token string, request *http
 func (sessions *RequestSessions) MarkStrong(request *http.Request) error {
 	token, valid := sessions.requestToken(request)
 	if !valid {
-		return ErrCurrentSession
+		return errCurrentSession
 	}
 	return sessions.core().MarkStrong(token)
 }
@@ -134,7 +134,7 @@ func (sessions *RequestSessions) requestToken(request *http.Request) (string, bo
 		sessions.config.Mutex.RLock()
 		value, found := (*sessions.config.Values)[SessionKey(token)]
 		sessions.config.Mutex.RUnlock()
-		if found && !SessionMatchesRequest(value, request) {
+		if found && !sessionMatchesRequest(value, request) {
 			return "", false
 		}
 	}
@@ -149,7 +149,7 @@ func (sessions *RequestSessions) core() *Sessions {
 }
 
 func ValidSessionToken(token string) bool {
-	if token == "" || len(token) > MaxSessionTokenBytes {
+	if token == "" || len(token) > maxSessionTokenBytes {
 		return false
 	}
 	for _, value := range []byte(token) {

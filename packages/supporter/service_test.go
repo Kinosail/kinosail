@@ -138,11 +138,11 @@ func TestActivateAndSaveCommitsOnlyValidatedChangedState(t *testing.T) {
 	saves := 0
 	save := func(State) error { saves++; return errors.New("disk full") }
 	bad, _, activateErr := service.ActivateAndSave(context.Background(), prepared, ActivationInput{Key: "short"}, save)
-	if !errors.Is(activateErr, ErrInvalid) || saves != 0 || !reflect.DeepEqual(bad, prepared) {
+	if !errors.Is(activateErr, errInvalid) || saves != 0 || !reflect.DeepEqual(bad, prepared) {
 		t.Fatalf("invalid save boundary = %#v, %d, %v", bad, saves, activateErr)
 	}
 	next, _, activateErr := service.ActivateAndSave(context.Background(), prepared, ActivationInput{Key: "VALID_SUPPORTER_KEY"}, save)
-	if !errors.Is(activateErr, ErrUnavailable) || saves != 1 || !reflect.DeepEqual(next, prepared) {
+	if !errors.Is(activateErr, errUnavailable) || saves != 1 || !reflect.DeepEqual(next, prepared) {
 		t.Fatalf("failed save boundary = %#v, %d, %v", next, saves, activateErr)
 	}
 }
@@ -177,7 +177,7 @@ func TestActivationRejectsInputsAndProviderFailuresWithoutStateChange(t *testing
 	badName := " padded "
 	for _, input := range []ActivationInput{{}, {Key: "short"}, {Key: "VALID_SUPPORTER_KEY", RecognitionName: &badName}} {
 		next, _, activateErr := service.Activate(context.Background(), prepared, input)
-		if !errors.Is(activateErr, ErrInvalid) || !reflect.DeepEqual(next, prepared) {
+		if !errors.Is(activateErr, errInvalid) || !reflect.DeepEqual(next, prepared) {
 			t.Fatalf("Activate(%#v) = %#v, %v", input, next, activateErr)
 		}
 	}
@@ -186,7 +186,7 @@ func TestActivationRejectsInputsAndProviderFailuresWithoutStateChange(t *testing
 	}
 	server.Close()
 	next, _, activateErr := service.Activate(context.Background(), prepared, ActivationInput{Key: "VALID_SUPPORTER_KEY"})
-	if !errors.Is(activateErr, ErrUncertain) || !reflect.DeepEqual(next, prepared) {
+	if !errors.Is(activateErr, errUncertain) || !reflect.DeepEqual(next, prepared) {
 		t.Fatalf("failed provider changed state: %#v, %v", next, activateErr)
 	}
 }
@@ -201,11 +201,11 @@ func TestActivationRetainsHigherPatronAndRemembersRejectedReference(t *testing.T
 	original := cloneGrant(state.PatronOrder)
 	fixture.tier, fixture.activationID = "friend", "00000000-0000-4000-8000-000000000011"
 	next, _, err := service.Activate(context.Background(), state, ActivationInput{Key: "LOW_SUPPORTER_KEY"})
-	if !errors.Is(err, ErrConflict) || !reflect.DeepEqual(next.PatronOrder, original) || next.Activations[1].ActivationID != fixture.activationID {
+	if !errors.Is(err, errConflict) || !reflect.DeepEqual(next.PatronOrder, original) || next.Activations[1].ActivationID != fixture.activationID {
 		t.Fatalf("downgrade = %#v, %v", next, err)
 	}
 	_, _, err = service.Activate(context.Background(), next, ActivationInput{Key: "LOW_SUPPORTER_KEY"})
-	if !errors.Is(err, ErrConflict) || fixture.last.ActivationID != fixture.activationID {
+	if !errors.Is(err, errConflict) || fixture.last.ActivationID != fixture.activationID {
 		t.Fatalf("retry reference = %#v, %v", fixture.last, err)
 	}
 }
@@ -223,7 +223,7 @@ func TestMalformedSignedCertificateDoesNotChangeState(t *testing.T) {
 			state := State{}
 			mutate()
 			next, _, err := service.Activate(context.Background(), state, ActivationInput{Key: "VALID_SUPPORTER_KEY"})
-			if !errors.Is(err, ErrInvalid) || !reflect.DeepEqual(next, state) {
+			if !errors.Is(err, errInvalid) || !reflect.DeepEqual(next, state) {
 				t.Fatalf("result = %#v, %v", next, err)
 			}
 			service.app.ID, fixture.private, fixture.family = "kino-player", originalKey, FamilyPatron

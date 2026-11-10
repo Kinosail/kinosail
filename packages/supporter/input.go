@@ -7,20 +7,20 @@ import (
 
 var (
 	ErrInvalidKey             = errors.New("invalid supporter key")
-	ErrInvalidRecognitionName = errors.New("invalid supporter recognition name")
+	errInvalidRecognitionName = errors.New("invalid supporter recognition name")
 )
 
 func NewActivationInput(key, recognitionName string) (ActivationInput, error) {
 	key = strings.TrimSpace(key)
-	if !ValidKey(key) {
+	if !validKey(key) {
 		return ActivationInput{}, ErrInvalidKey
 	}
 	input := ActivationInput{Key: key}
 	if recognitionName == "" {
 		return input, nil
 	}
-	if !ValidRecognitionName(recognitionName, true) {
-		return ActivationInput{}, ErrInvalidRecognitionName
+	if !validRecognitionName(recognitionName, true) {
+		return ActivationInput{}, errInvalidRecognitionName
 	}
 	input.RecognitionName = &recognitionName
 	return input, nil
@@ -29,17 +29,17 @@ func NewActivationInput(key, recognitionName string) (ActivationInput, error) {
 func ParseActivationJSON(data []byte) (ActivationInput, error) {
 	object, err := jsonObject(data)
 	if err != nil || !exactFields(object, []string{"key"}, []string{"recognitionName"}) {
-		return ActivationInput{}, ErrInvalid
+		return ActivationInput{}, errInvalid
 	}
 	key, ok := jsonString(object["key"])
 	if !ok {
-		return ActivationInput{}, ErrInvalid
+		return ActivationInput{}, errInvalid
 	}
 	input := ActivationInput{Key: key}
 	if raw, found := object["recognitionName"]; found {
 		name, nameOK := jsonString(raw)
-		if !nameOK || !ValidRecognitionName(name, true) {
-			return ActivationInput{}, ErrInvalid
+		if !nameOK || !validRecognitionName(name, true) {
+			return ActivationInput{}, errInvalid
 		}
 		input.RecognitionName = &name
 	}

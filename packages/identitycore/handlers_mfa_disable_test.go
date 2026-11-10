@@ -113,7 +113,7 @@ func TestMFADisableConfigurationFailsClosedBeforeCallbacks(t *testing.T) {
 				t.Fatal("incomplete MFA HTTP configuration accepted")
 			}
 			handlers, err := NewMFAHandlers(config)
-			if !errors.Is(err, ErrInvalidConfig) || handlers.Setup != nil || handlers.Confirm != nil || handlers.Disable != nil || handlers.WebConfirm != nil || handlers.WebDisable != nil {
+			if !errors.Is(err, errInvalidConfig) || handlers.Setup != nil || handlers.Confirm != nil || handlers.Disable != nil || handlers.WebConfirm != nil || handlers.WebDisable != nil {
 				t.Fatalf("incomplete configuration: handlers=%#v error=%v", handlers, err)
 			}
 			if len(probe.events) != 0 {

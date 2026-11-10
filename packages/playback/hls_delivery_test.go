@@ -12,12 +12,12 @@ import (
 func TestHLSDeliveryValidatesBeforeCallbacks(t *testing.T) {
 	t.Parallel()
 	policy := HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}
-	selection, err := ParseHLSRequest("p/t-a0-s0-none-t0-b0/360p/index.m3u8", "1", policy)
+	selection, err := parseHLSRequest("p/t-a0-s0-none-t0-b0/360p/index.m3u8", "1", policy)
 	if err != nil || !selection.Planned || selection.Track != 1 || selection.File != "360p/index.m3u8" {
 		t.Fatalf("selection = %#v, %v", selection, err)
 	}
 	for _, input := range [][2]string{{"p/bad/index.m3u8", "0"}, {"../secret", "0"}, {"index.m3u8", "32"}} {
-		if _, err := ParseHLSRequest(input[0], input[1], policy); err == nil {
+		if _, err := parseHLSRequest(input[0], input[1], policy); err == nil {
 			t.Errorf("accepted route %#v", input)
 		}
 	}
@@ -86,7 +86,7 @@ func TestTrickplayHandlerRejectsInvalidInputWithoutGeneration(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	callback := ""
-	frames, err := NewTrickplay(TrickplayDependencies{
+	frames, err := newTrickplay(TrickplayDependencies{
 		Cache: root, FFmpeg: "/missing", RecipePolicy: HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100},
 		Lookup: func(*http.Request, string) (library.Item, bool) {
 			return library.Item{ID: "0123456789abcdef", Kind: "video", Path: "/missing"}, true

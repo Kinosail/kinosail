@@ -53,7 +53,7 @@ func TestFetchJellyfinProjectsProgressAndPlaylists(t *testing.T) {
 		}
 	}))
 	defer server.Close()
-	activities, err := Fetch(t.Context(), server.Client(), Input{Source: "jellyfin", URL: server.URL, Token: token}, true)
+	activities, err := fetch(t.Context(), server.Client(), Input{Source: "jellyfin", URL: server.URL, Token: token}, true)
 	if err != nil || len(activities) != 2 || activities[0].Seconds != 100 || activities[0].ProviderIDs["tmdb"] != "329865" || activities[0].Playlists["Queue"] != 0 || activities[1].Playlists["Queue (2)"] != 0 || !activities[1].Watched {
 		t.Fatalf("activities=%#v error=%v", activities, err)
 	}
@@ -62,7 +62,7 @@ func TestFetchJellyfinProjectsProgressAndPlaylists(t *testing.T) {
 			t.Fatalf("source method = %s", method)
 		}
 	}
-	withoutLists, err := Fetch(t.Context(), server.Client(), Input{Source: "jellyfin", URL: server.URL, Token: token, SourceUser: "source-viewer"}, false)
+	withoutLists, err := fetch(t.Context(), server.Client(), Input{Source: "jellyfin", URL: server.URL, Token: token, SourceUser: "source-viewer"}, false)
 	if err != nil || len(withoutLists) != 2 || withoutLists[0].Playlists != nil {
 		t.Fatalf("without lists=%#v error=%v", withoutLists, err)
 	}
@@ -111,12 +111,12 @@ func TestFetchPlexProjectsProviderIDsAndPlaylists(t *testing.T) {
 		}
 	}))
 	defer server.Close()
-	activities, err := Fetch(t.Context(), server.Client(), Input{Source: "plex", URL: server.URL, Token: token}, true)
+	activities, err := fetch(t.Context(), server.Client(), Input{Source: "plex", URL: server.URL, Token: token}, true)
 	_, hasSmartSnapshot := activities[2].Playlists["Smart (snapshot)"]
 	if err != nil || len(activities) != 3 || activities[0].Seconds != 42 || activities[0].Watched || activities[0].ProviderIDs["tmdb"] != "329865" || activities[0].Playlists["Queue"] != 0 || activities[2].Kind != "unsupported" || !hasSmartSnapshot || strings.Join(starts, ",") != "0,1" {
 		t.Fatalf("starts=%#v activities=%#v error=%v", starts, activities, err)
 	}
-	withoutLists, err := Fetch(t.Context(), server.Client(), Input{Source: "plex", URL: server.URL, Token: token}, false)
+	withoutLists, err := fetch(t.Context(), server.Client(), Input{Source: "plex", URL: server.URL, Token: token}, false)
 	if err != nil || len(withoutLists) != 2 {
 		t.Fatalf("without lists=%#v error=%v", withoutLists, err)
 	}

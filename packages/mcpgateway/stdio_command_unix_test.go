@@ -15,7 +15,7 @@ func TestRunStdioCommandFallsBackWhenRelayIsUnavailable(t *testing.T) {
 	t.Parallel()
 	want := errors.New("served directly")
 	called := false
-	err := RunStdioCommand(filepath.Join(t.TempDir(), "missing"), func() error { called = true; return want }, func() (*os.File, error) { t.Fatal("relay opened"); return nil, nil }, func(string, []string, []string) error { t.Fatal("relay executed"); return nil })
+	err := runStdioCommand(filepath.Join(t.TempDir(), "missing"), func() error { called = true; return want }, func() (*os.File, error) { t.Fatal("relay opened"); return nil, nil }, func(string, []string, []string) error { t.Fatal("relay executed"); return nil })
 	if !called || !errors.Is(err, want) {
 		t.Fatalf("fallback = called %v, error %v", called, err)
 	}
@@ -29,10 +29,10 @@ func TestRunStdioCommandValidatesAndExecutesRelay(t *testing.T) {
 		t.Fatal(err)
 	}
 	wantOpen := errors.New("open failed")
-	if err := RunStdioCommand(path, func() error { return nil }, func() (*os.File, error) { return nil, wantOpen }, func(string, []string, []string) error { return nil }); !errors.Is(err, wantOpen) {
+	if err := runStdioCommand(path, func() error { return nil }, func() (*os.File, error) { return nil, wantOpen }, func(string, []string, []string) error { return nil }); !errors.Is(err, wantOpen) {
 		t.Fatalf("open error = %v", err)
 	}
-	if err := RunStdioCommand(path, func() error { return nil }, func() (*os.File, error) { return nil, nil }, func(string, []string, []string) error { return nil }); err == nil {
+	if err := runStdioCommand(path, func() error { return nil }, func() (*os.File, error) { return nil, nil }, func(string, []string, []string) error { return nil }); err == nil {
 		t.Fatal("nil relay socket was accepted")
 	}
 	closed, err := os.Open(path)
@@ -42,7 +42,7 @@ func TestRunStdioCommandValidatesAndExecutesRelay(t *testing.T) {
 	if err := closed.Close(); err != nil {
 		t.Fatal(err)
 	}
-	if err := RunStdioCommand(path, func() error { return nil }, func() (*os.File, error) { return closed, nil }, func(string, []string, []string) error { return nil }); err == nil {
+	if err := runStdioCommand(path, func() error { return nil }, func() (*os.File, error) { return closed, nil }, func(string, []string, []string) error { return nil }); err == nil {
 		t.Fatal("closed relay descriptor was accepted")
 	}
 
@@ -52,7 +52,7 @@ func TestRunStdioCommandValidatesAndExecutesRelay(t *testing.T) {
 	}
 	defer peer.Close()
 	wantExec := errors.New("exec stopped")
-	err = RunStdioCommand(path, func() error { return nil }, func() (*os.File, error) { return relay, nil }, func(gotPath string, arguments, environment []string) error {
+	err = runStdioCommand(path, func() error { return nil }, func() (*os.File, error) { return relay, nil }, func(gotPath string, arguments, environment []string) error {
 		if gotPath != path || len(arguments) != 3 || arguments[0] != "socat" || arguments[1] != "STDIO" || !strings.HasPrefix(arguments[2], "FD:") || !slices.Equal(environment, os.Environ()) {
 			t.Fatalf("exec = %q, %#v, %#v", gotPath, arguments, environment)
 		}

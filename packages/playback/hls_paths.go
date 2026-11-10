@@ -31,7 +31,7 @@ func HLSFile(name string) bool {
 		return true
 	}
 	parts := strings.Split(name, "/")
-	return len(parts) == 2 && QualityDirectory(parts[0]) && VariantFile(parts[1])
+	return len(parts) == 2 && QualityDirectory(parts[0]) && variantFile(parts[1])
 }
 
 func ReadHLSPlaylist(path string) ([]byte, error) {
@@ -86,7 +86,7 @@ func QualityDirectory(name string) bool {
 	return err == nil && strings.HasSuffix(name, "p") && height >= 1 && height <= 2160
 }
 
-func VariantFile(name string) bool {
+func variantFile(name string) bool {
 	if name == "index.m3u8" || name == "init.mp4" {
 		return true
 	}
@@ -112,7 +112,7 @@ func AudioTrackIndex(value string) (int, error) {
 	return track, nil
 }
 
-func HLSCacheKey(id string, track int) string {
+func hlsCacheKey(id string, track int) string {
 	if track == 0 {
 		return id
 	}

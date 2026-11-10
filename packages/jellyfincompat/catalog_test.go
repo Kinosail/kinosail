@@ -22,19 +22,19 @@ func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) {
 	if _, err := catalog.Items(url.Values{"IDs": {"one", "two"}}); err == nil {
 		t.Fatal("duplicate ids query succeeded")
 	}
-	result, err := catalog.Items(url.Values{"ParentId": {MoviesID}, "IncludeItemTypes": {"Movie"}, "SearchTerm": {"MOVIE"}})
+	result, err := catalog.Items(url.Values{"ParentId": {moviesID}, "IncludeItemTypes": {"Movie"}, "SearchTerm": {"MOVIE"}})
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertResultCount(t, result, 1)
 
-	result, err = catalog.Items(url.Values{"ParentId": {ShowsID}})
+	result, err = catalog.Items(url.Values{"ParentId": {showsID}})
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertResultCount(t, result, 1)
 
-	result, err = catalog.Items(url.Values{"ParentId": {ShowsID}, "IncludeItemTypes": {"Episode"}})
+	result, err = catalog.Items(url.Values{"ParentId": {showsID}, "IncludeItemTypes": {"Episode"}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,7 +62,7 @@ func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) {
 	}
 	assertResultCount(t, result, 2)
 
-	result, err = catalog.Items(url.Values{"ParentId": {SeasonID(showID, 2)}})
+	result, err = catalog.Items(url.Values{"ParentId": {seasonID(showID, 2)}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,7 +80,7 @@ func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) {
 	}
 	assertResultCount(t, result, 1)
 
-	for _, id := range []string{items[0].ID, ID(showID), showID, SeasonID(showID, 1)} {
+	for _, id := range []string{items[0].ID, ID(showID), showID, seasonID(showID, 1)} {
 		if _, found := catalog.Item(id); !found {
 			t.Fatalf("item %q not found", id)
 		}
@@ -103,7 +103,7 @@ func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) {
 		t.Fatal("series episodes not found")
 	}
 	assertResultCount(t, episodes, 2)
-	episodes, _ = catalog.Episodes(showID, url.Values{"SeasonId": {SeasonID(showID, 1)}})
+	episodes, _ = catalog.Episodes(showID, url.Values{"SeasonId": {seasonID(showID, 1)}})
 	assertResultCount(t, episodes, 1)
 	episodes, _ = catalog.Episodes(showID, url.Values{"Season": {"2"}})
 	assertResultCount(t, episodes, 1)
@@ -179,30 +179,30 @@ func TestDTOProjectionUsesPlayerContract(t *testing.T) {
 
 	episode.Artwork = "episode.jpg"
 	showWithArt := library.Show{ID: ShowID("Raw Show"), Title: "Display Show", ArtworkID: "episode00000001", Episodes: []library.Item{episode}}
-	if SeriesDTO(showWithArt).ImageTags == nil {
+	if seriesDTO(showWithArt).ImageTags == nil {
 		t.Fatal("series image tag missing")
 	}
 	showWithoutArt := library.Show{ID: "show00000000001", Title: "No Art"}
-	if SeriesDTO(showWithoutArt).ImageTags != nil {
+	if seriesDTO(showWithoutArt).ImageTags != nil {
 		t.Fatal("unexpected series image tag")
 	}
-	if SeasonDTO(showWithArt, 1).ImageTags == nil {
+	if seasonDTO(showWithArt, 1).ImageTags == nil {
 		t.Fatal("season image tag missing")
 	}
-	if SeasonDTO(showWithoutArt, 2).ImageTags != nil {
+	if seasonDTO(showWithoutArt, 2).ImageTags != nil {
 		t.Fatal("unexpected season image tag")
 	}
 
 	if ID("1234567890abcdef") != "1234567890abcdef0000000000000000" || RawID("1234567890abcdef0000000000000000") != "1234567890abcdef" || RawID("short") != "short" {
 		t.Fatal("item identifier mismatch")
 	}
-	if ShowID("RAW SHOW") != ShowID("raw show") || SeasonID("show", 15) != "show000000000000000f" {
+	if ShowID("RAW SHOW") != ShowID("raw show") || seasonID("show", 15) != "show000000000000000f" {
 		t.Fatal("hierarchy identifier mismatch")
 	}
 	if !reflect.DeepEqual(Seasons(library.Show{Episodes: []library.Item{{Season: 2}, {Season: 1}, {Season: 2}}}), []int{1, 2}) {
 		t.Fatal("seasons were not unique and sorted")
 	}
-	if FolderDTO("id", "Name", "kind").CollectionType != "kind" {
+	if folderDTO("id", "Name", "kind").CollectionType != "kind" {
 		t.Fatal("folder collection mismatch")
 	}
 }

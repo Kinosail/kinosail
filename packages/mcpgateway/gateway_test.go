@@ -165,7 +165,7 @@ func TestGatewayUsesPlayerToolsAndFailClosedPolicies(t *testing.T) {
 	}
 	mux := http.NewServeMux()
 	config := OAuthConfig{ResourceURL: audience, AuthorizationServer: issuer.URL, IntrospectionURL: issuer.URL + "/introspect", ClientID: "resource", ClientSecret: "secret"}
-	if _, err := Register(mux, testGatewayConfig(config, principals, api, routes), nil); err != nil {
+	if _, err := register(mux, testGatewayConfig(config, principals, api, routes), nil); err != nil {
 		t.Fatal(err)
 	}
 
@@ -190,16 +190,16 @@ func TestGatewayRejectsInvalidConfigurationAndProtocolWithoutEffects(t *testing.
 	if response.Code != http.StatusBadRequest || calls != 0 || !strings.Contains(response.Body.String(), ProtocolVersion) {
 		t.Fatalf("protocol = %d calls=%d %q", response.Code, calls, response.Body.String())
 	}
-	if _, err := Register(nil, GatewayConfig{}, nil); err == nil {
+	if _, err := register(nil, GatewayConfig{}, nil); err == nil {
 		t.Fatal("nil router was accepted")
 	}
 	mux := http.NewServeMux()
-	if _, err := Register(mux, GatewayConfig{}, nil); err == nil {
+	if _, err := register(mux, GatewayConfig{}, nil); err == nil {
 		t.Fatal("missing adapters were accepted")
 	}
 	principals := &testPrincipals{values: map[string]Principal{}}
 	api := &testAPI{respond: func(http.ResponseWriter, *http.Request) {}}
-	if _, err := Register(mux, testGatewayConfig(OAuthConfig{}, principals, api, testRoutes{}), nil); err == nil {
+	if _, err := register(mux, testGatewayConfig(OAuthConfig{}, principals, api, testRoutes{}), nil); err == nil {
 		t.Fatal("missing OAuth authority was accepted")
 	}
 }

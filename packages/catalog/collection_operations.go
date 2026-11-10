@@ -20,7 +20,7 @@ func (storage ListStorage) CreateCollection(ctx context.Context, name string) er
 		state.Playlists[key] = make(map[string]bool)
 	}
 	delete(state.Playlists[key], "!collection")
-	return storage.Commit(ctx, state, PlaylistsDocument)
+	return storage.Commit(ctx, state, playlistsDocument)
 }
 
 func (storage ListStorage) SetCollection(ctx context.Context, name string, item library.Item, included bool) error {
@@ -39,7 +39,7 @@ func (storage ListStorage) SetCollection(ctx context.Context, name string, item 
 		delete(collection, item.ID)
 		collection["!"+item.ID] = item.Collection == name
 	}
-	return storage.Commit(ctx, state, PlaylistsDocument)
+	return storage.Commit(ctx, state, playlistsDocument)
 }
 
 func (storage ListStorage) DeleteCollection(ctx context.Context, name string, items []library.Item) error {
@@ -55,7 +55,7 @@ func (storage ListStorage) DeleteCollection(ctx context.Context, name string, it
 		collection["!"+item.ID] = item.Collection == name
 	}
 	collection["!collection"] = true
-	return storage.Commit(ctx, state, PlaylistsDocument)
+	return storage.Commit(ctx, state, playlistsDocument)
 }
 
 func collectionStateKey(name string) string { return "collection:" + name }

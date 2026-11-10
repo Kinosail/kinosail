@@ -74,7 +74,7 @@ func ActorLibrary(items []library.Item, name string) (ActorPage, error) {
 	}
 	for _, show := range shows {
 		credit := showCredit(show, roles)
-		page.Shows = append(page.Shows, ActorTitle{ID: show.ID, Title: show.Title, Year: show.Year, Role: strings.Join(credit, " · "), Artwork: ArtworkURL(show.ArtworkID), URL: "/show/" + show.ID})
+		page.Shows = append(page.Shows, ActorTitle{ID: show.ID, Title: show.Title, Year: show.Year, Role: strings.Join(credit, " · "), Artwork: artworkURL(show.ArtworkID), URL: "/show/" + show.ID})
 	}
 	sort.Slice(page.Movies, func(i, j int) bool {
 		return page.Movies[i].Title < page.Movies[j].Title || page.Movies[i].Title == page.Movies[j].Title && page.Movies[i].ID < page.Movies[j].ID
@@ -95,7 +95,7 @@ func actorArtwork(item library.Item) string {
 	if item.Artwork == "" {
 		return ""
 	}
-	return ArtworkURLForItem(item)
+	return artworkURLForItem(item)
 }
 
 func (page *ActorPage) matchCredits(item library.Item, roles map[string][]string) bool {

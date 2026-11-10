@@ -105,8 +105,8 @@ func TestPullClassifiesEveryRecurringOutcome(t *testing.T) {
 	unchanged := Activity{SourceID: "observed", Kind: "movie", Title: "Whatever", Seconds: 8}
 	stable := Activity{SourceID: "stable-source", Kind: "movie", Title: "No longer matches", Seconds: 9}
 	sync := Sync{ProfileID: "viewer", Seen: map[string]Observation{
-		ActivityKey(unchanged): {TargetID: "same", Signature: Signature(unchanged)},
-		ActivityKey(stable):    {TargetID: "stable", Signature: "old"},
+		activityKey(unchanged): {TargetID: "same", Signature: Signature(unchanged)},
+		activityKey(stable):    {TargetID: "stable", Signature: "old"},
 	}}
 	activities := []Activity{
 		{SourceID: "inactive", Kind: "movie", Title: "Missing"},
@@ -119,7 +119,7 @@ func TestPullClassifiesEveryRecurringOutcome(t *testing.T) {
 		stable,
 	}
 	result, seen, err := manager.pull(sync, activities, now)
-	if err != nil || result.SourceItems != 8 || result.Activity != 7 || result.Matched != 4 || result.Ambiguous != 1 || result.Unmatched != 1 || result.Unchanged != 2 || result.Conflicts != 2 || result.Importable != 2 || result.Applied != 2 || len(changes) != 2 || seen[ActivityKey(stable)].TargetID != "stable" || changes[1].State.Updated != now {
+	if err != nil || result.SourceItems != 8 || result.Activity != 7 || result.Matched != 4 || result.Ambiguous != 1 || result.Unmatched != 1 || result.Unchanged != 2 || result.Conflicts != 2 || result.Importable != 2 || result.Applied != 2 || len(changes) != 2 || seen[activityKey(stable)].TargetID != "stable" || changes[1].State.Updated != now {
 		t.Fatalf("result=%#v changes=%#v seen=%#v error=%v", result, changes, seen, err)
 	}
 	if item, found := findLibraryItem(items, "ready"); !found || item.ID != "ready" {

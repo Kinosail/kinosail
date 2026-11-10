@@ -105,13 +105,13 @@ func TestQueueRejectsOverflowBeforeCreatingAJob(t *testing.T) {
 		},
 	})
 	rejected := 0
-	for position := range QueueCapacity + 2 {
+	for position := range queueCapacity + 2 {
 		item := library.Item{ID: string(rune('a' + position)), Kind: "audio", Title: "Track", Path: "/missing", Added: time.Now()}
 		if _, err := manager.Start("viewer", item, "audio"); err != nil {
 			rejected++
 		}
 	}
-	if rejected != 1 || len(manager.jobs) != QueueCapacity+1 {
+	if rejected != 1 || len(manager.jobs) != queueCapacity+1 {
 		t.Fatalf("rejected=%d jobs=%d", rejected, len(manager.jobs))
 	}
 	cancel()

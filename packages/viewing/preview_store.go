@@ -79,7 +79,7 @@ func (store PreviewStore) DeleteLocked(id string) {
 	delete(*store.Values, id)
 }
 
-func Prepare(ctx context.Context, store PreviewStore, fetch func(context.Context) ([]Activity, error), snapshot func() ([]library.Item, error), build func([]Activity, []library.Item) Preview) (Preview, error) {
+func prepare(ctx context.Context, store PreviewStore, fetch func(context.Context) ([]Activity, error), snapshot func() ([]library.Item, error), build func([]Activity, []library.Item) Preview) (Preview, error) {
 	release, err := store.Acquire(ctx, time.Now())
 	if err != nil {
 		return Preview{}, err
@@ -100,7 +100,7 @@ func Prepare(ctx context.Context, store PreviewStore, fetch func(context.Context
 	return preview, nil
 }
 
-func ApplyPreview(store PreviewStore, id string, commit func(Preview) (int, int, int, error)) (Summary, error) {
+func applyPreview(store PreviewStore, id string, commit func(Preview) (int, int, int, error)) (Summary, error) {
 	preview, found := store.Get(id, time.Now())
 	if !found {
 		return Summary{}, errors.New("import preview expired or was not found")

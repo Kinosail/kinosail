@@ -32,7 +32,7 @@ func Check(ctx context.Context, ffmpeg string, options Settings, backend string)
 	return runCheck(ctx, ffmpeg, options, backend, func() (string, error) { return os.MkdirTemp("", "kinosail-transcoder-check-") }, runFFmpeg)
 }
 
-func PendingCheck(options Settings, backend string) CheckResult {
+func pendingCheck(options Settings, backend string) CheckResult {
 	return CheckResult{Status: "not-run", Codec: options.Codec, CodecName: Definition(options.Codec).Name, Accelerator: options.Accelerator, Backend: checkBackend(options, backend)}
 }
 
@@ -127,7 +127,7 @@ func checkSetup(ffmpeg string, options Settings) string {
 	if options.HardwareToneMap != "" && (!options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || !validToneMapMethod(options) || options.ToneMapInput != "hdr10" && options.ToneMapInput != "hlg") {
 		return "The requested hardware tone mapping operation is unsupported."
 	}
-	if options.HardwareToneMap != "" && options.HardwareDecode && !HardwareDecodedToneMap(options) {
+	if options.HardwareToneMap != "" && options.HardwareDecode && !hardwareDecodedToneMap(options) {
 		return "The requested hardware tone mapping operation is unsupported."
 	}
 	if options.OutputHDR != "" && (options.Codec != "hevc" || options.OutputHDR != "hdr10" && options.OutputHDR != "hlg") {

@@ -13,15 +13,15 @@ import (
 
 const (
 	OIDCConfigurationKey = "integrations.oidc"
-	OIDCIssuerKey        = federation.OIDCIssuerKey
-	OIDCClientIDKey      = federation.OIDCClientIDKey
-	OIDCSecretKey        = federation.OIDCSecretKey
-	OIDCRedirectKey      = federation.OIDCRedirectKey
-	OIDCIdentityKey      = federation.OIDCIdentityKey
+	oidcIssuerKey        = federation.OIDCIssuerKey
+	oidcClientIDKey      = federation.OIDCClientIDKey
+	oidcSecretKey        = federation.OIDCSecretKey
+	oidcRedirectKey      = federation.OIDCRedirectKey
+	oidcIdentityKey      = federation.OIDCIdentityKey
 	SAMLConfigurationKey = "integrations.saml"
 	SAMLMetadataURLKey   = federation.SAMLMetadataURLKey
-	SAMLMetadataXMLKey   = federation.SAMLMetadataXMLKey
-	SAMLIdentityKey      = federation.SAMLIdentityKey
+	samlMetadataXMLKey   = federation.SAMLMetadataXMLKey
+	samlIdentityKey      = federation.SAMLIdentityKey
 )
 
 type OIDCConfig = federation.OIDCConfig
@@ -29,8 +29,8 @@ type OIDCConfig = federation.OIDCConfig
 type SAMLConfig = federation.SAMLConfig
 
 var (
-	oidcSettingKeys = []string{OIDCIssuerKey, OIDCClientIDKey, OIDCSecretKey, OIDCRedirectKey, OIDCIdentityKey}
-	samlSettingKeys = []string{SAMLMetadataURLKey, SAMLMetadataXMLKey, SAMLIdentityKey}
+	oidcSettingKeys = []string{oidcIssuerKey, oidcClientIDKey, oidcSecretKey, oidcRedirectKey, oidcIdentityKey}
+	samlSettingKeys = []string{SAMLMetadataURLKey, samlMetadataXMLKey, samlIdentityKey}
 )
 
 func OIDCConfigurationKeys() []string { return append([]string(nil), oidcSettingKeys...) }
@@ -38,7 +38,7 @@ func OIDCConfigurationKeys() []string { return append([]string(nil), oidcSetting
 func SAMLConfigurationKeys() []string { return append([]string(nil), samlSettingKeys...) }
 
 func SAMLConfigured(value func(string) string) bool {
-	return value(SAMLMetadataURLKey) != "" || value(SAMLMetadataXMLKey) != ""
+	return value(SAMLMetadataURLKey) != "" || value(samlMetadataXMLKey) != ""
 }
 
 type OIDCConfigurationView[C any] struct {
@@ -48,11 +48,11 @@ type OIDCConfigurationView[C any] struct {
 }
 
 func NewOIDCConfigurationView[C any](value func(string) (string, bool), control C) OIDCConfigurationView[C] {
-	issuer, configured := value(OIDCIssuerKey)
-	_, secretConfigured := value(OIDCSecretKey)
-	clientID, _ := value(OIDCClientIDKey)
-	redirectURL, _ := value(OIDCRedirectKey)
-	identityClaim, _ := value(OIDCIdentityKey)
+	issuer, configured := value(oidcIssuerKey)
+	_, secretConfigured := value(oidcSecretKey)
+	clientID, _ := value(oidcClientIDKey)
+	redirectURL, _ := value(oidcRedirectKey)
+	identityClaim, _ := value(oidcIdentityKey)
 	return OIDCConfigurationView[C]{issuer, clientID, redirectURL, identityClaim, configured, secretConfigured, control}
 }
 
@@ -93,19 +93,19 @@ func (store OIDCConfigurationStore[S]) Change(config OIDCConfig, reset bool) err
 		return nil
 	}
 	if config.ClientSecret == "" {
-		config.ClientSecret = store.Current(OIDCSecretKey)
+		config.ClientSecret = store.Current(oidcSecretKey)
 	}
 	if err := store.Set(directory, config.Issuer, config.ClientID, config.ClientSecret, config.RedirectURL, config.IdentityClaim); err != nil {
 		return err
 	}
-	values := map[string]string{OIDCIssuerKey: config.Issuer, OIDCClientIDKey: config.ClientID, OIDCSecretKey: config.ClientSecret, OIDCRedirectKey: config.RedirectURL, OIDCIdentityKey: config.IdentityClaim}
+	values := map[string]string{oidcIssuerKey: config.Issuer, oidcClientIDKey: config.ClientID, oidcSecretKey: config.ClientSecret, oidcRedirectKey: config.RedirectURL, oidcIdentityKey: config.IdentityClaim}
 	for key, value := range values {
 		store.Update(key, value, false)
 	}
 	return nil
 }
 
-func ParseOIDCConfigurationForm(writer http.ResponseWriter, request *http.Request) (OIDCConfig, error) {
+func parseOIDCConfigurationForm(writer http.ResponseWriter, request *http.Request) (OIDCConfig, error) {
 	keys := []string{"key", "issuer", "clientId", "clientSecret", "redirectUrl", "identityClaim"}
 	if err := httpguard.DecodeForm(writer, request, 16<<10, keys...); err != nil || request.PostForm.Get("key") != OIDCConfigurationKey {
 		return OIDCConfig{}, errors.New("invalid configuration form")
@@ -130,7 +130,7 @@ func oidcFormField(request *http.Request, key string, maximum int, required bool
 }
 
 func SaveOIDCConfiguration(writer http.ResponseWriter, request *http.Request, change func(string, string, string, string, string, bool) error, writeError func(http.ResponseWriter, *http.Request, string, int)) {
-	config, err := ParseOIDCConfigurationForm(writer, request)
+	config, err := parseOIDCConfigurationForm(writer, request)
 	if err != nil {
 		writeError(writer, request, err.Error(), http.StatusBadRequest)
 		return
@@ -150,8 +150,8 @@ type SAMLConfigurationView[C any] struct {
 
 func NewSAMLConfigurationView[C any](value func(string) (string, bool), origin string, control C) SAMLConfigurationView[C] {
 	metadataURL, urlConfigured := value(SAMLMetadataURLKey)
-	metadataXML, xmlConfigured := value(SAMLMetadataXMLKey)
-	identityAttribute, _ := value(SAMLIdentityKey)
+	metadataXML, xmlConfigured := value(samlMetadataXMLKey)
+	identityAttribute, _ := value(samlIdentityKey)
 	return SAMLConfigurationView[C]{metadataURL, metadataXML, origin + "/login/saml/metadata", origin + "/login/saml/acs", identityAttribute, urlConfigured || xmlConfigured, control}
 }
 
@@ -189,13 +189,13 @@ func (store SAMLConfigurationStore[S]) Change(config federation.SAMLConfig, rese
 	}
 	if !reset {
 		store.Update(SAMLMetadataURLKey, config.MetadataURL, false)
-		store.Update(SAMLMetadataXMLKey, config.MetadataXML, false)
-		store.Update(SAMLIdentityKey, config.IdentityAttribute, false)
+		store.Update(samlMetadataXMLKey, config.MetadataXML, false)
+		store.Update(samlIdentityKey, config.IdentityAttribute, false)
 	}
 	return nil
 }
 
-func ParseSAMLConfigurationForm(writer http.ResponseWriter, request *http.Request) (federation.SAMLConfig, error) {
+func parseSAMLConfigurationForm(writer http.ResponseWriter, request *http.Request) (federation.SAMLConfig, error) {
 	keys := []string{"key", "metadataUrl", "metadataXml", "identityAttribute"}
 	if err := httpguard.DecodeForm(writer, request, 1<<20, keys...); err != nil || request.PostForm.Get("key") != SAMLConfigurationKey {
 		return federation.SAMLConfig{}, errors.New("invalid configuration form")
@@ -218,7 +218,7 @@ func boundedFormField(request *http.Request, key string, maximum int, required b
 }
 
 func SaveSAMLConfiguration(writer http.ResponseWriter, request *http.Request, change func(string, string, string, bool) error, writeError func(http.ResponseWriter, *http.Request, string, int)) {
-	config, err := ParseSAMLConfigurationForm(writer, request)
+	config, err := parseSAMLConfigurationForm(writer, request)
 	if err != nil {
 		writeError(writer, request, err.Error(), http.StatusBadRequest)
 		return

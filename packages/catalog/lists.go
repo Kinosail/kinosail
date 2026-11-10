@@ -47,10 +47,10 @@ type ListPaths struct {
 type DocumentMask uint8
 
 const (
-	ListedDocument DocumentMask = 1 << iota
-	PlaylistsDocument
-	PlaylistOrderDocument
-	SmartListDocument
+	listedDocument DocumentMask = 1 << iota
+	playlistsDocument
+	playlistOrderDocument
+	smartListDocument
 )
 
 type ListStorage struct {
@@ -66,7 +66,7 @@ type ListStorage struct {
 }
 
 func (storage ListStorage) Restore() error {
-	state, err := LoadListState(storage.Paths, storage.Load)
+	state, err := loadListState(storage.Paths, storage.Load)
 	if err == nil {
 		storage.Assign(state)
 	}
@@ -81,7 +81,7 @@ func (storage ListStorage) Commit(ctx context.Context, state ListState, document
 	if *storage.LoadError != nil {
 		return *storage.LoadError
 	}
-	if err := CommitListState(ctx, storage.Database, storage.Paths, storage.Persist, state, uint8(documents)); err != nil {
+	if err := commitListState(ctx, storage.Database, storage.Paths, storage.Persist, state, uint8(documents)); err != nil {
 		return err
 	}
 	storage.Assign(state)
@@ -92,7 +92,7 @@ func (storage ListStorage) Assign(state ListState) {
 	*storage.Values, *storage.Playlists, *storage.PlaylistOrder, *storage.Smart = state.Values, state.Playlists, state.PlaylistOrder, state.Smart
 }
 
-func LoadListState(paths ListPaths, load func(string, any) (bool, error)) (ListState, error) {
+func loadListState(paths ListPaths, load func(string, any) (bool, error)) (ListState, error) {
 	state := ListState{}
 	for _, document := range []struct {
 		path   string
@@ -108,7 +108,7 @@ func LoadListState(paths ListPaths, load func(string, any) (bool, error)) (ListS
 		}
 	}
 	state = CloneListState(state.Values, state.Playlists, state.PlaylistOrder, state.Smart)
-	if err := ValidateListState(state); err != nil {
+	if err := validateListState(state); err != nil {
 		return ListState{}, err
 	}
 	return state, nil
@@ -131,7 +131,7 @@ func CloneListState(values map[string]bool, playlists map[string]map[string]bool
 	return state
 }
 
-func ValidateListState(state ListState) error {
+func validateListState(state ListState) error {
 	if !validListCardinality(state) || !validListValues(state.Values) || !validPlaylists(state.Playlists) || !validPlaylistOrder(state.PlaylistOrder) || !validSmartLists(state.Smart) {
 		return errors.New("persisted list state is invalid")
 	}
@@ -178,7 +178,7 @@ func validSmartLists(smart map[string]PlaylistRule) bool {
 	return true
 }
 
-func ListDocuments(state ListState, mask uint8) map[string]any {
+func listDocuments(state ListState, mask uint8) map[string]any {
 	updates := make(map[string]any, 4)
 	if mask&1 != 0 {
 		updates["lists.json"] = state.Values
@@ -195,12 +195,12 @@ func ListDocuments(state ListState, mask uint8) map[string]any {
 	return updates
 }
 
-func CommitListState(ctx context.Context, database *documentdb.Store, paths ListPaths, persist func(string, any) error, state ListState, mask uint8) error {
-	if err := ValidateListState(state); err != nil {
+func commitListState(ctx context.Context, database *documentdb.Store, paths ListPaths, persist func(string, any) error, state ListState, mask uint8) error {
+	if err := validateListState(state); err != nil {
 		return err
 	}
 	if database != nil {
-		return database.SaveJSONBatchContext(ctx, ListDocuments(state, mask))
+		return database.SaveJSONBatchContext(ctx, listDocuments(state, mask))
 	}
 	for _, document := range []struct {
 		selected bool

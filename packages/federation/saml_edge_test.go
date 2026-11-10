@@ -26,7 +26,7 @@ func TestSAMLProviderRefreshRetainsLastValidDocument(t *testing.T) {
 	}))
 	t.Cleanup(metadataServer.Close)
 	document.Store(samlMetadataDocument(metadataServer.URL, "/one", certificate))
-	flow := NewSAML(SAMLConfig{MetadataURL: metadataServer.URL, RootURL: "http://localhost", DataDir: t.TempDir()})
+	flow := newSAML(SAMLConfig{MetadataURL: metadataServer.URL, RootURL: "http://localhost", DataDir: t.TempDir()})
 	assertSAMLProviderEndpoint(t, flow, metadataServer.URL+"/one")
 	document.Store(samlMetadataDocument(metadataServer.URL, "/two", certificate))
 	flow.metadataLoadedAt = time.Now().Add(-metadataRefreshInterval)
@@ -51,11 +51,11 @@ func assertSAMLProviderEndpoint(t *testing.T, flow *SAML, want string) {
 func TestSAMLPendingStoreIsBounded(t *testing.T) {
 	t.Parallel()
 	metadata := samlMetadataDocument("https://identity.example", "/sso", samlMetadataCertificate(t))
-	flow := NewSAML(SAMLConfig{MetadataXML: metadata, RootURL: "http://localhost"})
+	flow := newSAML(SAMLConfig{MetadataXML: metadata, RootURL: "http://localhost"})
 	for index := range maxPendingStates {
 		flow.pending[fmt.Sprintf("request-%d", index)] = samlTransaction{expires: time.Now().Add(time.Minute)}
 	}
-	if _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, ErrTooManyPending) {
+	if _, err := flow.Begin(t.Context(), "viewer", "session"); !errors.Is(err, errTooManyPending) {
 		t.Fatalf("SAML pending limit = %v", err)
 	}
 }
@@ -86,11 +86,11 @@ func TestSAMLIdentitySelectionRejectsAmbiguity(t *testing.T) {
 		}
 	}
 	for _, attribute := range []string{"missing", "ambiguous"} {
-		if _, err := samlIdentityValue(assertion, attribute); !errors.Is(err, ErrTokenInvalid) {
+		if _, err := samlIdentityValue(assertion, attribute); !errors.Is(err, errTokenInvalid) {
 			t.Fatalf("identity %q = %v", attribute, err)
 		}
 	}
-	if _, _, err := samlProviderEndpoint(nil); !errors.Is(err, ErrProviderUnavailable) {
+	if _, _, err := samlProviderEndpoint(nil); !errors.Is(err, errProviderUnavailable) {
 		t.Fatalf("nil metadata endpoint = %v", err)
 	}
 	assertion.Subject.SubjectConfirmations = []saml.SubjectConfirmation{{}}

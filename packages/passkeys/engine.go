@@ -20,10 +20,10 @@ const (
 )
 
 var (
-	ErrInvalidConfig   = errors.New("invalid passkey configuration")
-	ErrInvalidCeremony = errors.New("invalid passkey ceremony")
+	errInvalidConfig   = errors.New("invalid passkey configuration")
+	errInvalidCeremony = errors.New("invalid passkey ceremony")
 	ErrCeremonyExpired = errors.New("passkey ceremony expired")
-	ErrCeremonyLimit   = errors.New("too many passkey ceremonies")
+	errCeremonyLimit   = errors.New("too many passkey ceremonies")
 )
 
 type Config struct {
@@ -77,9 +77,9 @@ func New(config Config) (*Engine, error) {
 		rawURL = config.DefaultURL
 	}
 	if config.DisplayName == "" || len(config.DisplayName) > 100 || !validCookieName(config.CookieName) {
-		return nil, ErrInvalidConfig
+		return nil, errInvalidConfig
 	}
-	origin, err := ParseOrigin(rawURL)
+	origin, err := parseOrigin(rawURL)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (engine *Engine) Origin() Origin {
 
 func (engine *Engine) BeginRegistration(user webauthn.User, ceremony Ceremony) (*protocol.CredentialCreation, *http.Cookie, error) {
 	if engine == nil || user == nil || ceremony.Identity == "" {
-		return nil, nil, ErrInvalidCeremony
+		return nil, nil, errInvalidCeremony
 	}
 	creation, session, err := engine.beginRegistration(user, webauthn.WithResidentKeyRequirement(protocol.ResidentKeyRequirementRequired))
 	if err != nil {
@@ -135,7 +135,7 @@ func (engine *Engine) FinishRegistration(user webauthn.User, identity string, re
 
 func (engine *Engine) BeginLogin(ceremony Ceremony) (*protocol.CredentialAssertion, *http.Cookie, error) {
 	if engine == nil || ceremony.Identity != "" {
-		return nil, nil, ErrInvalidCeremony
+		return nil, nil, errInvalidCeremony
 	}
 	assertion, session, err := engine.beginLogin()
 	if err != nil {
@@ -174,7 +174,7 @@ func (engine *Engine) RevokePublic() {
 	}
 }
 
-func WriteJSON(writer http.ResponseWriter, value any) {
+func writeJSON(writer http.ResponseWriter, value any) {
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(writer).Encode(value)
@@ -182,7 +182,7 @@ func WriteJSON(writer http.ResponseWriter, value any) {
 
 func (engine *Engine) start(ceremony Ceremony, session *webauthn.SessionData) (*http.Cookie, error) {
 	if session == nil || len(ceremony.Identity) > maxUserHandle || !validCookiePath(ceremony.CookiePath) {
-		return nil, ErrInvalidCeremony
+		return nil, errInvalidCeremony
 	}
 	engine.mu.Lock()
 	defer engine.mu.Unlock()
@@ -193,7 +193,7 @@ func (engine *Engine) start(ceremony Ceremony, session *webauthn.SessionData) (*
 		}
 	}
 	if len(engine.ceremonies) >= maxCeremonies {
-		return nil, ErrCeremonyLimit
+		return nil, errCeremonyLimit
 	}
 	id := rand.Text()
 	engine.ceremonies[id] = ceremonyState{identity: ceremony.Identity, session: *session, public: ceremony.Public}
@@ -202,7 +202,7 @@ func (engine *Engine) start(ceremony Ceremony, session *webauthn.SessionData) (*
 
 func (engine *Engine) take(request *http.Request, identity string) (webauthn.SessionData, error) {
 	if engine == nil || request == nil || len(identity) > maxUserHandle {
-		return webauthn.SessionData{}, ErrInvalidCeremony
+		return webauthn.SessionData{}, errInvalidCeremony
 	}
 	cookie, err := ceremonyCookie(request, engine.cookieName)
 	if err != nil {

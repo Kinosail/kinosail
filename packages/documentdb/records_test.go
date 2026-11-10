@@ -26,7 +26,7 @@ func TestEntryDocumentsGrowBeyondWholeDocumentLimit(t *testing.T) {
 	root := t.TempDir()
 	config := Config{Documents: []string{"metadata.json"}}
 	store := openEntries(t, root, config, "metadata.json")
-	record := strings.Repeat("r", EntrySizeLimit-64)
+	record := strings.Repeat("r", entrySizeLimit-64)
 	want := make(map[string]string)
 	for index := range DocumentSizeLimit/len(record) + 2 {
 		key := "item-" + strconv.Itoa(index)
@@ -35,7 +35,7 @@ func TestEntryDocumentsGrowBeyondWholeDocumentLimit(t *testing.T) {
 			t.Fatalf("entry %d: %v", index, err)
 		}
 	}
-	if err := store.SaveEntry("metadata.json", "oversized", strings.Repeat("x", EntrySizeLimit)); err == nil {
+	if err := store.SaveEntry("metadata.json", "oversized", strings.Repeat("x", entrySizeLimit)); err == nil {
 		t.Fatal("entry above the per-entry limit accepted")
 	}
 	exported, err := store.Export()

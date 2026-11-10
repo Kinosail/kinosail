@@ -55,7 +55,7 @@ func TestHardwareDecodedToneMapKeepsFramesOnTheDevice(t *testing.T) {
 		if backend == "cuda" {
 			options.Device = "1"
 		}
-		if !HardwareDecodedToneMap(options) {
+		if !hardwareDecodedToneMap(options) {
 			t.Fatalf("%s: hardware decoded tone map rejected", backend)
 		}
 		input, output := VideoArguments(options, "1280")
@@ -74,7 +74,7 @@ func TestHardwareDecodedToneMapKeepsFramesOnTheDevice(t *testing.T) {
 		} {
 			variant := options
 			change(&variant)
-			if HardwareDecodedToneMap(variant) {
+			if hardwareDecodedToneMap(variant) {
 				t.Fatalf("%s: software frames or filters still claimed hardware decode: %#v", backend, variant)
 			}
 			input, output := VideoArguments(variant, "1280")

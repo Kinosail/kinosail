@@ -22,14 +22,14 @@ type Web struct {
 }
 
 func RegisterWeb(mux *http.ServeMux, config Web) {
-	mux.Handle("GET /settings/metrics", config.Owner(MetricsHandler(config.Metrics)))
-	mux.Handle("GET /settings/diagnostics.json", config.Owner(DiagnosticsHandler(config.Diagnostics)))
-	mux.Handle("POST /settings/tasks/scan", config.Owner(TaskHandler(config.Tasks.Scan, config.WriteError)))
-	mux.Handle("POST /settings/tasks/metadata", config.Owner(TaskHandler(config.Tasks.Metadata, config.WriteError)))
-	mux.Handle("POST /settings/tasks/maintain", config.Owner(TaskHandler(config.Tasks.Maintain, config.WriteError)))
+	mux.Handle("GET /settings/metrics", config.Owner(metricsHandler(config.Metrics)))
+	mux.Handle("GET /settings/diagnostics.json", config.Owner(diagnosticsHandler(config.Diagnostics)))
+	mux.Handle("POST /settings/tasks/scan", config.Owner(taskHandler(config.Tasks.Scan, config.WriteError)))
+	mux.Handle("POST /settings/tasks/metadata", config.Owner(taskHandler(config.Tasks.Metadata, config.WriteError)))
+	mux.Handle("POST /settings/tasks/maintain", config.Owner(taskHandler(config.Tasks.Maintain, config.WriteError)))
 }
 
-func TaskHandler(run func(context.Context) error, writeError ErrorWriter) http.HandlerFunc {
+func taskHandler(run func(context.Context) error, writeError ErrorWriter) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := run(request.Context()); err != nil {
 			writeError(writer, request, err, http.StatusBadGateway)
@@ -63,7 +63,7 @@ func APITaskHandler(tasks Tasks, writeError ErrorWriter, notFound http.HandlerFu
 	}
 }
 
-func MetricsHandler(snapshot func() Metrics) http.HandlerFunc {
+func metricsHandler(snapshot func() Metrics) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		value := snapshot()
 		writer.Header().Set("Content-Type", "text/plain; version=0.0.4")
@@ -75,7 +75,7 @@ func MetricsHandler(snapshot func() Metrics) http.HandlerFunc {
 	}
 }
 
-func DiagnosticsHandler(report func() DiagnosticReport) http.HandlerFunc {
+func diagnosticsHandler(report func() DiagnosticReport) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")
 		writer.Header().Set("Content-Disposition", `attachment; filename="kinosail-diagnostics.json"`)

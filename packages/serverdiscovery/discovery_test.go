@@ -21,7 +21,7 @@ func TestAdvertisementLifecycle(t *testing.T) {
 	called := false
 	err := start(ctx, "Living room", "https://player.example.com:8443/", func(name, kind, domain string, port int, txt []string, interfaces []net.Interface) (advertisement, error) {
 		called = true
-		if name != "Living room" || kind != ServiceType || domain != "local." || port != 8443 || interfaces != nil || !reflect.DeepEqual(txt, []string{"version=1", "scheme=https", "url=https://player.example.com:8443"}) {
+		if name != "Living room" || kind != serviceType || domain != "local." || port != 8443 || interfaces != nil || !reflect.DeepEqual(txt, []string{"version=1", "scheme=https", "url=https://player.example.com:8443"}) {
 			t.Fatalf("unexpected advertisement: %s %s %s %d %v", name, kind, domain, port, txt)
 		}
 		return service, nil

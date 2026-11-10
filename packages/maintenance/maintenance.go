@@ -55,7 +55,7 @@ func New(ctx context.Context, interval time.Duration, limit int64, dependencies 
 	return manager
 }
 
-func NewBound(ctx context.Context, interval time.Duration, limit int64, dependencies Dependencies, setWait func(func(context.Context) error)) *Manager {
+func newBound(ctx context.Context, interval time.Duration, limit int64, dependencies Dependencies, setWait func(func(context.Context) error)) *Manager {
 	manager := New(ctx, interval, limit, dependencies)
 	if setWait != nil {
 		setWait(manager.WaitIdle)
@@ -64,7 +64,7 @@ func NewBound(ctx context.Context, interval time.Duration, limit int64, dependen
 }
 
 func NewApplication(ctx context.Context, interval time.Duration, limit int64, cache playback.HLSCacheControl, backups *sharedbackup.Manager, pruneMetadata func() error, metadataConfigured func() bool, analysis *markers.Analyzer) *Manager {
-	return NewBound(ctx, interval, limit, Dependencies{
+	return newBound(ctx, interval, limit, Dependencies{
 		PruneCache: cache.Prune, PruneMetadata: pruneMetadata, CacheStats: cache.Stats,
 		BackupStatus:       backupStatus(backups),
 		MetadataConfigured: metadataConfigured,

@@ -24,7 +24,7 @@ func TestLifetimeCapacityRejectsBeforePersistence(t *testing.T) {
 	}
 	var writes atomic.Int32
 	manager.persist = func(string, any) error { writes.Add(1); return nil }
-	if _, err := manager.Start("viewer", downloadItem(), "original"); !errors.Is(err, ErrCapacity) {
+	if _, err := manager.Start("viewer", downloadItem(), "original"); !errors.Is(err, errCapacity) {
 		t.Fatalf("capacity error = %v", err)
 	}
 	if writes.Load() != 0 || len(manager.pending) != 0 || len(manager.jobs) != maximumJobs {
@@ -89,7 +89,7 @@ func TestRemoveCancelsPreparationAndSameIdentityCanRestart(t *testing.T) {
 func TestCopyAndSealUseSameIntegrityContract(t *testing.T) {
 	root := t.TempDir()
 	input, output := filepath.Join(root, "input"), filepath.Join(root, "output")
-	if err := os.WriteFile(input, []byte(strings.Repeat("media", int(ChunkSize)/5+1)), 0o600); err != nil {
+	if err := os.WriteFile(input, []byte(strings.Repeat("media", int(chunkSize)/5+1)), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	copied, err := copyManifest(t.Context(), input, output, "aaaaaaaaaaaaaaaa")

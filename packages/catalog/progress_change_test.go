@@ -24,7 +24,7 @@ func TestProgressRevisionRejectsChangesWithoutPersistenceOrAudit(t *testing.T) {
 			storage := ProgressStorage{Mutex: new(sync.RWMutex), PersistMutex: new(sync.Mutex), Values: &values, File: "progress.json", Persist: func(string, any) error { t.Fatal("rejected event persisted"); return nil }}
 			watched := true
 			previous, current, accepted, err := storage.Update("viewer:item", ProgressRevision(test.seconds, &watched, test.session, test.revision, now.Add(time.Hour)))
-			started, completed := ProgressAudit(previous, current, test.seconds, &watched, accepted, err)
+			started, completed := progressAudit(previous, current, test.seconds, &watched, accepted, err)
 			if accepted || started || completed || !reflect.DeepEqual(values["viewer:item"], original) {
 				t.Fatalf("rejected event changed state or audit: %v %v %v", accepted, started, completed)
 			}
@@ -70,7 +70,7 @@ func TestProgressAuditTransitions(t *testing.T) {
 		{PlaybackState{Updated: now, Watched: true}, 0, &watch, nil, false, false},
 		{PlaybackState{}, 1, &watch, errors.New("persist"), false, false},
 	} {
-		started, completed := ProgressAudit(test.previous, PlaybackState{Updated: now}, test.seconds, test.watched, true, test.err)
+		started, completed := progressAudit(test.previous, PlaybackState{Updated: now}, test.seconds, test.watched, true, test.err)
 		if started != test.started || completed != test.completed {
 			t.Fatalf("audit = %v %v for %#v", started, completed, test)
 		}

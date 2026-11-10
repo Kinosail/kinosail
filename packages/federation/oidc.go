@@ -18,18 +18,18 @@ const (
 	maxPendingStates    = 256
 	maxMFAFailures      = 5
 	transactionTTL      = 10 * time.Minute
-	OIDCStateCookieName = "kinosail_oidc_state"
+	oidcStateCookieName = "kinosail_oidc_state"
 )
 
 var (
-	ErrNotConfigured       = errors.New("federation is not configured")
-	ErrTooManyPending      = errors.New("too many federation requests are pending")
-	ErrInvalidCallback     = errors.New("federation callback is invalid")
-	ErrInvalidState        = errors.New("federation state is invalid or expired")
-	ErrAuthorizationDenied = errors.New("federation authorization was denied")
-	ErrProviderUnavailable = errors.New("federation provider is unavailable")
-	ErrCodeExchange        = errors.New("federation code exchange failed")
-	ErrTokenInvalid        = errors.New("federation token is invalid")
+	errNotConfigured       = errors.New("federation is not configured")
+	errTooManyPending      = errors.New("too many federation requests are pending")
+	errInvalidCallback     = errors.New("federation callback is invalid")
+	errInvalidState        = errors.New("federation state is invalid or expired")
+	errAuthorizationDenied = errors.New("federation authorization was denied")
+	errProviderUnavailable = errors.New("federation provider is unavailable")
+	errCodeExchange        = errors.New("federation code exchange failed")
+	errTokenInvalid        = errors.New("federation token is invalid")
 )
 
 type Identity struct{ Issuer, Subject string }
@@ -63,7 +63,7 @@ type OIDCCallback struct {
 	ClearCookie bool
 }
 
-func NewOIDC(config OIDCConfig) *OIDC {
+func newOIDC(config OIDCConfig) *OIDC {
 	if config.IdentityClaim == "" {
 		config.IdentityClaim = "sub"
 	}
@@ -76,7 +76,7 @@ func (flow *OIDC) Configured() bool {
 	}
 	issuer, issuerErr := url.Parse(flow.config.Issuer)
 	redirect, redirectErr := url.Parse(flow.config.RedirectURL)
-	return issuerErr == nil && redirectErr == nil && TrustedURL(issuer) && TrustedURL(redirect)
+	return issuerErr == nil && redirectErr == nil && trustedURL(issuer) && trustedURL(redirect)
 }
 
 func validOIDCClient(config OIDCConfig) bool {
@@ -94,7 +94,7 @@ func (flow *OIDC) Begin(ctx context.Context, profileID, linkSession string) (str
 	prune(flow.pending, now, func(transaction oidcTransaction) time.Time { return transaction.expires })
 	if len(flow.pending) >= maxPendingStates {
 		flow.mu.Unlock()
-		return "", "", ErrTooManyPending
+		return "", "", errTooManyPending
 	}
 	flow.pending[tokenKey(state)] = oidcTransaction{nonce: nonce, verifier: verifier, profileID: profileID, linkSession: linkSession, expires: now.Add(transactionTTL)}
 	flow.mu.Unlock()
@@ -106,29 +106,29 @@ func (flow *OIDC) Begin(ctx context.Context, profileID, linkSession string) (str
 func (flow *OIDC) Complete(ctx context.Context, rawQuery, cookieState string, cookiePresent bool) (OIDCCallback, error) {
 	code, responseIssuer, providerError, valid := parseOIDCCallbackQuery(rawQuery)
 	if !valid || responseIssuer != "" && responseIssuer != flow.config.Issuer {
-		return OIDCCallback{}, ErrInvalidCallback
+		return OIDCCallback{}, errInvalidCallback
 	}
 	transaction, validState := flow.takeTransaction(parseState(rawQuery), cookieState, cookiePresent)
 	result := OIDCCallback{ProfileID: transaction.profileID, LinkSession: transaction.linkSession, ClearCookie: cookiePresent}
 	if !validState {
-		return result, ErrInvalidState
+		return result, errInvalidState
 	}
 	if providerError {
-		return result, ErrAuthorizationDenied
+		return result, errAuthorizationDenied
 	}
 	provider, err := flow.getProvider(ctx)
 	if err != nil {
-		return result, ErrProviderUnavailable
+		return result, errProviderUnavailable
 	}
 	config := flow.oauthConfig(provider)
 	token, err := config.Exchange(ctx, code, oauth2.VerifierOption(transaction.verifier))
 	raw, ok := tokenExtra(token, err)
 	if !ok {
-		return result, ErrCodeExchange
+		return result, errCodeExchange
 	}
 	result.Identity, err = flow.verifiedIdentity(ctx, provider, raw, transaction.nonce)
 	if err != nil {
-		return result, ErrTokenInvalid
+		return result, errTokenInvalid
 	}
 	return result, nil
 }
@@ -139,7 +139,7 @@ func (flow *OIDC) BeginMFA(profileID string) (string, error) {
 	defer flow.mu.Unlock()
 	prune(flow.mfa, now, func(entry mfaChallenge) time.Time { return entry.expires })
 	if len(flow.mfa) >= maxPendingStates {
-		return "", ErrTooManyPending
+		return "", errTooManyPending
 	}
 	flow.mfa[tokenKey(challenge)] = mfaChallenge{profileID: profileID, expires: now.Add(transactionTTL)}
 	return challenge, nil
@@ -186,7 +186,7 @@ func StateCookie(state string, secure bool) *http.Cookie {
 		maxAge = -1
 	}
 	//nolint:gosec // Production TLS supplies Secure; explicit loopback HTTP remains supported.
-	return &http.Cookie{Name: OIDCStateCookieName, Value: state, Path: "/login/oidc", MaxAge: maxAge, HttpOnly: true, Secure: secure, SameSite: http.SameSiteLaxMode}
+	return &http.Cookie{Name: oidcStateCookieName, Value: state, Path: "/login/oidc", MaxAge: maxAge, HttpOnly: true, Secure: secure, SameSite: http.SameSiteLaxMode}
 }
 
 func (flow *OIDC) takeTransaction(state, cookieState string, cookiePresent bool) (oidcTransaction, bool) {
@@ -209,11 +209,11 @@ func (flow *OIDC) getProvider(ctx context.Context) (*oidc.Provider, error) {
 		return flow.provider, nil
 	}
 	if !flow.Configured() {
-		return nil, ErrNotConfigured
+		return nil, errNotConfigured
 	}
 	provider, err := oidc.NewProvider(ctx, flow.config.Issuer)
 	if err != nil {
-		return nil, ErrProviderUnavailable
+		return nil, errProviderUnavailable
 	}
 	if err = validateOIDCProvider(provider); err != nil {
 		return nil, err
@@ -233,12 +233,12 @@ func (flow *OIDC) oauthConfig(provider *oidc.Provider) oauth2.Config {
 func (flow *OIDC) verifiedIdentity(ctx context.Context, provider *oidc.Provider, raw, nonce string) (Identity, error) {
 	idToken, err := provider.Verifier(&oidc.Config{ClientID: flow.config.ClientID}).Verify(ctx, raw)
 	if err != nil || idToken.Nonce != nonce {
-		return Identity{}, ErrTokenInvalid
+		return Identity{}, errTokenInvalid
 	}
 	claims := make(map[string]json.RawMessage)
 	var subject string
-	if err := idToken.Claims(&claims); err != nil || json.Unmarshal(claims[flow.config.IdentityClaim], &subject) != nil || !ValidSubject(subject) {
-		return Identity{}, ErrTokenInvalid
+	if err := idToken.Claims(&claims); err != nil || json.Unmarshal(claims[flow.config.IdentityClaim], &subject) != nil || !validSubject(subject) {
+		return Identity{}, errTokenInvalid
 	}
 	return Identity{Issuer: idToken.Issuer, Subject: subject}, nil
 }

@@ -69,7 +69,7 @@ func TestRequestSessionsCreateEveryPlayerSessionKind(t *testing.T) {
 		})
 	}
 	var missing *RequestSessions
-	if _, err := missing.CreateLocal("viewer", "Device", false, false); !errors.Is(err, ErrProfileNotFound) {
+	if _, err := missing.CreateLocal("viewer", "Device", false, false); !errors.Is(err, errProfileNotFound) {
 		t.Fatalf("nil request sessions = %v", err)
 	}
 }
@@ -90,16 +90,16 @@ func TestWithoutPublicSessionsReturnsAnIndependentCopy(t *testing.T) {
 func TestRequestSessionsRejectInvalidKindsAndTokensBeforePersistence(t *testing.T) {
 	t.Parallel()
 	fixture := newSessionFixture()
-	if _, err := fixture.sessions().Create("viewer", "Device", false, false, "unknown"); !errors.Is(err, ErrSessionKind) || fixture.writes != 0 {
+	if _, err := fixture.sessions().Create("viewer", "Device", false, false, "unknown"); !errors.Is(err, errSessionKind) || fixture.writes != 0 {
 		t.Fatalf("unknown kind = %v writes=%d", err, fixture.writes)
 	}
 	for name, token := range map[string]string{
-		"missing": "", "oversized": strings.Repeat("x", MaxSessionTokenBytes+1), "space": "two tokens", "control": "token\x7f",
+		"missing": "", "oversized": strings.Repeat("x", maxSessionTokenBytes+1), "space": "two tokens", "control": "token\x7f",
 	} {
 		t.Run(name, func(t *testing.T) {
 			candidate := newSessionFixture()
 			_, err := candidate.sessions(func(config *SessionConfig) { config.NewToken = func() string { return token } }).Create("viewer", "Device", false, false, "")
-			if !errors.Is(err, ErrSessionToken) || candidate.writes != 0 || len(candidate.values) != 0 {
+			if !errors.Is(err, errSessionToken) || candidate.writes != 0 || len(candidate.values) != 0 {
 				t.Fatalf("invalid token = %v writes=%d values=%#v", err, candidate.writes, candidate.values)
 			}
 		})
@@ -159,10 +159,10 @@ func TestRequestSessionsIssueCookiesAfterPersistence(t *testing.T) {
 	if err := requestSessionFixture(fixture).SignIn(response, request, "viewer"); err == nil || response.Header().Get("Set-Cookie") != "" {
 		t.Fatalf("failed persistence wrote cookie: %q, %v", response.Header().Get("Set-Cookie"), err)
 	}
-	if err := requestSessionFixture(newSessionFixture()).SignIn(nil, request, "viewer"); !errors.Is(err, ErrInvalidConfig) {
+	if err := requestSessionFixture(newSessionFixture()).SignIn(nil, request, "viewer"); !errors.Is(err, errInvalidConfig) {
 		t.Fatalf("nil writer = %v", err)
 	}
-	if err := requestSessionFixture(newSessionFixture()).SignIn(response, nil, "viewer"); !errors.Is(err, ErrInvalidConfig) {
+	if err := requestSessionFixture(newSessionFixture()).SignIn(response, nil, "viewer"); !errors.Is(err, errInvalidConfig) {
 		t.Fatalf("nil request = %v", err)
 	}
 }
@@ -219,7 +219,7 @@ func TestRequestSessionsBindAuthenticationToValidatedRequestTokens(t *testing.T)
 		},
 		"oversized": func(*RequestSessions) *http.Request {
 			value := request.Clone(request.Context())
-			value.Header.Set("Authorization", "Bearer "+strings.Repeat("x", MaxSessionTokenBytes+1))
+			value.Header.Set("Authorization", "Bearer "+strings.Repeat("x", maxSessionTokenBytes+1))
 			return value
 		},
 	} {
@@ -228,17 +228,17 @@ func TestRequestSessionsBindAuthenticationToValidatedRequestTokens(t *testing.T)
 			bound := requestSessionFixture(candidate)
 			input := invalid(bound)
 			before := candidate.writes
-			if !errors.Is(bound.MarkStrong(input), ErrCurrentSession) || bound.RecentlyAuthenticated(input, time.Hour) || bound.Public(input) || bound.SignOut(input) != nil || candidate.writes != before {
+			if !errors.Is(bound.MarkStrong(input), errCurrentSession) || bound.RecentlyAuthenticated(input, time.Hour) || bound.Public(input) || bound.SignOut(input) != nil || candidate.writes != before {
 				t.Fatalf("invalid request changed sessions: writes=%d", candidate.writes)
 			}
 		})
 	}
 	var missing *RequestSessions
-	if !errors.Is(missing.MarkStrong(request), ErrCurrentSession) || missing.RecentlyAuthenticated(request, time.Hour) || missing.Public(request) || missing.SignOut(request) != nil {
+	if !errors.Is(missing.MarkStrong(request), errCurrentSession) || missing.RecentlyAuthenticated(request, time.Hour) || missing.Public(request) || missing.SignOut(request) != nil {
 		t.Fatal("nil request lifecycle did not fail closed")
 	}
 	invalidCore := &RequestSessions{token: func(*http.Request) string { return "token" }}
-	if !errors.Is(invalidCore.MarkStrong(request), ErrCurrentSession) || invalidCore.RecentlyAuthenticated(request, time.Hour) || invalidCore.Public(request) || !errors.Is(invalidCore.SignOut(request), ErrCurrentSession) {
+	if !errors.Is(invalidCore.MarkStrong(request), errCurrentSession) || invalidCore.RecentlyAuthenticated(request, time.Hour) || invalidCore.Public(request) || !errors.Is(invalidCore.SignOut(request), errCurrentSession) {
 		t.Fatal("nil core did not fail closed")
 	}
 }

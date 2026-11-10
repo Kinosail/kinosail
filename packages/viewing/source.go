@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func Fetch(ctx context.Context, client *http.Client, input Input, lists bool) ([]Activity, error) {
+func fetch(ctx context.Context, client *http.Client, input Input, lists bool) ([]Activity, error) {
 	if input.Source == "plex" {
 		return fetchPlexViewingActivity(ctx, client, input, lists)
 	}

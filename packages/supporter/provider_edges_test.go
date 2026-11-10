@@ -16,14 +16,14 @@ func (failingReadCloser) Close() error             { return nil }
 
 func TestReadActivationResponseRejectsReadAndDecodeFailures(t *testing.T) {
 	readFailure := &http.Response{Header: http.Header{"Content-Type": []string{"application/json"}}, Body: failingReadCloser{}}
-	if _, _, err := readActivationResponse(readFailure); !errors.Is(err, ErrUnavailable) {
+	if _, _, err := readActivationResponse(readFailure); !errors.Is(err, errUnavailable) {
 		t.Fatalf("read failure error = %v", err)
 	}
 	typeFailure := &http.Response{
 		Header: http.Header{"Content-Type": []string{"application/json"}},
 		Body:   io.NopCloser(strings.NewReader(`{"certificate":1,"signature":"x","publicKey":"x","activationId":"x"}`)),
 	}
-	if _, _, err := readActivationResponse(typeFailure); !errors.Is(err, ErrUnavailable) {
+	if _, _, err := readActivationResponse(typeFailure); !errors.Is(err, errUnavailable) {
 		t.Fatalf("decode failure error = %v", err)
 	}
 }
@@ -31,7 +31,7 @@ func TestReadActivationResponseRejectsReadAndDecodeFailures(t *testing.T) {
 func TestProviderReportsRejectedKeyPrecisely(t *testing.T) {
 	service := testServiceAt(t, App{}, testNow())
 	object := map[string]json.RawMessage{"error": json.RawMessage(`"supporter_key_not_accepted"`)}
-	if err := service.providerError(http.StatusBadRequest, object, "supporter_key_not_accepted"); !errors.Is(err, ErrInvalid) || err.Error() != "supporter key was not accepted" {
+	if err := service.providerError(http.StatusBadRequest, object, "supporter_key_not_accepted"); !errors.Is(err, errInvalid) || err.Error() != "supporter key was not accepted" {
 		t.Fatalf("provider error = %v", err)
 	}
 }

@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	ErrInvalidFactorInput = errors.New("multi-factor authentication input is invalid")
-	ErrOwnerFactorNeeded  = errors.New("owner must retain a passkey or authenticator")
+	errInvalidFactorInput = errors.New("multi-factor authentication input is invalid")
+	errOwnerFactorNeeded  = errors.New("owner must retain a passkey or authenticator")
 )
 
 type FactorProfile struct {
@@ -43,11 +43,11 @@ func NewFactorTransaction[P any](config FactorConfig[P]) *FactorTransaction[P] {
 
 func (transaction *FactorTransaction[P]) Enable(id, secret string, recovery []string) error {
 	if !transaction.valid() || !validFactorIdentity(id) || !validFactorSecret(secret) {
-		return ErrInvalidFactorInput
+		return errInvalidFactorInput
 	}
 	hashed, valid := recoveryHashes(recovery)
 	if !valid {
-		return ErrInvalidFactorInput
+		return errInvalidFactorInput
 	}
 	profiles := slices.Clone(*transaction.config.Profiles)
 	for index, profile := range profiles {
@@ -61,12 +61,12 @@ func (transaction *FactorTransaction[P]) Enable(id, secret string, recovery []st
 		sessions := WithoutProfile(*transaction.config.Sessions, id, true)
 		return transaction.commit(profiles, sessions, true)
 	}
-	return ErrProfileNotFound
+	return errProfileNotFound
 }
 
 func (transaction *FactorTransaction[P]) Disable(id string) error {
 	if !transaction.valid() || !validFactorIdentity(id) {
-		return ErrProfileNotFound
+		return errProfileNotFound
 	}
 	profiles := slices.Clone(*transaction.config.Profiles)
 	for index, profile := range profiles {
@@ -75,7 +75,7 @@ func (transaction *FactorTransaction[P]) Disable(id string) error {
 			continue
 		}
 		if factor.Owner && factor.Passkeys == 0 {
-			return ErrOwnerFactorNeeded
+			return errOwnerFactorNeeded
 		}
 		factor.Secret, factor.Recovery, factor.Counter = "", nil, 0
 		factor.Revision++
@@ -83,7 +83,7 @@ func (transaction *FactorTransaction[P]) Disable(id string) error {
 		sessions := WithoutProfile(*transaction.config.Sessions, id, true)
 		return transaction.commit(profiles, sessions, true)
 	}
-	return ErrProfileNotFound
+	return errProfileNotFound
 }
 
 func (transaction *FactorTransaction[P]) Verify(id, code string) bool {
@@ -95,7 +95,7 @@ func (transaction *FactorTransaction[P]) Verify(id, code string) bool {
 		if factor.ID != id || factor.Secret == "" {
 			continue
 		}
-		if counter, valid := TOTPCounter(factor.Secret, code, transaction.config.Now()); valid {
+		if counter, valid := totpCounter(factor.Secret, code, transaction.config.Now()); valid {
 			if counter <= factor.Counter {
 				return false
 			}
@@ -105,7 +105,7 @@ func (transaction *FactorTransaction[P]) Verify(id, code string) bool {
 		if len(factor.Recovery) > recoveryCodeCount {
 			continue
 		}
-		normalized := NormalizeRecovery(code)
+		normalized := normalizeRecovery(code)
 		if normalized == "" {
 			return false
 		}
@@ -156,7 +156,7 @@ func recoveryHashes(recovery []string) ([]string, bool) {
 	}
 	hashed, unique := make([]string, len(recovery)), make(map[string]struct{}, len(recovery))
 	for index, code := range recovery {
-		normalized := NormalizeRecovery(code)
+		normalized := normalizeRecovery(code)
 		if normalized == "" {
 			return nil, false
 		}

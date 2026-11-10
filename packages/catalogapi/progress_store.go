@@ -24,7 +24,7 @@ func NewProgressStore(dataDir string, database *documentdb.Store, load func(stri
 
 func ProjectViewerItem(item library.Item, state catalog.PlaybackState, viewer identitycore.Profile) ClientItem {
 	access := ItemAccess{Stream: viewer.Permits("stream", true), Download: viewer.Permits("download", viewer.Owner || viewer.Downloads)}
-	return ProjectItem(item, state, access)
+	return projectItem(item, state, access)
 }
 
 func RecentAdminProgress(store *catalog.RequestProgressStore, index progressIndex, profiles []identitycore.Profile) []catalog.PlaybackView {

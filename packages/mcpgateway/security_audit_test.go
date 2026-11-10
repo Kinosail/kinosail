@@ -25,7 +25,7 @@ func auditGateway(t *testing.T, api *testAPI) *http.ServeMux {
 		ReadAccess:  {"GET /api/v1/library": true, "GET /api/v1/history": true},
 		WriteAccess: {"POST /api/v1/playlists": true}, ManageAccess: {"POST /api/v1/tasks/scan": true},
 	}
-	if _, err := Register(mux, testGatewayConfig(OAuthConfig{}, principals, api, routes), connections); err != nil {
+	if _, err := register(mux, testGatewayConfig(OAuthConfig{}, principals, api, routes), connections); err != nil {
 		t.Fatal(err)
 	}
 	return mux

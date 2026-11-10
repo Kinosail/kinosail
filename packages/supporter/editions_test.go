@@ -15,7 +15,7 @@ import (
 
 func TestActivationRequiresConfiguredIssuerKey(t *testing.T) {
 	fixture := newSigningFixture(t)
-	fixture.edition = EditionOnce
+	fixture.edition = editionOnce
 	_, different, err := ed25519.GenerateKey(rand.Reader)
 	if err != nil {
 		t.Fatal(err)
@@ -32,14 +32,14 @@ func TestActivationRequiresConfiguredIssuerKey(t *testing.T) {
 		t.Fatalf("certificate from trusted issuer was rejected: %v", err)
 	}
 	for _, invalid := range []string{"short", fixture.public + "=", strings.Repeat("A", 65)} {
-		if _, err := New(Config{App: service.app, TrustedPublicKey: invalid}); !errors.Is(err, ErrInvalid) {
+		if _, err := New(Config{App: service.app, TrustedPublicKey: invalid}); !errors.Is(err, errInvalid) {
 			t.Fatalf("invalid configured issuer key %q was accepted", invalid)
 		}
 	}
 }
 
 func TestThreeEditionsCoexistInEveryActivationOrder(t *testing.T) {
-	for _, order := range [][]string{{EditionOnce, EditionMonthly, EditionYearly}, {EditionOnce, EditionYearly, EditionMonthly}, {EditionMonthly, EditionOnce, EditionYearly}, {EditionMonthly, EditionYearly, EditionOnce}, {EditionYearly, EditionOnce, EditionMonthly}, {EditionYearly, EditionMonthly, EditionOnce}} {
+	for _, order := range [][]string{{editionOnce, editionMonthly, editionYearly}, {editionOnce, editionYearly, editionMonthly}, {editionMonthly, editionOnce, editionYearly}, {editionMonthly, editionYearly, editionOnce}, {editionYearly, editionOnce, editionMonthly}, {editionYearly, editionMonthly, editionOnce}} {
 		t.Run(strings.Join(order, "-"), func(t *testing.T) {
 			fixture := newSigningFixture(t)
 			service, _ := fixtureService(t, fixture)
@@ -47,7 +47,7 @@ func TestThreeEditionsCoexistInEveryActivationOrder(t *testing.T) {
 			for _, edition := range order {
 				fixture.edition = edition
 				fixture.family = FamilyLiving
-				if edition == EditionOnce {
+				if edition == editionOnce {
 					fixture.family = FamilyPatron
 				}
 				next, _, err := service.Activate(context.Background(), state, ActivationInput{Key: "VALID_KEY_" + edition})
@@ -70,8 +70,8 @@ func TestThreeEditionsCoexistInEveryActivationOrder(t *testing.T) {
 			}
 			fixture.tier = "friend"
 			fixture.family = FamilyLiving
-			fixture.edition = EditionMonthly
-			next, status, err := service.Activate(context.Background(), restored, ActivationInput{Key: "VALID_KEY_" + EditionMonthly})
+			fixture.edition = editionMonthly
+			next, status, err := service.Activate(context.Background(), restored, ActivationInput{Key: "VALID_KEY_" + editionMonthly})
 			if err != nil || status.BadgeCase.MonthlyLevel != 10 || status.Yearly.Rank != 10 {
 				t.Fatalf("downgrade lost earned tiers: %+v %v", status, err)
 			}
@@ -84,7 +84,7 @@ func TestThreeEditionsCoexistInEveryActivationOrder(t *testing.T) {
 }
 
 func TestEditionClaimsRejectInvalidAndConflictingValues(t *testing.T) {
-	for _, edition := range []string{"unknown", "MONTHLY", " monthly", strings.Repeat("x", 4097), EditionOnce} {
+	for _, edition := range []string{"unknown", "MONTHLY", " monthly", strings.Repeat("x", 4097), editionOnce} {
 		t.Run(edition[:min(len(edition), 20)], func(t *testing.T) {
 			fixture := newSigningFixture(t)
 			fixture.edition = edition
@@ -101,7 +101,7 @@ func TestEditionClaimsRejectInvalidAndConflictingValues(t *testing.T) {
 
 func TestEditionSaveFailureAndActivePrecedence(t *testing.T) {
 	fixture := newSigningFixture(t)
-	fixture.edition = EditionMonthly
+	fixture.edition = editionMonthly
 	fixture.family = FamilyLiving
 	service, _ := fixtureService(t, fixture)
 	state, _, err := service.Activate(context.Background(), State{}, ActivationInput{Key: "MONTHLY_SUPPORTER"})
@@ -109,7 +109,7 @@ func TestEditionSaveFailureAndActivePrecedence(t *testing.T) {
 		t.Fatal(err)
 	}
 	fixture.now = fixture.now.Add(31 * 24 * time.Hour)
-	fixture.edition = EditionYearly
+	fixture.edition = editionYearly
 	unchanged, _, err := service.ActivateAndSave(context.Background(), state, ActivationInput{Key: "YEARLY_SUPPORTER"}, func(State) error { return errors.New("disk") })
 	if err == nil || !reflect.DeepEqual(unchanged, state) {
 		t.Fatal("failed persistence changed collection")
@@ -118,7 +118,7 @@ func TestEditionSaveFailureAndActivePrecedence(t *testing.T) {
 	if err != nil || !status.Active || !status.SubscriptionActive || !status.Monthly.Expired || !status.Yearly.Active {
 		t.Fatalf("wrong active projection: %+v %v", status, err)
 	}
-	for _, edition := range []string{EditionMonthly, EditionYearly} {
+	for _, edition := range []string{editionMonthly, editionYearly} {
 		if _, _, ok := service.CertificateForFamily(next, edition); !ok {
 			t.Fatal("certificate unavailable", edition)
 		}
@@ -127,7 +127,7 @@ func TestEditionSaveFailureAndActivePrecedence(t *testing.T) {
 
 func TestYearlyCertificateCoversPaidYearWithoutWeakeningMonthlyOrLegacyBounds(t *testing.T) {
 	fixture := newSigningFixture(t)
-	fixture.edition, fixture.family, fixture.expiresIn = EditionYearly, FamilyLiving, 365*24*time.Hour
+	fixture.edition, fixture.family, fixture.expiresIn = editionYearly, FamilyLiving, 365*24*time.Hour
 	service, _ := fixtureService(t, fixture)
 	state, status, err := service.Activate(context.Background(), State{}, ActivationInput{Key: "YEARLY_SUPPORTER"})
 	if err != nil || !status.Active || status.Yearly == nil {
@@ -146,8 +146,8 @@ func TestYearlyCertificateCoversPaidYearWithoutWeakeningMonthlyOrLegacyBounds(t 
 		edition string
 		expiry  time.Duration
 	}{
-		{EditionYearly, 371 * 24 * time.Hour},
-		{EditionMonthly, 46 * 24 * time.Hour},
+		{editionYearly, 371 * 24 * time.Hour},
+		{editionMonthly, 46 * 24 * time.Hour},
 		{"", 46 * 24 * time.Hour},
 	} {
 		fixture := newSigningFixture(t)
@@ -163,7 +163,7 @@ func TestYearlyCertificateCoversPaidYearWithoutWeakeningMonthlyOrLegacyBounds(t 
 
 func TestEditionStateRejectsInvalidBeforeProvider(t *testing.T) {
 	fixture := newSigningFixture(t)
-	fixture.edition, fixture.family = EditionMonthly, FamilyLiving
+	fixture.edition, fixture.family = editionMonthly, FamilyLiving
 	service, _ := fixtureService(t, fixture)
 	state, _, err := service.Activate(context.Background(), State{}, ActivationInput{Key: "VALID_SUPPORTER_KEY"})
 	if err != nil {
@@ -171,7 +171,7 @@ func TestEditionStateRejectsInvalidBeforeProvider(t *testing.T) {
 	}
 	cases := []State{state, state, state, state}
 	cases[0].MonthlyLevel = -1
-	cases[1].YearlyLevel = MaximumLevel + 1
+	cases[1].YearlyLevel = maximumLevel + 1
 	cases[2].Yearly = state.Monthly
 	cases[3].Monthly = cloneGrant(state.Monthly)
 	cases[3].Monthly.Signature = "invalid"

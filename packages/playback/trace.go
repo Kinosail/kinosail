@@ -32,7 +32,7 @@ type TraceEvent struct {
 
 var playbackTraceEvents = stringSet("session-start", "capability", "capability-direct", "first-frame", "first-moving-frame", "frame-after-seek", "loadstart", "loadedmetadata", "canplay", "play-request", "play-rejected", "play", "playing", "waiting", "stalled", "seeking", "seeked", "pause", "ended", "error", "progress", "source-direct", "source-compatible", "fallback-offered", "fallback-selected", "hls-manifest", "hls-level", "hls-error", "policy-change", "heartbeat", "visibility-hidden", "visibility-visible", "session-end")
 
-func ReadTrace(writer http.ResponseWriter, request *http.Request, validSession func(string) bool) (TraceEvent, error) {
+func readTrace(writer http.ResponseWriter, request *http.Request, validSession func(string) bool) (TraceEvent, error) {
 	if writer == nil || request == nil || request.Body == nil || validSession == nil {
 		return TraceEvent{}, errors.New("invalid playback trace")
 	}
@@ -46,13 +46,13 @@ func ReadTrace(writer http.ResponseWriter, request *http.Request, validSession f
 
 func ValidTrace(event TraceEvent, validSession func(string) bool) bool {
 	return validSession != nil && validSession(event.Session) && playbackTraceEvents[event.Event] && event.Sequence > 0 && event.Sequence <= 1_000_000 &&
-		oneOf(event.Method, "", "direct", "remux", "audio-transcode", "transcode", "native-hls", "offline") && SafeTraceText(event.Detail) && SafeTraceText(event.Quality) &&
+		oneOf(event.Method, "", "direct", "remux", "audio-transcode", "transcode", "native-hls", "offline") && safeTraceText(event.Detail) && safeTraceText(event.Quality) &&
 		oneOf(event.Visibility, "", "visible", "hidden") && boundedTraceNumber(event.ElapsedMS, maxPlaybackTraceMilliseconds) && boundedTraceNumber(event.PositionMS, maxPlaybackTraceMilliseconds) &&
 		boundedTraceNumber(event.DurationMS, maxPlaybackTraceMilliseconds) && boundedTraceNumber(event.BufferedAheadMS, maxPlaybackTraceMilliseconds) && event.ReadyState >= 0 && event.ReadyState <= 4 &&
 		event.NetworkState >= 0 && event.NetworkState <= 3 && event.ErrorCode >= 0 && event.ErrorCode <= 4 && boundedTraceNumber(event.DroppedFrames, 1_000_000_000) && boundedTraceNumber(event.TotalFrames, 1_000_000_000)
 }
 
-func SafeTraceText(value string) bool {
+func safeTraceText(value string) bool {
 	return len(value) <= 64 && strings.IndexFunc(value, func(character rune) bool {
 		return character != '-' && character != '_' && character != '.' && character != ':' && (character < '0' || character > '9') && (character < 'A' || character > 'Z') && (character < 'a' || character > 'z')
 	}) == -1

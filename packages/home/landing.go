@@ -22,8 +22,8 @@ type libraryCounts struct {
 func libraryLanding(view *library.View, hasArtwork func(library.Item) bool) *landing {
 	return library.Derive(view, "home.landing", func(view *library.View) *landing {
 		items := view.Items()
-		artwork, titles := MediaPresentation(items, hasArtwork)
-		result := &landing{artwork: artwork, titles: titles, recent: RecentlyAdded(items, artwork, titles), genres: MovieGenres(items, artwork), shelves: make(map[string][]ShelfItem), added: make(map[string][]*library.Item), counts: countLibrary(view)}
+		artwork, titles := mediaPresentation(items, hasArtwork)
+		result := &landing{artwork: artwork, titles: titles, recent: recentlyAdded(items, artwork, titles), genres: movieGenres(items, artwork), shelves: make(map[string][]ShelfItem), added: make(map[string][]*library.Item), counts: countLibrary(view)}
 		for _, kind := range []string{"movie", "show", "audio", "audiobook", "other"} {
 			result.added[kind] = newestFirst(items, kind)
 			result.shelves[kind] = recentShelf(result.added[kind], artwork, titles, func(library.Item) bool { return true })

@@ -82,7 +82,7 @@ func (service *Service) validLegacyRecognition(object map[string]json.RawMessage
 		return certificate.RecognitionName == ""
 	}
 	name, ok := jsonString(raw)
-	if !ok || name != certificate.RecognitionName || !ValidRecognitionName(name, service.app.Legacy == LegacySubtitles) {
+	if !ok || name != certificate.RecognitionName || !validRecognitionName(name, service.app.Legacy == LegacySubtitles) {
 		return false
 	}
 	return !restrictTier || name == "" || Rank(certificate.Tier) >= 7

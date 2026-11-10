@@ -16,17 +16,17 @@ func TestConfigurationCommandRejectsInvalidInputBeforeValidation(t *testing.T) {
 	if called {
 		t.Fatal("validator called for invalid input")
 	}
-	if handled, err := ConfigurationCommand(nil, io.Discard, validate); handled || err != nil {
+	if handled, err := configurationCommand(nil, io.Discard, validate); handled || err != nil {
 		t.Fatalf("unrelated command = %v, %v", handled, err)
 	}
-	if handled, err := ConfigurationCommand([]string{"config", "validate"}, io.Discard, nil); !handled || err == nil {
+	if handled, err := configurationCommand([]string{"config", "validate"}, io.Discard, nil); !handled || err == nil {
 		t.Fatalf("missing validator = %v, %v", handled, err)
 	}
 	want := errors.New("invalid configuration")
-	if _, err := ConfigurationCommand([]string{"config", "validate"}, io.Discard, func(string) (ConfigurationCounts, error) { return ConfigurationCounts{}, want }); !errors.Is(err, want) {
+	if _, err := configurationCommand([]string{"config", "validate"}, io.Discard, func(string) (ConfigurationCounts, error) { return ConfigurationCounts{}, want }); !errors.Is(err, want) {
 		t.Fatalf("validation error = %v", err)
 	}
-	if _, err := ConfigurationCommand([]string{"config", "validate"}, errorWriter{}, validate); err == nil {
+	if _, err := configurationCommand([]string{"config", "validate"}, errorWriter{}, validate); err == nil {
 		t.Fatal("writer error was discarded")
 	}
 }
@@ -34,7 +34,7 @@ func TestConfigurationCommandRejectsInvalidInputBeforeValidation(t *testing.T) {
 func assertInvalidConfigurationArguments(t *testing.T, validate func(string) (ConfigurationCounts, error)) {
 	t.Helper()
 	for _, args := range [][]string{{"config"}, {"config", "unknown"}, {"config", "validate", "one", "two"}} {
-		if handled, err := ConfigurationCommand(args, io.Discard, validate); !handled || err == nil {
+		if handled, err := configurationCommand(args, io.Discard, validate); !handled || err == nil {
 			t.Errorf("invalid arguments accepted: %#v", args)
 		}
 	}

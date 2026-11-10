@@ -13,7 +13,7 @@ import (
 )
 
 func (module DeliveryHTTP) PlaySession(request *http.Request, itemID string) (DeliverySession, bool) {
-	id, valid := StrictQuery(request.URL.Query(), "playSessionId", 256)
+	id, valid := strictQuery(request.URL.Query(), "playSessionId", 256)
 	if !validRequiredValue(id, 256) || !valid {
 		return nil, false
 	}
@@ -33,7 +33,7 @@ func (module DeliveryHTTP) PlaybackContext(request *http.Request) (library.Item,
 		return library.Item{}, DeliveryViewer{}, false
 	}
 	id = RawID(id)
-	playID, queryValid := StrictQuery(request.URL.Query(), "playSessionId", 256)
+	playID, queryValid := strictQuery(request.URL.Query(), "playSessionId", 256)
 	if !queryValid {
 		return library.Item{}, DeliveryViewer{}, false
 	}

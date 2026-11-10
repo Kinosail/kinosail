@@ -15,7 +15,7 @@ type ScanRoot struct {
 	Path, Namespace string
 }
 
-func RefreshWork(ctx context.Context, mutex *sync.Mutex, acquire func(context.Context) (func(), error), refresh func(context.Context) error) error {
+func refreshWork(ctx context.Context, mutex *sync.Mutex, acquire func(context.Context) (func(), error), refresh func(context.Context) error) error {
 	mutex.Lock()
 	defer mutex.Unlock()
 	release, err := acquire(ctx)
@@ -26,7 +26,7 @@ func RefreshWork(ctx context.Context, mutex *sync.Mutex, acquire func(context.Co
 	return refresh(ctx)
 }
 
-func WaitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan struct{}, request func()) bool {
+func waitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan struct{}, request func()) bool {
 	if interval <= 0 {
 		select {
 		case <-ctx.Done():
@@ -88,7 +88,7 @@ dispatch:
 
 func (index *Index) Refresh(ctx context.Context) error {
 	index.resolveRoots()
-	return RefreshWork(ctx, &index.refreshMu, index.acquire, func(ctx context.Context) error {
+	return refreshWork(ctx, &index.refreshMu, index.acquire, func(ctx context.Context) error {
 		scanners := index.rootScanners()
 		raw, err := scanRoots(ctx, scanners, func(scanner *library.Scanner) ([]library.Item, error) { return scanner.Scan(ctx) })
 		return index.commit(ctx, raw, err, true)
@@ -100,7 +100,7 @@ func (index *Index) RefreshPaths(ctx context.Context, paths []string) error {
 }
 
 func (index *Index) refreshChanged(ctx context.Context, paths []string) error {
-	return RefreshWork(ctx, &index.refreshMu, index.acquire, func(ctx context.Context) error {
+	return refreshWork(ctx, &index.refreshMu, index.acquire, func(ctx context.Context) error {
 		scanners := index.rootScanners()
 		raw, err := scanRoots(ctx, scanners, func(scanner *library.Scanner) ([]library.Item, error) {
 			return scanner.Rescan(ctx, pathsWithin(scanner.Root(), paths))

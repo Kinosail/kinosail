@@ -14,7 +14,7 @@ import (
 	"github.com/libp2p/zeroconf/v2"
 )
 
-const ServiceType = "_kinosail-player._tcp"
+const serviceType = "_kinosail-player._tcp"
 
 type (
 	advertisement interface{ Shutdown() }
@@ -38,7 +38,7 @@ func start(ctx context.Context, name, origin string, register registerFunc) erro
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	service, err := register(name, ServiceType, "local.", port, txt, nil)
+	service, err := register(name, serviceType, "local.", port, txt, nil)
 	if err != nil {
 		return err
 	}

@@ -6,16 +6,16 @@ import (
 )
 
 var (
-	ErrSyncNotFound = errors.New("viewing activity sync was not found")
-	ErrSyncRunning  = errors.New("viewing activity sync is already running")
-	ErrSyncCapacity = errors.New("viewing activity sync capacity is in use")
+	errSyncNotFound = errors.New("viewing activity sync was not found")
+	errSyncRunning  = errors.New("viewing activity sync is already running")
+	errSyncCapacity = errors.New("viewing activity sync capacity is in use")
 )
 
 func SyncRunStatus(err error) int {
 	switch {
-	case errors.Is(err, ErrSyncNotFound):
+	case errors.Is(err, errSyncNotFound):
 		return http.StatusNotFound
-	case errors.Is(err, ErrSyncRunning), errors.Is(err, ErrSyncCapacity):
+	case errors.Is(err, errSyncRunning), errors.Is(err, errSyncCapacity):
 		return http.StatusConflict
 	}
 	return http.StatusBadGateway

@@ -8,7 +8,7 @@ import (
 const validManifest = `{"schemaVersion":2,"version":"v1.2.3","updateSchema":2,"stateSchema":1,"minimumStateSchema":1,"configurationSchema":1,"minimumConfigurationSchema":1,"runtimeCommands":["ffmpeg","ffprobe","fpcalc"],"installation":{"schemaVersion":3,"file":"kinosail-native-installation.json","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","size":100},"artifacts":[{"os":"linux","arch":"amd64","file":"kinosail-core-v1.2.3-linux-amd64.tar.gz","format":"tar.gz","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","size":1},{"os":"linux","arch":"arm64","file":"kinosail-core-v1.2.3-linux-arm64.tar.gz","format":"tar.gz","sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","size":2},{"os":"macos","arch":"amd64","file":"kinosail-core-v1.2.3-macos-amd64.tar.gz","format":"tar.gz","sha256":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","size":3},{"os":"macos","arch":"arm64","file":"kinosail-core-v1.2.3-macos-arm64.tar.gz","format":"tar.gz","sha256":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","size":4},{"os":"windows","arch":"amd64","file":"kinosail-core-v1.2.3-windows-amd64.zip","format":"zip","sha256":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","size":5},{"os":"windows","arch":"arm64","file":"kinosail-core-v1.2.3-windows-arm64.zip","format":"zip","sha256":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","size":6}]}`
 
 func TestManifestSelectsEverySupportedPlatform(t *testing.T) {
-	manifest, err := ParseManifest(strings.NewReader(validManifest))
+	manifest, err := parseManifest(strings.NewReader(validManifest))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,7 +28,7 @@ func TestManifestSelectsEverySupportedPlatform(t *testing.T) {
 }
 
 func TestManifestRejectsAnIncompatibleInstalledSchema(t *testing.T) {
-	manifest, err := ParseManifest(strings.NewReader(strings.Replace(validManifest, `"stateSchema":1,"minimumStateSchema":1`, `"stateSchema":2,"minimumStateSchema":2`, 1)))
+	manifest, err := parseManifest(strings.NewReader(strings.Replace(validManifest, `"stateSchema":1,"minimumStateSchema":1`, `"stateSchema":2,"minimumStateSchema":2`, 1)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestManifestRejectsUnknownMissingDuplicateAndOversizedInput(t *testing.T) {
 		"oversized":            strings.Repeat(" ", manifestLimit+1),
 	} {
 		t.Run(name, func(t *testing.T) {
-			if _, err := ParseManifest(strings.NewReader(input)); err == nil {
+			if _, err := parseManifest(strings.NewReader(input)); err == nil {
 				t.Fatal("invalid manifest was accepted")
 			}
 		})

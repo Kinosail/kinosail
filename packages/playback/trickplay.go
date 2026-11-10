@@ -40,7 +40,7 @@ type Trickplay struct {
 	misses       map[string]time.Time
 }
 
-func NewTrickplay(dependencies TrickplayDependencies) (*Trickplay, error) {
+func newTrickplay(dependencies TrickplayDependencies) (*Trickplay, error) {
 	if dependencies.Lookup == nil || dependencies.Acquire == nil || dependencies.NotFound == nil || dependencies.Unavailable == nil || dependencies.RecipePolicy.MaxBitrate <= 0 || dependencies.RecipePolicy.OffsetStepMilliseconds <= 0 {
 		return nil, errors.New("trickplay dependencies are invalid")
 	}
@@ -110,7 +110,7 @@ func (frames *Trickplay) generate(ctx context.Context, id, source, target string
 		if Fresh(target, source) {
 			return nil, nil
 		}
-		err := GenerateTrickplay(flight, frames.dependencies.Cache, frames.dependencies.FFmpeg, source, target, second)
+		err := generateTrickplay(flight, frames.dependencies.Cache, frames.dependencies.FFmpeg, source, target, second)
 		if !encoderMiss(flight, err) {
 			return nil, err
 		}
@@ -126,7 +126,7 @@ func (frames *Trickplay) generate(ctx context.Context, id, source, target string
 	}
 }
 
-func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
+func generateTrickplay(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
 	return generateFrame(ctx, cache, ffmpeg, source, target, second, 320)
 }
 

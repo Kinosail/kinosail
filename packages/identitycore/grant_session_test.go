@@ -65,12 +65,12 @@ func assertPublicGrantScenario(t *testing.T, scenario string) {
 
 func TestManagementSessionNilAndMissingBinding(t *testing.T) {
 	t.Parallel()
-	if ManagementProfileID(nil) != "" || ManagementDeviceKey(nil) != "" || SessionMatchesRequest(Session{}, nil) {
+	if ManagementProfileID(nil) != "" || ManagementDeviceKey(nil) != "" || sessionMatchesRequest(Session{}, nil) {
 		t.Fatal("nil request has authority")
 	}
 	fixture := newSessionFixture()
 	sessions := requestSessionFixture(fixture)
-	if _, err := sessions.CreateForRequest(nil, "viewer", "Device", false, false, ""); !errors.Is(err, ErrInvalidConfig) {
+	if _, err := sessions.CreateForRequest(nil, "viewer", "Device", false, false, ""); !errors.Is(err, errInvalidConfig) {
 		t.Fatalf("nil request=%v", err)
 	}
 	if _, err := sessions.CreateForRequest(httptest.NewRequestWithContext(t.Context(), "POST", "/", nil), "viewer", "Device", false, false, ""); err != nil {
@@ -78,7 +78,7 @@ func TestManagementSessionNilAndMissingBinding(t *testing.T) {
 	}
 	profile := SessionProfile{Owner: false, Secured: true}
 	key := base64.StdEncoding.EncodeToString(make([]byte, 32))
-	if err := validateSessionAuthority(profile, "", nil, key); !errors.Is(err, ErrSessionKind) {
+	if err := validateSessionAuthority(profile, "", nil, key); !errors.Is(err, errSessionKind) {
 		t.Fatal("viewer received owner management authority")
 	}
 }

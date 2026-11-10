@@ -54,7 +54,7 @@ func TestCertificateClientPerformsTrustedTLSHandshake(t *testing.T) {
 	requested := make(chan *tls.ClientHelloInfo, 1)
 	path := unixSocketServer(t, CertificateHandler("family.example", func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) { requested <- hello; return &cert, nil }))
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusNoContent) }))
-	server.TLS = &tls.Config{MinVersion: tls.VersionTLS12, GetCertificate: CertificateClient("family.example", path)}
+	server.TLS = &tls.Config{MinVersion: tls.VersionTLS12, GetCertificate: certificateClient("family.example", path)}
 	server.StartTLS()
 	t.Cleanup(server.Close)
 	leaf, err := x509.ParseCertificate(cert.Certificate[0])

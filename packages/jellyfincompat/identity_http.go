@@ -29,19 +29,19 @@ func (identity Identity[Profile]) SystemInfo(writer http.ResponseWriter, request
 	if identity.Secure(request) {
 		scheme = "https"
 	}
-	JSON(writer, SystemInfo(identity.ServerID, identity.ServerName(), scheme+"://"+request.Host, identity.Configured()))
+	JSON(writer, systemInfo(identity.ServerID, identity.ServerName(), scheme+"://"+request.Host, identity.Configured()))
 }
 
 func (identity Identity[Profile]) PasswordLogin(request *http.Request, credentials Credentials) (Authentication, error) {
 	if !identity.AllowLogin(request.RemoteAddr, credentials.Username) {
-		return Authentication{}, ErrCredentialRateLimit
+		return Authentication{}, errCredentialRateLimit
 	}
 	profile, valid := identity.Authenticate(credentials.Username, credentials.Pw)
 	if !valid {
-		return Authentication{}, ErrInvalidCredentials
+		return Authentication{}, errInvalidCredentials
 	}
 	if identity.RequiresMFA(profile) {
-		return Authentication{}, ErrQuickConnectMFA
+		return Authentication{}, errQuickConnectMFA
 	}
 	profile = identity.Compatibility(profile)
 	identity.Audit(request, profile)

@@ -14,7 +14,7 @@ func BenchmarkRecentlyAddedLargeLibrary(b *testing.B) {
 	}
 	b.ReportAllocs()
 	for b.Loop() {
-		if cards := RecentlyAdded(items, nil, nil); len(cards) != recentItemLimit {
+		if cards := recentlyAdded(items, nil, nil); len(cards) != recentItemLimit {
 			b.Fatalf("recent cards = %d", len(cards))
 		}
 	}
