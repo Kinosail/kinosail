@@ -1,4 +1,5 @@
 """Sharded quick Go tests run every listed test exactly once from any working directory."""
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -49,6 +50,64 @@ class GoShardTests(unittest.TestCase):
             else:
                 self.assertEqual(len(plan), 1)
         self.assertEqual(sorted(seen), sorted(tests))
+
+    def test_measured_weights_balance_the_shards_and_every_test_still_runs_once(self):
+        tests = [f"Test{index:02d}" for index in range(40)]
+        weights = {"Test00": 90.0, "Test02": 60.0, "Test04": 45.0, "Test06": 30.0, "Test08": 30.0, "TestRemoved": 500.0}
+        shards = [go_shard.partition(tests, index, 2, weights) for index in (1, 2)]
+        self.assertEqual(sorted(shards[0] + shards[1]), tests)
+        self.assertFalse(set(shards[0]) & set(shards[1]))
+        loads = [sum(weights.get(name, go_shard.DEFAULT_WEIGHT) for name in shard) for shard in shards]
+        self.assertLess(abs(loads[0] - loads[1]), 31)
+        alternating = sum(weights.get(name, go_shard.DEFAULT_WEIGHT) for name in tests[::2])
+        self.assertGreater(alternating - max(loads), 100)
+        self.assertEqual(shards, [go_shard.partition(list(reversed(tests)), index, 2, weights) for index in (1, 2)])
+        self.assertEqual(go_shard.partition(tests, 1, 2, {}), tests[::2])
+        three = [go_shard.partition(tests, index, 3, weights) for index in (1, 2, 3)]
+        self.assertEqual(sorted(sum(three, [])), tests)
+
+    def test_invalid_weight_files_fail_and_the_recorded_file_is_valid(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "weights.json"
+            for content in ("[]", '{"apps/player": []}', '{"apps/player": {"TestA": -1}}', '{"apps/player": {"TestA": "slow"}}',
+                            '{"apps/player": {"TestA": true}}', '{"apps/player": {"bad name": 2}}', "not json"):
+                path.write_text(content)
+                with self.subTest(content=content), self.assertRaises(ValueError):
+                    go_shard.load_weights("apps/player", path)
+            path.write_text('{"apps/other": {"TestA": 3}}')
+            self.assertEqual(go_shard.load_weights("apps/player", path), {})
+            path.write_text('{"apps/player": {"TestA": 3, "FuzzB": 1.5}}')
+            self.assertEqual(go_shard.load_weights("apps/player", path), {"TestA": 3.0, "FuzzB": 1.5})
+        recorded = go_shard.load_weights("apps/player")
+        self.assertGreater(len(recorded), 10)
+        self.assertEqual(list(json.loads(go_shard.WEIGHTS.read_text())["apps/player"]), sorted(recorded))
+
+    def test_recording_reads_json_events_and_verbose_logs_and_discounts_parallel_tests(self):
+        events = [{"Action": "pass", "Test": "TestSlow", "Elapsed": 12.34}, {"Action": "pass", "Test": "TestSlow/case", "Elapsed": 12.0},
+                  {"Action": "pass", "Test": "TestQuick", "Elapsed": 0.4}, {"Action": "fail", "Test": "TestFailed", "Elapsed": 9.0},
+                  {"Action": "run", "Test": "TestSlow"}, {"Action": "pass", "Elapsed": 80.0}, {"Action": "pass", "Test": "FuzzEdge", "Elapsed": 1.0},
+                  {"Action": "pause", "Test": "TestShared"}, {"Action": "pass", "Test": "TestShared", "Elapsed": 20.0},
+                  {"Action": "pause", "Test": "TestSharedQuick"}, {"Action": "pass", "Test": "TestSharedQuick", "Elapsed": 3.0}]
+        lines = [json.dumps(event) for event in events] + ["not json", "", "[]", "7"]
+        self.assertEqual(go_shard.record(lines), {"FuzzEdge": 1.0, "TestShared": 5.0, "TestSlow": 12.3})
+        log = ["2026-11-09T22:45:59.1Z === RUN   TestSerial", "2026-11-09T22:46:59.1Z --- PASS: TestSerial (60.04s)",
+               "2026-11-09T22:46:59.1Z === PAUSE TestWide", "2026-11-09T22:47:59.1Z --- PASS: TestWide (40.00s)",
+               "2026-11-09T22:47:59.1Z     --- PASS: TestSerial/case (55.00s)", "2026-11-09T22:47:59.1Z --- FAIL: TestBroken (30.00s)",
+               "2026-11-09T22:47:59.1Z --- PASS: TestTiny (0.20s)", "2026-11-09T22:47:59.1Z --- SKIP: TestSkipped (9.00s)",
+               "2026-11-09T22:48:00.1Z --- SKIP: TestGated (0.00s)", "2026-11-09T22:52:00.1Z --- PASS: TestGated (28.00s)"]
+        self.assertEqual(go_shard.record(log), {"TestSerial": 60.0, "TestWide": 10.0})
+        gated = [json.dumps({"Action": "skip", "Test": "TestGated", "Elapsed": 0}), json.dumps({"Action": "pass", "Test": "TestGated", "Elapsed": 28})]
+        self.assertEqual(go_shard.record(gated), {})
+        self.assertEqual(go_shard.record(reversed(gated)), {})
+        self.assertEqual(go_shard.record(reversed(log)), {"TestSerial": 60.0, "TestWide": 10.0})
+
+    def test_timing_mode_adds_verbose_output_to_the_heavy_package_only(self):
+        for value, verbose in (("1", True), ("", False), ("true", False)):
+            with self.subTest(value=value), patch.dict(os.environ, {"KINOSAIL_GO_TEST_TIMINGS": value}), \
+                    patch("go_shard.subprocess.run", side_effect=fake_run([], ["TestA", "TestB"])):
+                plan, _ = go_shard.commands("apps/player", "1/2")
+            self.assertEqual("-v" in plan[0], verbose)
+            self.assertNotIn("-v", plan[1])
 
     def test_invalid_shards_modules_and_empty_shards_fail_before_running_tests(self):
         for shard in ("0/2", "3/2", "2/0", "1-2", "", "x/y", "1/200"):

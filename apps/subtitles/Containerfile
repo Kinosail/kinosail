@@ -1,15 +1,27 @@
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.27.3-alpine@sha256:d200d2dd76b03a99b52651fd1325aff7dcd35422c35c01bac56571b0507f3deb AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.27.3-alpine@sha256:d200d2dd76b03a99b52651fd1325aff7dcd35422c35c01bac56571b0507f3deb AS modules
 WORKDIR /src
 COPY packages/go.mod ./packages/go.mod
 COPY apps/subtitles/go.mod apps/subtitles/go.sum ./apps/subtitles/
 RUN cd apps/subtitles && go mod download
+
+FROM modules AS dependencies
+COPY packages ./packages
+COPY apps/subtitles/cmd ./apps/subtitles/cmd
+COPY apps/subtitles/internal ./apps/subtitles/internal
+ARG TARGETOS
+ARG TARGETARCH
+RUN cd apps/subtitles && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOAMD64=v1 GOARM64=v8.0 go list -deps ./cmd/kinosail | grep -v '^github.com/MikeO7/' > /dependencies.txt
+
+FROM modules AS build
+ARG TARGETOS
+ARG TARGETARCH
+COPY --from=dependencies /dependencies.txt /dependencies.txt
+RUN cd apps/subtitles && GOCACHE=/go-cache CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOAMD64=v1 GOARM64=v8.0 go build -trimpath $(cat /dependencies.txt)
 COPY packages ./packages
 COPY apps/subtitles/cmd ./apps/subtitles/cmd
 COPY apps/subtitles/internal ./apps/subtitles/internal
 ARG VERSION=dev
-ARG TARGETOS
-ARG TARGETARCH
-RUN --mount=type=cache,target=/root/.cache/go-build cd apps/subtitles && GOCACHE=/root/.cache/go-build CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOAMD64=v1 GOARM64=v8.0 go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /kinosail ./cmd/kinosail
+RUN cd apps/subtitles && GOCACHE=/go-cache CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOAMD64=v1 GOARM64=v8.0 go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /kinosail ./cmd/kinosail
 
 FROM docker.io/library/debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS whisper
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates cmake g++ make wget \
