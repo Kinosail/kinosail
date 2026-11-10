@@ -46,6 +46,8 @@ Keep provider tokens private. Use the most limited token you can. Trust only cer
 
 When a Jellyfin app downloads a title, Kinosail prepares a verified copy of the original file. If the copy is not ready within 10 seconds, Kinosail sends the original file directly. It finishes the verified copy for later downloads.
 
+A Jellyfin app can sort a list by name, date added, or year. It can filter a list by genre, year, first letters of the name, played state, and favorites. An app shows these controls only if it has them.
+
 Kinosail tests common client tasks. It does not support every Jellyfin feature or device. For sign-in help, see [Jellyfin app troubleshooting]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}).
 
 ## Sign in and play
