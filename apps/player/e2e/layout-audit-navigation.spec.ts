@@ -165,10 +165,11 @@ test("desktop library navigation remains reachable in its own scroll region", as
   const icons = await rail.locator(".sidebar-group a").evaluateAll(links => links.map(link => {
     const icon = link.querySelector("[class^=i-]");
     const box = icon?.getBoundingClientRect();
-    return { name: link.textContent?.trim(), icon: icon?.className ?? "", drawn: !!icon && !!box && box.width > 0 && getComputedStyle(icon).getPropertyValue("--icon").includes("svg") };
+    return { name: link.textContent?.trim(), icon: icon?.className ?? "", drawn: !!icon && !!box && box.width > 0 && getComputedStyle(icon).getPropertyValue("--icon").includes("svg"), second: getComputedStyle(link, "::before").content !== "none" };
   }));
   expect(icons.length).toBeGreaterThan(1);
   expect(icons.filter(link => !link.drawn)).toEqual([]);
+  expect(icons.filter(link => link.second)).toEqual([]);
   expect(new Set(icons.map(link => link.icon)).size).toBe(icons.length);
   const edit = rail.getByRole("link", { name: "Edit navigation", exact: true });
   await edit.scrollIntoViewIfNeeded();
