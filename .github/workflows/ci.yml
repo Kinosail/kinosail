@@ -89,7 +89,7 @@ jobs:
               MODULES: ${{ needs.plan.outputs.modules }}
             run: |
               for directory in $(jq -r '.[].directory' <<< "$MODULES"); do
-                go -C "$directory" run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+                python3 scripts/ci/vuln_check.py "$directory" golang.org/x/vuln/cmd/govulncheck@v1.9.0
               done
           - run: make max-loc
           - run: make comments-check
