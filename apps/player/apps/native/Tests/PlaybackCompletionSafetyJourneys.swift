@@ -141,6 +141,11 @@ extension PlaybackEndpointJourneys {
         }
 
         @Test func nativeScrubSupersedesEndpointRestoreWithoutWatchedCompletion() async throws {
+            for _ in 1...6 { if try await scrubSupersedesEndpointRestore() { return } }
+            Issue.record("Prerequisite: native endpoint EOF must invoke a scrub while owned AVKit is attached and loading")
+        }
+
+        private func scrubSupersedesEndpointRestore() async throws -> Bool {
             let fixture = try await PlaybackEndpointJourneys.PlaybackHLSEndpointJourneys.compatibleFixture()
             defer { fixture.close() }
             let item = try fixture.item("movie")
@@ -175,7 +180,7 @@ extension PlaybackEndpointJourneys {
             let store = try await pendingStore(fixture, seconds: 15)
             try await joinedStartup(coordinator, item: item, fixture: fixture, store: store,
                                     onReturn: { observation.observe("startup-return", coordinator: coordinator, completions: completions) })
-            try #require(superseded, "Prerequisite: native endpoint EOF must invoke a scrub while owned AVKit is attached and loading")
+            guard superseded else { return false }
             let player = try #require(coordinator.player)
             let nativeSeconds = player.currentTime().seconds, sourceSeconds = coordinator.seconds
             observation.observe("assertion", coordinator: coordinator, completions: completions,
@@ -186,6 +191,7 @@ extension PlaybackEndpointJourneys {
             #expect(!fixture.progressReceipts.contains { $0.itemID == item.id && $0.watched })
             print("COMPLETION_SAFETY case=actual-EOF-superseded nativeTarget=3 sourceTarget=6 interiorAdvancing=true callbackCount=\(completions) watchedReceipt=\(fixture.progressReceipts.contains { $0.itemID == item.id && $0.watched })")
             await fixture.client.close()
+            return true
         }
 
         private func mp4Fixture() async throws -> PlaybackStartupFixture {

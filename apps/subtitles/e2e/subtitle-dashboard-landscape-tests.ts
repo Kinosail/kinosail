@@ -74,7 +74,7 @@ test("Phone overview reserves no empty space for hidden status messages", async 
       expect(box && box.y >= 0 && box.y + box.height <= viewport.height, `${viewport.width}px: status message is off screen`).toBeTruthy();
       expect(box && nav && box.y + box.height <= nav.y + 1, `${viewport.width}px: status message overlaps the tab bar`).toBeTruthy();
       expect(await layout(), `${viewport.width}px: a status message moved the page`).toEqual(before);
-    } finally { release(); await page.unroute("**/?view=library"); }
+    } finally { release(); await page.unrouteAll({behavior: "wait"}); }
   }
 });
 

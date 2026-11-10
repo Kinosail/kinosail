@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
@@ -121,14 +120,6 @@ func buildPlayerData(request *http.Request, item library.Item, index *libraryInd
 	data.NativeControls = !data.SubtitlePickerLimited
 	data.Finalize(request)
 	return data
-}
-
-func subtitleLabel(media, subtitle string) string {
-	label := strings.TrimPrefix(strings.TrimSuffix(filepath.Base(subtitle), filepath.Ext(subtitle)), strings.TrimSuffix(filepath.Base(media), filepath.Ext(media))+".")
-	if label == strings.TrimSuffix(filepath.Base(media), filepath.Ext(media)) {
-		return "Subtitles"
-	}
-	return strings.ToUpper(strings.ReplaceAll(label, ".", " · "))
 }
 
 func byteSize(size int64) string {

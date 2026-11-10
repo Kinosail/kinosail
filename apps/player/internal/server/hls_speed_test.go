@@ -39,7 +39,7 @@ func TestRealHLSGenerationKeepsAheadOfSupportedPlaybackSpeeds(t *testing.T) {
 			ctx, cancel := context.WithCancel(t.Context())
 			defer cancel()
 			media := speedTestMedia(t, ffmpeg, sample.video, sample.audio, sample.skip)
-			handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe})
+			handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: speedTestCache(t), FFmpeg: ffmpeg, FFprobe: ffprobe})
 			if sample.skip {
 				assertAPIBody(t, apiCall(t, handler, "", http.MethodPut, "/api/v1/settings/playback", map[string]any{"mode": "compatible", "autoplay": true, "subtitles": "on", "autoSkip": []string{"intro"}}), http.StatusOK)
 			}
@@ -62,6 +62,24 @@ func TestRealHLSGenerationKeepsAheadOfSupportedPlaybackSpeeds(t *testing.T) {
 			assertSpeedTestDelivery(t, ctx, handler, info.Compatible, ffmpeg, duration)
 		})
 	}
+}
+
+func speedTestCache(t *testing.T) string {
+	t.Helper()
+	cache, err := os.MkdirTemp("", "kinosail-speed-cache-")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		deadline := time.Now().Add(10 * time.Second)
+		for err = os.RemoveAll(cache); err != nil && time.Now().Before(deadline); err = os.RemoveAll(cache) {
+			time.Sleep(20 * time.Millisecond)
+		}
+		if err != nil {
+			t.Errorf("remove speed test cache after the encoder stopped: %v", err)
+		}
+	})
+	return cache
 }
 
 func speedTestMedia(t *testing.T, ffmpeg, video, audio string, skip bool) string {
