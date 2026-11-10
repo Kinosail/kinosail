@@ -18,6 +18,7 @@ type ProjectItem func(library.Item) ItemRecord
 type Catalog struct {
 	view    *library.View
 	project ProjectItem
+	state   func(library.Item) ItemState
 }
 
 func NewCatalog(view *library.View, project ProjectItem) Catalog {
@@ -80,11 +81,18 @@ func (catalog Catalog) Items(values url.Values) (Page, error) {
 	if err != nil {
 		return Page{}, err
 	}
+	query, err := parseListQuery(values)
+	if err != nil {
+		return Page{}, err
+	}
 	entries := catalog.under(Query(values, "parentId"), Query(values, "includeItemTypes"))
 	if entries == nil {
 		return Page{Items: catalog.records(nil)}, nil
 	}
-	page, start, total := newEntryFilter(values, ids).page(entries, max(0, Int(values, "startIndex")), limit)
+	query.state.lookup = catalog.state
+	filter := newEntryFilter(values, ids)
+	filter.query = query
+	page, start, total := filter.page(query.order(entries), max(0, Int(values, "startIndex")), limit)
 	return Page{Items: catalog.records(page), StartIndex: start, TotalRecordCount: total}, nil
 }
 

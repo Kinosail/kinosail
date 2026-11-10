@@ -9,7 +9,7 @@ import (
 
 func (api *jellyfinAPI) registerItems(mux *http.ServeMux) {
 	sharedjellyfin.RegisterItems(mux, sharedjellyfin.ItemHandlers{
-		Views: ownJellyfinUser(api.views), Items: ownJellyfinUser(api.items), Latest: ownJellyfinUser(api.latest), Persons: api.persons, Item: ownJellyfinUser(api.item),
+		Views: ownJellyfinUser(api.views), Items: ownJellyfinUser(api.items), Latest: ownJellyfinUser(api.latest), Persons: api.persons, Genres: api.genres, Filters: api.filters, Item: ownJellyfinUser(api.item),
 		Seasons: api.seasons, Episodes: api.episodes, NextUp: api.nextUp, Resume: api.resume,
 	})
 }
@@ -41,7 +41,10 @@ func (api *jellyfinAPI) items(writer http.ResponseWriter, request *http.Request)
 		http.Error(writer, "library is unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	result, err := api.listing(request, view).Items(request.URL.Query())
+	result, err := api.listing(request, view).WithState(func(item library.Item) sharedjellyfin.ItemState {
+		state := api.progress.Get(request, item.ID)
+		return sharedjellyfin.ItemState{Seconds: state.Seconds, Watched: state.Watched, Favorite: api.lists.Has(request, item.ID)}
+	}).Items(request.URL.Query())
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return

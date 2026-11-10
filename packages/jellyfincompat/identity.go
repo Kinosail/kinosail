@@ -54,7 +54,7 @@ func EnsureID(current string, generate func() (string, error)) (string, bool, er
 func LibraryRoutes() []string {
 	return []string{
 		"GET /System/Info", "GET /Library/MediaFolders", "GET /Users", "GET /Users/Me", "GET /Users/{id}",
-		"GET /UserViews", "GET /Users/{user}/Views", "GET /Items", "GET /Users/{user}/Items", "GET /Items/Latest", "GET /Users/{user}/Items/Latest", "GET /Persons",
+		"GET /UserViews", "GET /Users/{user}/Views", "GET /Items", "GET /Users/{user}/Items", "GET /Items/Latest", "GET /Users/{user}/Items/Latest", "GET /Persons", "GET /Genres", "GET /Items/Filters",
 		"GET /Items/{id}", "GET /Users/{user}/Items/{id}", "GET /Shows/{id}/Seasons", "GET /Shows/{id}/Episodes",
 		"GET /Items/{id}/Images/{type}", "GET /Items/{id}/Images/{type}/{index}",
 	}

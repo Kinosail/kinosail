@@ -8,7 +8,7 @@ import (
 type WriteJSON func(http.ResponseWriter, any)
 
 type ItemHandlers struct {
-	Views, Items, Latest, Persons, Item, Seasons, Episodes, NextUp, Resume http.HandlerFunc
+	Views, Items, Latest, Persons, Genres, Filters, Item, Seasons, Episodes, NextUp, Resume http.HandlerFunc
 }
 
 func RegisterItems(mux *http.ServeMux, handlers ItemHandlers) {
@@ -19,6 +19,8 @@ func RegisterItems(mux *http.ServeMux, handlers ItemHandlers) {
 	mux.HandleFunc("GET /Items/Latest", handlers.Latest)
 	mux.HandleFunc("GET /Users/{user}/Items/Latest", handlers.Latest)
 	mux.HandleFunc("GET /Persons", handlers.Persons)
+	mux.HandleFunc("GET /Genres", handlers.Genres)
+	mux.HandleFunc("GET /Items/Filters", handlers.Filters)
 	mux.HandleFunc("GET /Items/{id}", handlers.Item)
 	mux.HandleFunc("GET /Users/{user}/Items/{id}", handlers.Item)
 	mux.HandleFunc("GET /Shows/{id}/Seasons", handlers.Seasons)

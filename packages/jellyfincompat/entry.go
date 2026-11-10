@@ -31,7 +31,7 @@ var (
 var jellyfinPrefixes = []string{
 	"/System/", "/system/", "/QuickConnect/", "/Users", "/Library/", "/Auth/", "/UserViews", "/UserItems/",
 	"/UserPlayedItems/", "/UserFavoriteItems/", "/Items", "/Shows/", "/Videos/", "/Audio/", "/Sessions/",
-	"/Branding/", "/MediaSegments/", "/Playback/",
+	"/Branding/", "/MediaSegments/", "/Playback/", "/Genres",
 }
 
 type Credentials struct{ Username, Pw, Password string }
