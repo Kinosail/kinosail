@@ -88,32 +88,56 @@ func (query listQuery) matches(entry catalogEntry) bool {
 	return names && ids && query.state.matches(entry)
 }
 
+type sortRow struct {
+	entry      catalogEntry
+	name, year string
+	added      time.Time
+}
+
 func (query listQuery) order(entries []catalogEntry) []catalogEntry {
 	if len(query.sort) == 0 || len(entries) < 2 {
 		return entries
 	}
-	ordered := slices.Clone(entries)
-	slices.SortStableFunc(ordered, func(left, right catalogEntry) int {
-		for _, key := range query.sort {
-			result := 0
-			switch key {
-			case "name":
-				result = strings.Compare(left.sortName(), right.sortName())
-			case "added":
-				result = left.added().Compare(right.added())
-			case "year":
-				result = strings.Compare(left.year(), right.year())
-			}
-			if result != 0 {
-				if query.descending {
-					return -result
-				}
-				return result
-			}
+	rows := make([]sortRow, len(entries))
+	for position, entry := range entries {
+		rows[position] = sortRow{entry: entry}
+		if slices.Contains(query.sort, "name") {
+			rows[position].name = entry.sortName()
 		}
-		return 0
-	})
+		if slices.Contains(query.sort, "year") {
+			rows[position].year = entry.year()
+		}
+		if slices.Contains(query.sort, "added") {
+			rows[position].added = entry.added()
+		}
+	}
+	slices.SortStableFunc(rows, query.compare)
+	ordered := make([]catalogEntry, len(rows))
+	for position := range rows {
+		ordered[position] = rows[position].entry
+	}
 	return ordered
+}
+
+func (query listQuery) compare(left, right sortRow) int {
+	for _, key := range query.sort {
+		result := 0
+		switch key {
+		case "name":
+			result = strings.Compare(left.name, right.name)
+		case "added":
+			result = left.added.Compare(right.added)
+		case "year":
+			result = strings.Compare(left.year, right.year)
+		}
+		if result != 0 && query.descending {
+			return -result
+		}
+		if result != 0 {
+			return result
+		}
+	}
+	return 0
 }
 
 func (entry catalogEntry) sortName() string {
