@@ -251,7 +251,7 @@ jobs:
   proofs:
     name: Media proof (${{ matrix.shard }})
     needs: plan
-    if: needs.plan.outputs.verified != 'true' && fromJSON(needs.plan.outputs.plan).player
+    if: needs.plan.outputs.verified != 'true' && fromJSON(needs.plan.outputs.plan).player && (fromJSON(needs.plan.outputs.plan).media || github.event_name != 'pull_request')
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ matrix.timeout }}
     strategy:

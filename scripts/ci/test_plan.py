@@ -60,6 +60,13 @@ class DeriveTests(unittest.TestCase):
         pushed = expected({**flags(True), "deep": False, "verified": False}, "push")
         self.assertTrue(pushed["security"] and pushed["codeql-compiled"])
         self.assertFalse(any(expected({**flags(True), "deep": False, "verified": True}, "pull_request").values()))
+        quiet = {**flags(True, media=False), "deep": False, "verified": False}
+        self.assertEqual({job for job, run in expected(quiet, "pull_request").items() if not run}, {"proofs"})
+        for event in ("merge_group", "push", "workflow_dispatch"):
+            with self.subTest(event=event):
+                self.assertTrue(expected(quiet, event)["proofs"])
+        self.assertFalse(expected({**flags(False, media=True), "deep": False, "verified": False}, "pull_request")["proofs"])
+        self.assertFalse(expected({**flags(True), "deep": False, "verified": True}, "merge_group")["proofs"])
 
 
 class TestedRunTests(unittest.TestCase):
