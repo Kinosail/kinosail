@@ -14,3 +14,16 @@ Providers may carry subtitles for different edits of the same film or episode. K
 If a result is wrong, retain the original `.kinosail.bak` recovery copy, inspect the matching information, and follow [subtitle troubleshooting]({{ '/troubleshooting/playback/' | relative_url }}). Do not repeatedly fetch the same mismatch without changing the cause.
 
 SubSource files remain unchanged on disk. Optional locally generated drafts require review; they do not replace subtitles automatically.
+
+## Remove hearing-impaired descriptions
+
+A subtitle for deaf or hard-of-hearing viewers describes sounds and names speakers. You can remove those descriptions from one subtitle.
+
+1. Open the video from the dashboard and select the subtitle language.
+2. Open **Timing anchors and cleanup** and select **Remove hearing-impaired descriptions**.
+3. Select **Preview changes**. The comparison shows each changed and removed cue.
+4. Check the preview, then select **Save reviewed subtitle**.
+
+Kinosail removes text in square brackets and parentheses, such as `[door slams]` and `(sighs)`. It also removes a speaker name in capital letters before a colon, such as `JOHN:`, and lines that contain only music notes. A cue with no other text is removed.
+
+Ordinary dialogue in parentheses is also removed. Check the preview before you save. The option is off by default. To return to the previous file, select **Undo last replacement**.
