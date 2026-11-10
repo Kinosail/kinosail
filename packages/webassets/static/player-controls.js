@@ -252,7 +252,7 @@ if (controls && player.tagName === "VIDEO") {
   });
   if (settingsPanel) {
     const help = document.createElement("p");
-    help.textContent = `Keyboard: Space or K to play/pause, left/right arrows to seek 10 seconds, ${nativeControls ? "" : "T for Theater, "}Esc to close.`;
+    help.textContent = `Keyboard: Space or K to play/pause, left/right arrows or J/L to seek 10 seconds, 0–9 to jump, up/down arrows for volume, M to mute, F for fullscreen, C for subtitles, < and > for speed, ${nativeControls ? "" : "T for Theater, "}Esc to close.`;
     settingsPanel.append(help);
   }
   for (const event of ["enterpictureinpicture", "leavepictureinpicture", "webkitpresentationmodechanged"]) player.addEventListener(event, syncPictureInPicture);
