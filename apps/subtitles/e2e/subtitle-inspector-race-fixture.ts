@@ -48,7 +48,7 @@ export function inspectorFixture(withObservers = false) {
     nodes.set(id, n); return n;
   }
   const form = node("subtitle-edit-form");
-  form.elements = Object.fromEntries(["role", "language", "encoding", "offset", "automaticSync", "removeCredits", "mergeRepeated", "file", "text"].map(name => [name, node("field-" + name)]));
+  form.elements = Object.fromEntries(["role", "language", "encoding", "offset", "automaticSync", "removeCredits", "mergeRepeated", "removeHearingImpaired", "file", "text"].map(name => [name, node("field-" + name)]));
   form.elements.language.value = "en"; form.elements.offset.value = "0";
   form.querySelectorAll = () => [...Object.values(form.elements), node("add-anchor"), node("edit-preview-text"), node("clear-preview-text"), node("subtitle-edit-form-child")];
   const exports = [node("export-srt"), node("export-vtt")];

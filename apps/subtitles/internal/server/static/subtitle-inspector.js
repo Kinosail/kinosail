@@ -135,7 +135,7 @@
     review = result; form.elements.role.value = review.role === "captions" ? "captions" : "translation"; page = 0; render(); form.querySelector('button[type="submit"]').disabled = false; status.textContent = review.current ? "Current subtitle loaded. Preview a change before saving." : "Choose a subtitle file to begin.";
   }
   async function input() {
-    const values = { role: form.elements.role.value, language: form.elements.language.value, fingerprint: review.fingerprint, encoding: form.elements.encoding.value, offsetMilliseconds: Math.round(Number(form.elements.offset.value) * 1000), automaticSync: form.elements.automaticSync.checked, removeCredits: form.elements.removeCredits.checked, mergeRepeated: form.elements.mergeRepeated.checked };
+    const values = { role: form.elements.role.value, language: form.elements.language.value, fingerprint: review.fingerprint, encoding: form.elements.encoding.value, offsetMilliseconds: Math.round(Number(form.elements.offset.value) * 1000), automaticSync: form.elements.automaticSync.checked, removeCredits: form.elements.removeCredits.checked, mergeRepeated: form.elements.mergeRepeated.checked, removeHearingImpaired: form.elements.removeHearingImpaired.checked };
     const rows = Array.from(document.querySelectorAll(".subtitle-anchor"));
     if (rows.length) values.anchors = rows.map(row => { const at = Number(row.querySelector('[name="anchor-at"]').value), target = Number(row.querySelector('[name="anchor-target"]').value); return { atMilliseconds: Math.round(at * 1000), offsetMilliseconds: Math.round((target - at) * 1000) }; });
     const file = form.elements.file.files[0];
