@@ -83,6 +83,9 @@ type Page[Show, Resume, Playlist, Collection any] struct {
 	Letter                            string
 	Letters                           []catalog.Letter
 	SearchClear                       string
+	Filters                           catalog.Filters
+	Facets                            catalog.Facets
+	FiltersClear                      string
 	NavigationPrimary, NavigationMore []navigation.Link
 	HomeArtwork, HomeShowTitle        map[string]string
 	UpdateAvailable                   bool
