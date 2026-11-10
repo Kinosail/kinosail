@@ -232,6 +232,7 @@ try:
     for name in ("window_animation_scale", "transition_animation_scale", "animator_duration_scale"):
         adb("shell", "settings", "put", "global", name, "0")
     adb("shell", "settings", "put", "system", "font_scale", "1.0")
+    adb("shell", "settings", "put", "global", "hide_error_dialogs", "1")
     adb("shell", "cmd", "overlay", "enable-exclusive", "--category", "com.android.internal.systemui.navbar.gestural")
     check(b"[x] com.android.internal.systemui.navbar.gestural" in adb("shell", "cmd", "overlay", "list"), "gestural_navigation_not_active")
     adb("shell", "input", "keyevent", "82")
