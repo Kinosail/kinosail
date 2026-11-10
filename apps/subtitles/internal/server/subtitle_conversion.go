@@ -18,6 +18,7 @@ import (
 type subtitleConversionOptions struct {
 	Encoding      string `json:"encoding"`
 	RemoveCredits bool   `json:"removeCredits"`
+	RemoveHearing bool   `json:"removeHearingImpaired"`
 	MergeRepeated bool   `json:"mergeRepeated"`
 	TrackSources  bool   `json:"-"`
 }
@@ -55,6 +56,10 @@ func convertSubtitle(data []byte, language string, options subtitleConversionOpt
 	if options.RemoveCredits {
 		cleaned.Cues, cleaned.SourceCues = removeSubtitleEdgeCredits(cleaned.Cues, cleaned.SourceCues)
 		cleaned.Cleanup = append(cleaned.Cleanup, "Removed subtitle credits at the edges")
+	}
+	if options.RemoveHearing {
+		cleaned.Cues, cleaned.SourceCues = removeSubtitleHearingImpaired(cleaned.Cues, cleaned.SourceCues)
+		cleaned.Cleanup = append(cleaned.Cleanup, "Removed hearing-impaired descriptions")
 	}
 	if options.MergeRepeated {
 		var removed int

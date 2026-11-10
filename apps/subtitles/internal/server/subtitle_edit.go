@@ -45,6 +45,7 @@ type subtitleEdit struct {
 	AutomaticSync bool                 `json:"automaticSync"`
 	Encoding      string               `json:"encoding"`
 	RemoveCredits bool                 `json:"removeCredits"`
+	RemoveHearing bool                 `json:"removeHearingImpaired"`
 	MergeRepeated bool                 `json:"mergeRepeated"`
 }
 
@@ -153,7 +154,7 @@ func (manager *subtitleManager) previewSubtitleEdit(request *http.Request, id st
 	if err != nil {
 		return review, cleanedSubtitle{}, status, err
 	}
-	options := subtitleConversionOptions{Encoding: input.Encoding, RemoveCredits: input.RemoveCredits, MergeRepeated: input.MergeRepeated}
+	options := subtitleConversionOptions{Encoding: input.Encoding, RemoveCredits: input.RemoveCredits, RemoveHearing: input.RemoveHearing, MergeRepeated: input.MergeRepeated}
 	options.TrackSources = subtitleEditUsesCurrentCues(input, review, data)
 	document, err := convertSubtitle(data, input.Language, options)
 	if err != nil {
@@ -161,7 +162,7 @@ func (manager *subtitleManager) previewSubtitleEdit(request *http.Request, id st
 	}
 	sources := document.SourceCues
 	if input.Text != "" {
-		edited, editErr := convertSubtitle([]byte(input.Text), input.Language, subtitleConversionOptions{Encoding: "utf-8", RemoveCredits: input.RemoveCredits, MergeRepeated: input.MergeRepeated})
+		edited, editErr := convertSubtitle([]byte(input.Text), input.Language, subtitleConversionOptions{Encoding: "utf-8", RemoveCredits: input.RemoveCredits, RemoveHearing: input.RemoveHearing, MergeRepeated: input.MergeRepeated})
 		if editErr != nil {
 			return review, cleanedSubtitle{}, http.StatusBadRequest, editErr
 		}
