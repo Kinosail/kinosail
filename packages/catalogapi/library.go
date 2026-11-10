@@ -29,10 +29,14 @@ func Library(browse func(*http.Request) (catalog.Result, error), project func(*h
 		for _, item := range page.Items {
 			items = append(items, project(request, item))
 		}
-		serveListing(writer, request, map[string]any{
+		listing := map[string]any{
 			"items": items, "view": page.View, "sort": page.Sort, "query": page.Query,
 			"letter": page.Letter, "letters": page.Letters, "total": page.Total,
-			"offset": page.Offset, "limit": page.Limit, "filters": page.Filters, "facets": page.Facets,
-		})
+			"offset": page.Offset, "limit": page.Limit,
+		}
+		if page.Described {
+			listing["filters"], listing["facets"] = page.Filters, page.Facets
+		}
+		serveListing(writer, request, listing)
 	}
 }

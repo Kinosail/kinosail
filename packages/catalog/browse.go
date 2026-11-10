@@ -64,6 +64,7 @@ type Browse struct {
 	offset, limit      int
 	titleOrdered       bool
 	filters            Filters
+	described          bool
 }
 
 type Result struct {
@@ -74,6 +75,7 @@ type Result struct {
 	Total, Offset, Limit int
 	Filters              Filters
 	Facets               Facets
+	Described            bool
 	references           []*library.Item
 	pageStart, pageEnd   int
 	values               url.Values
@@ -86,7 +88,7 @@ type sortReference struct {
 
 func ParseBrowse(values url.Values, locale string) (Browse, error) {
 	for name := range values {
-		if !oneOf(name, "q", "view", "sort", "offset", "limit", "lang", "letter", "genre", "decade", "rating", "watched") {
+		if !oneOf(name, "q", "view", "sort", "offset", "limit", "lang", "letter", "genre", "decade", "rating", "watched", "facets") {
 			return Browse{}, fmt.Errorf("%w: unknown library query", ErrInvalidBrowse)
 		}
 	}
@@ -121,7 +123,13 @@ func ParseBrowse(values url.Values, locale string) (Browse, error) {
 	if err != nil {
 		return Browse{}, err
 	}
-	return Browse{values: cloneValues(values), query: query, view: view, order: order, letter: letter, locale: locale, offset: offset, limit: limit, filters: filters}, nil
+	described, requested := values["facets"]
+	if requested && (len(described) != 1 || described[0] != "true") {
+		return Browse{}, fmt.Errorf("%w: library facets is invalid", ErrInvalidBrowse)
+	}
+	values = cloneValues(values)
+	values.Del("facets")
+	return Browse{described: requested, values: values, query: query, view: view, order: order, letter: letter, locale: locale, offset: offset, limit: limit, filters: filters}, nil
 }
 
 func browseLibrary(ctx context.Context, values url.Values, locale string, load func(Browse) (browseSource, error), access func() BrowseAccess) (Result, error) {

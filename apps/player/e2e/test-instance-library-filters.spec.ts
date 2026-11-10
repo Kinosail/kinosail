@@ -21,7 +21,7 @@ test("library filters narrow movies, explain an empty result, and clear", { tag:
   expect(all.length).toBeGreaterThan(1);
   const target = all[0];
   const id = (await cards.first().getAttribute("href"))!.split("/").pop()!;
-  const listing = await (await page.request.get("/api/v1/library?view=movies")).json();
+  const listing = await (await page.request.get("/api/v1/library?view=movies&facets=true")).json();
   const facets = listing.facets as { genres: Facet[]; decades: Facet[]; ratings: Facet[] };
   expect(listing.filters).toEqual({ genre: "", decade: "", rating: "", watched: "" });
   const mark = async (watched: boolean) => {
@@ -70,7 +70,7 @@ test("library filters narrow movies, explain an empty result, and clear", { tag:
 
     for (const [name, values] of [["decade", facets.decades], ["rating", facets.ratings], ["genre", facets.genres]] as const) {
       if (!values.length) continue;
-      const narrowed = await (await page.request.get(`/api/v1/library?view=movies&${name}=${encodeURIComponent(values[0].value)}`)).json();
+      const narrowed = await (await page.request.get(`/api/v1/library?view=movies&facets=true&${name}=${encodeURIComponent(values[0].value)}`)).json();
       expect(narrowed.total).toBe(values[0].count);
       expect(narrowed.filters[name]).toBe(values[0].value);
       expect(narrowed.facets).toEqual(facets);
