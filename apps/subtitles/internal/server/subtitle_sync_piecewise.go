@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -111,6 +112,10 @@ func (attempt *subtitleCandidateAttempt) prepareCandidate(candidate subtitleDown
 	}
 	cleaned, err := convertSubtitle(data, firstNonempty(candidate.Language, "en"), subtitleConversionOptions{RemoveCredits: !candidate.Preserve, MergeRepeated: !candidate.Preserve})
 	if err != nil {
+		return cleanedSubtitle{}, false
+	}
+	if !subtitleScriptMatches(candidate.Language, cleaned.Cues) {
+		slog.WarnContext(attempt.ctx, "subtitle candidate rejected", "operation", "subtitle.candidate", "provider", candidate.Source, "failure_class", "writing-system", "language", canonicalSubtitleLanguage(firstNonempty(candidate.Language, "en")))
 		return cleanedSubtitle{}, false
 	}
 	if candidate.Preserve {
