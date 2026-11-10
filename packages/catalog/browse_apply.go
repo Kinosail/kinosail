@@ -26,18 +26,18 @@ func (browse Browse) apply(ctx context.Context, candidates []Candidate) (Result,
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
-	return browse.applyItems(ctx, candidateReferences(selected))
+	return browse.applyItems(ctx, candidateReferences(selected), Facets{})
 }
 
-func (browse Browse) applyItems(ctx context.Context, references []*library.Item) (Result, error) {
+func (browse Browse) applyItems(ctx context.Context, references []*library.Item, facets Facets) (Result, error) {
 	items, err := browseReferences(ctx, references, browse)
 	if err != nil {
 		return Result{}, err
 	}
-	return browse.result(ctx, items, browseLetterBuckets(items, browse))
+	return browse.result(ctx, items, browseLetterBuckets(items, browse), facets)
 }
 
-func (browse Browse) result(ctx context.Context, items []*library.Item, buckets []letterBucket) (Result, error) {
+func (browse Browse) result(ctx context.Context, items []*library.Item, buckets []letterBucket, facets Facets) (Result, error) {
 	letters := browseLetterLinks(browse.values, buckets, browse.letter)
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
@@ -46,7 +46,7 @@ func (browse Browse) result(ctx context.Context, items []*library.Item, buckets 
 	if err != nil {
 		return Result{}, err
 	}
-	result := Result{Query: browse.query, View: browse.view, Sort: normalizeSort(browse.order), Letter: browse.letter, Letters: letters, Total: len(items), Offset: offset, Limit: browse.limit, references: items, pageStart: pageStart, pageEnd: pageEnd, values: cloneValues(browse.values)}
+	result := Result{Query: browse.query, View: browse.view, Sort: normalizeSort(browse.order), Letter: browse.letter, Letters: letters, Total: len(items), Offset: offset, Limit: browse.limit, Filters: browse.filters, Facets: facets, references: items, pageStart: pageStart, pageEnd: pageEnd, values: cloneValues(browse.values)}
 	result.Items = browsePage(items, offset, pageEnd, browse.limit)
 	return result, nil
 }
@@ -162,13 +162,14 @@ func (browse Browse) ApplyAccess(ctx context.Context, items []*library.Item, acc
 	access.ListMutex.RLock()
 	var references []*library.Item
 	var candidates []Candidate
+	var facets Facets
 	var err error
 	if browse.view == "history" {
 		candidates, err = itemCandidates(ctx, items, access.Visible, func(id string) (bool, PlaybackState) {
 			return false, ProfileProgress(*access.Progress, access.ProfileID, access.Owner, id)
 		})
 	} else {
-		references, err = browse.accessItems(ctx, items, access)
+		references, facets, err = browse.accessItems(ctx, items, access)
 	}
 	access.ListMutex.RUnlock()
 	access.ProgressMutex.Unlock()
@@ -182,15 +183,16 @@ func (browse Browse) ApplyAccess(ctx context.Context, items []*library.Item, acc
 	if err != nil {
 		return Result{}, err
 	}
-	return browse.applyItems(ctx, references)
+	return browse.applyItems(ctx, references, facets)
 }
 
-func (browse Browse) accessItems(ctx context.Context, items []*library.Item, access BrowseAccess) ([]*library.Item, error) {
+func (browse Browse) accessItems(ctx context.Context, items []*library.Item, access BrowseAccess) ([]*library.Item, Facets, error) {
 	selected := make([]*library.Item, 0, len(items))
+	counter := newFacetCounter()
 	for position, item := range items {
 		if position%64 == 0 {
 			if err := ctx.Err(); err != nil {
-				return nil, err
+				return nil, Facets{}, err
 			}
 		}
 		if item == nil || !access.Visible(*item) {
@@ -203,11 +205,19 @@ func (browse Browse) accessItems(ctx context.Context, items []*library.Item, acc
 		case "unwatched":
 			candidate.Watched = ProfileProgress(*access.Progress, access.ProfileID, access.Owner, item.ID).Watched
 		}
-		if viewMatches(candidate, browse.view) {
-			selected = append(selected, item)
+		if !viewMatches(candidate, browse.view) {
+			continue
 		}
+		counter.add(item)
+		if browse.filters.intrinsic() && !browse.filters.matches(item) {
+			continue
+		}
+		if browse.filters.Watched != "" && !browse.filters.matchesWatched(ProfileProgress(*access.Progress, access.ProfileID, access.Owner, item.ID).Watched) {
+			continue
+		}
+		selected = append(selected, item)
 	}
-	return selected, ctx.Err()
+	return selected, counter.facets(), ctx.Err()
 }
 
 func searchReferences(ctx context.Context, items []*library.Item, query string) ([]*library.Item, error) {

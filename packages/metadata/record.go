@@ -109,9 +109,13 @@ func Apply(item *library.Item, record Record) {
 	if len(record.ProviderIDs) > 0 {
 		item.ProviderIDs = record.ProviderIDs
 	}
-	setString(&item.ShowTitle, record.ShowTitle)
-	setString(&item.ShowYear, record.ShowYear)
-	setString(&item.ShowPlot, record.ShowPlot)
+	showText := setString
+	if item.LocalShowMetadata {
+		showText = fillString
+	}
+	showText(&item.ShowTitle, record.ShowTitle)
+	showText(&item.ShowYear, record.ShowYear)
+	showText(&item.ShowPlot, record.ShowPlot)
 	setString(&item.ShowArtwork, record.ShowArtwork)
 	setString(&item.ShowBackdrop, record.ShowBackdrop)
 	if len(record.ShowProviderIDs) > 0 {

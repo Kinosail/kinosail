@@ -26,6 +26,7 @@ Kinosail ignores other extensions. It does not ingest `.cbr` or RAR comics. A `.
 The scanner skips symbolic links. It reads optional sidecars beside a media file:
 
 - `.nfo` supplies local title, year, plot, rating, genres, credits, album fields, and supported provider IDs.
+- `tvshow.nfo` in a show folder supplies the show title, year, plot, genres, studio, and provider IDs. Its rating applies to each episode that has no rating of its own.
 - `.vtt` and `.srt` supply external text subtitles when their filename matches the media stem.
 - `.lrc` and `.txt` supply lyrics for audio.
 - Artwork uses supported image types with names such as `poster`, `folder`, `fanart`, `backdrop`, `thumb`, `clearlogo`, and `logo`, plus matching media suffixes.

@@ -122,15 +122,15 @@ try {
               video.cancelVideoFrameCallback(callback);
               reject(new Error('frame_presentation_timeout'));
             }, 30000);
-            const observe = (mediaTime, source) => {
+            const observe = (mediaTime, source, image) => {
               const decodedTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get.call(video);
               const presentedTime = mediaTime + video.currentTime - decodedTime;
               if (presentations.length < 64) presentations.push({point, source, mediaTime, presentedTime,
                 currentTime: video.currentTime, decodedTime, paused: video.paused, seeking: video.seeking});
-              if (presentedTime < point - 1 / frameRate - .002 || presentedTime > point + .002) return;
+              if (presentedTime < point - 1 / frameRate - .002 || presentedTime > point + .002 || (currentFrames && !image)) return;
               settled = true;
               video.pause(); clearTimeout(timer); video.cancelVideoFrameCallback(callback);
-              resolve({presentedTime, mediaTime, source});
+              resolve({presentedTime, mediaTime, source, image: image?.clone()});
             };
             const frame = (_, metadata) => {
               if (settled) return;
@@ -142,21 +142,22 @@ try {
               let image;
               try { image = new VideoFrame(video); } catch {}
               const mediaTime = image ? image.timestamp / 1e6 : undefined;
+              if (mediaTime !== undefined && mediaTime !== lastCurrent) { lastCurrent = mediaTime; observe(mediaTime, 'current', image); }
               image?.close();
-              if (mediaTime !== undefined && mediaTime !== lastCurrent) { lastCurrent = mediaTime; observe(mediaTime, 'current'); }
               if (!settled) requestAnimationFrame(current);
             };
             confirmCurrent = () => { if (currentFrames) current(); };
             callback = video.requestVideoFrameCallback(frame);
           });
-          const [, frame] = await Promise.all([wait('seeked', () => {
+          const [, {image, ...frame}] = await Promise.all([wait('seeked', () => {
             video.currentTime = point;
             if (native && variant === 'compatible') { video.muted = true; video.play().catch(() => {}); }
           }).then(() => confirmCurrent()), presented]);
           video.pause();
           const canvas = document.createElement('canvas');
           canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-          const drawing = canvas.getContext('2d'); drawing.drawImage(video, 0, 0);
+          const drawing = canvas.getContext('2d'); drawing.drawImage(image || video, 0, 0, canvas.width, canvas.height);
+          image?.close();
           const bytes = drawing.getImageData(0, 0, canvas.width, canvas.height).data;
           const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
             .map(value => value.toString(16).padStart(2, '0')).join('');
