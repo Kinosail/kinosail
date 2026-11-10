@@ -18,6 +18,7 @@ type entryFilter struct {
 	includes string
 	types    []string
 	search   string
+	query    listQuery
 }
 
 func requestedLimit(values url.Values) (int, bool, error) {
@@ -58,13 +59,14 @@ func newEntryFilter(values url.Values, ids map[string]bool) entryFilter {
 }
 
 func (filter entryFilter) all() bool {
-	return len(filter.ids) == 0 && filter.includes == "" && filter.search == ""
+	return len(filter.ids) == 0 && filter.includes == "" && filter.search == "" && !filter.query.filters()
 }
 
 func (filter entryFilter) matches(entry catalogEntry) bool {
 	return (len(filter.ids) == 0 || filter.ids[entry.raw]) &&
 		(filter.includes == "" || includesType(filter.types, entry.kind)) &&
-		(filter.search == "" || strings.Contains(entry.lower, filter.search))
+		(filter.search == "" || strings.Contains(entry.lower, filter.search)) &&
+		filter.query.matches(entry)
 }
 
 func (filter entryFilter) page(entries []catalogEntry, start, limit int) ([]catalogEntry, int, int) {
