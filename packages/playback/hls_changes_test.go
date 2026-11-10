@@ -18,6 +18,9 @@ import (
 const promptHLSWake = 5 * time.Millisecond
 
 func TestWaitHLSChangeWakesWhenSegmentIsPublished(t *testing.T) {
+	if !HLSFileEvents {
+		t.Skip("prompt wake needs file events; this host polls")
+	}
 	var latencies []time.Duration
 	for trial := range 16 {
 		latency, _ := measureHLSSegmentWake(t, trial)
@@ -29,6 +32,9 @@ func TestWaitHLSChangeWakesWhenSegmentIsPublished(t *testing.T) {
 }
 
 func TestPublishVariantsObservedSignalsReadyWhenVariantIsPublished(t *testing.T) {
+	if !HLSFileEvents {
+		t.Skip("prompt wake needs file events; this host polls")
+	}
 	var latencies []time.Duration
 	for trial := range 16 {
 		latencies = append(latencies, measureHLSPublicationWake(t, trial))
@@ -230,7 +236,7 @@ func hlsWaitBaseline(t *testing.T) int {
 	hlsWatches.mu.Lock()
 	ready := hlsWatches.ready(t.Context())
 	hlsWatches.mu.Unlock()
-	if !ready {
+	if !ready && HLSFileEvents {
 		t.Fatal("shared HLS watch is unavailable")
 	}
 	return runtime.NumGoroutine()
