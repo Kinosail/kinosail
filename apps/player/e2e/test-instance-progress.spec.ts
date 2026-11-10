@@ -1,4 +1,4 @@
-import { expect, test, type Page, type TestInfo } from "@playwright/test";
+import { expect, test, type Page, type Request, type TestInfo } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
@@ -67,6 +67,11 @@ test.beforeEach(async ({page}) => {
 test("real Server rejects invalid progress without changing stored state and web reports the rejection", {tag: "@smoke"}, async ({page}, testInfo) => {
   await login(page);
   const watch = await firstPlayable(page);
+  const saving = new Set<Request>();
+  const saves = (request: Request) => new URL(request.url()).pathname.startsWith("/progress/");
+  page.on("request", request => { if (saves(request)) saving.add(request); });
+  page.on("requestfinished", request => saving.delete(request));
+  page.on("requestfailed", request => saving.delete(request));
   await page.goto(watch);
   const assetURL = await page.locator('script[src*="/static/player.js"]').getAttribute("src");
   expect(assetURL).toMatch(/^\/static\/player\.js\?v=[a-f0-9]{64}$/);
@@ -81,6 +86,7 @@ test("real Server rejects invalid progress without changing stored state and web
   await media.evaluate((video: HTMLVideoElement) => video.pause());
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.paused)).toBe(true);
   await page.waitForTimeout(300);
+  await expect.poll(() => saving.size).toBe(0);
   const id = watch.split("/").at(-1)!;
   const before = await serverProgress(page, id);
   await media.evaluate(video => video.dataset.progress = video.dataset.progress!.split("?")[0] + "?playbackToken=invalid");

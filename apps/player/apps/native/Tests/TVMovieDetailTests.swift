@@ -30,7 +30,7 @@ import Testing
                                              "title": .string("S01E02 · Pilot"), "show": .string("Series"),
                                              "showId": .string("0123456789abcdef"), "season": .number(1),
                                              "episode": .number(2), "rating": .string("PG")]), server: server)
-        #expect(TVMovieDetail(item: episode).metadata == "Series · S1 E2 · PG")
+        #expect(TVMovieDetail(item: episode).metadata == "Season 1, Episode 2 · PG")
         #expect(TVMovieDetail(item: episode).title == "Pilot")
     }
 
