@@ -14,7 +14,9 @@ DELETE /api/v1/viewing-syncs/{id}
 GET /Audio/{id}/{stream}
 GET /Auth/Keys
 GET /Branding/Configuration
+GET /Genres
 GET /Items
+GET /Items/Filters
 GET /Items/Latest
 GET /Items/{id}
 GET /Items/{id}/Download
