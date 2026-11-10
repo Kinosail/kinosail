@@ -154,5 +154,6 @@ test("a stale login page redirects passkey sign-in to the canonical origin", asy
   const begin = await response;
   expect(begin.status()).toBe(421);
   expect(begin.headers().location).toBe(new URL("/login", canonical).toString());
+  await page.waitForURL(new URL("/login", canonical).toString());
 });
 }
