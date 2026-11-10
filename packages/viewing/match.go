@@ -11,15 +11,15 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func SameState(left, right catalog.PlaybackState) bool {
+func sameState(left, right catalog.PlaybackState) bool {
 	return left.Watched == right.Watched && math.Abs(left.Seconds-right.Seconds) < .5
 }
 
-func Conflict(destination, source catalog.PlaybackState) bool {
+func conflict(destination, source catalog.PlaybackState) bool {
 	return !destination.Updated.IsZero() && (source.Updated.IsZero() || destination.Updated.After(source.Updated))
 }
 
-func Match(activity Activity, items []library.Item) (library.Item, string, string) {
+func match(activity Activity, items []library.Item) (library.Item, string, string) {
 	providerMatches := matchingItems(items, func(item library.Item) bool {
 		if !sameKind(activity, item) {
 			return false
@@ -56,7 +56,7 @@ func Match(activity Activity, items []library.Item) (library.Item, string, strin
 	}
 }
 
-func ActivityKey(activity Activity) string {
+func activityKey(activity Activity) string {
 	providers := make([]string, 0, len(activity.ProviderIDs))
 	for provider, id := range activity.ProviderIDs {
 		providers = append(providers, provider+":"+strings.ToLower(id))
@@ -75,7 +75,7 @@ func Signature(activity Activity) string {
 	return fmt.Sprintf("%t|%.3f", activity.Watched, activity.Seconds)
 }
 
-func Label(activity Activity) string {
+func label(activity Activity) string {
 	if activity.Kind == "episode" {
 		return fmt.Sprintf("%s · S%02dE%02d · %s", activity.Show, activity.Season, activity.Episode, activity.Title)
 	}

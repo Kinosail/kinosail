@@ -122,7 +122,7 @@ func TestFactorEnableValidatesBeforePersistence(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			fixture := newFactorFixture(FactorProfile{ID: "owner", Revision: 2})
 			beforeProfiles, beforeSessions := cloneFactorRecords(fixture.profiles), CloneSessions(fixture.sessions)
-			if err := fixture.transaction(time.Now).Enable(test.id, test.secret, test.recovery); !errors.Is(err, ErrInvalidFactorInput) {
+			if err := fixture.transaction(time.Now).Enable(test.id, test.secret, test.recovery); !errors.Is(err, errInvalidFactorInput) {
 				t.Fatalf("error = %v", err)
 			}
 			if fixture.writes != 0 || !reflect.DeepEqual(fixture.profiles, beforeProfiles) || !reflect.DeepEqual(fixture.sessions, beforeSessions) {
@@ -131,11 +131,11 @@ func TestFactorEnableValidatesBeforePersistence(t *testing.T) {
 		})
 	}
 	fixture := newFactorFixture(FactorProfile{ID: "owner"})
-	if err := fixture.transaction(time.Now).Enable("missing", "secret", []string{"code"}); !errors.Is(err, ErrProfileNotFound) || fixture.writes != 0 {
+	if err := fixture.transaction(time.Now).Enable("missing", "secret", []string{"code"}); !errors.Is(err, errProfileNotFound) || fixture.writes != 0 {
 		t.Fatalf("missing profile result = %v, writes %d", err, fixture.writes)
 	}
 	var missing *FactorTransaction[factorRecord]
-	if err := missing.Enable("owner", "secret", []string{"code"}); !errors.Is(err, ErrInvalidFactorInput) {
+	if err := missing.Enable("owner", "secret", []string{"code"}); !errors.Is(err, errInvalidFactorInput) {
 		t.Fatalf("nil transaction error = %v", err)
 	}
 }
@@ -159,7 +159,7 @@ func TestFactorEnableAcceptsExactBounds(t *testing.T) {
 func TestFactorDisablePreservesOwnerInvariantAndCommits(t *testing.T) {
 	t.Parallel()
 	blocked := newFactorFixture(FactorProfile{ID: "owner", Owner: true, Secret: "secret", Recovery: []string{"code"}, Revision: 7})
-	if err := blocked.transaction(time.Now).Disable("owner"); !errors.Is(err, ErrOwnerFactorNeeded) || fixtureChanged(blocked) {
+	if err := blocked.transaction(time.Now).Disable("owner"); !errors.Is(err, errOwnerFactorNeeded) || fixtureChanged(blocked) {
 		t.Fatalf("blocked disable = %v, writes %d", err, blocked.writes)
 	}
 	fixture := newFactorFixture(FactorProfile{ID: "owner", Owner: true, Passkeys: 1, Secret: "secret", Recovery: []string{"code"}, Revision: 7})
@@ -175,7 +175,7 @@ func TestFactorDisablePreservesOwnerInvariantAndCommits(t *testing.T) {
 	}
 	for _, id := range []string{"", " owner", strings.Repeat("i", maxIdentityLength+1), "owner\x00", "missing"} {
 		invalid := newFactorFixture(FactorProfile{ID: "owner", Passkeys: 1})
-		if err := invalid.transaction(time.Now).Disable(id); !errors.Is(err, ErrProfileNotFound) || invalid.writes != 0 {
+		if err := invalid.transaction(time.Now).Disable(id); !errors.Is(err, errProfileNotFound) || invalid.writes != 0 {
 			t.Fatalf("disable %q = %v, writes %d", id, err, invalid.writes)
 		}
 	}

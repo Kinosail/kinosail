@@ -6,7 +6,7 @@ import (
 	"unicode/utf8"
 )
 
-func VisibleText(value string) string {
+func visibleText(value string) string {
 	if strings.IndexFunc(value, hiddenText) < 0 {
 		return value
 	}
@@ -25,14 +25,14 @@ func RepairedText(value string) string {
 	encoded := make([]byte, 0, len(value))
 	for _, character := range value {
 		if character < 0 || character > 0xff {
-			return VisibleText(value)
+			return visibleText(value)
 		}
 		encoded = append(encoded, byte(character))
 	}
 	if utf8.Valid(encoded) && utf8.RuneCount(encoded) < len(encoded) {
-		return VisibleText(string(encoded))
+		return visibleText(string(encoded))
 	}
-	return VisibleText(value)
+	return visibleText(value)
 }
 
 func WithVisibleText(items []Item) []Item {
@@ -42,7 +42,7 @@ func WithVisibleText(items []Item) []Item {
 			&item.Title, &item.SortTitle, &item.Plot, &item.Tagline, &item.Genres, &item.Director, &item.Studio,
 			&item.Collection, &item.Artist, &item.AlbumArtist, &item.Album, &item.ShowTitle, &item.ShowPlot, &item.ShowGenres, &item.ShowStudio,
 		} {
-			*field = VisibleText(*field)
+			*field = visibleText(*field)
 		}
 		item.Cast, item.ShowCast = visiblePeople(item.Cast), visiblePeople(item.ShowCast)
 	}
@@ -51,10 +51,10 @@ func WithVisibleText(items []Item) []Item {
 
 func visiblePeople(people []Person) []Person {
 	for position, person := range people {
-		if VisibleText(person.Name) != person.Name || VisibleText(person.Role) != person.Role {
+		if visibleText(person.Name) != person.Name || visibleText(person.Role) != person.Role {
 			people = append([]Person(nil), people...)
 			for index := position; index < len(people); index++ {
-				people[index].Name, people[index].Role = VisibleText(people[index].Name), VisibleText(people[index].Role)
+				people[index].Name, people[index].Role = visibleText(people[index].Name), visibleText(people[index].Role)
 			}
 			return people
 		}

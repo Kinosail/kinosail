@@ -29,11 +29,11 @@ func TestEngineConfigurationAndProtocolOptions(t *testing.T) {
 		{DefaultURL: "http://localhost", DisplayName: "Kinosail"},
 		{DefaultURL: "http://localhost", DisplayName: "Kinosail", CookieName: "bad cookie"},
 	} {
-		if _, err := New(config); !errors.Is(err, ErrInvalidConfig) {
+		if _, err := New(config); !errors.Is(err, errInvalidConfig) {
 			t.Fatalf("invalid config = %v", err)
 		}
 	}
-	if _, err := New(Config{URL: "not-an-origin", DefaultURL: "http://localhost", DisplayName: "Kinosail", CookieName: "cookie"}); !errors.Is(err, ErrInvalidOrigin) {
+	if _, err := New(Config{URL: "not-an-origin", DefaultURL: "http://localhost", DisplayName: "Kinosail", CookieName: "cookie"}); !errors.Is(err, errInvalidOrigin) {
 		t.Fatalf("invalid URL = %v", err)
 	}
 	creationFailure := errors.New("creation failed")
@@ -46,7 +46,7 @@ func TestEngineConfigurationAndProtocolOptions(t *testing.T) {
 	if engine.Origin().String() != "http://localhost:38127" || (*Engine)(nil).Origin().String() != "" {
 		t.Fatal("engine origin is incorrect")
 	}
-	user := NewUser(struct{}{}, "owner", "Owner", nil)
+	user := newUser(struct{}{}, "owner", "Owner", nil)
 	creation, cookie, err := engine.BeginRegistration(user, Ceremony{Identity: "owner", CookiePath: "/api/v1/passkeys/"})
 	if err != nil || creation.Response.RelyingParty.ID != "localhost" || creation.Response.RelyingParty.Name != "Kinosail" || creation.Response.AuthenticatorSelection.UserVerification != protocol.VerificationRequired || cookie.Name != "kinosail_passkey" || !cookie.HttpOnly || cookie.SameSite != http.SameSiteStrictMode || cookie.MaxAge != 300 {
 		t.Fatalf("registration = %#v, %#v, %v", creation, cookie, err)
@@ -59,7 +59,7 @@ func TestEngineConfigurationAndProtocolOptions(t *testing.T) {
 
 func TestEngineRejectsInvalidCeremoniesBeforeStateChanges(t *testing.T) {
 	engine := testEngine(t)
-	user := NewUser(struct{}{}, "owner", "Owner", nil)
+	user := newUser(struct{}{}, "owner", "Owner", nil)
 	beginFailure := errors.New("begin failed")
 	engine.beginRegistration = func(webauthn.User, ...webauthn.RegistrationOption) (*protocol.CredentialCreation, *webauthn.SessionData, error) {
 		return nil, nil, beginFailure
@@ -82,20 +82,20 @@ func TestEngineRejectsInvalidCeremoniesBeforeStateChanges(t *testing.T) {
 		{Identity: strings.Repeat("i", maxUserHandle+1), CookiePath: "/"},
 		{Identity: "owner", CookiePath: "/" + strings.Repeat("p", maxCookiePath)},
 	} {
-		if _, _, err := engine.BeginRegistration(user, ceremony); !errors.Is(err, ErrInvalidCeremony) {
+		if _, _, err := engine.BeginRegistration(user, ceremony); !errors.Is(err, errInvalidCeremony) {
 			t.Fatalf("invalid registration %d = %v", index, err)
 		}
 	}
-	if _, _, err := engine.BeginRegistration(nil, Ceremony{Identity: "owner", CookiePath: "/"}); !errors.Is(err, ErrInvalidCeremony) {
+	if _, _, err := engine.BeginRegistration(nil, Ceremony{Identity: "owner", CookiePath: "/"}); !errors.Is(err, errInvalidCeremony) {
 		t.Fatalf("nil user = %v", err)
 	}
-	if _, _, err := (*Engine)(nil).BeginRegistration(user, Ceremony{Identity: "owner", CookiePath: "/"}); !errors.Is(err, ErrInvalidCeremony) {
+	if _, _, err := (*Engine)(nil).BeginRegistration(user, Ceremony{Identity: "owner", CookiePath: "/"}); !errors.Is(err, errInvalidCeremony) {
 		t.Fatalf("nil engine = %v", err)
 	}
-	if _, _, err := engine.BeginLogin(Ceremony{Identity: "owner", CookiePath: "/"}); !errors.Is(err, ErrInvalidCeremony) {
+	if _, _, err := engine.BeginLogin(Ceremony{Identity: "owner", CookiePath: "/"}); !errors.Is(err, errInvalidCeremony) {
 		t.Fatalf("login identity = %v", err)
 	}
-	if _, _, err := (*Engine)(nil).BeginLogin(Ceremony{CookiePath: "/"}); !errors.Is(err, ErrInvalidCeremony) {
+	if _, _, err := (*Engine)(nil).BeginLogin(Ceremony{CookiePath: "/"}); !errors.Is(err, errInvalidCeremony) {
 		t.Fatalf("nil login engine = %v", err)
 	}
 	if len(engine.ceremonies) != 0 {
@@ -129,10 +129,10 @@ func TestCeremoniesAreBoundedOneUseAndPubliclyRevocable(t *testing.T) {
 	for index := 0; index < maxCeremonies; index++ {
 		engine.ceremonies[string(rune(index+1))] = ceremonyState{}
 	}
-	if _, err := engine.start(Ceremony{CookiePath: "/"}, &webauthn.SessionData{}); !errors.Is(err, ErrCeremonyLimit) {
+	if _, err := engine.start(Ceremony{CookiePath: "/"}, &webauthn.SessionData{}); !errors.Is(err, errCeremonyLimit) {
 		t.Fatalf("ceremony limit = %v", err)
 	}
-	if _, err := engine.start(Ceremony{CookiePath: "/"}, nil); !errors.Is(err, ErrInvalidCeremony) {
+	if _, err := engine.start(Ceremony{CookiePath: "/"}, nil); !errors.Is(err, errInvalidCeremony) {
 		t.Fatalf("nil session = %v", err)
 	}
 	(*Engine)(nil).RevokePublic()
@@ -162,14 +162,14 @@ func TestCeremonyTakeRejectsMissingMalformedWrongAndExpiredCookies(t *testing.T)
 	if _, err := engine.take(requestWithCookie(t, "missing"), ""); !errors.Is(err, ErrCeremonyExpired) {
 		t.Fatalf("unknown = %v", err)
 	}
-	if _, err := engine.take(requestWithCookie(t, "missing"), strings.Repeat("i", maxUserHandle+1)); !errors.Is(err, ErrInvalidCeremony) {
+	if _, err := engine.take(requestWithCookie(t, "missing"), strings.Repeat("i", maxUserHandle+1)); !errors.Is(err, errInvalidCeremony) {
 		t.Fatalf("oversized identity = %v", err)
 	}
 }
 
 func TestFinishMethodsConsumeCeremoniesAndWriteNoStoreJSON(t *testing.T) {
 	engine := testEngine(t)
-	user := NewUser(struct{}{}, "owner", "Owner", nil)
+	user := newUser(struct{}{}, "owner", "Owner", nil)
 	_, registrationCookie, err := engine.BeginRegistration(user, Ceremony{Identity: "owner", CookiePath: "/"})
 	if err != nil {
 		t.Fatal(err)
@@ -213,7 +213,7 @@ func TestFinishMethodsConsumeCeremoniesAndWriteNoStoreJSON(t *testing.T) {
 		t.Fatalf("missing parsed login = %v", finishErr)
 	}
 	response := httptest.NewRecorder()
-	WriteJSON(response, map[string]string{"ok": "yes"})
+	writeJSON(response, map[string]string{"ok": "yes"})
 	if response.Header().Get("Cache-Control") != "no-store" || response.Header().Get("Content-Type") != "application/json" || response.Body.String() != "{\"ok\":\"yes\"}\n" {
 		t.Fatalf("JSON response = %#v %q", response.Header(), response.Body.String())
 	}

@@ -115,7 +115,7 @@ func TestHandlerBuildsCompleteLandingPage(t *testing.T) {
 	if !ok {
 		t.Fatalf("page type = %T", view.data)
 	}
-	if response.Header().Get("Content-Type") != "text/html; charset=utf-8" || response.Header().Get("Vary") != InfiniteLibraryHeader || view.fullCalls != 1 || view.templateCalls != 0 {
+	if response.Header().Get("Content-Type") != "text/html; charset=utf-8" || response.Header().Get("Vary") != infiniteLibraryHeader || view.fullCalls != 1 || view.templateCalls != 0 {
 		t.Fatalf("response=%v view=%+v", response.Header(), view)
 	}
 	if page.ServerName != "Player" || !page.Owner || page.ViewerName != "Owner" || !page.CanLogout || !page.UpdateAvailable || !page.CommandMenu || !page.TMDB {
@@ -157,7 +157,7 @@ func TestHandlerPreservesFragmentAndErrorBoundaries(t *testing.T) {
 			failure := failureRecord{}
 			request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "http://example.test/?view=movies", nil)
 			for _, value := range test.header {
-				request.Header.Add(InfiniteLibraryHeader, value)
+				request.Header.Add(infiniteLibraryHeader, value)
 			}
 			NewHandler[string, string, string, string](source, view, false, func(_ http.ResponseWriter, _ *http.Request, message string, status int) {
 				failure = failureRecord{message, status}

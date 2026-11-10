@@ -1,4 +1,4 @@
-package hlsmanifest
+package playback
 
 import (
 	"bytes"
@@ -6,13 +6,11 @@ import (
 	"math"
 	"strconv"
 	"strings"
-
-	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 func CompleteCuts(manifest []byte, cuts []float64) ([]byte, bool) {
-	if !playback.PlaylistHas(manifest, "#EXT-X-PLAYLIST-TYPE:EVENT") ||
-		!bytes.Contains(manifest, []byte("#EXT-X-MAP:URI=\"init.mp4\"")) || !MatchesCuts(manifest, cuts) {
+	if !PlaylistHas(manifest, "#EXT-X-PLAYLIST-TYPE:EVENT") ||
+		!bytes.Contains(manifest, []byte("#EXT-X-MAP:URI=\"init.mp4\"")) || !matchesCuts(manifest, cuts) {
 		return manifest, false
 	}
 	target := 1.0
@@ -28,7 +26,7 @@ func CompleteCuts(manifest []byte, cuts []float64) ([]byte, bool) {
 	return []byte(output.String()), true
 }
 
-func MatchesCuts(manifest []byte, cuts []float64) bool {
+func matchesCuts(manifest []byte, cuts []float64) bool {
 	if len(manifest) > 1<<20 || !validCuts(cuts) {
 		return false
 	}
@@ -48,7 +46,7 @@ func MatchesCuts(manifest []byte, cuts []float64) bool {
 		observed++
 		length = 0
 	}
-	return observed > 0 && (!playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") || observed+1 == len(cuts))
+	return observed > 0 && (!PlaylistHas(manifest, "#EXT-X-ENDLIST") || observed+1 == len(cuts))
 }
 
 func matchesCut(cuts []float64, number int, name string, length float64) bool {

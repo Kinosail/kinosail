@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 )
 
-func CloneState(value State) State {
+func cloneState(value State) State {
 	copy := State{Shares: make(map[string]Share, len(value.Shares)), Sessions: make(map[string]Session, len(value.Sessions))}
 	for id, share := range value.Shares {
 		share.ItemIDs = append([]string(nil), share.ItemIDs...)

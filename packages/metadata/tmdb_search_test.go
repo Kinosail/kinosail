@@ -33,17 +33,17 @@ func TestFindTMDBCandidateUsesIDAndTitleFallbacks(t *testing.T) {
 		return nil
 	}
 	baseURL := "https://example.com/v3"
-	matched, err := FindTMDBCandidate(t.Context(), baseURL, "movie", library.Item{Title: "Wrong"}, map[string]string{"imdb": "tt1234567"}, fetch)
+	matched, err := findTMDBCandidate(t.Context(), baseURL, "movie", library.Item{Title: "Wrong"}, map[string]string{"imdb": "tt1234567"}, fetch)
 	if err != nil || matched.ID != 7 || len(requests) != 1 || requests[0].Query().Get("external_source") != "imdb_id" {
 		t.Fatalf("ID match = %#v, requests=%v, err=%v", matched, requests, err)
 	}
 	requests = nil
-	matched, err = FindTMDBCandidate(t.Context(), baseURL, "movie", library.Item{Title: "Movie (2020)"}, nil, fetch)
+	matched, err = findTMDBCandidate(t.Context(), baseURL, "movie", library.Item{Title: "Movie (2020)"}, nil, fetch)
 	if err != nil || matched.ID != 8 || len(requests) != 1 || requests[0].Query().Get("query") != "Movie" || requests[0].Query().Get("primary_release_year") != "2020" {
 		t.Fatalf("movie match = %#v, requests=%v, err=%v", matched, requests, err)
 	}
 	requests = nil
-	matched, err = FindTMDBCandidate(t.Context(), baseURL, "tv", library.Item{Title: "Show (US)", Year: "2021"}, nil, fetch)
+	matched, err = findTMDBCandidate(t.Context(), baseURL, "tv", library.Item{Title: "Show (US)", Year: "2021"}, nil, fetch)
 	if err != nil || matched.ID != 9 || len(requests) != 2 || requests[1].Query().Get("query") != "Show" || requests[1].Query().Get("first_air_date_year") != "2021" {
 		t.Fatalf("TV fallback = %#v, requests=%v, err=%v", matched, requests, err)
 	}
@@ -96,35 +96,35 @@ func TestFindTMDBCandidateRejectsInvalidBoundaries(t *testing.T) {
 	valid := library.Item{Title: "Movie", Year: "2020"}
 	for name, test := range map[string]func() error{
 		"nil context": func() error {
-			_, err := FindTMDBCandidate(nil, "https://example.com", "movie", valid, nil, fetch) //nolint:staticcheck // Intentional nil validates fail-closed behavior.
+			_, err := findTMDBCandidate(nil, "https://example.com", "movie", valid, nil, fetch) //nolint:staticcheck // Intentional nil validates fail-closed behavior.
 			return err
 		},
 		"nil fetch": func() error {
-			_, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", valid, nil, nil)
+			_, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", valid, nil, nil)
 			return err
 		},
 		"invalid URL": func() error {
-			_, err := FindTMDBCandidate(t.Context(), "http://example.com", "movie", valid, nil, fetch)
+			_, err := findTMDBCandidate(t.Context(), "http://example.com", "movie", valid, nil, fetch)
 			return err
 		},
 		"unknown kind": func() error {
-			_, err := FindTMDBCandidate(t.Context(), "https://example.com", "person", valid, nil, fetch)
+			_, err := findTMDBCandidate(t.Context(), "https://example.com", "person", valid, nil, fetch)
 			return err
 		},
 		"missing title": func() error {
-			_, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Year: "2020"}, nil, fetch)
+			_, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Year: "2020"}, nil, fetch)
 			return err
 		},
 		"long title": func() error {
-			_, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Title: strings.Repeat("x", 201)}, nil, fetch)
+			_, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Title: strings.Repeat("x", 201)}, nil, fetch)
 			return err
 		},
 		"bad year": func() error {
-			_, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Title: "Movie", Year: "20xx"}, nil, fetch)
+			_, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Title: "Movie", Year: "20xx"}, nil, fetch)
 			return err
 		},
 		"control": func() error {
-			_, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Title: "Movie\x00"}, nil, fetch)
+			_, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Title: "Movie\x00"}, nil, fetch)
 			return err
 		},
 	} {
@@ -149,7 +149,7 @@ func TestFindTMDBCandidateRejectsInvalidBoundaries(t *testing.T) {
 				*target.(*TMDBCandidates) = candidates
 				return nil
 			}
-			if _, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", valid, nil, provider); err == nil {
+			if _, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", valid, nil, provider); err == nil {
 				t.Fatal("invalid provider candidate accepted")
 			}
 		})
@@ -162,7 +162,7 @@ func TestFindTMDBCandidateRejectsAmbiguousIMDbMatch(t *testing.T) {
 		target.(*TMDBCandidates).MovieResults = []TMDBCandidate{{ID: 1}, {ID: 2}}
 		return nil
 	}
-	_, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Title: "Movie"}, map[string]string{"imdb": "tt1234567"}, fetch)
+	_, err := findTMDBCandidate(t.Context(), "https://example.com", "movie", library.Item{Title: "Movie"}, map[string]string{"imdb": "tt1234567"}, fetch)
 	if err == nil || err.Error() != "metadata match was ambiguous" {
 		t.Fatalf("ambiguous match error = %v", err)
 	}

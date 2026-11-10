@@ -40,7 +40,7 @@ func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
 		return nil, ""
 	}
 	input, upload, filter := toneMapDeviceFilter(options)
-	if HardwareDecodedToneMap(options) {
+	if hardwareDecodedToneMap(options) {
 		input = acceleratedInput(options)
 	} else {
 		filter = upload + "," + filter
@@ -71,7 +71,7 @@ func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
 	return input, filter
 }
 
-func HardwareDecodedToneMap(options Settings) bool {
+func hardwareDecodedToneMap(options Settings) bool {
 	return options.HardwareDecode && options.HardwareToneMap != "" && options.HardwareToneMap == options.Accelerator && !ToneMapSoftwareFrames(options)
 }
 

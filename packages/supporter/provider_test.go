@@ -16,14 +16,14 @@ func TestProviderResponsesFailClosedWithoutStateChange(t *testing.T) {
 		status                  int
 		want                    error
 	}{
-		{"wrong content type", "text/plain", `{}`, http.StatusOK, ErrUnavailable},
-		{"unknown success field", "application/json", `{"certificate":"x","signature":"x","publicKey":"x","activationId":"x","extra":true}`, http.StatusOK, ErrInvalid},
-		{"duplicate error", "application/json", `{"error":"invalid_request","error":"invalid_request"}`, http.StatusBadRequest, ErrUnavailable},
-		{"player invalid request", "application/json", `{"error":"invalid_request"}`, http.StatusBadRequest, ErrUnavailable},
-		{"expired key", "application/json", `{"error":"supporter_key_expired"}`, http.StatusBadRequest, ErrInvalid},
-		{"server key error", "application/json", `{"error":"supporter_key_expired"}`, http.StatusInternalServerError, ErrUnavailable},
-		{"provider failure", "application/json", `{"error":"provider_unavailable"}`, http.StatusBadGateway, ErrUnavailable},
-		{"oversized", "application/json", strings.Repeat("x", 8193), http.StatusOK, ErrUnavailable},
+		{"wrong content type", "text/plain", `{}`, http.StatusOK, errUnavailable},
+		{"unknown success field", "application/json", `{"certificate":"x","signature":"x","publicKey":"x","activationId":"x","extra":true}`, http.StatusOK, errInvalid},
+		{"duplicate error", "application/json", `{"error":"invalid_request","error":"invalid_request"}`, http.StatusBadRequest, errUnavailable},
+		{"player invalid request", "application/json", `{"error":"invalid_request"}`, http.StatusBadRequest, errUnavailable},
+		{"expired key", "application/json", `{"error":"supporter_key_expired"}`, http.StatusBadRequest, errInvalid},
+		{"server key error", "application/json", `{"error":"supporter_key_expired"}`, http.StatusInternalServerError, errUnavailable},
+		{"provider failure", "application/json", `{"error":"provider_unavailable"}`, http.StatusBadGateway, errUnavailable},
+		{"oversized", "application/json", strings.Repeat("x", 8193), http.StatusOK, errUnavailable},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -67,7 +67,7 @@ func TestDerivativeInvalidRequestResponseFailsClosedWithoutStateChange(t *testin
 	}
 	state, _ := service.Prepare(State{})
 	next, _, activateErr := service.Activate(context.Background(), state, ActivationInput{Key: "VALID_SUPPORTER_KEY"})
-	if !errors.Is(activateErr, ErrInvalid) || !reflect.DeepEqual(next, state) {
+	if !errors.Is(activateErr, errInvalid) || !reflect.DeepEqual(next, state) {
 		t.Fatalf("Activate = %#v, %v", next, activateErr)
 	}
 }

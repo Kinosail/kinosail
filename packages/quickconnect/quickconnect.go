@@ -20,12 +20,12 @@ const (
 
 var (
 	ErrCapacity        = errors.New("too many Quick Connect requests")
-	ErrPending         = errors.New("Quick Connect is pending")
-	ErrNotFound        = errors.New("Quick Connect request was not found")
+	errPending         = errors.New("Quick Connect is pending")
+	errNotFound        = errors.New("Quick Connect request was not found")
 	ErrInvalidCode     = errors.New("Quick Connect code is invalid or expired")
-	ErrAlreadyApproved = errors.New("Quick Connect code is already approved")
+	errAlreadyApproved = errors.New("Quick Connect code is already approved")
 	ErrRemoteViewer    = errors.New("public Quick Connect requires a remote-enabled Viewer")
-	ErrInvalidRequest  = errors.New("Quick Connect request is invalid")
+	errInvalidRequest  = errors.New("Quick Connect request is invalid")
 )
 
 type Request struct {
@@ -85,7 +85,7 @@ func New(ttl time.Duration) *Broker {
 
 func (broker *Broker) Create(request Request) (string, Connection, error) {
 	if !validRequest(request) {
-		return "", Connection{}, ErrInvalidRequest
+		return "", Connection{}, errInvalidRequest
 	}
 	secret, now := "qc_"+rand.Text(), broker.now()
 	broker.mu.Lock()
@@ -149,7 +149,7 @@ func (broker *Broker) Approve(value string, viewer Viewer) error {
 
 func approvalAllowed(pending pendingConnection, viewer Viewer) error {
 	if pending.profileID != "" && pending.profileID != viewer.ID {
-		return ErrAlreadyApproved
+		return errAlreadyApproved
 	}
 	if pending.remote && (viewer.Owner || !viewer.Remote || !viewer.Secured || !viewer.StronglyVerified) {
 		return ErrRemoteViewer
@@ -159,14 +159,14 @@ func approvalAllowed(pending pendingConnection, viewer Viewer) error {
 
 func approvalCode(value string, viewer Viewer) (string, error) {
 	if len(value) > 16 || viewer.ID == "" || !validField(viewer.ID, 128) {
-		return "", ErrInvalidRequest
+		return "", errInvalidRequest
 	}
 	return strings.ToUpper(strings.TrimSpace(value)), nil
 }
 
 func (broker *Broker) Consume(secret string) (Grant, error) {
 	if !validField(secret, 128) {
-		return Grant{}, ErrNotFound
+		return Grant{}, errNotFound
 	}
 	key := secretKey(secret)
 	broker.mu.Lock()
@@ -174,10 +174,10 @@ func (broker *Broker) Consume(secret string) (Grant, error) {
 	broker.prune(broker.now())
 	pending, found := broker.pending[key]
 	if !found {
-		return Grant{}, ErrNotFound
+		return Grant{}, errNotFound
 	}
 	if pending.profileID == "" {
-		return Grant{}, ErrPending
+		return Grant{}, errPending
 	}
 	broker.remove(key, pending.connection.Code)
 	return Grant{ProfileID: pending.profileID, Device: pending.connection.Device, ProfileRevision: pending.profileRevision, Remote: pending.remote, Owner: pending.owner}, nil

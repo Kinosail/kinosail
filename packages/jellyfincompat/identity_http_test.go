@@ -97,9 +97,9 @@ func TestIdentityPasswordLoginPreservesOrderingAndErrors(t *testing.T) {
 		wantErr            error
 		wantEffects        string
 	}{
-		{"limited", "secret", ErrCredentialRateLimit, "rate"},
-		{"Sam", "wrong", ErrInvalidCredentials, "rate,authenticate"},
-		{"mfa", "secret", ErrQuickConnectMFA, "rate,authenticate"},
+		{"limited", "secret", errCredentialRateLimit, "rate"},
+		{"Sam", "wrong", errInvalidCredentials, "rate,authenticate"},
+		{"mfa", "secret", errQuickConnectMFA, "rate,authenticate"},
 		{"Sam", "secret", nil, "rate,authenticate,compatibility,audit,success,session"},
 	} {
 		effects := make([]string, 0)
@@ -180,7 +180,7 @@ func TestQuickConnectAdaptersValidateBeforeMutation(t *testing.T) {
 	if missing.Code != http.StatusNotFound || success.Code != http.StatusOK || audits != 1 || consumes != 2 {
 		t.Fatalf("authentication = %d/%d audits=%d consumes=%d", missing.Code, success.Code, audits, consumes)
 	}
-	if _, valid := StrictQuery(map[string][]string{"Secret": {"one"}, "secret": {"two"}}, "secret", 8); valid {
+	if _, valid := strictQuery(map[string][]string{"Secret": {"one"}, "secret": {"two"}}, "secret", 8); valid {
 		t.Fatal("conflicting query was accepted")
 	}
 }

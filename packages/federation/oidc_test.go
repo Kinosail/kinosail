@@ -20,7 +20,7 @@ import (
 func TestOIDCConfigurationAndValueValidation(t *testing.T) {
 	t.Parallel()
 	valid := OIDCConfig{Issuer: "https://identity.example", ClientID: "client", ClientSecret: "secret", RedirectURL: "https://media.example/login/oidc/callback"}
-	if !NewOIDC(valid).Configured() || (*OIDC)(nil).Configured() {
+	if !newOIDC(valid).Configured() || (*OIDC)(nil).Configured() {
 		t.Fatal("valid OIDC configuration was not distinguished from nil")
 	}
 	for name, mutate := range map[string]func(*OIDCConfig){
@@ -37,7 +37,7 @@ func TestOIDCConfigurationAndValueValidation(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			candidate := valid
 			mutate(&candidate)
-			if NewOIDC(candidate).Configured() {
+			if newOIDC(candidate).Configured() {
 				t.Fatal("invalid OIDC configuration was accepted")
 			}
 		})
@@ -53,15 +53,15 @@ func TestOIDCConfigurationAndValueValidation(t *testing.T) {
 		"https://identity.example/#x":   false,
 	} {
 		parsed, _ := url.Parse(raw)
-		if TrustedURL(parsed) != want {
+		if trustedURL(parsed) != want {
 			t.Fatalf("TrustedURL(%q) = %v", raw, !want)
 		}
 	}
-	if TrustedURL(nil) {
+	if trustedURL(nil) {
 		t.Fatal("nil URL was trusted")
 	}
 	for subject, want := range map[string]bool{"subject": true, "": false, strings.Repeat("x", 256): false, "bad\nsubject": false, string([]byte{0xff}): false} {
-		if ValidSubject(subject) != want {
+		if validSubject(subject) != want {
 			t.Fatalf("ValidSubject(%q) = %v", subject, !want)
 		}
 	}
@@ -102,7 +102,7 @@ func TestOIDCStateCookiePolicy(t *testing.T) {
 	t.Parallel()
 	secure := StateCookie("state", true)
 	cleared := StateCookie("", false)
-	if secure.Name != OIDCStateCookieName || !secure.Secure {
+	if secure.Name != oidcStateCookieName || !secure.Secure {
 		t.Fatalf("state cookies = %#v %#v", secure, cleared)
 	}
 	if secure.MaxAge != 600 || cleared.MaxAge != -1 {
@@ -112,7 +112,7 @@ func TestOIDCStateCookiePolicy(t *testing.T) {
 
 func TestOIDCMFAChallengeLifecycle(t *testing.T) {
 	t.Parallel()
-	flow := NewOIDC(OIDCConfig{})
+	flow := newOIDC(OIDCConfig{})
 	challenge, err := flow.BeginMFA("viewer")
 	profileID, found := flow.MFAProfile(challenge)
 	if err != nil || !found {
@@ -135,11 +135,11 @@ func TestOIDCMFAChallengeLifecycle(t *testing.T) {
 
 func TestOIDCMFAStoreIsBounded(t *testing.T) {
 	t.Parallel()
-	flow := NewOIDC(OIDCConfig{})
+	flow := newOIDC(OIDCConfig{})
 	for index := range maxPendingStates {
 		flow.mfa[string(rune(index+1))] = mfaChallenge{expires: time.Now().Add(time.Minute)}
 	}
-	if _, err := flow.BeginMFA("viewer"); !errors.Is(err, ErrTooManyPending) {
+	if _, err := flow.BeginMFA("viewer"); !errors.Is(err, errTooManyPending) {
 		t.Fatalf("MFA pending limit = %v", err)
 	}
 	flow.mfa["expired"] = mfaChallenge{expires: time.Now().Add(-time.Minute)}
@@ -154,12 +154,12 @@ func TestOIDCFlowValidatesBeforeEffectsAndCompletesOnce(t *testing.T) {
 	flow, exchanges, setNonce := newOIDCTestFlow(t)
 	state, nonce := mustBeginOIDC(t, flow)
 	setNonce(nonce)
-	assertOIDCCallbackError(t, flow, "code=approved&code=other&state="+url.QueryEscape(state), state, ErrInvalidCallback)
+	assertOIDCCallbackError(t, flow, "code=approved&code=other&state="+url.QueryEscape(state), state, errInvalidCallback)
 	assertExchanges(t, exchanges, 0)
 	result, err := flow.Complete(t.Context(), "code=approved&state="+url.QueryEscape(state), state, true)
 	assertOIDCCallback(t, result, err)
 	assertExchanges(t, exchanges, 1)
-	assertOIDCCallbackError(t, flow, "code=approved&state="+url.QueryEscape(state), state, ErrInvalidState)
+	assertOIDCCallbackError(t, flow, "code=approved&state="+url.QueryEscape(state), state, errInvalidState)
 	assertExchanges(t, exchanges, 1)
 }
 
@@ -216,13 +216,13 @@ func newOIDCTestFlow(t *testing.T) (*OIDC, *atomic.Int32, func(string)) {
 	}))
 	t.Cleanup(provider.Close)
 	issuer = provider.URL
-	flow := NewOIDC(OIDCConfig{Issuer: issuer, ClientID: "kinosail", ClientSecret: "secret", RedirectURL: "http://localhost/login/oidc/callback"})
+	flow := newOIDC(OIDCConfig{Issuer: issuer, ClientID: "kinosail", ClientSecret: "secret", RedirectURL: "http://localhost/login/oidc/callback"})
 	return flow, &exchanges, func(value string) { nonce = value }
 }
 
 func TestOIDCFlowRejectsProviderAndCallbackFailures(t *testing.T) {
 	t.Parallel()
-	if _, _, err := NewOIDC(OIDCConfig{}).Begin(t.Context(), "", ""); !errors.Is(err, ErrNotConfigured) {
+	if _, _, err := newOIDC(OIDCConfig{}).Begin(t.Context(), "", ""); !errors.Is(err, errNotConfigured) {
 		t.Fatalf("unconfigured begin = %v", err)
 	}
 	issuer := ""
@@ -231,29 +231,29 @@ func TestOIDCFlowRejectsProviderAndCallbackFailures(t *testing.T) {
 	}))
 	t.Cleanup(provider.Close)
 	issuer = provider.URL
-	untrusted := NewOIDC(OIDCConfig{Issuer: issuer, ClientID: "client", ClientSecret: "secret", RedirectURL: "http://localhost/callback"})
-	if _, _, err := untrusted.Begin(t.Context(), "", ""); !errors.Is(err, ErrProviderUnavailable) {
+	untrusted := newOIDC(OIDCConfig{Issuer: issuer, ClientID: "client", ClientSecret: "secret", RedirectURL: "http://localhost/callback"})
+	if _, _, err := untrusted.Begin(t.Context(), "", ""); !errors.Is(err, errProviderUnavailable) {
 		t.Fatalf("untrusted provider = %v", err)
 	}
 	flow, state := oidcFlowWithPending("https://identity.example")
-	if _, err := flow.Complete(t.Context(), "code=approved&iss=https%3A%2F%2Fother.example&state="+state, state, true); !errors.Is(err, ErrInvalidCallback) {
+	if _, err := flow.Complete(t.Context(), "code=approved&iss=https%3A%2F%2Fother.example&state="+state, state, true); !errors.Is(err, errInvalidCallback) {
 		t.Fatalf("issuer mismatch = %v", err)
 	}
-	if _, err := flow.Complete(t.Context(), "error=access_denied&state="+state, state, true); !errors.Is(err, ErrAuthorizationDenied) {
+	if _, err := flow.Complete(t.Context(), "error=access_denied&state="+state, state, true); !errors.Is(err, errAuthorizationDenied) {
 		t.Fatalf("provider denial = %v", err)
 	}
 	flow, state = oidcFlowWithPending("https://identity.example")
-	if _, err := flow.Complete(t.Context(), "code=approved&state="+state, "other", true); !errors.Is(err, ErrInvalidState) {
+	if _, err := flow.Complete(t.Context(), "code=approved&state="+state, "other", true); !errors.Is(err, errInvalidState) {
 		t.Fatalf("state mismatch = %v", err)
 	}
 	flow, state = oidcFlowWithPending("https://identity.example")
-	if _, err := flow.Complete(t.Context(), "code=approved&state="+state, state, true); !errors.Is(err, ErrProviderUnavailable) {
+	if _, err := flow.Complete(t.Context(), "code=approved&state="+state, state, true); !errors.Is(err, errProviderUnavailable) {
 		t.Fatalf("unavailable provider = %v", err)
 	}
 }
 
 func oidcFlowWithPending(issuer string) (*OIDC, string) {
-	flow := NewOIDC(OIDCConfig{Issuer: issuer, ClientID: "client", ClientSecret: "secret", RedirectURL: "https://media.example/callback"})
+	flow := newOIDC(OIDCConfig{Issuer: issuer, ClientID: "client", ClientSecret: "secret", RedirectURL: "https://media.example/callback"})
 	state := "state"
 	flow.pending[tokenKey(state)] = oidcTransaction{nonce: "nonce", verifier: "verifier", expires: time.Now().Add(time.Minute)}
 	return flow, state

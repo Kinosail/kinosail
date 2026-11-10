@@ -22,15 +22,15 @@ func (result Result) ViewerShelves(access BrowseAccess) ViewerShelves {
 	}
 	relevant := make([]library.Item, 0)
 	for _, item := range result.references {
-		state := ViewerProgress(progress, access.ProfileID, access.Owner, item.ID)
+		state := viewerProgress(progress, access.ProfileID, access.Owner, item.ID)
 		if state.Seconds > 0 || !state.Updated.IsZero() || isListed(item.ID) {
 			relevant = append(relevant, *item)
 		}
 	}
-	recent := ProgressHistory(progress, access.ProfileID, access.Owner, relevant)
+	recent := progressHistory(progress, access.ProfileID, access.Owner, relevant)
 	return ViewerShelves{
-		Active: ActiveProgress(progress, access.ProfileID, access.Owner, relevant),
-		Listed: ListedItems(relevant, isListed),
+		Active: activeProgress(progress, access.ProfileID, access.Owner, relevant),
+		Listed: listedItems(relevant, isListed),
 		Recent: recent[:min(recentPlaybackLimit, len(recent))],
 	}
 }

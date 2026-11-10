@@ -142,7 +142,7 @@ func (handlers MediaHandlers) createPlaylist(writer http.ResponseWriter, request
 		apiAction{err: err, status: http.StatusBadRequest}.serve(writer)
 		return
 	}
-	name, err := CreatePlaylistDocument(request.Context(), handlers.Viewer(request), input, func(id string) (library.Item, bool) {
+	name, err := createPlaylistDocument(request.Context(), handlers.Viewer(request), input, func(id string) (library.Item, bool) {
 		return handlers.Index.VisibleItem(request, id)
 	}, handlers.Lists.Create)
 	if err != nil {

@@ -30,7 +30,7 @@ func NewProfilePrincipals(config ProfilePrincipalConfig) PrincipalRepository {
 	profiles := identitycore.NewProfileStore(identitycore.ProfileStoreConfig{
 		Mutex: config.State.Mutex, Profiles: config.State.Profiles,
 	})
-	return NewPrincipalAdapter(PrincipalAdapterConfig[identitycore.Profile]{
+	return newPrincipalAdapter(PrincipalAdapterConfig[identitycore.Profile]{
 		CurrentProfile: config.CurrentProfile, FindProfile: profiles.ByID, FederatedProfiles: profiles.FederatedProfiles,
 		AllowProfile: func(profile identitycore.Profile, request *http.Request, now time.Time) bool {
 			return (!(profile.Owner || config.MFARequired()) || profile.Secured()) && profile.Allowed(config.PublicRequest(request), now)

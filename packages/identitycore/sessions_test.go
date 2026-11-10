@@ -56,7 +56,7 @@ func (fixture *sessionFixture) sessions(options ...func(*SessionConfig)) *Sessio
 	for _, option := range options {
 		option(&config)
 	}
-	return NewSessions(config)
+	return newSessions(config)
 }
 
 func TestLoadSessionsSupportsDocumentsFilesAndLegacyState(t *testing.T) {
@@ -109,7 +109,7 @@ func TestSessionCreationPreservesPlayerPolicies(t *testing.T) {
 	} {
 		fixture := newSessionFixture()
 		fixture.profiles = []SessionProfile{profile}
-		if _, err := fixture.sessions().Create("viewer", "device", false, false, ""); !errors.Is(err, ErrProfileNotFound) || fixture.writes != 0 {
+		if _, err := fixture.sessions().Create("viewer", "device", false, false, ""); !errors.Is(err, errProfileNotFound) || fixture.writes != 0 {
 			t.Fatalf("%s error = %v writes=%d", name, err, fixture.writes)
 		}
 	}
@@ -119,7 +119,7 @@ func TestSessionCreationPreservesPlayerPolicies(t *testing.T) {
 	} {
 		fixture := newSessionFixture()
 		fixture.profiles = []SessionProfile{profile}
-		if _, err := fixture.sessions().Create("viewer", "device", false, false, "public"); !errors.Is(err, ErrPublicProfile) || fixture.writes != 0 {
+		if _, err := fixture.sessions().Create("viewer", "device", false, false, "public"); !errors.Is(err, errPublicProfile) || fixture.writes != 0 {
 			t.Fatalf("%s error = %v writes=%d", name, err, fixture.writes)
 		}
 	}
@@ -130,7 +130,7 @@ func TestSessionCreationPreservesPlayerPolicies(t *testing.T) {
 	fixture.values["expired"] = Session{ProfileID: "viewer", Channel: "public", ExpiresAt: fixture.now.Unix()}
 	fixture.values["other"] = Session{ProfileID: "other", Channel: "public", ExpiresAt: fixture.now.Add(time.Hour).Unix()}
 	fixture.values["private"] = Session{ProfileID: "viewer", ExpiresAt: fixture.now.Add(time.Hour).Unix()}
-	if _, err := fixture.sessions().Create("viewer", "device", false, false, "public"); !errors.Is(err, ErrPublicLimit) || fixture.writes != 0 {
+	if _, err := fixture.sessions().Create("viewer", "device", false, false, "public"); !errors.Is(err, errPublicLimit) || fixture.writes != 0 {
 		t.Fatalf("public limit = %v writes=%d", err, fixture.writes)
 	}
 }
@@ -169,7 +169,7 @@ func TestSessionAuthenticationAndRevocation(t *testing.T) {
 	key := SessionKey("token")
 	fixture.values = map[string]Session{key: {ProfileID: "viewer", ExpiresAt: fixture.now.Add(time.Hour).Unix()}, SessionKey("weak"): {ProfileID: "other"}}
 	sessions := fixture.sessions()
-	if err := sessions.MarkStrong("missing"); !errors.Is(err, ErrCurrentSession) {
+	if err := sessions.MarkStrong("missing"); !errors.Is(err, errCurrentSession) {
 		t.Fatalf("missing strong = %v", err)
 	}
 	if err := sessions.MarkStrong("token"); err != nil || fixture.values[key].StrongAt != fixture.now.Unix() {
@@ -182,7 +182,7 @@ func TestSessionAuthenticationAndRevocation(t *testing.T) {
 	if !sessions.Public("token") || sessions.Public("missing") {
 		t.Fatal("public session lookup is incorrect")
 	}
-	if err := sessions.RevokeOthers("missing"); !errors.Is(err, ErrCurrentSession) {
+	if err := sessions.RevokeOthers("missing"); !errors.Is(err, errCurrentSession) {
 		t.Fatalf("missing revoke others = %v", err)
 	}
 	if err := sessions.RevokeOthers("token"); err != nil || len(fixture.values) != 1 || fixture.values[key].Channel != "public" {
@@ -212,7 +212,7 @@ func TestSessionAdminViewsAndFailures(t *testing.T) {
 	if len(devices) != 2 || devices[0].ID != "unknown" || devices[0].Profile != "Viewer" || devices[1].ID != "active" || devices[1].Profile != "Sam" {
 		t.Fatalf("devices = %#v", devices)
 	}
-	if err := sessions.RevokeDevice("missing"); !errors.Is(err, ErrDeviceNotFound) {
+	if err := sessions.RevokeDevice("missing"); !errors.Is(err, errDeviceNotFound) {
 		t.Fatalf("missing device = %v", err)
 	}
 	fixture.persist = errors.New("persist failed")
@@ -277,8 +277,8 @@ func TestActivePublicAndSessionCopies(t *testing.T) {
 func TestInvalidSessionManagers(t *testing.T) {
 	t.Parallel()
 	assertInvalidSessionsFailClosed(t)
-	configured := NewSessions(SessionConfig{})
-	if !errors.Is(configured.SignOut("token"), ErrCurrentSession) {
+	configured := newSessions(SessionConfig{})
+	if !errors.Is(configured.SignOut("token"), errCurrentSession) {
 		t.Fatal("unconfigured sign-out did not fail closed")
 	}
 	defaults := newSessionFixture()
@@ -293,7 +293,7 @@ func TestInvalidSessionManagers(t *testing.T) {
 func assertInvalidSessionsFailClosed(t *testing.T) {
 	t.Helper()
 	var invalid *Sessions
-	if _, err := invalid.Create("", "", false, false, ""); !errors.Is(err, ErrProfileNotFound) || !errors.Is(invalid.MarkStrong(""), ErrCurrentSession) || invalid.RecentlyAuthenticated("", time.Hour) || invalid.Public("") || invalid.Active() != 0 || len(invalid.Devices()) != 0 || !errors.Is(invalid.RevokeAll(), ErrCurrentSession) {
+	if _, err := invalid.Create("", "", false, false, ""); !errors.Is(err, errProfileNotFound) || !errors.Is(invalid.MarkStrong(""), errCurrentSession) || invalid.RecentlyAuthenticated("", time.Hour) || invalid.Public("") || invalid.Active() != 0 || len(invalid.Devices()) != 0 || !errors.Is(invalid.RevokeAll(), errCurrentSession) {
 		t.Fatal("invalid manager did not fail closed")
 	}
 }

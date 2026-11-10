@@ -36,11 +36,11 @@ func TestArtworkCacheValidity(t *testing.T) {
 	t.Parallel()
 	cache, paths := artworkCacheFixture(t)
 	root := filepath.Join(cache, "metadata")
-	if got := CurrentArtwork(cache, paths["current.jpg"]); got != paths["current.jpg"] {
+	if got := currentArtwork(cache, paths["current.jpg"]); got != paths["current.jpg"] {
 		t.Fatalf("current artwork = %q", got)
 	}
 	for _, pair := range [][2]string{{"", paths["current.jpg"]}, {cache, ""}, {cache, cache}, {cache, filepath.Join(cache, "outside.jpg")}, {cache, "relative.jpg"}, {cache, root}, {cache, filepath.Join(root, "missing.jpg")}, {cache, paths["expired.JPG"]}} {
-		if got := CurrentArtwork(pair[0], pair[1]); got != "" {
+		if got := currentArtwork(pair[0], pair[1]); got != "" {
 			t.Fatalf("invalid artwork accepted: %q", got)
 		}
 	}

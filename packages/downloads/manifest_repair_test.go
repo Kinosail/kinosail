@@ -77,10 +77,10 @@ func TestManifestRepairCancellationReleasesWaiter(t *testing.T) {
 func TestManifestRepairBoundsQueueAndSharesRevision(t *testing.T) {
 	manager, job := readyRepairJob(t)
 	manager.manifestWork = make(map[string]*manifestFlight)
-	for index := range QueueCapacity {
+	for index := range queueCapacity {
 		manager.manifestWork[string(rune(index))] = &manifestFlight{}
 	}
-	if _, err := manager.manifestFlight(job); !errors.Is(err, ErrQueueFull) {
+	if _, err := manager.manifestFlight(job); !errors.Is(err, errQueueFull) {
 		t.Fatalf("unbounded repair queue: %v", err)
 	}
 	existing := &manifestFlight{done: make(chan struct{})}

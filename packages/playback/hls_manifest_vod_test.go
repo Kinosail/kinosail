@@ -1,4 +1,4 @@
-package hlsmanifest
+package playback
 
 import (
 	"math"

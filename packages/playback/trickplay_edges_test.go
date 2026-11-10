@@ -18,7 +18,7 @@ func TestTrickplayRoutingAndGenerationEdges(t *testing.T) {
 	source := filepath.Join(root, "source.mkv")
 	writeTestFile(t, source, "source")
 	callback := ""
-	frames, err := NewTrickplay(TrickplayDependencies{
+	frames, err := newTrickplay(TrickplayDependencies{
 		Cache: root, FFmpeg: "/missing", RecipePolicy: policy,
 		Lookup: func(*http.Request, string) (library.Item, bool) {
 			return library.Item{ID: "0123456789abcdef", Kind: "video", Path: source}, true
@@ -59,11 +59,11 @@ func TestTrickplayRoutingAndGenerationEdges(t *testing.T) {
 	}
 	blockedParent := filepath.Join(root, "blocked")
 	writeTestFile(t, blockedParent, "file")
-	if err := GenerateTrickplay(t.Context(), root, "/missing", source, filepath.Join(blockedParent, "frame.jpg"), 0); err == nil {
+	if err := generateTrickplay(t.Context(), root, "/missing", source, filepath.Join(blockedParent, "frame.jpg"), 0); err == nil {
 		t.Fatal("ignored trickplay directory failure")
 	}
 	failedTarget := filepath.Join(root, "failed.jpg")
-	if err := GenerateTrickplay(t.Context(), root, "/missing", source, failedTarget, 0); err == nil || len(scratchFiles(t, root)) != 0 {
+	if err := generateTrickplay(t.Context(), root, "/missing", source, failedTarget, 0); err == nil || len(scratchFiles(t, root)) != 0 {
 		t.Fatalf("failed generation = %v", err)
 	}
 }

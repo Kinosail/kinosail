@@ -17,7 +17,7 @@ func (zeroReader) Read(buffer []byte) (int, error) {
 }
 
 func JellyfinBitrateTest(writer http.ResponseWriter, request *http.Request) {
-	size, valid := JellyfinBitrateTestSize(request)
+	size, valid := jellyfinBitrateTestSize(request)
 	if !valid {
 		http.Error(writer, "invalid bitrate test size", http.StatusBadRequest)
 		return
@@ -28,7 +28,7 @@ func JellyfinBitrateTest(writer http.ResponseWriter, request *http.Request) {
 	_, _ = io.CopyN(writer, zeroReader{}, int64(size))
 }
 
-func JellyfinBitrateTestSize(request *http.Request) (int, bool) {
+func jellyfinBitrateTestSize(request *http.Request) (int, bool) {
 	if request == nil || request.URL == nil {
 		return 0, false
 	}

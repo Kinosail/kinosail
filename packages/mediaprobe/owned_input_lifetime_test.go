@@ -14,7 +14,7 @@ func TestInputProbeJoinsBlockedInputAndDescendant(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), time.Second)
 		defer cancel()
 		err := ProbeInputLines(ctx, nil, "must-not-start", nil, strings.NewReader("input"), 1024, 1, func(string) error { t.Fatal("unsupported input launched a probe"); return nil })
-		if !errors.Is(err, ErrProbeInputUnsupported) {
+		if !errors.Is(err, errProbeInputUnsupported) {
 			t.Fatal("unsupported process input did not reject before launch")
 		}
 		return

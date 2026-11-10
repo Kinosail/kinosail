@@ -87,21 +87,21 @@ func TestListActionsValidateBeforePersistence(t *testing.T) {
 	create := func(context.Context, string, string, ...string) error { calls++; return nil }
 	document := func(raw string) (string, error) { calls++; return raw, nil }
 	request := listRequest("/playlists", "name=Queue")
-	if action := CreatePlaylist(request, "viewer", document, create); action.Err != nil || action.Redirect != "/playlist/Queue" || calls != 1 {
+	if action := createPlaylist(request, "viewer", document, create); action.Err != nil || action.Redirect != "/playlist/Queue" || calls != 1 {
 		t.Fatalf("create = %#v calls=%d", action, calls)
 	}
 	request = listRequest("/playlists", "document=Imported")
-	if action := CreatePlaylist(request, "viewer", document, create); action.Err != nil || action.Redirect != "/playlist/Imported" || calls != 2 {
+	if action := createPlaylist(request, "viewer", document, create); action.Err != nil || action.Redirect != "/playlist/Imported" || calls != 2 {
 		t.Fatalf("import = %#v calls=%d", action, calls)
 	}
 	for _, body := range []string{"", "name=A&document=B", "unknown=x", "name=A&name=B", "name=%FF", "name=bad%2Fname", "name=" + strings.Repeat("x", 65)} {
-		if action := CreatePlaylist(listRequest("/playlists", body), "viewer", document, create); action.Status != http.StatusBadRequest {
+		if action := createPlaylist(listRequest("/playlists", body), "viewer", document, create); action.Status != http.StatusBadRequest {
 			t.Fatalf("invalid create %q = %#v", body, action)
 		}
 	}
 	wrong := listRequest("/playlists", "name=Queue")
 	wrong.Header.Set("Content-Type", "text/plain")
-	if action := CreatePlaylist(wrong, "viewer", document, create); action.Status != http.StatusBadRequest || calls != 2 {
+	if action := createPlaylist(wrong, "viewer", document, create); action.Status != http.StatusBadRequest || calls != 2 {
 		t.Fatalf("wrong content type = %#v calls=%d", action, calls)
 	}
 
@@ -113,14 +113,14 @@ func TestListActionsValidateBeforePersistence(t *testing.T) {
 		}
 		return nil
 	}
-	if action := CreateSmartPlaylist(listRequest("/smart", "name=New&kind=video&query=test&sort=title"), "viewer", smart); action.Err != nil || smartCalls != 1 {
+	if action := createSmartPlaylist(listRequest("/smart", "name=New&kind=video&query=test&sort=title"), "viewer", smart); action.Err != nil || smartCalls != 1 {
 		t.Fatalf("smart = %#v calls=%d", action, smartCalls)
 	}
-	if action := CreateSmartPlaylist(listRequest("/smart", "name=New&sort="), "viewer", smart); action.Status != http.StatusBadRequest || smartCalls != 1 {
+	if action := createSmartPlaylist(listRequest("/smart", "name=New&sort="), "viewer", smart); action.Status != http.StatusBadRequest || smartCalls != 1 {
 		t.Fatalf("invalid smart = %#v calls=%d", action, smartCalls)
 	}
 	for _, body := range []string{"name=%FF&sort=title", "name=bad%2Fname&sort=title", "name=New&kind=unknown&sort=title", "name=New&sort=unknown"} {
-		if action := CreateSmartPlaylist(listRequest("/smart", body), "viewer", smart); action.Status != http.StatusBadRequest || smartCalls != 1 {
+		if action := createSmartPlaylist(listRequest("/smart", body), "viewer", smart); action.Status != http.StatusBadRequest || smartCalls != 1 {
 			t.Fatalf("invalid smart %q = %#v calls=%d", body, action, smartCalls)
 		}
 	}
@@ -131,13 +131,13 @@ func TestListActionsValidateBeforePersistence(t *testing.T) {
 	request = listRequest("/playlist/Queue/item", "included=true")
 	request.SetPathValue("name", "Queue")
 	request.SetPathValue("id", "item")
-	if action := SavePlaylist(request, "viewer", visible, save); action.Err != nil || action.Redirect != "/book/item" || visibleCalls != 1 || saveCalls != 1 {
+	if action := savePlaylist(request, "viewer", visible, save); action.Err != nil || action.Redirect != "/book/item" || visibleCalls != 1 || saveCalls != 1 {
 		t.Fatalf("save playlist = %#v visible=%d saves=%d", action, visibleCalls, saveCalls)
 	}
 	request = listRequest("/playlist/Queue/item", "included=maybe")
 	request.SetPathValue("name", "Queue")
 	request.SetPathValue("id", "item")
-	if action := SavePlaylist(request, "viewer", visible, save); action.Status != http.StatusBadRequest || visibleCalls != 1 || saveCalls != 1 {
+	if action := savePlaylist(request, "viewer", visible, save); action.Status != http.StatusBadRequest || visibleCalls != 1 || saveCalls != 1 {
 		t.Fatalf("invalid playlist save = %#v", action)
 	}
 
@@ -157,15 +157,15 @@ func TestListActionsValidateBeforePersistence(t *testing.T) {
 	remove := func(context.Context, string, string) error { deleteCalls++; return nil }
 	request = listRequest("/playlist/Queue/delete", "")
 	request.SetPathValue("name", "Queue")
-	if action := DeletePlaylist(request, "viewer", remove); action.Err != nil || action.Redirect != "/?view=playlists" || deleteCalls != 1 {
+	if action := deletePlaylist(request, "viewer", remove); action.Err != nil || action.Redirect != "/?view=playlists" || deleteCalls != 1 {
 		t.Fatalf("delete = %#v calls=%d", action, deleteCalls)
 	}
 	request = listRequest("/playlist/bad/delete", "unknown=true")
 	request.SetPathValue("name", "bad/name")
-	if action := DeletePlaylist(request, "viewer", remove); action.Status != http.StatusBadRequest || deleteCalls != 1 {
+	if action := deletePlaylist(request, "viewer", remove); action.Status != http.StatusBadRequest || deleteCalls != 1 {
 		t.Fatalf("invalid delete = %#v calls=%d", action, deleteCalls)
 	}
-	if listed := ListedItems([]library.Item{{ID: "one"}, {ID: "two"}}, func(id string) bool { return id == "two" }); len(listed) != 1 || listed[0].ID != "two" {
+	if listed := listedItems([]library.Item{{ID: "one"}, {ID: "two"}}, func(id string) bool { return id == "two" }); len(listed) != 1 || listed[0].ID != "two" {
 		t.Fatalf("listed = %#v", listed)
 	}
 }

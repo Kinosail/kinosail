@@ -212,7 +212,7 @@ func supports(tag string, provider Provider) bool {
 	return ok
 }
 
-func NormalizeFileName(value string) (string, bool) {
+func normalizeFileName(value string) (string, bool) {
 	if tag, ok := NormalizeLocal(value); ok {
 		return tag, true
 	}

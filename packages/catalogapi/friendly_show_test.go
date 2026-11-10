@@ -14,7 +14,7 @@ func TestProjectItemUsesFriendlyShowNameWithoutChangingIdentity(t *testing.T) {
 		Season: 1, Episode: 1, Artwork: "episode.jpg",
 	}
 	progress := catalog.PlaybackState{Seconds: 44}
-	result := ProjectItem(item, progress, ItemAccess{Stream: true, Download: true})
+	result := projectItem(item, progress, ItemAccess{Stream: true, Download: true})
 	if result.Show != "Age of Attraction" || result.Title != item.Title {
 		t.Fatalf("friendly labels = %#v", result)
 	}
@@ -33,7 +33,7 @@ func TestProjectItemWithoutShowMetadataKeepsExistingLabels(t *testing.T) {
 		{ID: "movie", Kind: "video", Title: "1917"},
 		{ID: "track", Kind: "audio", Title: "Track", Artist: "Artist"},
 	} {
-		result := ProjectItem(item, catalog.PlaybackState{}, ItemAccess{})
+		result := projectItem(item, catalog.PlaybackState{}, ItemAccess{})
 		if result.Title != item.Title || result.Show != item.Show || result.Artist != item.Artist {
 			t.Fatalf("labels changed without show metadata: %#v", result)
 		}
@@ -46,19 +46,19 @@ func TestEpisodeWithoutSuppliedArtworkExposesItsOwnStill(t *testing.T) {
 		{ID: "first", Kind: "video", Show: "Series", Season: 1, Episode: 1, ShowBackdrop: "show.jpg"},
 		{ID: "second", Kind: "video", Show: "Series", Season: 1, Episode: 2, ShowBackdrop: "show.jpg"},
 	} {
-		result := ProjectItem(item, catalog.PlaybackState{}, ItemAccess{})
+		result := projectItem(item, catalog.PlaybackState{}, ItemAccess{})
 		if result.Artwork != "/episode-art/"+item.ID {
 			t.Fatalf("episode %s artwork = %q", item.ID, result.Artwork)
 		}
 	}
-	if result := ProjectItem(library.Item{ID: "movie", Kind: "video"}, catalog.PlaybackState{}, ItemAccess{}); result.Artwork != "/episode-art/movie" {
+	if result := projectItem(library.Item{ID: "movie", Kind: "video"}, catalog.PlaybackState{}, ItemAccess{}); result.Artwork != "/episode-art/movie" {
 		t.Fatalf("movie without artwork or backdrop = %q", result.Artwork)
 	}
 	for _, item := range []library.Item{
 		{ID: "movie-with-backdrop", Kind: "video", Backdrop: "movie-backdrop.jpg"},
 		{ID: "track", Kind: "audio", Show: "Series", Episode: 1},
 	} {
-		if result := ProjectItem(item, catalog.PlaybackState{}, ItemAccess{}); result.Artwork != "" {
+		if result := projectItem(item, catalog.PlaybackState{}, ItemAccess{}); result.Artwork != "" {
 			t.Fatalf("non-episode %s artwork = %q", item.ID, result.Artwork)
 		}
 	}

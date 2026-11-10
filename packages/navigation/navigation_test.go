@@ -55,7 +55,7 @@ func TestValidateRejectsInvalidNavigation(t *testing.T) {
 func TestLinksProjectPlayerNavigation(t *testing.T) {
 	t.Parallel()
 	localize := func(value string) string { return "localized " + value }
-	primary, more := Links([]string{"home", "movies", "shows", "music", "books"}, "movies", localize)
+	primary, more := links([]string{"home", "movies", "shows", "music", "books"}, "movies", localize)
 	wantPrimary := []Link{
 		{"localized Home", "/?view=all", "library", "home", false},
 		{"localized Movies", "/?view=movies", "library", "film", true},
@@ -65,11 +65,11 @@ func TestLinksProjectPlayerNavigation(t *testing.T) {
 	if !slices.Equal(primary, wantPrimary) || !slices.Equal(more, []Link{{"localized Books", "/?view=books", "library", "book", false}}) {
 		t.Fatalf("Links() = %#v, %#v", primary, more)
 	}
-	primary, more = Links([]string{"home"}, "home", localize)
+	primary, more = links([]string{"home"}, "home", localize)
 	if !slices.Equal(primary, []Link{{"localized Home", "/?view=all", "library", "home", true}}) || more != nil {
 		t.Fatalf("Links(home) = %#v, %#v", primary, more)
 	}
-	primary, more = Links([]string{"unknown"}, "", localize)
+	primary, more = links([]string{"unknown"}, "", localize)
 	if !slices.Equal(primary, []Link{{"localized ", "", "", "", true}}) || more != nil {
 		t.Fatalf("Links(unknown) = %#v, %#v", primary, more)
 	}
@@ -78,7 +78,7 @@ func TestLinksProjectPlayerNavigation(t *testing.T) {
 func TestPreferencesPutVisibleDestinationsFirst(t *testing.T) {
 	t.Parallel()
 	localize := strings.ToUpper
-	got := Preferences([]string{"movies", "home"}, localize)
+	got := preferences([]string{"movies", "home"}, localize)
 	if len(got) != len(allDestinations) {
 		t.Fatalf("len(Preferences()) = %d", len(got))
 	}
@@ -89,15 +89,15 @@ func TestPreferencesPutVisibleDestinationsFirst(t *testing.T) {
 		t.Fatalf("hidden Preferences() = %#v", got[2:])
 	}
 
-	hidden := Preferences(nil, localize)
+	hidden := preferences(nil, localize)
 	if len(hidden) != len(allDestinations) || hidden[0].Visible || hidden[0].CanMoveUp || hidden[0].CanMoveDown {
 		t.Fatalf("Preferences(nil) = %#v", hidden)
 	}
-	allVisible := Preferences(allDestinations, localize)
+	allVisible := preferences(allDestinations, localize)
 	if len(allVisible) != len(allDestinations) || !allVisible[len(allVisible)-1].Visible || allVisible[len(allVisible)-1].CanMoveDown {
 		t.Fatalf("Preferences(all) = %#v", allVisible)
 	}
-	unknown := Preferences([]string{"unknown"}, localize)
+	unknown := preferences([]string{"unknown"}, localize)
 	if unknown[0] != (Preference{ID: "unknown", Visible: true}) {
 		t.Fatalf("Preferences(unknown) = %#v", unknown)
 	}

@@ -35,7 +35,7 @@ type Result struct {
 	Images []Image
 }
 
-func Year(date string) string {
+func year(date string) string {
 	if len(date) < 4 {
 		return ""
 	}
@@ -79,7 +79,7 @@ func hasInvalidRecordText(value string, multiline bool) bool {
 	}) >= 0
 }
 
-func ApplyMissing(item *library.Item, record Record) {
+func applyMissing(item *library.Item, record Record) {
 	applyRecordCast(item, record)
 	fillString(&item.Year, record.Year)
 	fillString(&item.Plot, record.Plot)
@@ -95,7 +95,7 @@ func ApplyMissing(item *library.Item, record Record) {
 	}
 }
 
-func Apply(item *library.Item, record Record) {
+func apply(item *library.Item, record Record) {
 	applyRecordCast(item, record)
 	setString(&item.Title, record.Title)
 	setString(&item.Year, record.Year)
@@ -152,10 +152,10 @@ func ApplyRecords(items []library.Item, records map[string]Record, currentArtwor
 			}
 		}
 		if !record.Owner && items[position].LocalMetadata {
-			ApplyMissing(&items[position], record)
+			applyMissing(&items[position], record)
 			continue
 		}
-		Apply(&items[position], record)
+		apply(&items[position], record)
 	}
 	return items
 }
@@ -200,10 +200,10 @@ func ResolveTMDBEpisode(ctx context.Context, item library.Item, show Record, enr
 	if ctx == nil || enrich == nil || artwork == nil || err != nil || id <= 0 || !validMetadataID(item.ID) || item.Season < 0 || item.Season > 100000 || item.Episode < 0 || item.Episode > 100000 || show.ShowTitle == "" || !Bounded(show) {
 		return Result{}, errors.New("show metadata is invalid")
 	}
-	record := Record{CastFetched: show.CastFetched, BackdropChecked: show.BackdropChecked, ShowCast: append([]library.Person(nil), show.ShowCast...), ShowTitle: show.ShowTitle, ShowYear: show.ShowYear, ShowPlot: show.ShowPlot, ShowArtwork: show.ShowArtwork, ShowBackdrop: show.ShowBackdrop, ShowProviderIDs: maps.Clone(show.ShowProviderIDs), ProviderIDs: TVDBProviderID(item)}
+	record := Record{CastFetched: show.CastFetched, BackdropChecked: show.BackdropChecked, ShowCast: append([]library.Person(nil), show.ShowCast...), ShowTitle: show.ShowTitle, ShowYear: show.ShowYear, ShowPlot: show.ShowPlot, ShowArtwork: show.ShowArtwork, ShowBackdrop: show.ShowBackdrop, ShowProviderIDs: maps.Clone(show.ShowProviderIDs), ProviderIDs: tvdbProviderID(item)}
 	poster := ""
 	enrich(ctx, item, id, show.ShowTitle, show.ShowYear, &record, &poster)
-	if !ValidTMDBPath(poster) || !Valid(record) {
+	if !validTMDBPath(poster) || !Valid(record) {
 		return Result{}, errors.New("metadata provider returned invalid data")
 	}
 	result := Result{Record: record}
@@ -217,7 +217,7 @@ func ResolveTMDBEpisode(ctx context.Context, item library.Item, show Record, enr
 	return result, nil
 }
 
-func TVDBProviderID(item library.Item) map[string]string {
+func tvdbProviderID(item library.Item) map[string]string {
 	if value := strings.TrimSpace(item.ProviderIDs["tvdb"]); value != "" {
 		return map[string]string{"tvdb": value}
 	}

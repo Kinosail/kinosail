@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	MaxCredentials  = 20
+	maxCredentials  = 20
 	maxCredentialID = 1024
 	maxPublicKey    = 8192
 	maxUserHandle   = 100
@@ -22,9 +22,9 @@ const (
 )
 
 var (
-	ErrInvalidCredential = errors.New("invalid passkey credential")
-	ErrDuplicate         = errors.New("passkey is already registered")
-	ErrLimit             = errors.New("passkey limit reached")
+	errInvalidCredential = errors.New("invalid passkey credential")
+	errDuplicate         = errors.New("passkey is already registered")
+	errLimit             = errors.New("passkey limit reached")
 	ErrInvalidID         = errors.New("invalid passkey id")
 	ErrNotFound          = errors.New("passkey was not found")
 	ErrLastFactor        = errors.New("owner must retain a passkey or authenticator")
@@ -42,21 +42,21 @@ func (user User[T]) WebAuthnName() string                       { return user.Na
 func (user User[T]) WebAuthnDisplayName() string                { return user.Name }
 func (user User[T]) WebAuthnCredentials() []webauthn.Credential { return user.Credentials }
 
-func NewUser[T any](value T, id, name string, credentials []webauthn.Credential) User[T] {
+func newUser[T any](value T, id, name string, credentials []webauthn.Credential) User[T] {
 	return User[T]{Value: value, ID: id, Name: name, Credentials: CloneAll(credentials)}
 }
 
-func ValidateCredential(credential *webauthn.Credential) error {
+func validateCredential(credential *webauthn.Credential) error {
 	if !validCredentialShape(credential) {
-		return ErrInvalidCredential
+		return errInvalidCredential
 	}
 	for _, transport := range credential.Transport {
 		if !validTransport(transport) {
-			return ErrInvalidCredential
+			return errInvalidCredential
 		}
 	}
 	if !validAttestation(credential.Attestation) {
-		return ErrInvalidCredential
+		return errInvalidCredential
 	}
 	return nil
 }
@@ -69,9 +69,9 @@ func validAttestation(attestation webauthn.CredentialAttestation) bool {
 	return len(attestation.ClientDataJSON) <= maxAttestation && len(attestation.ClientDataHash) <= 64 && len(attestation.AuthenticatorData) <= maxAttestation && len(attestation.Object) <= maxAttestation
 }
 
-func ValidateLookup(rawID, userHandle []byte) error {
+func validateLookup(rawID, userHandle []byte) error {
 	if len(rawID) == 0 || len(rawID) > maxCredentialID || len(userHandle) == 0 || len(userHandle) > maxUserHandle {
-		return ErrInvalidCredential
+		return errInvalidCredential
 	}
 	return nil
 }
@@ -106,7 +106,7 @@ func ID(raw []byte) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func ValidateID(id string) error {
+func validateID(id string) error {
 	if len(id) != sha256.Size*2 {
 		return ErrInvalidID
 	}
@@ -136,7 +136,7 @@ type Summary struct {
 	CloneWarning   bool   `json:"cloneWarning"`
 }
 
-func Inventory(credentials []webauthn.Credential, usage map[string]Usage) []Summary {
+func inventory(credentials []webauthn.Credential, usage map[string]Usage) []Summary {
 	result := make([]Summary, 0, len(credentials))
 	mostRecent := int64(0)
 	for _, item := range usage {
@@ -157,8 +157,8 @@ func Inventory(credentials []webauthn.Credential, usage map[string]Usage) []Summ
 	return result
 }
 
-func Update(credentials []webauthn.Credential, usage map[string]Usage, credential *webauthn.Credential, now time.Time) bool {
-	if usage == nil || ValidateCredential(credential) != nil {
+func update(credentials []webauthn.Credential, usage map[string]Usage, credential *webauthn.Credential, now time.Time) bool {
+	if usage == nil || validateCredential(credential) != nil {
 		return false
 	}
 	index := Index(credentials, credential.ID)

@@ -26,11 +26,11 @@ func TestDetailPresentationValidation(t *testing.T) {
 		{Product: "Kinosail Player", ThemeVersion: "6", StyleVersion: "75?"},
 	}
 	for _, presentation := range tests {
-		if sources, err := NewDetailSources(presentation); !errors.Is(err, ErrInvalidDetailPresentation) || sources != (DetailSources{}) {
+		if sources, err := newDetailSources(presentation); !errors.Is(err, errInvalidDetailPresentation) || sources != (DetailSources{}) {
 			t.Fatalf("NewDetailSources(%q) = %#v, %v", presentation.Product, sources, err)
 		}
 	}
-	sources, err := NewDetailSources(DetailPresentation{"Kinosail Édition", "v1.2-a_b", "75"})
+	sources, err := newDetailSources(DetailPresentation{"Kinosail Édition", "v1.2-a_b", "75"})
 	if err != nil || !strings.Contains(sources.Album, "Kinosail Édition") {
 		t.Fatalf("valid presentation = %#v, %v", sources, err)
 	}
@@ -39,7 +39,7 @@ func TestDetailPresentationValidation(t *testing.T) {
 func TestMustDetailSourcesRejectsInvalidStaticConfiguration(t *testing.T) {
 	t.Parallel()
 	defer func() {
-		if recovered := recover(); !errors.Is(recovered.(error), ErrInvalidDetailPresentation) {
+		if recovered := recover(); !errors.Is(recovered.(error), errInvalidDetailPresentation) {
 			t.Fatalf("panic = %v", recovered)
 		}
 	}()

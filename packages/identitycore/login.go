@@ -2,16 +2,16 @@ package identitycore
 
 import "errors"
 
-var ErrInvalidCredentials = errors.New("invalid credentials")
+var errInvalidCredentials = errors.New("invalid credentials")
 
-func PasswordLogin[T any](name, password string, authenticate func(string, string) (T, bool), signIn func(T) error) (T, error) {
+func passwordLogin[T any](name, password string, authenticate func(string, string) (T, bool), signIn func(T) error) (T, error) {
 	var zero T
 	if authenticate == nil || signIn == nil {
-		return zero, ErrInvalidConfig
+		return zero, errInvalidConfig
 	}
 	profile, valid := authenticate(name, password)
 	if !valid {
-		return zero, ErrInvalidCredentials
+		return zero, errInvalidCredentials
 	}
 	if err := signIn(profile); err != nil {
 		return zero, err

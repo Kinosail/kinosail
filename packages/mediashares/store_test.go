@@ -220,12 +220,12 @@ func TestStateValidationClonePruneAndRevokeAll(t *testing.T) {
 	if !ValidState(valid) || !ValidSecret(secret) || !ValidHash(hash) {
 		t.Fatal("valid state rejected")
 	}
-	clone := CloneState(valid)
+	clone := cloneState(valid)
 	clone.Shares[secret] = Share{}
 	if valid.Shares[secret].ID == "" {
 		t.Fatal("clone mutated source")
 	}
-	invalid := CloneState(valid)
+	invalid := cloneState(valid)
 	invalid.Shares[secret] = Share{ID: "bad"}
 	tooMany := State{Shares: make(map[string]Share), Sessions: make(map[string]Session)}
 	for index := range 257 {

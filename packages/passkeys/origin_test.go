@@ -9,12 +9,12 @@ import (
 )
 
 func TestOriginValidationAndMatching(t *testing.T) {
-	origin, err := ParseOrigin("https://Media.Example:38127/")
+	origin, err := parseOrigin("https://Media.Example:38127/")
 	if err != nil || origin.RPID() != "Media.Example" || origin.String() != "https://Media.Example:38127" || !origin.RedirectPages() {
 		t.Fatalf("origin = %#v, %v", origin, err)
 	}
 	for _, raw := range []string{"", "ftp://example.test", "https://user@example.test", "https://example.test/path", "https://example.test?x=1", "https://example.test#fragment", "https://", "://", strings.Repeat("x", maxOriginLength+1)} {
-		if _, parseErr := ParseOrigin(raw); !errors.Is(parseErr, ErrInvalidOrigin) {
+		if _, parseErr := parseOrigin(raw); !errors.Is(parseErr, errInvalidOrigin) {
 			t.Fatalf("invalid origin %q = %v", raw, parseErr)
 		}
 	}
@@ -23,15 +23,15 @@ func TestOriginValidationAndMatching(t *testing.T) {
 	if !origin.Matches(request, true) || origin.Matches(insecureRequest, false) || origin.Matches(nil, true) {
 		t.Fatal("origin request match is incorrect")
 	}
-	localhost, _ := ParseOrigin("http://localhost:38127")
-	loopback, _ := ParseOrigin("https://127.0.0.1:38127")
+	localhost, _ := parseOrigin("http://localhost:38127")
+	loopback, _ := parseOrigin("https://127.0.0.1:38127")
 	if localhost.RedirectPages() || loopback.RedirectPages() {
 		t.Fatal("local origins require a page redirect")
 	}
 }
 
 func TestOriginPageRedirectBoundsMethodPathAndQuery(t *testing.T) {
-	origin, _ := ParseOrigin("https://media.example")
+	origin, _ := parseOrigin("https://media.example")
 	for _, test := range []struct {
 		method, target, want string
 		status               int
@@ -61,7 +61,7 @@ func TestOriginPageRedirectBoundsMethodPathAndQuery(t *testing.T) {
 }
 
 func TestEngineCanonicalPageOrigin(t *testing.T) {
-	origin, _ := ParseOrigin("https://media.example")
+	origin, _ := parseOrigin("https://media.example")
 	engine := &Engine{origin: origin}
 	matching := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "https://media.example/account", nil)
 	mismatch := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "https://alias.example/account", nil)

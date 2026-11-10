@@ -49,7 +49,7 @@ func TestManifestAPIReportsQueueBackpressure(t *testing.T) {
 	job.ItemID = "item"
 	manager.jobs[job.ID] = job
 	manager.manifestWork = make(map[string]*manifestFlight)
-	for index := range QueueCapacity {
+	for index := range queueCapacity {
 		manager.manifestWork[string(rune(index))] = &manifestFlight{}
 	}
 	mux := http.NewServeMux()

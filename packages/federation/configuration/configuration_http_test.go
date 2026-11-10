@@ -16,13 +16,13 @@ func TestParseOIDCConfigurationForm(t *testing.T) {
 		"key": {OIDCConfigurationKey}, "issuer": {"https://identity.example"}, "clientId": {"client"},
 		"clientSecret": {"secret"}, "redirectUrl": {"https://media.example/login/oidc/callback"}, "identityClaim": {"sub"},
 	}
-	config, err := ParseOIDCConfigurationForm(httptest.NewRecorder(), oidcFormRequest(valid))
+	config, err := parseOIDCConfigurationForm(httptest.NewRecorder(), oidcFormRequest(valid))
 	if err != nil || config.Issuer != valid.Get("issuer") || config.ClientID != "client" || config.ClientSecret != "secret" || config.RedirectURL != valid.Get("redirectUrl") || config.IdentityClaim != "sub" {
 		t.Fatalf("valid form = %#v %v", config, err)
 	}
 	withoutSecret := cloneOIDCFormValues(valid)
 	withoutSecret.Set("clientSecret", "")
-	if config, parseErr := ParseOIDCConfigurationForm(httptest.NewRecorder(), oidcFormRequest(withoutSecret)); parseErr != nil || config.ClientSecret != "" {
+	if config, parseErr := parseOIDCConfigurationForm(httptest.NewRecorder(), oidcFormRequest(withoutSecret)); parseErr != nil || config.ClientSecret != "" {
 		t.Fatalf("optional secret = %#v %v", config, parseErr)
 	}
 	cases := map[string]func(url.Values, *http.Request){
@@ -53,7 +53,7 @@ func TestParseOIDCConfigurationForm(t *testing.T) {
 			if request.Header.Get("Content-Type") != "text/plain" && request.URL.RawQuery == "" {
 				request = oidcFormRequest(values)
 			}
-			if _, parseErr := ParseOIDCConfigurationForm(httptest.NewRecorder(), request); parseErr == nil {
+			if _, parseErr := parseOIDCConfigurationForm(httptest.NewRecorder(), request); parseErr == nil {
 				t.Fatal("invalid form was accepted")
 			}
 		})

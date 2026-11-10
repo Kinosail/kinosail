@@ -22,7 +22,7 @@ type OIDCHTTP[T any] struct {
 }
 
 func NewOIDCHTTP[T any](config OIDCConfig, profiles Profiles[T], hooks WebHooks[T], renderMFA func(http.ResponseWriter, *http.Request, string) error) *OIDCHTTP[T] {
-	return &OIDCHTTP[T]{flow: NewOIDC(config), profiles: profiles, hooks: hooks, renderMFA: renderMFA}
+	return &OIDCHTTP[T]{flow: newOIDC(config), profiles: profiles, hooks: hooks, renderMFA: renderMFA}
 }
 
 func (login *OIDCHTTP[T]) Configured() bool { return login.flow.Configured() }
@@ -49,7 +49,7 @@ func (login *OIDCHTTP[T]) startLink(writer http.ResponseWriter, request *http.Re
 func (login *OIDCHTTP[T]) startFor(writer http.ResponseWriter, request *http.Request, profileID string) {
 	location, state, err := login.flow.Begin(request.Context(), profileID, login.hooks.linkSession(request, profileID))
 	if err != nil {
-		if errors.Is(err, ErrTooManyPending) {
+		if errors.Is(err, errTooManyPending) {
 			login.hooks.Error(writer, request, "too many SSO requests are pending", http.StatusTooManyRequests)
 			return
 		}
@@ -61,7 +61,7 @@ func (login *OIDCHTTP[T]) startFor(writer http.ResponseWriter, request *http.Req
 }
 
 func (login *OIDCHTTP[T]) callback(writer http.ResponseWriter, request *http.Request) {
-	stateCookie, cookieErr := request.Cookie(OIDCStateCookieName)
+	stateCookie, cookieErr := request.Cookie(oidcStateCookieName)
 	cookieState := ""
 	if cookieErr == nil {
 		cookieState = stateCookie.Value
@@ -189,15 +189,15 @@ func (login *OIDCHTTP[T]) unlinkWeb(writer http.ResponseWriter, request *http.Re
 func (login *OIDCHTTP[T]) writeCallbackError(writer http.ResponseWriter, request *http.Request, err error) {
 	message, status := "SSO callback is invalid", http.StatusBadRequest
 	switch {
-	case errors.Is(err, ErrInvalidState):
+	case errors.Is(err, errInvalidState):
 		message = "SSO state is invalid or expired"
-	case errors.Is(err, ErrAuthorizationDenied):
+	case errors.Is(err, errAuthorizationDenied):
 		message = "SSO authorization was denied"
-	case errors.Is(err, ErrProviderUnavailable):
+	case errors.Is(err, errProviderUnavailable):
 		message, status = "SSO provider is unavailable", http.StatusBadGateway
-	case errors.Is(err, ErrCodeExchange):
+	case errors.Is(err, errCodeExchange):
 		message, status = "SSO code exchange failed", http.StatusBadGateway
-	case errors.Is(err, ErrTokenInvalid):
+	case errors.Is(err, errTokenInvalid):
 		message, status = "SSO token validation failed", http.StatusUnauthorized
 	}
 	login.hooks.Error(writer, request, message, status)

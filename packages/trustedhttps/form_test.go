@@ -17,7 +17,7 @@ func TestParseSettingsForm(t *testing.T) {
 		}
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings", strings.NewReader(form.Encode()))
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		got, err := ParseSettingsForm(httptest.NewRecorder(), request)
+		got, err := parseSettingsForm(httptest.NewRecorder(), request)
 		want := SettingsInput{Provider: provider, Domain: "house", Address: "192.168.1.2", TermsAccepted: true}
 		if err != nil || got != want {
 			t.Fatalf("parsed form = %#v, %v; want %#v", got, err, want)
@@ -42,7 +42,7 @@ func TestParseSettingsFormRejectsInvalidTransportAndFields(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings", strings.NewReader(body))
 			request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-			got, err := ParseSettingsForm(httptest.NewRecorder(), request)
+			got, err := parseSettingsForm(httptest.NewRecorder(), request)
 			if err == nil || got != (SettingsInput{}) {
 				t.Fatalf("invalid form returned usable input: %#v, %v", got, err)
 			}
@@ -53,7 +53,7 @@ func TestParseSettingsFormRejectsInvalidTransportAndFields(t *testing.T) {
 		if target != "/settings" {
 			request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		}
-		if _, err := ParseSettingsForm(httptest.NewRecorder(), request); err == nil {
+		if _, err := parseSettingsForm(httptest.NewRecorder(), request); err == nil {
 			t.Fatalf("invalid transport accepted for %s", target)
 		}
 	}

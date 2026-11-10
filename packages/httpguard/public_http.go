@@ -20,14 +20,14 @@ func GuardPublicRequests(next http.Handler, public func(*http.Request) bool, wri
 			writeError(writer, request, "public source is temporarily quarantined", http.StatusTooManyRequests)
 			return
 		}
-		if SuspiciousPublicPath(request.URL.Path) {
+		if suspiciousPublicPath(request.URL.Path) {
 			if tripwire.Strike(key, now, 3) {
 				audit(request, "scanner probe", true)
 			}
 			writeNotFound(writer, request)
 			return
 		}
-		if !CredentialAttempt(request) {
+		if !credentialAttempt(request) {
 			next.ServeHTTP(writer, request)
 			return
 		}
@@ -40,7 +40,7 @@ func GuardPublicRequests(next http.Handler, public func(*http.Request) bool, wri
 }
 
 func LimitPublicRequests(next http.Handler, public func(*http.Request) bool, writeError WritePublicError) http.Handler {
-	capacity := NewPublicCapacity()
+	capacity := newPublicCapacity()
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if !public(request) {
 			next.ServeHTTP(writer, request)

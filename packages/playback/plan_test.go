@@ -122,7 +122,7 @@ func TestPlaybackHelpersReturnCanonicalValues(t *testing.T) {
 	if !Includes([]string{"AAC"}, "aac") || !Includes([]string{"*"}, "anything") || Includes([]string{"aac"}, "opus") {
 		t.Fatal("case-insensitive capability matching changed")
 	}
-	if MinimumPositive(0, 20, -1, 10) != 10 || MinimumPositiveInt(0, 20, -1, 10) != 10 {
+	if minimumPositive(0, 20, -1, 10) != 10 || MinimumPositiveInt(0, 20, -1, 10) != 10 {
 		t.Fatal("positive minimum changed")
 	}
 	if got := AdaptiveQualities(640, 360, 23.976, 0); len(got) != 1 || got[0].Label != "360p" || got[0].Width != 640 || got[0].Height != 360 {

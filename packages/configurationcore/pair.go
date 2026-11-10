@@ -134,7 +134,7 @@ func stagePairFiles(dataDir string, files []pairFile, dependencies *pairDependen
 			return err
 		}
 		files[index].temporary = file.Name()
-		if err := WriteStagedFile(file, files[index].data, 0o600); err != nil {
+		if err := writeStagedFile(file, files[index].data, 0o600); err != nil {
 			removePairStages(files, dependencies)
 			return err
 		}

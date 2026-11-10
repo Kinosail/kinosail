@@ -88,12 +88,12 @@ func (provider *TVMazeProvider) Record(ctx context.Context, item library.Item) (
 	showYear, showPlot := item.ShowYear, ""
 	if show, found := provider.show(ctx, showID); found {
 		showTitle = cleanTVMazeText(show.Name)
-		showYear, showPlot = Year(show.Premiered), cleanTVMazeText(show.Summary)
+		showYear, showPlot = year(show.Premiered), cleanTVMazeText(show.Summary)
 	}
 	if showTitle == "" {
 		showTitle = item.Show
 	}
-	record := Record{Title: fmt.Sprintf("S%02dE%02d · %s", item.Season, item.Episode, name), Plot: plot, Year: Year(episode.Airdate), ShowTitle: showTitle, ShowYear: showYear, ShowPlot: showPlot, ProviderIDs: map[string]string{"tvdb": tvdbID, "tvmaze": strconv.Itoa(episode.ID)}, ShowProviderIDs: map[string]string{"tvmaze": strconv.Itoa(showID)}}
+	record := Record{Title: fmt.Sprintf("S%02dE%02d · %s", item.Season, item.Episode, name), Plot: plot, Year: year(episode.Airdate), ShowTitle: showTitle, ShowYear: showYear, ShowPlot: showPlot, ProviderIDs: map[string]string{"tvdb": tvdbID, "tvmaze": strconv.Itoa(episode.ID)}, ShowProviderIDs: map[string]string{"tvmaze": strconv.Itoa(showID)}}
 	if !boundedMetadata(record) {
 		return Result{}, false
 	}

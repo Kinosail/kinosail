@@ -74,7 +74,7 @@ func TestSyntheticSeasonJourneyDetectsIntroOutroAndCreditRollWithRealTools(t *te
 		}
 	}
 	checksums, _ := os.ReadFile(filepath.Join(media, "checksums.txt")) //nolint:gosec // Fixture checksum list inside the operator-chosen folder.
-	artifact := map[string]any{"ffmpeg": ffmpeg, "fpcalc": fpcalc, "detectorVersion": DetectorVersion, "elapsed": elapsed.String(), "checksums": string(checksums), "markers": results}
+	artifact := map[string]any{"ffmpeg": ffmpeg, "fpcalc": fpcalc, "detectorVersion": detectorVersion, "elapsed": elapsed.String(), "checksums": string(checksums), "markers": results}
 	encoded, _ := json.MarshalIndent(artifact, "", "  ")
 	t.Logf("SYNTHETIC_SEASON_ARTIFACT %s", encoded)
 	if path := os.Getenv("KINOSAIL_MARKER_MEDIA_E2E_ARTIFACT"); path != "" {

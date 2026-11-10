@@ -7,16 +7,16 @@ import (
 	"unicode/utf8"
 )
 
-func ValidCollectionPathName(name string) bool {
+func validCollectionPathName(name string) bool {
 	return name != "" && len(name) <= 200 && utf8.ValidString(name) && !strings.Contains(name, "/")
 }
 
-func ValidCurationItemID(id string) bool {
+func validCurationItemID(id string) bool {
 	_, err := hex.DecodeString(id)
 	return len(id) == 16 && err == nil
 }
 
-func ValidCurationItemForm(form url.Values) bool {
+func validCurationItemForm(form url.Values) bool {
 	if !validCurationItemFields(form) {
 		return false
 	}

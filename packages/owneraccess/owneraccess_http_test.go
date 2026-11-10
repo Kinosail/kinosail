@@ -11,7 +11,7 @@ import (
 
 func TestManagementFormAndJSONRejectionHasNoStateEffects(t *testing.T) {
 	config, _, _ := ownerFixture(t)
-	m, err := Open(config)
+	m, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,7 +44,7 @@ func TestManagementFormAndJSONRejectionHasNoStateEffects(t *testing.T) {
 
 func TestManagementFailedSaveKeepsRecoveryClosed(t *testing.T) {
 	config, _, _ := ownerFixture(t)
-	m, err := Open(config)
+	m, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func TestManagementFailedSaveKeepsRecoveryClosed(t *testing.T) {
 	if err = m.Disable(); err == nil {
 		t.Fatal("failed save reported success")
 	}
-	reopened, err := Open(config)
+	reopened, err := open(config)
 	if err != nil || reopened.Status().Enabled {
 		t.Fatal("failed save reopened management")
 	}
@@ -60,7 +60,7 @@ func TestManagementFailedSaveKeepsRecoveryClosed(t *testing.T) {
 
 func TestManagementDisableRejectsWrongEncodingAndAmbiguousFormWithoutSaving(t *testing.T) {
 	config, _, _ := ownerFixture(t)
-	m, err := Open(config)
+	m, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,7 +93,7 @@ func TestManagementDisableRejectsWrongEncodingAndAmbiguousFormWithoutSaving(t *t
 
 func TestManagementFailedPairDoesNotReturnKeysAndFailedRevokeStaysClosed(t *testing.T) {
 	config, _, _ := ownerFixture(t)
-	m, err := Open(config)
+	m, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -109,7 +109,7 @@ func TestManagementFailedPairDoesNotReturnKeysAndFailedRevokeStaysClosed(t *test
 	if m.Revoke(key) == nil {
 		t.Fatal("failed revocation reported success")
 	}
-	reopened, err := Open(config)
+	reopened, err := open(config)
 	if err != nil || reopened.Status().Enabled {
 		t.Fatal("revoked device returned after failed save")
 	}
@@ -118,7 +118,7 @@ func TestManagementFailedPairDoesNotReturnKeysAndFailedRevokeStaysClosed(t *test
 func TestManagementOriginUsesCanonicalHTTPSPort(t *testing.T) {
 	config, _, _ := ownerFixture(t)
 	config.Origin += ":443"
-	m, err := Open(config)
+	m, err := open(config)
 	if err != nil {
 		t.Fatal(err)
 	}

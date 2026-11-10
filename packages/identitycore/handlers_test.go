@@ -44,10 +44,10 @@ func TestRespondDenial(t *testing.T) {
 		authenticationError bool
 		status              int
 	}{
-		{"not found", RemoteRouteDenied, false, http.StatusNotFound},
-		{"MFA redirect", MFAEnrollmentRequired, false, http.StatusSeeOther},
-		{"MFA JSON", MFAEnrollmentRequired, true, http.StatusForbidden},
-		{"ordinary", APIKeyScopeDenied, false, http.StatusForbidden},
+		{"not found", remoteRouteDenied, false, http.StatusNotFound},
+		{"MFA redirect", mfaEnrollmentRequired, false, http.StatusSeeOther},
+		{"MFA JSON", mfaEnrollmentRequired, true, http.StatusForbidden},
+		{"ordinary", apiKeyScopeDenied, false, http.StatusForbidden},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -206,7 +206,7 @@ func TestLoginRequestLifecycle(t *testing.T) {
 			request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader("name=owner&password=password"))
 			request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 			response := httptest.NewRecorder()
-			PasswordLoginRequest(response, request, "/requested", passwordConfig(record, test.valid, test.signInError, &signedIn, &audited))
+			passwordLoginRequest(response, request, "/requested", passwordConfig(record, test.valid, test.signInError, &signedIn, &audited))
 			if response.Code != test.status || signedIn != test.signedIn || audited != test.audited {
 				t.Fatalf("login response=%d signedIn=%v audited=%v", response.Code, signedIn, audited)
 			}
@@ -234,7 +234,7 @@ func TestLoginRenderingAndInvalidConfiguration(t *testing.T) {
 		t.Fatalf("nil renderer response = %d", response.Code)
 	}
 	response = httptest.NewRecorder()
-	PasswordLoginRequest(response, request, "", PasswordLoginConfig[string]{})
+	passwordLoginRequest(response, request, "", PasswordLoginConfig[string]{})
 	if response.Code != http.StatusInternalServerError {
 		t.Fatalf("invalid login config response = %d", response.Code)
 	}

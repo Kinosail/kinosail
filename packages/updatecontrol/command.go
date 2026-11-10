@@ -61,7 +61,7 @@ func (commands commandSet) writeArtifact(input io.Reader, output io.Writer, goos
 	if output == nil {
 		return errors.New("update output is unavailable")
 	}
-	manifest, err := ParseManifest(input)
+	manifest, err := parseManifest(input)
 	if err != nil {
 		return err
 	}

@@ -1,17 +1,15 @@
-package hlsmanifest
+package playback
 
 import (
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 func TestWriteSkipConcatWritesOnlyRetainedRanges(t *testing.T) {
 	directory := t.TempDir()
-	path, err := WriteSkipConcat(directory, "/media/O'Brien.mkv", 40, []playback.Range{{Start: 0, End: 5}, {Start: 10, End: 20}, {Start: 30, End: 30}})
+	path, err := WriteSkipConcat(directory, "/media/O'Brien.mkv", 40, []Range{{Start: 0, End: 5}, {Start: 10, End: 20}, {Start: 30, End: 30}})
 	if err != nil || path != filepath.Join(directory, "skip.ffconcat") {
 		t.Fatalf("path = %q, error = %v", path, err)
 	}

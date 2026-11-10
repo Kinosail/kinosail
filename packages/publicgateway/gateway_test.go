@@ -38,10 +38,10 @@ func TestGatewayForwardsOnlyToPublicSocketAndStripsProxyCredentials(t *testing.T
 	r.RemoteAddr = "198.51.100.10:5000"
 	r.Header.Set("X-Kinosail-Proxy-Token", "forged")
 	r.Header.Set("X-Forwarded-For", "127.0.0.1")
-	r.Header.Set(ClientAddressHeader, "127.0.0.1:1")
+	r.Header.Set(clientAddressHeader, "127.0.0.1:1")
 	r.Header.Set("Authorization", "Bearer viewer")
 	w := httptest.NewRecorder()
-	Handler("family.duckdns.org", path).ServeHTTP(w, r)
+	handler("family.duckdns.org", path).ServeHTTP(w, r)
 	if w.Code != http.StatusNoContent {
 		t.Fatalf("proxy = %d %s", w.Code, w.Body.String())
 	}
@@ -55,7 +55,7 @@ func TestGatewayRejectsWrongHostPlaintextOversizeAndTransferEncoding(t *testing.
 			r.URL.Host = ""
 			mutate(r)
 			w := httptest.NewRecorder()
-			Handler("family.duckdns.org", "/must-not-connect.sock").ServeHTTP(w, r)
+			handler("family.duckdns.org", "/must-not-connect.sock").ServeHTTP(w, r)
 			if w.Code != http.StatusBadRequest && w.Code != http.StatusMisdirectedRequest {
 				t.Fatalf("status %d", w.Code)
 			}
@@ -82,7 +82,7 @@ func TestGatewayMetadataRejectsMalformedPeerBeforeApplication(t *testing.T) {
 		called := false
 		handler := TLSMetadata(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { called = true }))
 		r := httptest.NewRequestWithContext(t.Context(), "GET", "/", nil)
-		r.Header.Set(ClientAddressHeader, address)
+		r.Header.Set(clientAddressHeader, address)
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, r)
 		if called || w.Code != http.StatusBadRequest {

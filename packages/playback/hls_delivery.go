@@ -34,7 +34,7 @@ func ServeHLS(writer http.ResponseWriter, request *http.Request, dependencies HL
 		return
 	}
 	item, found := dependencies.Lookup(request, request.PathValue("id"))
-	selection, err := ParseHLSRequest(request.PathValue("file"), request.PathValue("track"), dependencies.Policy)
+	selection, err := parseHLSRequest(request.PathValue("file"), request.PathValue("track"), dependencies.Policy)
 	if !found || err != nil {
 		dependencies.NotFound(writer, request)
 		return
@@ -54,7 +54,7 @@ func ServeHLS(writer http.ResponseWriter, request *http.Request, dependencies HL
 	dependencies.Serve(writer, request, item, recipe, selection.File)
 }
 
-func ParseHLSRequest(name, track string, policy HLSRecipePolicy) (HLSRequest, error) {
+func parseHLSRequest(name, track string, policy HLSRecipePolicy) (HLSRequest, error) {
 	recipe, file, planned := PlannedHLSFile(name, policy)
 	if len(name) >= 2 && name[:2] == "p/" && !planned {
 		return HLSRequest{}, errors.New("HLS request is invalid")
@@ -130,7 +130,7 @@ func copiedVideoArguments(input HLSCodecInput) []string {
 }
 
 func DolbyVisionCopyCodec(video VideoFacts) string {
-	if DolbyVisionBaseLayer(video) == "" {
+	if dolbyVisionBaseLayer(video) == "" {
 		return ""
 	}
 	return Lower(video.Codec)

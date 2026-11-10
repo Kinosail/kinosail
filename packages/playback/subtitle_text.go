@@ -21,7 +21,7 @@ import (
 
 var errSubtitleText = errors.New("subtitle text encoding is invalid")
 
-func DecodeSubtitleText(data []byte, languageCode string) ([]byte, error) {
+func decodeSubtitleText(data []byte, languageCode string) ([]byte, error) {
 	switch {
 	case bytes.HasPrefix(data, []byte{0xef, 0xbb, 0xbf}):
 		data = data[3:]

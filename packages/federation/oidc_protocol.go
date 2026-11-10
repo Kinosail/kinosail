@@ -23,23 +23,23 @@ func validateOIDCProvider(provider oidcProviderMetadata) error {
 		JWKSURL string `json:"jwks_uri"`
 	}
 	if err := provider.Claims(&metadata); err != nil {
-		return ErrProviderUnavailable
+		return errProviderUnavailable
 	}
 	endpoint := provider.Endpoint()
 	for _, raw := range []string{endpoint.AuthURL, endpoint.TokenURL, metadata.JWKSURL} {
 		parsed, err := url.Parse(raw)
-		if err != nil || !TrustedURL(parsed) {
-			return ErrProviderUnavailable
+		if err != nil || !trustedURL(parsed) {
+			return errProviderUnavailable
 		}
 	}
 	return nil
 }
 
-func TrustedURL(endpoint *url.URL) bool {
+func trustedURL(endpoint *url.URL) bool {
 	return endpoint != nil && endpoint.Host != "" && endpoint.User == nil && endpoint.RawQuery == "" && endpoint.Fragment == "" && (endpoint.Scheme == "https" || endpoint.Scheme == "http" && (endpoint.Hostname() == "127.0.0.1" || endpoint.Hostname() == "localhost"))
 }
 
-func ValidSubject(subject string) bool {
+func validSubject(subject string) bool {
 	if subject == "" || len(subject) > 255 || !utf8.ValidString(subject) {
 		return false
 	}

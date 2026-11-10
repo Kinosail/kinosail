@@ -23,7 +23,7 @@ type Filters struct {
 	Years           []int    `json:"Years"`
 }
 
-func GenreID(name string) string {
+func genreID(name string) string {
 	sum := sha256.Sum256([]byte("genre:" + strings.ToLower(name)))
 	return hex.EncodeToString(sum[:16])
 }
@@ -37,7 +37,7 @@ func (catalog Catalog) Genres(values url.Values) (Page, error) {
 	genres := make([]GenreRecord, 0)
 	for _, name := range catalog.Filters(values).Genres {
 		if search == "" || strings.Contains(strings.ToLower(name), search) {
-			genres = append(genres, GenreRecord{ID: GenreID(name), Name: name, Type: "Genre"})
+			genres = append(genres, GenreRecord{ID: genreID(name), Name: name, Type: "Genre"})
 		}
 	}
 	start := min(max(0, Int(values, "startIndex")), len(genres))

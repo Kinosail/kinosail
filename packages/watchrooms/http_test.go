@@ -86,7 +86,7 @@ func TestHTTPRoutesValidateCreateRedirectAndPlayerProjection(t *testing.T) {
 		"negative":  {"media": {"movie"}, "seconds": {"-1"}},
 		"nan":       {"media": {"movie"}, "seconds": {"NaN"}},
 		"infinite":  {"media": {"movie"}, "seconds": {"+Inf"}},
-		"oversized": {"media": {"movie"}, "seconds": {strconv.FormatFloat(MaximumSeconds+1, 'f', -1, 64)}},
+		"oversized": {"media": {"movie"}, "seconds": {strconv.FormatFloat(maximumSeconds+1, 'f', -1, 64)}},
 	} {
 		t.Run(name, func(t *testing.T) {
 			response := serveRoomRequest(mux, http.MethodPost, "/watch-together", form.Encode(), "leader", "")
@@ -216,7 +216,7 @@ func TestHTTPEventValidationRejectsUntrustedValues(t *testing.T) {
 		{Action: "play", Media: "photo"},
 		{Action: "play", Media: "hidden"},
 		{Action: "play", Media: "movie", Seconds: -1},
-		{Action: "play", Media: "movie", Seconds: MaximumSeconds + 1},
+		{Action: "play", Media: "movie", Seconds: maximumSeconds + 1},
 		{Action: "play", Media: "movie", Seconds: math.NaN()},
 		{Action: "play", Media: "movie", Seconds: math.Inf(1)},
 	} {

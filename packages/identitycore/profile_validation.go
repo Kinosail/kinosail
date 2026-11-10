@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/scim"
 )
 
-func ValidateProfiles(profiles []Profile) error {
+func validateProfiles(profiles []Profile) error {
 	ids := make(map[string]struct{}, len(profiles))
 	userNames := make(map[string]struct{})
 	oidcIdentities, samlIdentities := make(map[string]struct{}), make(map[string]struct{})

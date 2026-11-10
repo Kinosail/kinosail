@@ -1,4 +1,4 @@
-package validation
+package configurationcore
 
 import (
 	"net/url"
@@ -91,15 +91,15 @@ func TestSupporterValidation(t *testing.T) {
 			}
 		})
 	}
-	if ValidSupporterURL(nil, true) {
+	if validSupporterURL(nil, true) {
 		t.Fatal("ValidSupporterURL(nil) succeeded")
 	}
 	parsed, _ := url.Parse("http://127.0.0.1:8080")
-	if !ValidSupporterURL(parsed, true) || ValidSupporterURL(parsed, false) {
+	if !validSupporterURL(parsed, true) || validSupporterURL(parsed, false) {
 		t.Fatal("loopback HTTP policy mismatch")
 	}
 	private, _ := url.Parse("http://192.168.1.10:8080")
-	if ValidSupporterURL(private, true) {
+	if validSupporterURL(private, true) {
 		t.Fatal("non-loopback HTTP endpoint accepted")
 	}
 }

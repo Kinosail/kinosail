@@ -109,7 +109,7 @@ func startManager(t *testing.T, ctx context.Context) *Manager {
 	t.Helper()
 	return &Manager{
 		ctx: ctx, root: t.TempDir(), persist: persistJSON, jobs: make(map[string]Job),
-		pending: make(chan struct{}, QueueCapacity+1), tasks: make(chan task, QueueCapacity),
+		pending: make(chan struct{}, queueCapacity+1), tasks: make(chan task, queueCapacity),
 	}
 }
 

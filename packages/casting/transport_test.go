@@ -69,7 +69,7 @@ func TestRendererPollingRejectsInvalidResponsesWithoutRenewal(t *testing.T) {
 		t.Fatal("unknown renderer reached network")
 		return nil, nil
 	})
-	if _, err := r.Status(t.Context(), strings.Repeat("c", 32)); !errors.Is(err, ErrUnavailable) {
+	if _, err := r.Status(t.Context(), strings.Repeat("c", 32)); !errors.Is(err, errUnavailable) {
 		t.Fatalf("unknown renderer: %v", err)
 	}
 }

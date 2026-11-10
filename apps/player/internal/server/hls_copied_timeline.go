@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/MikeO7/kinosail/packages/hlsmanifest"
 	"github.com/MikeO7/kinosail/packages/httpguard"
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 const maximumCopiedHLSTimelineBytes = 256 << 10
@@ -182,7 +182,7 @@ func copiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) ([]byte, bo
 	if !validCopiedHLSTimeline(timeline) || timeline.Clock == nil {
 		return manifest, false
 	}
-	return hlsmanifest.CompleteCuts(manifest, copiedHLSCuts(timeline))
+	return playback.CompleteCuts(manifest, copiedHLSCuts(timeline))
 }
 
 func copiedHLSCuts(timeline *copiedHLSTimeline) []float64 {
@@ -199,7 +199,7 @@ func copiedHLSTime(value float64) string {
 }
 
 func matchesCopiedHLSLength(timeline *copiedHLSTimeline, number int, length float64) bool {
-	return hlsmanifest.MatchesCutLength(timeline.segmentEnd(number)-timeline.point(number), length, number+1 == len(timeline.Keys))
+	return playback.MatchesCutLength(timeline.segmentEnd(number)-timeline.point(number), length, number+1 == len(timeline.Keys))
 }
 
 func validCopiedHLSManifestCut(lines []string, number int, length float64) bool {

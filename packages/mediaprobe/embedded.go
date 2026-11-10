@@ -24,7 +24,7 @@ import (
 const embeddedSubtitleLimit = 16 << 20
 
 var (
-	ErrEmbeddedSubtitleStream = errors.New("embedded subtitle stream is unsupported")
+	errEmbeddedSubtitleStream = errors.New("embedded subtitle stream is unsupported")
 	errEmbeddedSubtitleOutput = errors.New("subtitle output is empty or too large")
 	errInvalidFFmpeg          = errors.New("invalid FFmpeg executable")
 )
@@ -66,7 +66,7 @@ func (probe *Probe) EmbeddedHandler(adapter EmbeddedHTTPAdapter, policy playback
 func (probe *Probe) ServeEmbedded(writer http.ResponseWriter, request *http.Request, item library.Item, stream int, policy playback.HLSRecipePolicy, options EmbeddedOptions) (string, int) {
 	started := time.Now()
 	subtitle, err := probe.EmbeddedPlayback(request.Context(), item, stream, request.URL.Query().Get("playbackToken"), policy, options)
-	if errors.Is(err, ErrEmbeddedSubtitleStream) {
+	if errors.Is(err, errEmbeddedSubtitleStream) {
 		return "not found", http.StatusNotFound
 	}
 	if err != nil {
@@ -99,7 +99,7 @@ func (subtitle EmbeddedSubtitle) ServeHTTP(writer http.ResponseWriter, request *
 func (probe *Probe) EmbeddedPlayback(ctx context.Context, item library.Item, stream int, token string, policy playback.HLSRecipePolicy, options EmbeddedOptions) (EmbeddedSubtitle, error) {
 	timeline, err := playback.TimelineFromPlaybackToken(token, policy)
 	if err != nil {
-		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
+		return EmbeddedSubtitle{}, errEmbeddedSubtitleStream
 	}
 	options.Timeline = &timeline
 	return probe.Embedded(ctx, item, stream, options)
@@ -107,12 +107,12 @@ func (probe *Probe) EmbeddedPlayback(ctx context.Context, item library.Item, str
 
 func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int, options EmbeddedOptions) (EmbeddedSubtitle, error) {
 	if stream < 0 || stream > 65535 {
-		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
+		return EmbeddedSubtitle{}, errEmbeddedSubtitleStream
 	}
 	probe.ConfigureCache(options.CacheDir)
 	facts := probe.WithConvertedSubtitles(item, probe.Facts(ctx, item), options.CacheDir)
 	if !textSubtitle(facts, stream) {
-		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
+		return EmbeddedSubtitle{}, errEmbeddedSubtitleStream
 	}
 	path := embeddedSubtitlePath(options.CacheDir, item, stream)
 	if options.Timeline == nil || len(options.Timeline.Omitted) == 0 {
@@ -125,7 +125,7 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 		return presentEmbeddedSubtitle(path, data, options.Timeline), nil
 	}
 	if convertedSubtitle(facts, stream) {
-		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
+		return EmbeddedSubtitle{}, errEmbeddedSubtitleStream
 	}
 	var companions []int
 	if options.AllTextStreams {

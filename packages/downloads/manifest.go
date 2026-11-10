@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	ChunkSize            int64 = 8 << 20
-	MaximumChunks              = 16384
+	chunkSize            int64 = 8 << 20
+	maximumChunks              = 16384
 	maximumManifestBytes       = 2 << 20
 )
 
@@ -58,12 +58,12 @@ func digestFile(ctx context.Context, file *os.File, id string, destination io.Wr
 	if !validID(id) || !validDownloadSource(info) {
 		return Manifest{}, errors.New("download size is unsupported")
 	}
-	result := Manifest{Version: 1, ID: id, Size: info.Size(), ChunkSize: ChunkSize, Chunks: []string{}}
+	result := Manifest{Version: 1, ID: id, Size: info.Size(), ChunkSize: chunkSize, Chunks: []string{}}
 	whole := sha256.New()
 	buffer := make([]byte, copyBufferBytes)
-	for offset := int64(0); offset < result.Size; offset += ChunkSize {
+	for offset := int64(0); offset < result.Size; offset += chunkSize {
 		block := sha256.New()
-		length := min(ChunkSize, result.Size-offset)
+		length := min(chunkSize, result.Size-offset)
 		if copied, err := io.CopyBuffer(io.MultiWriter(destination, whole, block), io.LimitReader(contextReader{ctx, file}, length), buffer); err != nil || copied != length {
 			if err == nil {
 				err = io.ErrUnexpectedEOF
@@ -138,8 +138,8 @@ func cloneManifest(ctx context.Context, source, destination *os.File, before os.
 
 func validManifest(value Manifest, job Job) bool {
 	if value.Version != 1 || value.ID != job.ID || value.Size != job.Size || value.SHA256 != job.SHA256 ||
-		value.ChunkSize != ChunkSize || value.Size <= 0 || value.Size > ChunkSize*MaximumChunks ||
-		len(value.Chunks) != int((value.Size+ChunkSize-1)/ChunkSize) || !validSHA256(value.SHA256) {
+		value.ChunkSize != chunkSize || value.Size <= 0 || value.Size > chunkSize*maximumChunks ||
+		len(value.Chunks) != int((value.Size+chunkSize-1)/chunkSize) || !validSHA256(value.SHA256) {
 		return false
 	}
 	for _, digest := range value.Chunks {
@@ -250,9 +250,9 @@ func (manager *Manager) manifestFlight(job Job) (*manifestFlight, error) {
 	}
 	flight := manager.manifestWork[job.ID]
 	if flight == nil {
-		if len(manager.manifestWork) >= QueueCapacity {
+		if len(manager.manifestWork) >= queueCapacity {
 			manager.manifestMu.Unlock()
-			return nil, ErrQueueFull
+			return nil, errQueueFull
 		}
 		work, cancel := context.WithCancel(manager.ctx)
 		flight = &manifestFlight{done: make(chan struct{}), cancel: cancel}
@@ -265,7 +265,7 @@ func (manager *Manager) manifestFlight(job Job) (*manifestFlight, error) {
 }
 
 func validDownloadSource(info os.FileInfo) bool {
-	return info.Mode().IsRegular() && info.Size() > 0 && info.Size() <= ChunkSize*MaximumChunks
+	return info.Mode().IsRegular() && info.Size() > 0 && info.Size() <= chunkSize*maximumChunks
 }
 
 func unchangedDownloadSource(before, after os.FileInfo) bool {

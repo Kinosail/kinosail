@@ -18,22 +18,22 @@ func QuickConnectApproval[Profile any](
 ) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if public(request) {
-			WriteQuickConnectApproval(writer, request, ErrPublicApproval)
+			writeQuickConnectApproval(writer, request, errPublicApproval)
 			return
 		}
-		userID, userValid := StrictQuery(request.URL.Query(), "userId", 256)
-		code, codeValid := StrictQuery(request.URL.Query(), "code", 64)
+		userID, userValid := strictQuery(request.URL.Query(), "userId", 256)
+		code, codeValid := strictQuery(request.URL.Query(), "code", 64)
 		code, codeValid = normalizeQuickConnectCode(code, codeValid)
 		if !codeValid {
-			WriteQuickConnectApproval(writer, request, quickconnect.ErrInvalidCode)
+			writeQuickConnectApproval(writer, request, quickconnect.ErrInvalidCode)
 			return
 		}
 		profile := current(request)
 		if !userValid || userID != "" && userID != profileID(profile) {
-			WriteQuickConnectApproval(writer, request, ErrViewerUnavailable)
+			writeQuickConnectApproval(writer, request, errViewerUnavailable)
 			return
 		}
-		WriteQuickConnectApproval(writer, request, approve(profile, code, recent(request)))
+		writeQuickConnectApproval(writer, request, approve(profile, code, recent(request)))
 	}
 }
 
@@ -44,7 +44,7 @@ func QuickConnectAuthentication[Profile any](
 	project func(Profile) User,
 ) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		AuthenticateQuickConnect(writer, request, polls, func(secret string) (Authentication, error) {
+		authenticateQuickConnect(writer, request, polls, func(secret string) (Authentication, error) {
 			token, profile, err := consume(secret)
 			if err != nil {
 				return Authentication{}, err
@@ -55,7 +55,7 @@ func QuickConnectAuthentication[Profile any](
 	}
 }
 
-func StrictQuery(values url.Values, name string, maximum int) (string, bool) {
+func strictQuery(values url.Values, name string, maximum int) (string, bool) {
 	candidates := foldedValues(values, name)
 	if len(candidates) > 1 {
 		return "", false

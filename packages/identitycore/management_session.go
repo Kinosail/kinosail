@@ -32,7 +32,7 @@ func ManagementDeviceKey(r *http.Request) string {
 	return value.publicKey
 }
 
-func SessionMatchesRequest(s Session, r *http.Request) bool {
+func sessionMatchesRequest(s Session, r *http.Request) bool {
 	if r == nil {
 		return false
 	}
@@ -50,12 +50,12 @@ func validManagementKey(raw string) bool {
 
 func (sessions *RequestSessions) CreateForRequest(r *http.Request, id, name string, browser, strong bool, channel string) (string, error) {
 	if r == nil {
-		return "", ErrInvalidConfig
+		return "", errInvalidConfig
 	}
 	key := ManagementDeviceKey(r)
 	if key != "" {
 		if channel != "" || id != ManagementProfileID(r) || !validManagementKey(key) {
-			return "", ErrSessionKind
+			return "", errSessionKind
 		}
 		return sessions.core().create(id, name, browser, strong, "", nil, key)
 	}

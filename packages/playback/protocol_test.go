@@ -35,8 +35,8 @@ func TestTraceReaderRejectsBeforeCallerSideEffects(t *testing.T) {
 	validSession := func(value string) bool { return value == "trace-session" }
 	valid := `{"session":"trace-session","event":"play","sequence":1,"method":"direct","detail":"control:ok"}`
 	response := httptest.NewRecorder()
-	event, err := ReadTrace(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(valid)), validSession)
-	if err != nil || event.Event != "play" || !ValidTrace(event, validSession) || !SafeTraceText(event.Detail) {
+	event, err := readTrace(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(valid)), validSession)
+	if err != nil || event.Event != "play" || !ValidTrace(event, validSession) || !safeTraceText(event.Detail) {
 		t.Fatalf("trace = %#v, %v", event, err)
 	}
 	for _, body := range []string{
@@ -47,11 +47,11 @@ func TestTraceReaderRejectsBeforeCallerSideEffects(t *testing.T) {
 		`{"session":"trace-session","event":"play","sequence":1,"readyState":5}`,
 		`{"session":"trace-session","event":"play","sequence":1,"detail":"bad value"}`,
 	} {
-		if _, err := ReadTrace(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(body)), validSession); err == nil {
+		if _, err := readTrace(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(body)), validSession); err == nil {
 			t.Errorf("accepted %q", body)
 		}
 	}
-	if _, err := ReadTrace(nil, nil, nil); err == nil || ValidTrace(TraceEvent{}, nil) || SafeTraceText(strings.Repeat("x", 65)) {
+	if _, err := readTrace(nil, nil, nil); err == nil || ValidTrace(TraceEvent{}, nil) || safeTraceText(strings.Repeat("x", 65)) {
 		t.Fatal("accepted missing or oversized trace input")
 	}
 }
@@ -96,7 +96,7 @@ func TestJellyfinMediaSourcePreservesBothProductContracts(t *testing.T) {
 	if err != nil || strings.Contains(subtitles["Path"].(string), "?") || subtitles["TranscodingProtocol"] != "hls" {
 		t.Fatalf("Subtitles media source = %#v, %v", subtitles, err)
 	}
-	if streams := JellyfinMediaStreams(item, facts, "vtt", "?x=1"); len(streams) != 3 {
+	if streams := jellyfinMediaStreams(item, facts, "vtt", "?x=1"); len(streams) != 3 {
 		t.Fatalf("streams = %#v", streams)
 	}
 	if _, err := JellyfinMediaSource(item, facts, plan, JellyfinMediaSourceOptions{TranscodingProtocolField: "bad"}); err == nil {
@@ -153,7 +153,7 @@ func TestJellyfinRoutesSessionsAndBitrate(t *testing.T) {
 			t.Errorf("%s = %d", path, response.Code)
 		}
 	}
-	if _, ok := JellyfinBitrateTestSize(nil); ok {
+	if _, ok := jellyfinBitrateTestSize(nil); ok {
 		t.Fatal("accepted nil bitrate request")
 	}
 }
@@ -186,16 +186,16 @@ func TestSubtitlesAndTrickplay(t *testing.T) {
 		t.Fatal("accepted invalid VTT time")
 	}
 
-	if _, err := NewTrickplay(TrickplayDependencies{}); err == nil {
+	if _, err := newTrickplay(TrickplayDependencies{}); err == nil {
 		t.Fatal("accepted missing trickplay dependencies")
 	}
 	root := t.TempDir()
 	target := filepath.Join(root, "frame.jpg")
 	fake := linkFakeEncoder(t, root, "frame")
-	if err := GenerateTrickplay(t.Context(), root, fake, filepath.Join(root, "source.mkv"), target, 10); err != nil || !pathExists(target) {
+	if err := generateTrickplay(t.Context(), root, fake, filepath.Join(root, "source.mkv"), target, 10); err != nil || !pathExists(target) {
 		t.Fatalf("trickplay generation = %v", err)
 	}
-	if err := GenerateTrickplay(t.Context(), "", fake, "source", target, 0); err == nil {
+	if err := generateTrickplay(t.Context(), "", fake, "source", target, 0); err == nil {
 		t.Fatal("accepted unconfigured trickplay")
 	}
 }

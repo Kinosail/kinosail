@@ -24,7 +24,7 @@ type Record struct {
 }
 
 const (
-	DetectorVersion          = 4
+	detectorVersion          = 4
 	visualFingerprintVersion = 3
 	failedAnalysisRetry      = 7 * 24 * time.Hour
 )
@@ -189,7 +189,7 @@ func seasonKey(item library.Item) string {
 }
 
 func (record Record) current(item library.Item) bool {
-	if record.Revision != mediaRevision(item) || record.DetectorVersion != DetectorVersion {
+	if record.Revision != mediaRevision(item) || record.DetectorVersion != detectorVersion {
 		return false
 	}
 	return record.Failed == 0 || time.Since(time.Unix(record.Failed, 0)) < failedAnalysisRetry

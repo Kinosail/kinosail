@@ -15,7 +15,7 @@ import (
 
 const (
 	TransactionFilename = ".kinosail-configuration-transaction"
-	MaxTransactionSize  = 3 << 20
+	maxTransactionSize  = 3 << 20
 )
 
 type transactionEnvelope struct {
@@ -38,7 +38,7 @@ func (transaction Transaction) Write(dataDir string, regular, secrets []byte) er
 		return errors.New("configuration transaction is incomplete")
 	}
 	data, _ := json.Marshal(transactionEnvelope{Regular: regular, Secrets: secrets})
-	if len(data) > MaxTransactionSize {
+	if len(data) > maxTransactionSize {
 		return errors.New("configuration transaction is too large")
 	}
 	return privatefile.Write(filepath.Join(dataDir, TransactionFilename), data)
@@ -48,7 +48,7 @@ func (transaction Transaction) Recover(dataDir string) error {
 	if err := transaction.valid(dataDir); err != nil {
 		return err
 	}
-	data, err := privatefile.Read(filepath.Join(dataDir, TransactionFilename), MaxTransactionSize)
+	data, err := privatefile.Read(filepath.Join(dataDir, TransactionFilename), maxTransactionSize)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil
 	}
@@ -108,7 +108,7 @@ func (transaction Transaction) read(data []byte) ([]byte, []byte, error) {
 }
 
 func decodeTransaction(data []byte) (transactionEnvelope, error) {
-	if len(data) > MaxTransactionSize || !utf8.Valid(data) {
+	if len(data) > maxTransactionSize || !utf8.Valid(data) {
 		return transactionEnvelope{}, errors.New("transaction is too large")
 	}
 	decoder := json.NewDecoder(bytes.NewReader(data))

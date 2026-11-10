@@ -32,15 +32,15 @@ func TestMatchUsesConservativeIdentityOrder(t *testing.T) {
 		{Activity{Kind: "unsupported", Title: "Arrival", Year: "2016"}, "", "ambiguous", "Movie title and year matched multiple Kinosail items"},
 	}
 	for _, test := range cases {
-		item, status, reason := Match(test.activity, items)
+		item, status, reason := match(test.activity, items)
 		if item.ID != test.id || status != test.status || reason != test.reason {
 			t.Errorf("Match(%#v) = %q, %q, %q", test.activity, item.ID, status, reason)
 		}
 	}
-	if !Conflict(catalog.PlaybackState{Updated: time.Now()}, catalog.PlaybackState{}) || Conflict(catalog.PlaybackState{}, catalog.PlaybackState{}) {
+	if !conflict(catalog.PlaybackState{Updated: time.Now()}, catalog.PlaybackState{}) || conflict(catalog.PlaybackState{}, catalog.PlaybackState{}) {
 		t.Fatal("conflict ordering is incorrect")
 	}
-	if !SameState(catalog.PlaybackState{Seconds: 2, Watched: true}, catalog.PlaybackState{Seconds: 2.4, Watched: true}) || SameState(catalog.PlaybackState{Seconds: 2}, catalog.PlaybackState{Seconds: 2.5}) || SameState(catalog.PlaybackState{Seconds: 2}, catalog.PlaybackState{Seconds: 3}) {
+	if !sameState(catalog.PlaybackState{Seconds: 2, Watched: true}, catalog.PlaybackState{Seconds: 2.4, Watched: true}) || sameState(catalog.PlaybackState{Seconds: 2}, catalog.PlaybackState{Seconds: 2.5}) || sameState(catalog.PlaybackState{Seconds: 2}, catalog.PlaybackState{Seconds: 3}) {
 		t.Fatal("state equality tolerance is incorrect")
 	}
 	if normalizedText(" A-b_2! ") != "ab2" {
@@ -59,16 +59,16 @@ func TestMatchUsesConservativeIdentityOrder(t *testing.T) {
 
 func TestActivityIdentifiersAndLabelsAreStable(t *testing.T) {
 	episode := Activity{Kind: "episode", Show: "Show", Title: "Pilot", Season: 1, Episode: 2, Watched: true, Seconds: 1.2345, ProviderIDs: map[string]string{"tmdb": "9", "imdb": "TT1"}}
-	if ActivityKey(episode) != "episode|imdb:tt1" || Signature(episode) != "true|1.234" || Label(episode) != "Show · S01E02 · Pilot" {
-		t.Fatalf("key=%q signature=%q label=%q", ActivityKey(episode), Signature(episode), Label(episode))
+	if activityKey(episode) != "episode|imdb:tt1" || Signature(episode) != "true|1.234" || label(episode) != "Show · S01E02 · Pilot" {
+		t.Fatalf("key=%q signature=%q label=%q", activityKey(episode), Signature(episode), label(episode))
 	}
 	movie := Activity{Kind: "movie", Title: "Movie", Year: "2024", Path: `C:\Media\Movie.mkv`}
-	if ActivityKey(movie) != "movie|path:movie.mkv" || Label(movie) != "Movie · 2024" {
-		t.Fatalf("movie key=%q label=%q", ActivityKey(movie), Label(movie))
+	if activityKey(movie) != "movie|path:movie.mkv" || label(movie) != "Movie · 2024" {
+		t.Fatalf("movie key=%q label=%q", activityKey(movie), label(movie))
 	}
 	plain := Activity{Kind: "movie", Title: "Movie"}
-	if ActivityKey(plain) != "movie|movie||0|0" || Label(plain) != "Movie" {
-		t.Fatalf("plain key=%q label=%q", ActivityKey(plain), Label(plain))
+	if activityKey(plain) != "movie|movie||0|0" || label(plain) != "Movie" {
+		t.Fatalf("plain key=%q label=%q", activityKey(plain), label(plain))
 	}
 }
 
@@ -90,7 +90,7 @@ func TestBuildPreviewClassifiesWithoutSideEffects(t *testing.T) {
 		{Kind: "movie", Title: "Ready", Year: "2024", Favorite: true},
 	}
 	progressReads, listReads := 0, 0
-	plan := BuildPreview(PreviewInput{
+	plan := buildPreview(PreviewInput{
 		Activities: activities, Items: items,
 		Progress: func(id string) catalog.PlaybackState {
 			progressReads++
@@ -118,7 +118,7 @@ func TestBuildPreviewClassifiesWithoutSideEffects(t *testing.T) {
 		t.Fatalf("plan = %#v, progress=%d list=%d", plan, progressReads, listReads)
 	}
 
-	overwrite := BuildPreview(PreviewInput{Overwrite: true, Activities: activities[3:4], Items: items, Progress: func(string) catalog.PlaybackState { return catalog.PlaybackState{Seconds: 2} }, ListAdditions: func(string, bool, map[string]int) int { return 0 }})
+	overwrite := buildPreview(PreviewInput{Overwrite: true, Activities: activities[3:4], Items: items, Progress: func(string) catalog.PlaybackState { return catalog.PlaybackState{Seconds: 2} }, ListAdditions: func(string, bool, map[string]int) int { return 0 }})
 	if len(overwrite.Changes) != 1 || overwrite.Summary.Conflicts != 0 {
 		t.Fatalf("overwrite = %#v", overwrite)
 	}
@@ -127,7 +127,7 @@ func TestBuildPreviewClassifiesWithoutSideEffects(t *testing.T) {
 	for index := range many {
 		many[index] = Activity{Kind: "movie", Title: "Missing", Year: "2024", Favorite: true}
 	}
-	truncated := BuildPreview(PreviewInput{Activities: many, Items: items, Progress: func(string) catalog.PlaybackState { return catalog.PlaybackState{} }, ListAdditions: func(string, bool, map[string]int) int { return 0 }})
+	truncated := buildPreview(PreviewInput{Activities: many, Items: items, Progress: func(string) catalog.PlaybackState { return catalog.PlaybackState{} }, ListAdditions: func(string, bool, map[string]int) int { return 0 }})
 	if !truncated.Truncated || len(truncated.Items) != 500 {
 		t.Fatalf("truncated rows = %d, flag = %t", len(truncated.Items), truncated.Truncated)
 	}
@@ -148,7 +148,7 @@ func TestMergeProgressAndListsPreservesOptimisticState(t *testing.T) {
 	playlists := map[string]map[string]bool{"viewer:Existing": {"same": true}}
 	order := map[string][]string{"viewer:Queue": {"first"}}
 	smart := map[string]catalog.PlaylistRule{"viewer:Smart": {Sort: "title"}}
-	lists, playlists, order, applied = MergeLists(lists, playlists, order, smart, "viewer", []ListChange{
+	lists, playlists, order, applied = mergeLists(lists, playlists, order, smart, "viewer", []ListChange{
 		{TargetID: "two", Favorite: true, Playlists: map[string]int{"Queue": 2, "Smart": 0, "bad/name": 0}},
 		{TargetID: "one", Playlists: map[string]int{"Queue": 1}},
 		{TargetID: "same", Playlists: map[string]int{"Existing": 0}},
@@ -197,13 +197,13 @@ func TestEngineStopsAtValidationAndMissingProfile(t *testing.T) {
 }
 
 func TestViewingFormsRejectAmbiguityAndOversize(t *testing.T) {
-	settingsPage, onboardingPage := PreviewPage("/settings/viewing-imports/preview"), PreviewPage("/onboarding/viewing-imports/preview")
+	settingsPage, onboardingPage := previewPage("/settings/viewing-imports/preview"), previewPage("/onboarding/viewing-imports/preview")
 	if !settingsPage.AllowSync || settingsPage.ApplyPath != "/settings/viewing-imports/apply" || onboardingPage.AllowSync || onboardingPage.Step != "Step 4 of 4" {
 		t.Fatalf("preview pages = %#v / %#v", settingsPage, onboardingPage)
 	}
 	validID := "ABCDEFGHIJKLMNOP234567"
 	request := formRequest("source=plex&url=http%3A%2F%2Fserver&token=t&profileId=p&overwriteExisting=true")
-	input, err := ParseImportForm(request)
+	input, err := parseImportForm(request)
 	if err != nil || input.Source != "plex" || !input.Overwrite {
 		t.Fatalf("input = %#v, error = %v", input, err)
 	}
@@ -247,10 +247,10 @@ func TestViewingFormsRejectAmbiguityAndOversize(t *testing.T) {
 		t.Fatalf("successful apply = result=%#v status=%d calls=%d error=%v", result, status, calls, err)
 	}
 	previewCalls := 0
-	if _, status, err := PreviewForm(context.Background(), wrongType, func(context.Context, Input) (Preview, error) { previewCalls++; return Preview{}, nil }); err == nil || status != http.StatusBadRequest || previewCalls != 0 {
+	if _, status, err := previewForm(context.Background(), wrongType, func(context.Context, Input) (Preview, error) { previewCalls++; return Preview{}, nil }); err == nil || status != http.StatusBadRequest || previewCalls != 0 {
 		t.Fatalf("invalid preview caused side effects: status=%d calls=%d error=%v", status, previewCalls, err)
 	}
-	if _, status, err := PreviewForm(context.Background(), formRequest("source=plex&url=http%3A%2F%2Fserver&token=t&profileId=p"), func(context.Context, Input) (Preview, error) { previewCalls++; return Preview{}, errors.New("source") }); err == nil || status != http.StatusBadRequest || previewCalls != 1 {
+	if _, status, err := previewForm(context.Background(), formRequest("source=plex&url=http%3A%2F%2Fserver&token=t&profileId=p"), func(context.Context, Input) (Preview, error) { previewCalls++; return Preview{}, errors.New("source") }); err == nil || status != http.StatusBadRequest || previewCalls != 1 {
 		t.Fatalf("failed preview = status=%d calls=%d error=%v", status, previewCalls, err)
 	}
 	writer := &responseWriterStub{header: make(http.Header)}
@@ -264,7 +264,7 @@ func TestViewingFormsRejectAmbiguityAndOversize(t *testing.T) {
 		t.Fatalf("served preview = %d %v, headers=%v", status, err, writer.header)
 	}
 	_, err = ServeWebPreview(context.Background(), writer, formRequest("source=plex"), func(context.Context, Input) (Preview, error) { return Preview{}, nil }, func(WebPreview) error { return errors.New("template details") })
-	if !errors.Is(err, ErrPreviewRender) {
+	if !errors.Is(err, errPreviewRender) {
 		t.Fatalf("renderer error = %v", err)
 	}
 	for _, id := range []string{strings.Repeat("A", 128), "A", "Z", "2", "7"} {
@@ -284,7 +284,7 @@ func TestViewingFormsRejectAmbiguityAndOversize(t *testing.T) {
 		"source=plex&source=plex&url=u&token=t&profileId=p",
 		"source=plex&url=u&token=t&profileId=p&overwriteExisting=no",
 	} {
-		if _, err := ParseImportForm(formRequest(encoded)); err == nil {
+		if _, err := parseImportForm(formRequest(encoded)); err == nil {
 			t.Fatalf("invalid import form accepted: %q", encoded)
 		}
 	}

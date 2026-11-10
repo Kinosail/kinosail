@@ -14,16 +14,16 @@ func (data *PlayerData) ApplyMedia(media mediaprobe.Result) {
 	data.MediaDetails, data.Audio = media.Summary, media.Audio
 	data.MediaBitrate, data.MediaWidth, data.MediaHeight, data.MediaFrameRate = media.Bitrate, media.Video.Width, media.Video.Height, media.Video.FrameRate
 	data.Duration, data.Chapters, data.Markers = media.Duration, media.Chapters, media.Markers
-	data.ReplayGainTrack = FormatReplayGain(media.ReplayGain.Track, media.ReplayGain.TrackSet)
-	data.ReplayGainAlbum = FormatReplayGain(media.ReplayGain.Album, media.ReplayGain.AlbumSet)
+	data.ReplayGainTrack = formatReplayGain(media.ReplayGain.Track, media.ReplayGain.TrackSet)
+	data.ReplayGainAlbum = formatReplayGain(media.ReplayGain.Album, media.ReplayGain.AlbumSet)
 }
 
 func (data *PlayerData) Finalize(request *http.Request) {
 	userAgent := request.UserAgent()
 	data.AppleNativeControls = strings.Contains(userAgent, "iPhone") || strings.Contains(userAgent, "iPad") || strings.Contains(userAgent, "iPod")
 	data.NativeControls = data.NativeControls || data.AppleNativeControls
-	data.DeferDirect = data.AdaptiveSource != "" && AppleWebKitClient(request.UserAgent()) && strings.Contains(data.DirectType, "matroska")
-	data.Source, data.DirectSource, data.AdaptiveSource = SessionURL(data.Source, data.PlaybackSession), SessionURL(data.DirectSource, data.PlaybackSession), SessionURL(data.AdaptiveSource, data.PlaybackSession)
+	data.DeferDirect = data.AdaptiveSource != "" && appleWebKitClient(request.UserAgent()) && strings.Contains(data.DirectType, "matroska")
+	data.Source, data.DirectSource, data.AdaptiveSource = sessionURL(data.Source, data.PlaybackSession), sessionURL(data.DirectSource, data.PlaybackSession), sessionURL(data.AdaptiveSource, data.PlaybackSession)
 	method, reason := data.Plan.Mode, data.Plan.Reason
 	if method == "" {
 		method, reason = "direct", "original-media"
@@ -31,11 +31,11 @@ func (data *PlayerData) Finalize(request *http.Request) {
 	slog.InfoContext(request.Context(), "playback planned", "playback_session", data.PlaybackSession, "kind", data.Kind, "policy", data.PlaybackPolicy, "method", method, "reason", reason, "compatibility_method", data.CompatibilityMode, "transcode_allowed", data.CanTranscode, "override", data.PlaybackOverride, "container", data.Plan.Container, "video_codec", data.Plan.VideoCodec, "audio_codec", data.Plan.AudioCodec, "width", data.Plan.Width, "height", data.Plan.Height, "direct_type", data.DirectType)
 }
 
-func AppleWebKitClient(userAgent string) bool {
+func appleWebKitClient(userAgent string) bool {
 	return strings.Contains(userAgent, "iPhone") || strings.Contains(userAgent, "iPad") || strings.Contains(userAgent, "Macintosh") && strings.Contains(userAgent, "Safari/") && !strings.Contains(userAgent, "Chrome/")
 }
 
-func SessionURL(source, session string) string {
+func sessionURL(source, session string) string {
 	if source == "" {
 		return ""
 	}
@@ -49,7 +49,7 @@ func SessionURL(source, session string) string {
 	return parsed.String()
 }
 
-func FormatReplayGain(gain float64, present bool) string {
+func formatReplayGain(gain float64, present bool) string {
 	if !present {
 		return ""
 	}

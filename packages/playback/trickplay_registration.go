@@ -20,7 +20,7 @@ func MustTrickplayRegistration(
 	if lookup == nil || acquire == nil || failure == nil {
 		panic(errInvalidTrickplayRegistration)
 	}
-	frames, err := NewTrickplay(TrickplayDependencies{
+	frames, err := newTrickplay(TrickplayDependencies{
 		Cache: cache, FFmpeg: ffmpeg, RecipePolicy: policy, Lookup: lookup, Acquire: acquire,
 		NotFound: func(writer http.ResponseWriter, request *http.Request) {
 			failure(writer, request, "not found", http.StatusNotFound)

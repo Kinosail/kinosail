@@ -25,7 +25,7 @@ func LoadProfileState(
 	state.APIFile = filepath.Join(dataDir, "api_keys.json")
 	_, state.Err = loadProfiles(state.ProfileFile, &state.Profiles)
 	if state.Err == nil {
-		state.Err = ValidateProfiles(state.Profiles)
+		state.Err = validateProfiles(state.Profiles)
 	}
 	if state.Err == nil {
 		state.Sessions, state.Err = loadSessions(state.SessionFile)

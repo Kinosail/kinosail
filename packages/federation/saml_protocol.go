@@ -18,22 +18,22 @@ func samlProviderEndpoint(metadata *saml.EntityDescriptor) (string, string, erro
 			for _, descriptor := range metadata.IDPSSODescriptors {
 				for _, service := range descriptor.SingleSignOnServices {
 					endpoint, err := url.Parse(service.Location)
-					if service.Binding == binding && err == nil && TrustedURL(endpoint) {
+					if service.Binding == binding && err == nil && trustedURL(endpoint) {
 						return binding, service.Location, nil
 					}
 				}
 			}
 		}
 	}
-	return "", "", ErrProviderUnavailable
+	return "", "", errProviderUnavailable
 }
 
 func samlIdentityValue(assertion *saml.Assertion, attribute string) (string, error) {
 	if strings.EqualFold(attribute, "NameID") {
-		if assertion.Subject != nil && assertion.Subject.NameID != nil && ValidSubject(assertion.Subject.NameID.Value) {
+		if assertion.Subject != nil && assertion.Subject.NameID != nil && validSubject(assertion.Subject.NameID.Value) {
 			return assertion.Subject.NameID.Value, nil
 		}
-		return "", ErrTokenInvalid
+		return "", errTokenInvalid
 	}
 	values := make([]string, 0, 1)
 	for _, statement := range assertion.AttributeStatements {
@@ -46,8 +46,8 @@ func samlIdentityValue(assertion *saml.Assertion, attribute string) (string, err
 			}
 		}
 	}
-	if len(values) != 1 || !ValidSubject(values[0]) {
-		return "", ErrTokenInvalid
+	if len(values) != 1 || !validSubject(values[0]) {
+		return "", errTokenInvalid
 	}
 	return values[0], nil
 }
@@ -90,8 +90,8 @@ func formEncoded(request *http.Request) bool {
 
 func samlHTTPClient() *http.Client {
 	return &http.Client{Timeout: 10 * time.Second, CheckRedirect: func(request *http.Request, via []*http.Request) error {
-		if len(via) >= 10 || !boundedURLText(request.URL.String()) || !TrustedURL(request.URL) {
-			return ErrProviderUnavailable
+		if len(via) >= 10 || !boundedURLText(request.URL.String()) || !trustedURL(request.URL) {
+			return errProviderUnavailable
 		}
 		return nil
 	}}

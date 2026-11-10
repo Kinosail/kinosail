@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	MoviesID = "00000000000000000000000000000001"
-	ShowsID  = "00000000000000000000000000000002"
+	moviesID = "00000000000000000000000000000001"
+	showsID  = "00000000000000000000000000000002"
 )
 
 type ProjectItem func(library.Item) ItemRecord
@@ -64,10 +64,10 @@ func includesType(candidates []string, value string) bool {
 func (catalog Catalog) Views() Page {
 	views := make([]FolderRecord, 0, 2)
 	if len(catalog.view.Movies()) > 0 {
-		views = append(views, FolderDTO(MoviesID, "Movies", "movies"))
+		views = append(views, folderDTO(moviesID, "Movies", "movies"))
 	}
 	if len(catalog.view.Shows()) > 0 {
-		views = append(views, FolderDTO(ShowsID, "Shows", "tvshows"))
+		views = append(views, folderDTO(showsID, "Shows", "tvshows"))
 	}
 	return Result(views, 0)
 }
@@ -77,7 +77,7 @@ func (catalog Catalog) Items(values url.Values) (Page, error) {
 	if err != nil {
 		return Page{}, err
 	}
-	ids, err := ItemIDs(values, RawID)
+	ids, err := itemIDs(values, RawID)
 	if err != nil {
 		return Page{}, err
 	}
@@ -101,7 +101,7 @@ func (catalog Catalog) Latest(values url.Values) (Records, error) {
 	if err != nil {
 		return Records{}, err
 	}
-	ids, err := ItemIDs(values, RawID)
+	ids, err := itemIDs(values, RawID)
 	if err != nil {
 		return Records{}, err
 	}
@@ -145,12 +145,12 @@ func (catalog Catalog) Item(id string) (any, bool) {
 		return catalog.project(item), true
 	}
 	if show, found := catalog.view.Show(RawID(id)); found && (ID(show.ID) == id || show.ID == id) {
-		return SeriesDTO(show), true
+		return seriesDTO(show), true
 	}
 	if show, found := catalog.seasonShow(id); found {
 		for _, season := range Seasons(show) {
-			if SeasonID(show.ID, season) == id {
-				return SeasonDTO(show, season), true
+			if seasonID(show.ID, season) == id {
+				return seasonDTO(show, season), true
 			}
 		}
 	}
@@ -221,11 +221,11 @@ func (catalog Catalog) newest(parent, includes string) []catalogEntry {
 func catalogListing(parent, includes string) (string, func(*library.View) []catalogEntry) {
 	episodes := Includes(includes, "Episode")
 	switch {
-	case parent == MoviesID:
+	case parent == moviesID:
 		return "jellyfincompat.movies", movieEntries
-	case (parent == ShowsID || parent == "") && episodes:
+	case (parent == showsID || parent == "") && episodes:
 		return "jellyfincompat.episodes", episodeEntries
-	case parent == ShowsID:
+	case parent == showsID:
 		return "jellyfincompat.series", seriesEntries
 	case parent == "":
 		return "jellyfincompat.root", rootEntries
@@ -248,7 +248,7 @@ func (catalog Catalog) hierarchy(parent string) []catalogEntry {
 	}
 	result := make([]catalogEntry, 0)
 	for position := range show.Episodes {
-		if parent == SeasonID(show.ID, show.Episodes[position].Season) {
+		if parent == seasonID(show.ID, show.Episodes[position].Season) {
 			result = append(result, itemEntry(&show.Episodes[position]))
 		}
 	}

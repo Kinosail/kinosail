@@ -24,7 +24,7 @@ func validatePolicy(policy Policy) error {
 	return nil
 }
 
-func ValidReleaseVersion(value string) bool {
+func validReleaseVersion(value string) bool {
 	if !strings.HasPrefix(value, "v") || len(value) > 64 {
 		return false
 	}
@@ -44,7 +44,7 @@ func ValidReleaseVersion(value string) bool {
 }
 
 func releaseManifestURLs(version string, policy Policy) (string, string) {
-	if !ValidReleaseVersion(version) {
+	if !validReleaseVersion(version) {
 		return "", ""
 	}
 	base := fmt.Sprintf("https://github.com/Kinosail/kinosail/releases/download/%s-%s/kinosail-release.json", policy.tagPrefix, version)

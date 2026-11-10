@@ -39,7 +39,7 @@ func DownloadProviderBackdrop(ctx context.Context, client *http.Client, baseURL,
 }
 
 func RetainProviderBackdrop(ctx context.Context, baseURL, cache, target string) bool {
-	if ctx.Err() != nil || baseURL != defaultImageURL || CurrentArtwork(cache, target) == "" {
+	if ctx.Err() != nil || baseURL != defaultImageURL || currentArtwork(cache, target) == "" {
 		return false
 	}
 	data, err := privatefile.Read(target, 8<<20)

@@ -22,7 +22,7 @@ const (
 	Directory           = "/public-transport"
 	HTTPPath            = Directory + "/http.sock"
 	CertificatePath     = Directory + "/certificate.sock"
-	ClientAddressHeader = "X-Kinosail-Public-Client"
+	clientAddressHeader = "X-Kinosail-Public-Client"
 )
 
 func Run(ctx context.Context, hostname string) error {
@@ -37,8 +37,8 @@ func Run(ctx context.Context, hostname string) error {
 	if err = restrictNetwork(); err != nil {
 		return err
 	}
-	server := servertransport.NewServer(":8443", Handler(hostname, HTTPPath))
-	server.TLSConfig.GetCertificate = CertificateClient(hostname, CertificatePath)
+	server := servertransport.NewServer(":8443", handler(hostname, HTTPPath))
+	server.TLSConfig.GetCertificate = certificateClient(hostname, CertificatePath)
 	server.TLSConfig.NextProtos = []string{"h2", "http/1.1", acme.ALPNProto}
 	var limits connectionLimits
 	server.ConnState = limits.track
@@ -75,15 +75,15 @@ func (buffers *proxyBufferPool) Put(buffer []byte) {
 	}
 }
 
-func Handler(hostname, path string) http.Handler {
+func handler(hostname, path string) http.Handler {
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(p *httputil.ProxyRequest) {
 			p.SetURL(&url.URL{Scheme: "http", Host: "public"})
 			p.Out.Host = p.In.Host
-			for _, name := range []string{"Forwarded", "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto", "X-Kinosail-Proxy-Token", "X-Kinosail-Remote", ClientAddressHeader} {
+			for _, name := range []string{"Forwarded", "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto", "X-Kinosail-Proxy-Token", "X-Kinosail-Remote", clientAddressHeader} {
 				p.Out.Header.Del(name)
 			}
-			p.Out.Header.Set(ClientAddressHeader, p.In.RemoteAddr)
+			p.Out.Header.Set(clientAddressHeader, p.In.RemoteAddr)
 		},
 		Transport: unixTransport(path), BufferPool: proxyBuffers,
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, _ error) {
@@ -156,7 +156,7 @@ func (l *connectionLimits) track(c net.Conn, state http.ConnState) {
 
 func TLSMetadata(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		values := r.Header.Values(ClientAddressHeader)
+		values := r.Header.Values(clientAddressHeader)
 		if len(values) != 1 || len(values[0]) > 256 {
 			http.Error(w, "bad gateway request", http.StatusBadRequest)
 			return
@@ -168,7 +168,7 @@ func TLSMetadata(next http.Handler) http.Handler {
 			return
 		}
 		r.RemoteAddr = values[0]
-		r.Header.Del(ClientAddressHeader)
+		r.Header.Del(clientAddressHeader)
 		r.TLS = &tls.ConnectionState{Version: tls.VersionTLS13, HandshakeComplete: true}
 		next.ServeHTTP(w, r)
 	})

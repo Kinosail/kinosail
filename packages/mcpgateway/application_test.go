@@ -61,7 +61,7 @@ func TestPrincipalAdapterPreservesIdentityDecisions(t *testing.T) {
 	}
 	var stateErr error
 	var attributed adapterProfile
-	adapter := NewPrincipalAdapter(adapterConfig(&profiles, &stateErr, &attributed))
+	adapter := newPrincipalAdapter(adapterConfig(&profiles, &stateErr, &attributed))
 	request := httptest.NewRequestWithContext(context.WithValue(t.Context(), adapterProfileKey{}, profiles[0]), http.MethodGet, "/", nil)
 	if current := adapter.Current(request); current.ID != "owner" || current.Name != "Owner" || !current.Owner {
 		t.Fatalf("current principal = %+v", current)

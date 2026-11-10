@@ -22,7 +22,7 @@ func TestExternalEventsRequireBoundedClientIdentityAndExpireWithToken(t *testing
 			config := testGatewayConfig(OAuthConfig{ResourceURL: "http://localhost/mcp", AuthorizationServer: issuer.URL, IntrospectionURL: issuer.URL, ClientID: "server", ClientSecret: "test-only"}, fixture.principals, &testAPI{}, testRoutes{})
 			fixture.mux = http.NewServeMux()
 			var err error
-			fixture.gateway, err = Register(fixture.mux, config, fixture.connections)
+			fixture.gateway, err = register(fixture.mux, config, fixture.connections)
 			if err != nil {
 				t.Fatal(err)
 			}

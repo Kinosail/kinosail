@@ -15,34 +15,34 @@ func TestProjectionHelpers(t *testing.T) {
 		{ID: "episode-art", Kind: "video", Title: "One", Show: "series", ShowTitle: "Series", ShowArtwork: "poster", Season: 1, Episode: 1},
 		{ID: "episode-fallback", Kind: "video", Title: "Two", Show: "series", ShowTitle: "Series", Season: 1, Episode: 2},
 	}
-	artwork, titles := MediaPresentation(items, func(item library.Item) bool { return item.ID != "episode-fallback" })
+	artwork, titles := mediaPresentation(items, func(item library.Item) bool { return item.ID != "episode-fallback" })
 	if artwork["movie"] != "movie" || artwork["episode-art"] != "episode-art" || artwork["episode-fallback"] != "episode-art" || titles["episode-fallback"] != "Series" {
 		t.Fatalf("artwork=%v titles=%v", artwork, titles)
 	}
-	if matched := Media(items, "video"); len(matched) != 3 || len(Media(items, "book")) != 0 {
+	if matched := media(items, "video"); len(matched) != 3 || len(media(items, "book")) != 0 {
 		t.Fatalf("matched=%v", matched)
 	}
 
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "http://example.test/?q=movie&offset=10&letter=M&view=movies", nil)
-	if clear := ClearSearchURL(request); clear != "/?view=movies" {
+	if clear := clearSearchURL(request); clear != "/?view=movies" {
 		t.Fatalf("clear URL = %q", clear)
 	}
-	if clear := ClearSearchURL(httptest.NewRequestWithContext(t.Context(), http.MethodGet, "http://example.test/?q=movie", nil)); clear != "/" {
+	if clear := clearSearchURL(httptest.NewRequestWithContext(t.Context(), http.MethodGet, "http://example.test/?q=movie", nil)); clear != "/" {
 		t.Fatalf("empty clear URL = %q", clear)
 	}
-	if fragment, err := FragmentRequest(request); err != nil || fragment {
+	if fragment, err := fragmentRequest(request); err != nil || fragment {
 		t.Fatalf("empty fragment = %v, %v", fragment, err)
 	}
-	request.Header.Set(InfiniteLibraryHeader, "1")
-	if fragment, err := FragmentRequest(request); err != nil || !fragment {
+	request.Header.Set(infiniteLibraryHeader, "1")
+	if fragment, err := fragmentRequest(request); err != nil || !fragment {
 		t.Fatalf("valid fragment = %v, %v", fragment, err)
 	}
-	request.Header.Set(InfiniteLibraryHeader, "0")
-	if _, err := FragmentRequest(request); err == nil {
+	request.Header.Set(infiniteLibraryHeader, "0")
+	if _, err := fragmentRequest(request); err == nil {
 		t.Fatal("invalid fragment was accepted")
 	}
-	request.Header.Add(InfiniteLibraryHeader, "1")
-	if _, err := FragmentRequest(request); err == nil {
+	request.Header.Add(infiniteLibraryHeader, "1")
+	if _, err := fragmentRequest(request); err == nil {
 		t.Fatal("repeated fragment was accepted")
 	}
 }
@@ -60,7 +60,7 @@ func TestDestinationProjection(t *testing.T) {
 	if len(groups) != 3 || len(groups[0].Destinations) != 3 || len(groups[1].Destinations) != 3 || len(groups[2].Destinations) != 3 {
 		t.Fatalf("groups=%+v", groups)
 	}
-	if groups[0].Destinations[0].CountLabel != "1 item" || groups[2].Destinations[1].CountLabel != "2 items" || CountLabel(0) != "0 items" {
+	if groups[0].Destinations[0].CountLabel != "1 item" || groups[2].Destinations[1].CountLabel != "2 items" || countLabel(0) != "0 items" {
 		t.Fatalf("count labels=%+v", groups)
 	}
 	if groups := destinations(libraryCounts{}, 0, 0, 0); len(groups) != 0 {
@@ -78,7 +78,7 @@ func TestRecentShelfProjection(t *testing.T) {
 	}
 	artwork := map[string]string{"episode-one": "poster", "book": "cover"}
 	titles := map[string]string{"episode-one": "Series"}
-	played := RecentlyPlayed(items, artwork, titles)
+	played := recentlyPlayed(items, artwork, titles)
 	if len(played) != 3 || !played[0].Stacked || played[0].Count != 2 || played[0].Title != "Series" || played[0].StackLabel != "recently played episodes stacked" || played[0].Meta != "2 episodes stacked" {
 		t.Fatalf("played=%+v", played)
 	}
@@ -89,12 +89,12 @@ func TestRecentShelfProjection(t *testing.T) {
 	for index := range addedItems {
 		addedItems[index] = library.Item{ID: string(rune('a' + index)), Kind: "book", Title: "Book", Added: now.Add(time.Duration(index) * time.Minute)}
 	}
-	added := RecentlyAdded(addedItems, nil, nil)
+	added := recentlyAdded(addedItems, nil, nil)
 	if len(added) != recentItemLimit || added[0].Href != "/book/n" || added[0].PlaceholderIcon != "book" {
 		t.Fatalf("added=%+v", added)
 	}
 	addedItems[12].Added = addedItems[13].Added
-	added = RecentlyAdded(addedItems, nil, nil)
+	added = recentlyAdded(addedItems, nil, nil)
 	if added[0].Href != "/book/m" || added[1].Href != "/book/n" || addedItems[0].ID != "a" || addedItems[13].ID != "n" {
 		t.Fatalf("added order=%+v, input first=%q last=%q", added[:2], addedItems[0].ID, addedItems[13].ID)
 	}

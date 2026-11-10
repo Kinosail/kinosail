@@ -1,4 +1,4 @@
-package hlsmanifest
+package playback
 
 import (
 	"errors"
@@ -6,11 +6,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-
-	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func WriteSkipConcat(directory, source string, duration float64, omitted []playback.Range) (string, error) {
+func WriteSkipConcat(directory, source string, duration float64, omitted []Range) (string, error) {
 	if strings.ContainsAny(source, "\r\n") {
 		return "", errors.New("library content path cannot be safely remuxed")
 	}

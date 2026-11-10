@@ -91,7 +91,7 @@ func traceRequest(t *testing.T, body string) *http.Request {
 
 func TestTraceAcceptsMovingFrameEvidence(t *testing.T) {
 	request := traceRequest(t, `{"session":"session","event":"first-moving-frame","sequence":3,"elapsedMs":400,"totalFrames":2}`)
-	event, err := ReadTrace(httptest.NewRecorder(), request, func(value string) bool { return value == "session" })
+	event, err := readTrace(httptest.NewRecorder(), request, func(value string) bool { return value == "session" })
 	if err != nil || event.Event != "first-moving-frame" || event.TotalFrames != 2 {
 		t.Fatalf("moving frame evidence = %#v, %v", event, err)
 	}

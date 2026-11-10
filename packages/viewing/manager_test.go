@@ -193,7 +193,7 @@ func TestCreateSyncIsAtomicAcrossPersistenceAndCommit(t *testing.T) {
 	success := newTestManager(t.TempDir(), config)
 	var saved []map[string]Sync
 	success.config.Persist = func(_ string, value any) error {
-		saved = append(saved, CloneSyncs(value.(map[string]Sync)))
+		saved = append(saved, cloneSyncs(value.(map[string]Sync)))
 		return nil
 	}
 	success.config.Commit = func(_ Profile, progress []ProgressChange, lists []ListChange) (int, int, int, error) {
@@ -201,9 +201,9 @@ func TestCreateSyncIsAtomicAcrossPersistenceAndCommit(t *testing.T) {
 	}
 	success.previews[preview.ID] = preview
 	view, err = success.CreateSync(preview.ID, "15m")
-	_, sawActive := success.syncs[view.ID].Seen[ActivityKey(preview.Activities[0])]
-	_, sawWatched := success.syncs[view.ID].Seen[ActivityKey(preview.Activities[1])]
-	_, sawInactive := success.syncs[view.ID].Seen[ActivityKey(preview.Activities[2])]
+	_, sawActive := success.syncs[view.ID].Seen[activityKey(preview.Activities[0])]
+	_, sawWatched := success.syncs[view.ID].Seen[activityKey(preview.Activities[1])]
+	_, sawInactive := success.syncs[view.ID].Seen[activityKey(preview.Activities[2])]
 	if err != nil || view.ID == "" || view.ProfileName != "Viewer" || view.LastResult.Conflicts != 2 || view.LastResult.Applied != 1 || view.LastResult.ListsApplied != 1 || len(saved) != 2 || saved[0][view.ID].LastResult.Applied != 1 || saved[0][view.ID].LastResult.ListsApplied != 0 || len(success.previews) != 0 || len(success.syncs) != 1 || success.syncs[view.ID].Pending != nil || len(success.syncs[view.ID].Seen) != 2 || !sawActive || !sawWatched || sawInactive {
 		t.Fatalf("view=%#v state=%#v error=%v", view, success.syncs, err)
 	}

@@ -20,7 +20,7 @@ type WebHooks[T any] struct {
 }
 
 func (hooks WebHooks[T]) unavailable(writer http.ResponseWriter, request *http.Request, err error, message string, status int) {
-	if errors.Is(err, ErrNotConfigured) && hooks.NotConfigured != nil {
+	if errors.Is(err, errNotConfigured) && hooks.NotConfigured != nil {
 		hooks.NotConfigured(request)
 	}
 	hooks.Error(writer, request, message, status)

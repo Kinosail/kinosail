@@ -12,23 +12,23 @@ import (
 )
 
 func TestIdentifierGenerationAndValidation(t *testing.T) {
-	id, err := IDFrom(strings.NewReader("0123456789abcdef"))
-	if err != nil || id != "30313233343536373839616263646566" || !ValidID(id) {
+	id, err := idFrom(strings.NewReader("0123456789abcdef"))
+	if err != nil || id != "30313233343536373839616263646566" || !validID(id) {
 		t.Fatalf("identifier = %q, error = %v", id, err)
 	}
-	if id, err = IDFrom(strings.NewReader("short")); err == nil || id != "" {
+	if id, err = idFrom(strings.NewReader("short")); err == nil || id != "" {
 		t.Fatalf("short entropy identifier = %q, error = %v", id, err)
 	}
-	if id, err = NewID(); err != nil || len(id) != 32 || !ValidID(id) {
+	if id, err = NewID(); err != nil || len(id) != 32 || !validID(id) {
 		t.Fatalf("random identifier = %q, error = %v", id, err)
 	}
 	for _, valid := range []string{"-", "0", "9", "A", "Z", "a", "z", strings.Repeat("a", 128)} {
-		if !ValidID(valid) {
+		if !validID(valid) {
 			t.Errorf("valid identifier rejected: %q", valid)
 		}
 	}
 	for _, invalid := range []string{"", "/", ":", "@", "[", "_", "`", "{", strings.Repeat("a", 129)} {
-		if ValidID(invalid) {
+		if validID(invalid) {
 			t.Errorf("invalid identifier accepted: %q", invalid)
 		}
 	}
@@ -88,30 +88,30 @@ func TestAppAcceptsOneSupportedSeerrName(t *testing.T) {
 }
 
 func TestProviderIDsUseOnlyKnownNonemptyNames(t *testing.T) {
-	got := ProviderIDs(map[string]string{
+	got := providerIDs(map[string]string{
 		"tmdb": "1", "TheMovieDB": "2", "IMDB": "3", "tvdb": "4", "AniDB": "5", "unknown": "6", "blank": " ",
 	})
 	want := map[string]string{"Tmdb": "1", "TheMovieDb": "2", "Imdb": "3", "Tvdb": "4", "AniDB": "5"}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("provider IDs = %v, want %v", got, want)
 	}
-	if got := ShowProviderIDs([]library.Item{{}, {ShowProviderIDs: map[string]string{"tmdb": "7"}}, {ShowProviderIDs: map[string]string{"tmdb": "8"}}}); !reflect.DeepEqual(got, map[string]string{"Tmdb": "7"}) {
+	if got := showProviderIDs([]library.Item{{}, {ShowProviderIDs: map[string]string{"tmdb": "7"}}, {ShowProviderIDs: map[string]string{"tmdb": "8"}}}); !reflect.DeepEqual(got, map[string]string{"Tmdb": "7"}) {
 		t.Fatalf("show provider IDs = %v", got)
 	}
-	if got := ShowProviderIDs(nil); len(got) != 0 || got == nil {
+	if got := showProviderIDs(nil); len(got) != 0 || got == nil {
 		t.Fatalf("empty show provider IDs = %#v", got)
 	}
-	if got := ProviderIDs(map[string]string{"tmdb": " ", "imdb": "kept"}); !reflect.DeepEqual(got, map[string]string{"Imdb": "kept"}) {
+	if got := providerIDs(map[string]string{"tmdb": " ", "imdb": "kept"}); !reflect.DeepEqual(got, map[string]string{"Imdb": "kept"}) {
 		t.Fatalf("blank provider did not skip to next entry: %v", got)
 	}
 }
 
 func TestItemIDsValidateOneBoundedQuery(t *testing.T) {
 	normalize := func(value string) string { return "id:" + value }
-	if ids, err := ItemIDs(nil, normalize); err != nil || ids != nil {
+	if ids, err := itemIDs(nil, normalize); err != nil || ids != nil {
 		t.Fatalf("missing IDs = %v, %v", ids, err)
 	}
-	ids, err := ItemIDs(url.Values{"IDs": {" first ,second "}}, normalize)
+	ids, err := itemIDs(url.Values{"IDs": {" first ,second "}}, normalize)
 	if err != nil || !reflect.DeepEqual(ids, map[string]bool{"id:first": true, "id:second": true}) {
 		t.Fatalf("valid IDs = %v, %v", ids, err)
 	}
@@ -123,11 +123,11 @@ func TestItemIDsValidateOneBoundedQuery(t *testing.T) {
 	for index := range maximum {
 		maximum[index] = "id"
 	}
-	if ids, err := ItemIDs(url.Values{"ids": {strings.Join(maximum, ",")}}, normalize); err != nil || len(ids) != 1 {
+	if ids, err := itemIDs(url.Values{"ids": {strings.Join(maximum, ",")}}, normalize); err != nil || len(ids) != 1 {
 		t.Fatalf("maximum IDs = %v, %v", ids, err)
 	}
 	maximumPart := strings.Repeat("a", 64)
-	if ids, err := ItemIDs(url.Values{"ids": {maximumPart}}, normalize); err != nil || !ids["id:"+maximumPart] {
+	if ids, err := itemIDs(url.Values{"ids": {maximumPart}}, normalize); err != nil || !ids["id:"+maximumPart] {
 		t.Fatalf("maximum-length ID = %v, %v", ids, err)
 	}
 	for name, values := range map[string]url.Values{
@@ -139,7 +139,7 @@ func TestItemIDsValidateOneBoundedQuery(t *testing.T) {
 		"NUL first": {"ids": {"\x00a"}},
 		"many":      {"ids": {strings.Join(tooMany, ",")}},
 	} {
-		if ids, err := ItemIDs(values, normalize); err == nil || ids != nil {
+		if ids, err := itemIDs(values, normalize); err == nil || ids != nil {
 			t.Errorf("%s IDs = %v, %v", name, ids, err)
 		}
 	}

@@ -43,9 +43,9 @@ func validCodecProfiles(profiles []JellyfinCodecProfile) bool {
 
 func matchesMediaProfile(profile JellyfinMediaProfile, container, video, audio, kind string) bool {
 	return (profile.Type == "" || strings.EqualFold(profile.Type, kind)) &&
-		(profile.Container == "" || Includes(AppendCSV(nil, profile.Container, true), container)) &&
-		(video == "" || profile.VideoCodec == "" || Includes(AppendCSV(nil, profile.VideoCodec, false), video)) &&
-		(audio == "" || profile.AudioCodec == "" || Includes(AppendCSV(nil, profile.AudioCodec, false), audio))
+		(profile.Container == "" || Includes(appendCSV(nil, profile.Container, true), container)) &&
+		(video == "" || profile.VideoCodec == "" || Includes(appendCSV(nil, profile.VideoCodec, false), video)) &&
+		(audio == "" || profile.AudioCodec == "" || Includes(appendCSV(nil, profile.AudioCodec, false), audio))
 }
 
 func directCombination(client ClientCapabilities, facts MediaFacts, audio AudioFacts) bool {
@@ -79,7 +79,7 @@ func codecConditions(profiles []JellyfinCodecProfile, kind string, facts MediaFa
 		codec = audio.Codec
 	}
 	for _, profile := range profiles {
-		if (!strings.EqualFold(profile.Type, kind) && (kind != "Audio" || facts.Kind != "video" || profile.Type != "VideoAudio")) || profile.Codec != "" && !Includes(AppendCSV(nil, profile.Codec, false), codec) {
+		if (!strings.EqualFold(profile.Type, kind) && (kind != "Audio" || facts.Kind != "video" || profile.Type != "VideoAudio")) || profile.Codec != "" && !Includes(appendCSV(nil, profile.Codec, false), codec) {
 			continue
 		}
 		if !matchesProfileConditions(profile.Conditions, facts, audio) {
@@ -131,7 +131,7 @@ func jellyfinRange(hdr string) string {
 
 func explicitHDRSupport(profiles []JellyfinCodecProfile, video VideoFacts) bool {
 	for _, profile := range profiles {
-		if !strings.EqualFold(profile.Type, "Video") || profile.Codec != "" && !Includes(AppendCSV(nil, profile.Codec, false), video.Codec) {
+		if !strings.EqualFold(profile.Type, "Video") || profile.Codec != "" && !Includes(appendCSV(nil, profile.Codec, false), video.Codec) {
 			continue
 		}
 		for _, condition := range profile.Conditions {

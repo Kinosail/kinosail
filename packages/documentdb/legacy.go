@@ -118,7 +118,7 @@ func (store *Store) scanEntryFile(name, path string, emit func(string, []byte) e
 }
 
 func nextEntry(decoder *json.Decoder, count int) (string, json.RawMessage, error) {
-	if count >= EntryCountLimit {
+	if count >= entryCountLimit {
 		return "", nil, errors.New("record cardinality is too large")
 	}
 	token, err := decoder.Token()
@@ -127,7 +127,7 @@ func nextEntry(decoder *json.Decoder, count int) (string, json.RawMessage, error
 		return "", nil, errors.New("invalid record key")
 	}
 	var value json.RawMessage
-	if err := decoder.Decode(&value); err != nil || len(value) > EntrySizeLimit {
+	if err := decoder.Decode(&value); err != nil || len(value) > entrySizeLimit {
 		return "", nil, errors.New("invalid record value")
 	}
 	if err := uniqueJSONValue(json.NewDecoder(bytes.NewReader(value)), 1); err != nil {

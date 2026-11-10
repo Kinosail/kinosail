@@ -24,7 +24,7 @@ func TestManagementReloadValidatesEveryPersistedPeerBeforeUse(t *testing.T) {
 	if err := privatefile.Write(path, raw); err != nil {
 		t.Fatal(err)
 	}
-	manager, err := Open(config)
+	manager, err := open(config)
 	if err != nil || len(manager.Status().Devices) != 1 {
 		t.Fatalf("valid persisted peer rejected: %v", err)
 	}
@@ -62,7 +62,7 @@ func assertInvalidPersistedState(t *testing.T, config Config, path string, candi
 	if err := privatefile.Write(path, data); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Open(config); err == nil {
+	if _, err := open(config); err == nil {
 		t.Fatal("invalid persisted peer accepted")
 	}
 	after, err := os.ReadFile(path)

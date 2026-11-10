@@ -85,7 +85,7 @@ func TestTransactionRejectsInvalidWritesBeforeCreatingAJournal(t *testing.T) {
 	for name, pair := range map[string][2][]byte{
 		"missing regular": {nil, []byte(`{}`)},
 		"missing secrets": {[]byte(`{}`), nil},
-		"oversized":       {bytes.Repeat([]byte("x"), MaxTransactionSize), []byte(`{}`)},
+		"oversized":       {bytes.Repeat([]byte("x"), maxTransactionSize), []byte(`{}`)},
 	} {
 		if err := valid.Write(directory, pair[0], pair[1]); err == nil {
 			t.Fatalf("%s transaction was accepted", name)
@@ -126,7 +126,7 @@ func TestTransactionRejectsEveryInvalidEnvelopeWithoutSideEffects(t *testing.T) 
 			assertRejectedTransactionPreservesFiles(t, transaction, data)
 		})
 	}
-	if _, err := decodeTransaction(bytes.Repeat([]byte("x"), MaxTransactionSize+1)); err == nil {
+	if _, err := decodeTransaction(bytes.Repeat([]byte("x"), maxTransactionSize+1)); err == nil {
 		t.Fatal("oversized envelope was accepted")
 	}
 }

@@ -59,7 +59,7 @@ func homeKind(item library.Item, kind string) bool {
 	}
 }
 
-func MovieGenres(items []library.Item, artwork map[string]string) []MovieGenre {
+func movieGenres(items []library.Item, artwork map[string]string) []MovieGenre {
 	grouped := make(map[string][]library.Item)
 	for _, item := range items {
 		if item.Kind != "video" || item.Show != "" {
@@ -105,7 +105,7 @@ type ShelfItem struct {
 	Priority        bool
 }
 
-func RecentlyAdded(items []library.Item, artwork, showTitles map[string]string) []ShelfItem {
+func recentlyAdded(items []library.Item, artwork, showTitles map[string]string) []ShelfItem {
 	recent := make([]*library.Item, len(items))
 	for position := range items {
 		recent[position] = &items[position]
@@ -118,7 +118,7 @@ func RecentlyAdded(items []library.Item, artwork, showTitles map[string]string) 
 	return episodeShelf(selected, artwork, showTitles, "play", "recently added episodes stacked")
 }
 
-func RecentlyPlayed(items []library.Item, artwork, showTitles map[string]string) []ShelfItem {
+func recentlyPlayed(items []library.Item, artwork, showTitles map[string]string) []ShelfItem {
 	return episodeShelf(items, artwork, showTitles, "play", "recently played episodes stacked")
 }
 

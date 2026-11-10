@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/MikeO7/kinosail/packages/hlsmanifest"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
@@ -196,7 +195,7 @@ func hlsPlaylistWithSession(manifest []byte, playID, token string, start int, du
 }
 
 func completeHLSVOD(manifest []byte, duration float64) []byte {
-	result, _ := hlsmanifest.CompleteVOD(manifest, duration, 2)
+	result, _ := playback.CompleteVOD(manifest, duration, 2)
 	return result
 }
 

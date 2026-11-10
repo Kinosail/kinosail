@@ -31,7 +31,7 @@ func TestAdminRoutesManageMarkersAndQueueAnalysis(t *testing.T) {
 		t.Fatalf("delete status = %d, markers = %#v", response.Code, analyzer.Markers(item, nil))
 	}
 	response = markerRequest(t, mux, http.MethodGet, "/api/v1/marker-analysis", "", "")
-	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"detectorVersion":`+strconv.Itoa(DetectorVersion)) {
+	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"detectorVersion":`+strconv.Itoa(detectorVersion)) {
 		t.Fatalf("status response = %d: %s", response.Code, response.Body.String())
 	}
 	response = markerRequest(t, mux, http.MethodPost, "/api/v1/marker-analysis", "", "")

@@ -11,7 +11,7 @@ import (
 func BenchmarkCertificateClientTLSHandshake(b *testing.B) {
 	certificate := certificateValidFor(b, 30*24*time.Hour)
 	path := unixSocketServer(b, CertificateHandler("family.example", func(*tls.ClientHelloInfo) (*tls.Certificate, error) { return &certificate, nil }))
-	server := &tls.Config{MinVersion: tls.VersionTLS12, GetCertificate: CertificateClient("family.example", path)}
+	server := &tls.Config{MinVersion: tls.VersionTLS12, GetCertificate: certificateClient("family.example", path)}
 	leaf, err := x509.ParseCertificate(certificate.Certificate[0])
 	if err != nil {
 		b.Fatal(err)

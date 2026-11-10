@@ -45,11 +45,11 @@ func TestListStorageAndRefreshBoundaries(t *testing.T) {
 	storage.Persist = func(string, any) error { writes++; return nil }
 	next := storage.State()
 	next.Values["v:two"] = true
-	if err := storage.Commit(t.Context(), next, ListedDocument); err != nil || writes != 1 || !values["v:two"] {
+	if err := storage.Commit(t.Context(), next, listedDocument); err != nil || writes != 1 || !values["v:two"] {
 		t.Fatalf("commit writes=%d values=%#v error=%v", writes, values, err)
 	}
 	loadErr = errors.New("restore")
-	if err := storage.Commit(t.Context(), next, ListedDocument); err == nil || writes != 1 {
+	if err := storage.Commit(t.Context(), next, listedDocument); err == nil || writes != 1 {
 		t.Fatal("restore failure allowed persistence")
 	}
 
@@ -67,25 +67,25 @@ func TestListStorageAndRefreshBoundaries(t *testing.T) {
 	}
 	var refreshMutex sync.Mutex
 	acquires, refreshes := 0, 0
-	if err := RefreshWork(t.Context(), &refreshMutex, func(context.Context) (func(), error) { acquires++; return func() { acquires++ }, nil }, func(context.Context) error { refreshes++; return nil }); err != nil || acquires != 2 || refreshes != 1 {
+	if err := refreshWork(t.Context(), &refreshMutex, func(context.Context) (func(), error) { acquires++; return func() { acquires++ }, nil }, func(context.Context) error { refreshes++; return nil }); err != nil || acquires != 2 || refreshes != 1 {
 		t.Fatalf("refresh work = %d/%d %v", acquires, refreshes, err)
 	}
-	if err := RefreshWork(t.Context(), &refreshMutex, func(context.Context) (func(), error) { return nil, errors.New("busy") }, func(context.Context) error { refreshes++; return nil }); err == nil || refreshes != 1 {
+	if err := refreshWork(t.Context(), &refreshMutex, func(context.Context) (func(), error) { return nil, errors.New("busy") }, func(context.Context) error { refreshes++; return nil }); err == nil || refreshes != 1 {
 		t.Fatal("failed lease ran refresh")
 	}
 
 	reschedule := make(chan struct{}, 1)
 	requests := 0
 	reschedule <- struct{}{}
-	if !WaitRefresh(t.Context(), time.Hour, reschedule, func() { requests++ }) || requests != 0 {
+	if !waitRefresh(t.Context(), time.Hour, reschedule, func() { requests++ }) || requests != 0 {
 		t.Fatal("reschedule did not request refresh")
 	}
-	if !WaitRefresh(t.Context(), time.Nanosecond, make(chan struct{}), func() { requests++ }) || requests != 1 {
+	if !waitRefresh(t.Context(), time.Nanosecond, make(chan struct{}), func() { requests++ }) || requests != 1 {
 		t.Fatal("refresh interval did not request refresh")
 	}
 	cancelled, cancel := context.WithCancel(t.Context())
 	cancel()
-	if WaitRefresh(cancelled, time.Hour, make(chan struct{}), func() { requests++ }) {
+	if waitRefresh(cancelled, time.Hour, make(chan struct{}), func() { requests++ }) {
 		t.Fatal("cancelled refresh kept running")
 	}
 }

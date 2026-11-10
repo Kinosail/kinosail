@@ -64,8 +64,8 @@ func TestCoreAndQuickConnectRoutesPreserveContract(t *testing.T) {
 }
 
 func TestEntryProjectionsPreservePlayerContract(t *testing.T) {
-	info := SystemInfo("server", "Kinosail", "https://media.test", true)
-	wantInfo := map[string]any{"Id": "server", "ServerName": "Kinosail", "Version": Version, "ProductName": "Jellyfin Server", "OperatingSystem": "Linux", "StartupWizardCompleted": true, "LocalAddress": "https://media.test"}
+	info := systemInfo("server", "Kinosail", "https://media.test", true)
+	wantInfo := map[string]any{"Id": "server", "ServerName": "Kinosail", "Version": version, "ProductName": "Jellyfin Server", "OperatingSystem": "Linux", "StartupWizardCompleted": true, "LocalAddress": "https://media.test"}
 	if !reflect.DeepEqual(info, wantInfo) {
 		t.Fatalf("system info = %#v", info)
 	}
@@ -79,7 +79,7 @@ func TestEntryProjectionsPreservePlayerContract(t *testing.T) {
 	if owner["IsAdministrator"] != true || owner["IsDisabled"] != true || owner["EnableContentDownloading"] != true || owner["EnableRemoteAccess"] != true {
 		t.Fatalf("owner policy = %#v", owner)
 	}
-	authentication := AuthenticationResult(Authentication{Token: "token", User: user})
+	authentication := authenticationResult(Authentication{Token: "token", User: user})
 	if authentication["AccessToken"] != "token" || authentication["ServerId"] != "server" || authentication["SessionInfo"].(map[string]any)["UserName"] != "Sam" {
 		t.Fatalf("authentication = %#v", authentication)
 	}
@@ -87,7 +87,7 @@ func TestEntryProjectionsPreservePlayerContract(t *testing.T) {
 
 func TestJSONHelpersWriteExactUncachedResponses(t *testing.T) {
 	response := httptest.NewRecorder()
-	JSONStatus(response, map[string]bool{"ok": true}, http.StatusCreated)
+	jsonStatus(response, map[string]bool{"ok": true}, http.StatusCreated)
 	if response.Code != http.StatusCreated || response.Body.String() != "{\"ok\":true}\n" || response.Header().Get("Content-Type") != "application/json" || response.Header().Get("Cache-Control") != "no-store" {
 		t.Fatalf("JSON response = %d %q %v", response.Code, response.Body.String(), response.Header())
 	}
@@ -114,7 +114,7 @@ func TestPasswordAuthenticationPreservesValidationAndErrors(t *testing.T) {
 	}
 	public := PasswordAuthentication(func(*http.Request) bool { return true }, login)
 	response = entryCall(t, public, `{`)
-	if response.Code != http.StatusForbidden || response.Body.String() != ErrPublicPasswordLogin.Error()+"\n" || called != 1 {
+	if response.Code != http.StatusForbidden || response.Body.String() != errPublicPasswordLogin.Error()+"\n" || called != 1 {
 		t.Fatalf("public login = %d %q, calls %d", response.Code, response.Body.String(), called)
 	}
 	for name, body := range map[string]string{
@@ -123,7 +123,7 @@ func TestPasswordAuthenticationPreservesValidationAndErrors(t *testing.T) {
 		"oversized": strings.Repeat(" ", maxCredentialsBytes+1),
 	} {
 		response = entryCall(t, handler, body)
-		if response.Code != http.StatusBadRequest || response.Body.String() != ErrInvalidCredentials.Error()+"\n" {
+		if response.Code != http.StatusBadRequest || response.Body.String() != errInvalidCredentials.Error()+"\n" {
 			t.Errorf("%s credentials = %d %q", name, response.Code, response.Body.String())
 		}
 	}
@@ -138,10 +138,10 @@ func TestPasswordAuthenticationPreservesValidationAndErrors(t *testing.T) {
 		body   string
 		retry  string
 	}{
-		{ErrInvalidCredentials, http.StatusUnauthorized, ErrInvalidCredentials.Error() + "\n", ""},
-		{ErrCredentialRateLimit, http.StatusTooManyRequests, ErrCredentialRateLimit.Error() + "\n", "60"},
-		{ErrQuickConnectMFA, http.StatusForbidden, ErrQuickConnectMFA.Error() + "\n", ""},
-		{errors.New("database failed"), http.StatusInternalServerError, ErrCreateSession.Error() + "\n", ""},
+		{errInvalidCredentials, http.StatusUnauthorized, errInvalidCredentials.Error() + "\n", ""},
+		{errCredentialRateLimit, http.StatusTooManyRequests, errCredentialRateLimit.Error() + "\n", "60"},
+		{errQuickConnectMFA, http.StatusForbidden, errQuickConnectMFA.Error() + "\n", ""},
+		{errors.New("database failed"), http.StatusInternalServerError, errCreateSession.Error() + "\n", ""},
 	} {
 		failing := PasswordAuthentication(func(*http.Request) bool { return false }, func(*http.Request, Credentials) (Authentication, error) { return Authentication{}, test.err })
 		response = entryCall(t, failing, `{}`)

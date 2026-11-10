@@ -131,7 +131,7 @@ func (store *Store) Create(itemIDs []string, lifetime time.Duration, maxDevices 
 	share := Share{ID: id, ItemIDs: append([]string(nil), itemIDs...), ClaimHash: sessionKey(claim), ExpiresAt: now.Add(lifetime).Unix(), MaxDevices: maxDevices, RightsAcknowledged: true}
 	store.mu.Lock()
 	defer store.mu.Unlock()
-	state := CloneState(store.state)
+	state := cloneState(store.state)
 	Prune(&state, now.Unix())
 	if len(state.Shares) >= 256 {
 		return View{}, "", errors.New("too many active media shares")
@@ -154,7 +154,7 @@ func (store *Store) Claim(token, device string) (string, time.Time, error) {
 	if store.err != nil {
 		return "", time.Time{}, store.err
 	}
-	state := CloneState(store.state)
+	state := cloneState(store.state)
 	var selected Share
 	for _, share := range state.Shares {
 		if subtle.ConstantTimeCompare([]byte(share.ClaimHash), []byte(sessionKey(token))) == 1 && share.ExpiresAt > now.Unix() {
@@ -202,7 +202,7 @@ func (store *Store) Revoke(id string) error {
 	if _, found := store.state.Shares[id]; !found {
 		return errors.New("media share was not found")
 	}
-	state := CloneState(store.state)
+	state := cloneState(store.state)
 	delete(state.Shares, id)
 	for key, session := range state.Sessions {
 		if session.ShareID == id {

@@ -125,7 +125,7 @@ func updateTripwireSource(state tripwireSource, now time.Time, maximum int) (tri
 	return state, blocked
 }
 
-func SuspiciousPublicPath(path string) bool {
+func suspiciousPublicPath(path string) bool {
 	path = strings.ToLower(path)
 	for _, prefix := range []string{"/.env", "/.git", "/.aws", "/.ssh", "/wp-", "/wordpress", "/phpmyadmin", "/cgi-bin", "/server-status", "/actuator", "/vendor/phpunit"} {
 		if path == prefix || strings.HasPrefix(path, prefix+"/") || strings.HasPrefix(path, prefix+".") || strings.HasSuffix(prefix, "-") && strings.HasPrefix(path, prefix) {
@@ -135,7 +135,7 @@ func SuspiciousPublicPath(path string) bool {
 	return false
 }
 
-func CredentialAttempt(request *http.Request) bool {
+func credentialAttempt(request *http.Request) bool {
 	if request.Method != http.MethodPost {
 		return false
 	}

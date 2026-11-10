@@ -53,19 +53,19 @@ func NewListHandlers(index listIndex, lists listMutations, viewer func(*http.Req
 }
 
 func (handlers ListHandlers) CreatePlaylist(writer http.ResponseWriter, request *http.Request) {
-	CreatePlaylist(request, handlers.viewer(request), func(raw string) (string, error) { return handlers.document(request, raw) }, handlers.lists.Create).Serve(writer, request, handlers.failure, handlers.notFound)
+	createPlaylist(request, handlers.viewer(request), func(raw string) (string, error) { return handlers.document(request, raw) }, handlers.lists.Create).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
 func (handlers ListHandlers) CreateSmart(writer http.ResponseWriter, request *http.Request) {
-	CreateSmartPlaylist(request, handlers.viewer(request), handlers.lists.CreateSmart).Serve(writer, request, handlers.failure, handlers.notFound)
+	createSmartPlaylist(request, handlers.viewer(request), handlers.lists.CreateSmart).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
 func (handlers ListHandlers) SavePlaylist(writer http.ResponseWriter, request *http.Request) {
-	SavePlaylist(request, handlers.viewer(request), func(id string) (library.Item, bool) { return handlers.index.VisibleItem(request, id) }, handlers.lists.SetPlaylist).Serve(writer, request, handlers.failure, handlers.notFound)
+	savePlaylist(request, handlers.viewer(request), func(id string) (library.Item, bool) { return handlers.index.VisibleItem(request, id) }, handlers.lists.SetPlaylist).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
 func (handlers ListHandlers) DeletePlaylist(writer http.ResponseWriter, request *http.Request) {
-	DeletePlaylist(request, handlers.viewer(request), handlers.lists.DeletePlaylist).Serve(writer, request, handlers.failure, handlers.notFound)
+	deletePlaylist(request, handlers.viewer(request), handlers.lists.DeletePlaylist).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
 func (handlers ListHandlers) SaveList(writer http.ResponseWriter, request *http.Request) {
@@ -90,7 +90,7 @@ func (action WebAction) Serve(writer http.ResponseWriter, request *http.Request,
 	}
 }
 
-func CreatePlaylist(request *http.Request, viewer string, document func(string) (string, error), create func(context.Context, string, string, ...string) error) WebAction {
+func createPlaylist(request *http.Request, viewer string, document func(string) (string, error), create func(context.Context, string, string, ...string) error) WebAction {
 	values, err := listForm(request, "document", "name")
 	if err != nil {
 		return badListAction("invalid playlist document")
@@ -119,7 +119,7 @@ func CreatePlaylist(request *http.Request, viewer string, document func(string) 
 	return WebAction{Redirect: "/playlist/" + url.PathEscape(name)}
 }
 
-func CreateSmartPlaylist(request *http.Request, viewer string, create func(context.Context, string, string, PlaylistRule) error) WebAction {
+func createSmartPlaylist(request *http.Request, viewer string, create func(context.Context, string, string, PlaylistRule) error) WebAction {
 	values, err := listForm(request, "name", "kind", "query", "sort")
 	if err != nil {
 		return badListAction("invalid smart playlist rule")
@@ -141,7 +141,7 @@ func CreateSmartPlaylist(request *http.Request, viewer string, create func(conte
 	return WebAction{Redirect: "/playlist/" + url.PathEscape(name)}
 }
 
-func SavePlaylist(request *http.Request, viewer string, visible func(string) (library.Item, bool), save func(context.Context, string, string, string, bool) error) WebAction {
+func savePlaylist(request *http.Request, viewer string, visible func(string) (library.Item, bool), save func(context.Context, string, string, string, bool) error) WebAction {
 	values, err := listForm(request, "included")
 	included, includedOK := listBool(values, "included")
 	name, id := request.PathValue("name"), request.PathValue("id")
@@ -164,7 +164,7 @@ func SavePlaylist(request *http.Request, viewer string, visible func(string) (li
 	return WebAction{Redirect: target}
 }
 
-func DeletePlaylist(request *http.Request, viewer string, remove func(context.Context, string, string) error) WebAction {
+func deletePlaylist(request *http.Request, viewer string, remove func(context.Context, string, string) error) WebAction {
 	if _, err := listForm(request); err != nil || !ValidListName(request.PathValue("name")) {
 		return badListAction("invalid playlist state")
 	}
@@ -191,7 +191,7 @@ func SaveList(request *http.Request, viewer string, visible func(string) (librar
 	return WebAction{Redirect: "/watch/" + item.ID}
 }
 
-func ListedItems(items []library.Item, has func(string) bool) []library.Item {
+func listedItems(items []library.Item, has func(string) bool) []library.Item {
 	listed := make([]library.Item, 0)
 	for _, item := range items {
 		if has(item.ID) {

@@ -13,7 +13,7 @@ type Preview struct {
 
 func (broker *Broker) Preview(code string, viewer Viewer) (Preview, error) {
 	if !numericCode(code) || !validViewer(viewer) {
-		return Preview{}, ErrInvalidRequest
+		return Preview{}, errInvalidRequest
 	}
 	broker.mu.Lock()
 	defer broker.mu.Unlock()
@@ -26,7 +26,7 @@ func (broker *Broker) Preview(code string, viewer Viewer) (Preview, error) {
 
 func (broker *Broker) PendingTVs(viewer Viewer) ([]Preview, error) {
 	if !validViewer(viewer) {
-		return nil, ErrInvalidRequest
+		return nil, errInvalidRequest
 	}
 	broker.mu.Lock()
 	defer broker.mu.Unlock()

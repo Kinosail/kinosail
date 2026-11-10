@@ -68,10 +68,10 @@ func (records Records) writeJSON(writer io.Writer) error {
 			item = records.project(*entry.item)
 			out.value(&item)
 		case entry.kind == "Season":
-			season = SeasonDTO(*entry.show, entry.season)
+			season = seasonDTO(*entry.show, entry.season)
 			out.value(&season)
 		default:
-			series = SeriesDTO(*entry.show)
+			series = seriesDTO(*entry.show)
 			out.value(&series)
 		}
 		if out.err != nil {

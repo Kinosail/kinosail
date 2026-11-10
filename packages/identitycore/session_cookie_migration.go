@@ -43,7 +43,7 @@ func (sessions *RequestSessions) migrationSession(request *http.Request, token s
 	defer sessions.config.Mutex.RUnlock()
 	session, found := (*sessions.config.Values)[SessionKey(token)]
 	inactive, absolute := sessions.TimeoutsFor(session)
-	if !found || !session.Browser || !SessionMatchesRequest(session, request) || SessionExpired(session, now, inactive, absolute) {
+	if !found || !session.Browser || !sessionMatchesRequest(session, request) || SessionExpired(session, now, inactive, absolute) {
 		return session, false
 	}
 	profile, profileFound := findSessionProfile(sessions.config.Profiles(), session.ProfileID)
@@ -63,7 +63,7 @@ func (sessions *RequestSessions) signOutBrowserTokens(request *http.Request, tok
 	}
 	return sessions.core().remove(func(values map[string]Session) ([]string, error) {
 		keys := []string{SessionKey(token)}
-		if current, found := values[SessionKey(legacy)]; legacy != "" && found && SessionMatchesRequest(current, request) {
+		if current, found := values[SessionKey(legacy)]; legacy != "" && found && sessionMatchesRequest(current, request) {
 			keys = append(keys, SessionKey(legacy))
 		}
 		return keys, nil

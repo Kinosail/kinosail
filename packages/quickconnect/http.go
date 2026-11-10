@@ -35,7 +35,7 @@ func (application *Application) Start(writer http.ResponseWriter, request *http.
 		Remote: identitycore.RemoteRequest(request),
 	})
 	if err != nil {
-		if errors.Is(err, ErrInvalidRequest) {
+		if errors.Is(err, errInvalidRequest) {
 			apihttp.Error(writer, errHTTPRequest, http.StatusBadRequest)
 			return
 		}
@@ -55,7 +55,7 @@ func (application *Application) Poll(writer http.ResponseWriter, request *http.R
 		return
 	}
 	token, _, err := application.Consume(secret)
-	if errors.Is(err, ErrPending) {
+	if errors.Is(err, errPending) {
 		apihttp.WriteJSON(writer, map[string]string{"status": "pending"}, http.StatusAccepted)
 		return
 	}
@@ -77,7 +77,7 @@ func (application *Application) Page(writer http.ResponseWriter, request *http.R
 	if request.URL.RawQuery != "" || request.URL.ForceQuery {
 		code, ok := ReadLinkCode(request)
 		if !ok {
-			application.adapter.Error(writer, request, ErrInvalidRequest.Error(), http.StatusBadRequest)
+			application.adapter.Error(writer, request, errInvalidRequest.Error(), http.StatusBadRequest)
 			return
 		}
 		pending, err := application.broker.Preview(code, application.viewer(request))
@@ -98,12 +98,12 @@ func (application *Application) ApprovePage(writer http.ResponseWriter, request 
 	}
 	request.Body = http.MaxBytesReader(writer, request.Body, RequestBodyMaximum)
 	if !strictRequiredForm(request, "code") {
-		application.adapter.Error(writer, request, ErrInvalidRequest.Error(), http.StatusBadRequest)
+		application.adapter.Error(writer, request, errInvalidRequest.Error(), http.StatusBadRequest)
 		return
 	}
 	code := request.PostForm.Get("code")
 	if !validApprovalValue(code) {
-		application.adapter.Error(writer, request, ErrInvalidRequest.Error(), http.StatusBadRequest)
+		application.adapter.Error(writer, request, errInvalidRequest.Error(), http.StatusBadRequest)
 		return
 	}
 	if err := application.approveRequest(request, code); err != nil {

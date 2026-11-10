@@ -1,4 +1,4 @@
-package hlsmanifest
+package playback
 
 import (
 	"bytes"
@@ -6,8 +6,6 @@ import (
 	"math"
 	"strconv"
 	"strings"
-
-	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 func CompleteVOD(manifest []byte, duration, cadence float64) ([]byte, bool) {
@@ -17,7 +15,7 @@ func CompleteVOD(manifest []byte, duration, cadence float64) ([]byte, bool) {
 	if invalidHLSSegmentDuration(cadence) {
 		return manifest, false
 	}
-	if playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
+	if PlaylistHas(manifest, "#EXT-X-ENDLIST") {
 		return bytes.Replace(manifest, []byte("#EXT-X-PLAYLIST-TYPE:EVENT"), []byte("#EXT-X-PLAYLIST-TYPE:VOD"), 1), true
 	}
 	if invalidHLSVODDuration(duration) {

@@ -15,16 +15,16 @@ func TestSubtitlePath(t *testing.T) {
 	t.Parallel()
 	paths := []string{"first.srt", "second.vtt"}
 	for value, want := range map[string]string{"": paths[0], "0": paths[0], "1": paths[1], "+1": paths[1]} {
-		if path, ok := SubtitlePath(paths, value); !ok || path != want {
+		if path, ok := subtitlePath(paths, value); !ok || path != want {
 			t.Errorf("track %q = %q, %v", value, path, ok)
 		}
 	}
 	for _, value := range []string{"bad", "-1", "2"} {
-		if path, ok := SubtitlePath(paths, value); ok || path != "" {
+		if path, ok := subtitlePath(paths, value); ok || path != "" {
 			t.Errorf("accepted track %q as %q", value, path)
 		}
 	}
-	if path, ok := SubtitlePath(nil, ""); ok || path != "" {
+	if path, ok := subtitlePath(nil, ""); ok || path != "" {
 		t.Errorf("accepted an absent track as %q", path)
 	}
 }

@@ -35,7 +35,7 @@ type ProfileFlow[T any] struct {
 
 func NewProfileFlow[T any](config ProfileFlowConfig[T]) (*ProfileFlow[T], error) {
 	if !validProfileFlow(config) {
-		return nil, ErrInvalidConfig
+		return nil, errInvalidConfig
 	}
 	return &ProfileFlow[T]{config: config, finishRegistration: config.Engine.FinishRegistrationRequest, finishLogin: config.Engine.FinishLoginRequest}, nil
 }
@@ -58,13 +58,13 @@ func (flow *ProfileFlow[T]) BeginRegistration(writer http.ResponseWriter, reques
 	}
 	profile := flow.config.Current(request)
 	id, name, credentials := flow.config.Identity(profile)
-	creation, cookie, err := flow.config.Engine.BeginRegistration(NewUser(profile, id, name, credentials), flow.ceremony(request, id))
+	creation, cookie, err := flow.config.Engine.BeginRegistration(newUser(profile, id, name, credentials), flow.ceremony(request, id))
 	if err != nil {
 		flow.config.WriteError(writer, errors.New("passkey registration is unavailable"), http.StatusServiceUnavailable)
 		return
 	}
 	http.SetCookie(writer, cookie)
-	WriteJSON(writer, creation)
+	writeJSON(writer, creation)
 }
 
 func (flow *ProfileFlow[T]) FinishRegistration(writer http.ResponseWriter, request *http.Request) {
@@ -73,7 +73,7 @@ func (flow *ProfileFlow[T]) FinishRegistration(writer http.ResponseWriter, reque
 	}
 	profile := flow.config.Current(request)
 	id, name, credentials := flow.config.Identity(profile)
-	credential, err := flow.finishRegistration(NewUser(profile, id, name, credentials), id, request)
+	credential, err := flow.finishRegistration(newUser(profile, id, name, credentials), id, request)
 	if errors.Is(err, ErrCeremonyExpired) {
 		flow.config.WriteError(writer, errors.New("passkey ceremony expired"), http.StatusBadRequest)
 		return
@@ -99,7 +99,7 @@ func (flow *ProfileFlow[T]) BeginLogin(writer http.ResponseWriter, request *http
 		return
 	}
 	http.SetCookie(writer, cookie)
-	WriteJSON(writer, assertion)
+	writeJSON(writer, assertion)
 }
 
 func (flow *ProfileFlow[T]) FinishLogin(writer http.ResponseWriter, request *http.Request) {

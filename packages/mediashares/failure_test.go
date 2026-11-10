@@ -95,13 +95,13 @@ func TestNewAndStateValidationFailureBranches(t *testing.T) {
 	hash := strings.Repeat("0", 64)
 	validShare := Share{ID: secret, ItemIDs: []string{"item"}, ClaimHash: hash, ExpiresAt: now + 60, MaxDevices: 1, RightsAcknowledged: true}
 	valid := State{Shares: map[string]Share{secret: validShare}, Sessions: map[string]Session{}}
-	invalidSession := CloneState(valid)
+	invalidSession := cloneState(valid)
 	invalidSession.Sessions[hash] = Session{ShareID: "missing", ExpiresAt: now + 30}
-	duplicateItem := CloneState(valid)
+	duplicateItem := cloneState(valid)
 	share := duplicateItem.Shares[secret]
 	share.ItemIDs = []string{"item", "item"}
 	duplicateItem.Shares[secret] = share
-	emptyItems := CloneState(valid)
+	emptyItems := cloneState(valid)
 	share = emptyItems.Shares[secret]
 	share.ItemIDs = nil
 	emptyItems.Shares[secret] = share

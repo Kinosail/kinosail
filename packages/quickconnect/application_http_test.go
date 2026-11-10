@@ -153,7 +153,7 @@ func TestApplicationConsumeFailures(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, _, err = fixture.application.Consume(secret); !errors.Is(err, ErrPending) {
+	if _, _, err = fixture.application.Consume(secret); !errors.Is(err, errPending) {
 		t.Fatalf("pending error = %v", err)
 	}
 	missing := fixture.approved(t, Request{}, fixture.profiles["viewer"])
@@ -188,7 +188,7 @@ func TestApplicationApprovalAndRevocation(t *testing.T) {
 	if err := fixture.application.Approve(owner, connection.Code, true); !errors.Is(err, ErrRemoteViewer) || approvalStatus(err) != http.StatusForbidden {
 		t.Fatalf("owner approval = %v", err)
 	}
-	if approvalStatus(ErrInvalidRequest) != http.StatusBadRequest {
+	if approvalStatus(errInvalidRequest) != http.StatusBadRequest {
 		t.Fatal("invalid approval status")
 	}
 	fixture.application.RevokeRemote()

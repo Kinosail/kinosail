@@ -128,7 +128,7 @@ func TestMarkerDatabaseStateAndPersistence(t *testing.T) {
 func TestPersistedMarkerValidationBoundaries(t *testing.T) {
 	t.Parallel()
 	marker := Marker{Type: "intro", Label: "Intro", Start: 1, End: 2, Source: "manual"}
-	valid := Record{Revision: "revision", DetectorVersion: DetectorVersion, Markers: []Marker{marker}, Suppressed: []string{"credits"}}
+	valid := Record{Revision: "revision", DetectorVersion: detectorVersion, Markers: []Marker{marker}, Suppressed: []string{"credits"}}
 	if err := validateRecords(map[string]Record{"item": valid}); err != nil {
 		t.Fatal(err)
 	}

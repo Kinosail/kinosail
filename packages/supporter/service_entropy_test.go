@@ -16,7 +16,7 @@ func TestPrepareLeavesStateUnchangedWhenEntropyFails(t *testing.T) {
 	t.Cleanup(func() { rand.Reader = previous })
 	state := State{}
 	prepared, err := (&Service{}).Prepare(state)
-	if !errors.Is(err, ErrUnavailable) || prepared.InstallationKey != "" || state.InstallationKey != "" {
+	if !errors.Is(err, errUnavailable) || prepared.InstallationKey != "" || state.InstallationKey != "" {
 		t.Fatalf("failed preparation created an installation identity: state=%+v err=%v", prepared, err)
 	}
 }

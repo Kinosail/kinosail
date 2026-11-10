@@ -25,7 +25,7 @@ const (
 
 var (
 	imageSubtitleCodecs        = []string{"hdmv_pgs_subtitle", "dvd_subtitle", "dvb_subtitle", "xsub"}
-	ErrImageSubtitleOCR        = errors.New("image subtitle text recognition is unavailable")
+	errImageSubtitleOCR        = errors.New("image subtitle text recognition is unavailable")
 	errImageSubtitleFrames     = errors.New("image subtitle frames are invalid")
 	errImageSubtitleUnreadable = errors.New("image subtitle has no readable text")
 )
@@ -92,11 +92,11 @@ func hasTextTwin(item library.Item, result Result, code string, forced bool) boo
 func (probe *Probe) ConvertImageSubtitles(ctx context.Context, item library.Item, streams []int, options ImageTextOptions) error {
 	recognized, data := probe.ocrLanguage(ctx, options)
 	if recognized == "" || !validFFmpegExecutable(options.FFmpeg) || len(streams) == 0 || len(streams) > imageSubtitleStreamLimit {
-		return ErrImageSubtitleOCR
+		return errImageSubtitleOCR
 	}
 	directory := filepath.Dir(embeddedSubtitlePath(options.CacheDir, item, streams[0]))
 	if directory == "." {
-		return ErrImageSubtitleOCR
+		return errImageSubtitleOCR
 	}
 	if err := os.MkdirAll(directory, 0o700); err != nil {
 		return err

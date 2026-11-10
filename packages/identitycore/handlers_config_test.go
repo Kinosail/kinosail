@@ -22,7 +22,7 @@ func TestDenialConfigurationRequiresEveryDependency(t *testing.T) {
 		config := valid
 		mutate(&config)
 		response := httptest.NewRecorder()
-		RespondDenial(response, request, OwnerRequired, config)
+		RespondDenial(response, request, ownerRequired, config)
 		if response.Code != http.StatusInternalServerError {
 			t.Fatalf("invalid denial dependency %d response = %d", index, response.Code)
 		}
@@ -95,7 +95,7 @@ func TestPasswordLoginConfigurationRequiresEveryDependency(t *testing.T) {
 		config := passwordConfig(record, true, nil, &signedIn, &audited)
 		mutate(&config)
 		response := httptest.NewRecorder()
-		PasswordLoginRequest(response, request, "", config)
+		passwordLoginRequest(response, request, "", config)
 		if response.Code != http.StatusInternalServerError || signedIn || audited {
 			t.Fatalf("invalid password dependency %d response=%d signedIn=%v audited=%v", index, response.Code, signedIn, audited)
 		}

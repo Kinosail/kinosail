@@ -39,7 +39,7 @@ type certificateCache struct {
 	flights  singleflight.Group
 }
 
-func CertificateClient(hostname, path string) func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
+func certificateClient(hostname, path string) func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
 	cache := &certificateCache{
 		hostname: hostname,
 		client:   &http.Client{Transport: unixTransport(path), Timeout: certificateFetchTimeout, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }},

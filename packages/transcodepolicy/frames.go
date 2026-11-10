@@ -74,7 +74,7 @@ func qsvDevice(device string) []string {
 	return []string{"-init_hw_device", "qsv=kino", "-filter_hw_device", "kino"}
 }
 
-func PixelFormat(options Settings) string {
+func pixelFormat(options Settings) string {
 	if options.OutputHDR == "hdr10" || options.OutputHDR == "hlg" {
 		return "yuv420p10le"
 	}
@@ -82,20 +82,20 @@ func PixelFormat(options Settings) string {
 }
 
 func surfaceFormat(options Settings) string {
-	if PixelFormat(options) == "yuv420p10le" {
+	if pixelFormat(options) == "yuv420p10le" {
 		return "p010le"
 	}
 	return "nv12"
 }
 
 func cudaFormat(options Settings) string {
-	if PixelFormat(options) == "yuv420p10le" {
+	if pixelFormat(options) == "yuv420p10le" {
 		return "p010le"
 	}
 	return "yuv420p"
 }
 
-func ColorArguments(options Settings) []string {
+func colorArguments(options Settings) []string {
 	if options.ToneMap {
 		return []string{"-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", "-color_range", "tv"}
 	}
@@ -117,7 +117,7 @@ func softwareFrameFilters(options Settings, width string) []string {
 	if options.ToneMap {
 		filters = append(filters, softwareToneMapFilters()...)
 	}
-	filters = append(filters, "scale=w="+width+":h='trunc(ow/dar/2)*2'", "setsar=1", "format="+PixelFormat(options))
+	filters = append(filters, "scale=w="+width+":h='trunc(ow/dar/2)*2'", "setsar=1", "format="+pixelFormat(options))
 	return filters
 }
 

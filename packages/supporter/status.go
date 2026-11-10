@@ -12,8 +12,8 @@ func (service *Service) Status(state State) Status {
 		status.AppID = service.app.ID
 	}
 	service.fillEmptyBadges(&status)
-	status.Monthly = service.badge(service.decodeGrant(state, state.Monthly, EditionMonthly, true))
-	status.Yearly = service.badge(service.decodeGrant(state, state.Yearly, EditionYearly, true))
+	status.Monthly = service.badge(service.decodeGrant(state, state.Monthly, editionMonthly, true))
+	status.Yearly = service.badge(service.decodeGrant(state, state.Yearly, editionYearly, true))
 	status.BadgeCase = service.badgeCase(state, patron, living)
 	status.BadgeCase.MonthlyLevel = earnedEditionLevel(state.MonthlyLevel, status.Monthly)
 	status.BadgeCase.YearlyLevel = earnedEditionLevel(state.YearlyLevel, status.Yearly)
@@ -82,7 +82,7 @@ func (service *Service) badge(decoded decodedGrant) *Badge {
 		Collection: cloneCollection(certificate.Collection),
 	}
 	if decoded.family == FamilyPatron {
-		badge.Edition = EditionOnce
+		badge.Edition = editionOnce
 	}
 	if decoded.family == FamilyLiving {
 		badge.ServiceMonths, badge.ServiceMarks = serviceMonths(certificate, service.now().UTC())
@@ -102,10 +102,10 @@ func (service *Service) badgeCase(state State, patron, living *Badge) BadgeCase 
 	if patron != nil {
 		patronLevel = max(patronLevel, patron.Rank)
 	}
-	if livingLevel < 0 || livingLevel > MaximumLevel {
+	if livingLevel < 0 || livingLevel > maximumLevel {
 		livingLevel = 0
 	}
-	if patronLevel < 0 || patronLevel > MaximumLevel {
+	if patronLevel < 0 || patronLevel > maximumLevel {
 		patronLevel = 0
 	}
 	level := min(livingLevel, patronLevel)
@@ -147,13 +147,13 @@ func (service *Service) CertificateForFamily(state State, family string) (Certif
 	if family == FamilyLiving {
 		grant = state.LivingStandard
 	}
-	if family == EditionMonthly {
+	if family == editionMonthly {
 		grant = state.Monthly
 	}
-	if family == EditionYearly {
+	if family == editionYearly {
 		grant = state.Yearly
 	}
-	if family == EditionOnce {
+	if family == editionOnce {
 		family = FamilyPatron
 	}
 	decoded := service.decodeGrant(state, grant, family, true)

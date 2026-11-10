@@ -38,7 +38,7 @@ func countedCertificateClient(t *testing.T, issue func(*tls.ClientHelloInfo) (*t
 		calls.Add(1)
 		return issue(hello)
 	}))
-	return CertificateClient("family.example", path), &calls
+	return certificateClient("family.example", path), &calls
 }
 
 func modernHello(t *testing.T, protocols ...string) *tls.ClientHelloInfo {

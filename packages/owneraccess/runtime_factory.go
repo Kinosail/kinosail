@@ -28,7 +28,7 @@ func OpenRuntime(config RuntimeConfig) *Manager {
 		return nil
 	}
 	tunnel, domain, token := tunnelCertificate(config)
-	manager, err := Open(Config{
+	manager, err := open(Config{
 		Directory: config.Directory,
 		Origin:    config.Origin,
 		Profile:   config.Profile,

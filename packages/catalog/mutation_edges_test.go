@@ -22,41 +22,41 @@ func TestListMutationErrorEdges(t *testing.T) {
 	if failed != 1 {
 		t.Fatal("web action did not use failure adapter")
 	}
-	if action := CreatePlaylist(listRequest("/", "name=Queue"), "viewer", func(string) (string, error) { return "", nil }, func(context.Context, string, string, ...string) error { return wantErr }); action.Status != http.StatusInternalServerError {
+	if action := createPlaylist(listRequest("/", "name=Queue"), "viewer", func(string) (string, error) { return "", nil }, func(context.Context, string, string, ...string) error { return wantErr }); action.Status != http.StatusInternalServerError {
 		t.Fatalf("named create error = %#v", action)
 	}
 	for _, document := range []func(string) (string, error){
 		func(string) (string, error) { return "Imported", wantErr },
 		func(string) (string, error) { return "bad/name", wantErr },
 	} {
-		if action := CreatePlaylist(listRequest("/", "document=data"), "viewer", document, func(context.Context, string, string, ...string) error { t.Fatal("unexpected create"); return nil }); action.Status != http.StatusBadRequest {
+		if action := createPlaylist(listRequest("/", "document=data"), "viewer", document, func(context.Context, string, string, ...string) error { t.Fatal("unexpected create"); return nil }); action.Status != http.StatusBadRequest {
 			t.Fatalf("document error = %#v", action)
 		}
 	}
-	if action := CreateSmartPlaylist(listRequest("/", "name=Queue&sort=title"), "viewer", func(context.Context, string, string, PlaylistRule) error { return wantErr }); action.Status != http.StatusBadRequest {
+	if action := createSmartPlaylist(listRequest("/", "name=Queue&sort=title"), "viewer", func(context.Context, string, string, PlaylistRule) error { return wantErr }); action.Status != http.StatusBadRequest {
 		t.Fatalf("smart create error = %#v", action)
 	}
 	invalidSmart := listRequest("/", "name=Queue&sort=title")
 	invalidSmart.Header.Set("Content-Type", "text/plain")
-	if action := CreateSmartPlaylist(invalidSmart, "viewer", func(context.Context, string, string, PlaylistRule) error { t.Fatal("unexpected create"); return nil }); action.Status != http.StatusBadRequest {
+	if action := createSmartPlaylist(invalidSmart, "viewer", func(context.Context, string, string, PlaylistRule) error { t.Fatal("unexpected create"); return nil }); action.Status != http.StatusBadRequest {
 		t.Fatalf("invalid smart form = %#v", action)
 	}
 	visible := func(string) (library.Item, bool) { return library.Item{ID: "item", Kind: "video"}, true }
 	playlistRequest := listRequest("/", "included=true")
 	playlistRequest.SetPathValue("name", "Queue")
 	playlistRequest.SetPathValue("id", "item")
-	if action := SavePlaylist(playlistRequest, "viewer", func(string) (library.Item, bool) { return library.Item{}, false }, func(context.Context, string, string, string, bool) error { t.Fatal("unexpected save"); return nil }); action.Status != http.StatusBadRequest {
+	if action := savePlaylist(playlistRequest, "viewer", func(string) (library.Item, bool) { return library.Item{}, false }, func(context.Context, string, string, string, bool) error { t.Fatal("unexpected save"); return nil }); action.Status != http.StatusBadRequest {
 		t.Fatalf("invisible playlist item = %#v", action)
 	}
-	if action := SavePlaylist(playlistRequest, "viewer", visible, func(context.Context, string, string, string, bool) error { return wantErr }); action.Status != http.StatusInternalServerError {
+	if action := savePlaylist(playlistRequest, "viewer", visible, func(context.Context, string, string, string, bool) error { return wantErr }); action.Status != http.StatusInternalServerError {
 		t.Fatalf("playlist save error = %#v", action)
 	}
-	if action := SavePlaylist(playlistRequest, "viewer", visible, func(context.Context, string, string, string, bool) error { return nil }); action.Redirect != "/watch/item" {
+	if action := savePlaylist(playlistRequest, "viewer", visible, func(context.Context, string, string, string, bool) error { return nil }); action.Redirect != "/watch/item" {
 		t.Fatalf("video playlist redirect = %#v", action)
 	}
 	deleteRequest := listRequest("/", "")
 	deleteRequest.SetPathValue("name", "Queue")
-	if action := DeletePlaylist(deleteRequest, "viewer", func(context.Context, string, string) error { return wantErr }); action.Status != http.StatusInternalServerError {
+	if action := deletePlaylist(deleteRequest, "viewer", func(context.Context, string, string) error { return wantErr }); action.Status != http.StatusInternalServerError {
 		t.Fatalf("playlist delete error = %#v", action)
 	}
 	listRequestValue := listRequest("/", "listed=true")
@@ -86,7 +86,7 @@ func TestListHandlerDocumentAndCollectionFailures(t *testing.T) {
 	wantErr := errors.New("failed")
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/collections", strings.NewReader(`{"name":"Queue"}`))
 	request.Header.Set("Content-Type", "application/json")
-	if action := CreateCollectionAPI(request, func(context.Context, string) error { return wantErr }); action.Status != http.StatusBadRequest || !errors.Is(action.Err, wantErr) {
+	if action := createCollectionAPI(request, func(context.Context, string) error { return wantErr }); action.Status != http.StatusBadRequest || !errors.Is(action.Err, wantErr) {
 		t.Fatalf("collection create failure = %#v", action)
 	}
 }
@@ -100,13 +100,13 @@ func TestListStorageAndProgressRemainingEdges(t *testing.T) {
 	loadErr := error(nil)
 	wantErr := errors.New("failed")
 	storage := ListStorage{Values: &values, Playlists: &playlists, PlaylistOrder: &order, Smart: &smart, Paths: ListPaths{Values: "lists.json"}, Persist: func(string, any) error { return wantErr }, LoadError: &loadErr}
-	if err := storage.Commit(t.Context(), CloneListState(nil, nil, nil, nil), ListedDocument); !errors.Is(err, wantErr) {
+	if err := storage.Commit(t.Context(), CloneListState(nil, nil, nil, nil), listedDocument); !errors.Is(err, wantErr) {
 		t.Fatalf("list commit error = %v", err)
 	}
-	if _, err := LoadListState(ListPaths{}, func(string, any) (bool, error) { return false, wantErr }); !errors.Is(err, wantErr) {
+	if _, err := loadListState(ListPaths{}, func(string, any) (bool, error) { return false, wantErr }); !errors.Is(err, wantErr) {
 		t.Fatalf("list load error = %v", err)
 	}
-	if _, err := LoadListState(ListPaths{}, func(_ string, target any) (bool, error) {
+	if _, err := loadListState(ListPaths{}, func(_ string, target any) (bool, error) {
 		if values, ok := target.(*map[string]bool); ok {
 			*values = map[string]bool{"": true}
 		}
@@ -123,10 +123,10 @@ func TestListStorageAndProgressRemainingEdges(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = database.Close() })
-	if err := CommitListState(t.Context(), database, ListPaths{}, nil, state, uint8(ListedDocument)); err != nil {
+	if err := commitListState(t.Context(), database, ListPaths{}, nil, state, uint8(listedDocument)); err != nil {
 		t.Fatalf("database list commit = %v", err)
 	}
-	if err := CommitListState(t.Context(), nil, ListPaths{Values: "lists.json"}, func(string, any) error { return wantErr }, state, uint8(ListedDocument)); !errors.Is(err, wantErr) {
+	if err := commitListState(t.Context(), nil, ListPaths{Values: "lists.json"}, func(string, any) error { return wantErr }, state, uint8(listedDocument)); !errors.Is(err, wantErr) {
 		t.Fatalf("file list commit = %v", err)
 	}
 	progress := map[string]PlaybackState{}
@@ -136,7 +136,7 @@ func TestListStorageAndProgressRemainingEdges(t *testing.T) {
 	if _, _, changed, err := progressStorage.Update("item", func(current PlaybackState) (PlaybackState, bool, error) { return current, false, nil }); err != nil || changed {
 		t.Fatalf("unchanged progress = %t, %v", changed, err)
 	}
-	if ValidateStoredProgress(nil) != nil || ValidateStoredProgress(map[string]PlaybackState{"": {}}) == nil {
+	if validateStoredProgress(nil) != nil || validateStoredProgress(map[string]PlaybackState{"": {}}) == nil {
 		t.Fatal("stored progress validation missed an edge")
 	}
 }
@@ -146,7 +146,7 @@ func TestStoredProgressRejectsExcessiveCardinality(t *testing.T) {
 	for index := 0; index <= 1_000_000; index++ {
 		values[strconv.Itoa(index)] = PlaybackState{}
 	}
-	if ValidateStoredProgress(values) == nil {
+	if validateStoredProgress(values) == nil {
 		t.Fatal("excessive progress cardinality was accepted")
 	}
 }

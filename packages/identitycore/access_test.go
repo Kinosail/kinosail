@@ -17,20 +17,20 @@ func TestEvaluateAccessPrecedence(t *testing.T) {
 		want   Denial
 	}{
 		{"allowed", func(*AccessInput) {}, Allowed},
-		{"remote Owner first", func(input *AccessInput) { input.Public, input.Owner, input.RecentlyAuthenticated = true, true, false }, OwnerRemoteDenied},
-		{"remote API key first", func(input *AccessInput) { input.Public, input.APIKey, input.RecentlyAuthenticated = true, true, false }, OwnerRemoteDenied},
-		{"strong authentication", func(input *AccessInput) { input.Public, input.RecentlyAuthenticated = true, false }, StrongAuthenticationRequired},
-		{"public session", func(input *AccessInput) { input.Public, input.PublicSession = true, false }, PublicSessionRequired},
-		{"remote route", func(input *AccessInput) { input.Public, input.RemoteRouteAllowed = true, false }, RemoteRouteDenied},
-		{"schedule", func(input *AccessInput) { input.ScheduleAllowed = false }, ViewerScheduleDenied},
-		{"API scope", func(input *AccessInput) { input.APIKey, input.APIKeyAllowed = true, false }, APIKeyScopeDenied},
+		{"remote Owner first", func(input *AccessInput) { input.Public, input.Owner, input.RecentlyAuthenticated = true, true, false }, ownerRemoteDenied},
+		{"remote API key first", func(input *AccessInput) { input.Public, input.APIKey, input.RecentlyAuthenticated = true, true, false }, ownerRemoteDenied},
+		{"strong authentication", func(input *AccessInput) { input.Public, input.RecentlyAuthenticated = true, false }, strongAuthenticationRequired},
+		{"public session", func(input *AccessInput) { input.Public, input.PublicSession = true, false }, publicSessionRequired},
+		{"remote route", func(input *AccessInput) { input.Public, input.RemoteRouteAllowed = true, false }, remoteRouteDenied},
+		{"schedule", func(input *AccessInput) { input.ScheduleAllowed = false }, viewerScheduleDenied},
+		{"API scope", func(input *AccessInput) { input.APIKey, input.APIKeyAllowed = true, false }, apiKeyScopeDenied},
 		{"API scope allowed", func(input *AccessInput) { input.APIKey = true }, Allowed},
 		{"MFA required", func(input *AccessInput) {
 			input.LocalOwner, input.MFARequired, input.Secured, input.EnrollmentRoute = false, true, false, false
-		}, MFAEnrollmentRequired},
+		}, mfaEnrollmentRequired},
 		{"Owner MFA required", func(input *AccessInput) {
 			input.LocalOwner, input.Owner, input.Secured, input.EnrollmentRoute = false, true, false, false
-		}, MFAEnrollmentRequired},
+		}, mfaEnrollmentRequired},
 		{"local Owner exemption", func(input *AccessInput) { input.Owner, input.Secured, input.EnrollmentRoute = true, false, false }, Allowed},
 		{"secured exemption", func(input *AccessInput) { input.LocalOwner, input.Owner, input.EnrollmentRoute = false, true, false }, Allowed},
 		{"enrollment exemption", func(input *AccessInput) { input.LocalOwner, input.MFARequired, input.Secured = false, true, false }, Allowed},
@@ -50,17 +50,17 @@ func TestEvaluateAccessPrecedence(t *testing.T) {
 
 func TestOwnerPolicyAndDenialPresentation(t *testing.T) {
 	t.Parallel()
-	if EvaluateOwner(false, true, true, true, true) != OwnerRequired {
+	if evaluateOwner(false, true, true, true, true) != ownerRequired {
 		t.Fatal("non-Owner was allowed")
 	}
-	if EvaluateOwner(true, false, false, false, false) != OwnerStepUpRequired {
+	if evaluateOwner(true, false, false, false, false) != ownerStepUpRequired {
 		t.Fatal("remote Owner without step-up was allowed")
 	}
 	for _, allowed := range []Denial{
-		EvaluateOwner(true, true, false, false, false),
-		EvaluateOwner(true, false, true, false, false),
-		EvaluateOwner(true, false, false, true, false),
-		EvaluateOwner(true, false, false, false, true),
+		evaluateOwner(true, true, false, false, false),
+		evaluateOwner(true, false, true, false, false),
+		evaluateOwner(true, false, false, true, false),
+		evaluateOwner(true, false, false, false, true),
 	} {
 		if allowed != Allowed {
 			t.Fatalf("Owner exemption denied: %v", allowed)
@@ -70,15 +70,15 @@ func TestOwnerPolicyAndDenialPresentation(t *testing.T) {
 		reason, message string
 		status          int
 	}{
-		OwnerRemoteDenied:            {"Owner and API key access unavailable remotely", "Owner access is available only on the local network or WireGuard", http.StatusForbidden},
-		StrongAuthenticationRequired: {"strong authentication required remotely", "strong authentication is required for public access", http.StatusForbidden},
-		PublicSessionRequired:        {"public session required remotely", "public sign-in is required for public access", http.StatusForbidden},
-		RemoteRouteDenied:            {"route unavailable remotely", "Owner access required", http.StatusNotFound},
-		ViewerScheduleDenied:         {"viewer access unavailable", "Viewer access is not available", http.StatusForbidden},
-		APIKeyScopeDenied:            {"API key scope", "API key scope does not allow this request", http.StatusForbidden},
-		MFAEnrollmentRequired:        {"MFA enrollment required", "MFA enrollment required", http.StatusForbidden},
-		OwnerRequired:                {"Owner access required", "Owner access required", http.StatusForbidden},
-		OwnerStepUpRequired:          {"Owner access required", "Owner access required", http.StatusForbidden},
+		ownerRemoteDenied:            {"Owner and API key access unavailable remotely", "Owner access is available only on the local network or WireGuard", http.StatusForbidden},
+		strongAuthenticationRequired: {"strong authentication required remotely", "strong authentication is required for public access", http.StatusForbidden},
+		publicSessionRequired:        {"public session required remotely", "public sign-in is required for public access", http.StatusForbidden},
+		remoteRouteDenied:            {"route unavailable remotely", "Owner access required", http.StatusNotFound},
+		viewerScheduleDenied:         {"viewer access unavailable", "Viewer access is not available", http.StatusForbidden},
+		apiKeyScopeDenied:            {"API key scope", "API key scope does not allow this request", http.StatusForbidden},
+		mfaEnrollmentRequired:        {"MFA enrollment required", "MFA enrollment required", http.StatusForbidden},
+		ownerRequired:                {"Owner access required", "Owner access required", http.StatusForbidden},
+		ownerStepUpRequired:          {"Owner access required", "Owner access required", http.StatusForbidden},
 		Allowed:                      {"Owner access required", "Owner access required", http.StatusNotFound},
 	}
 	for denial, want := range tests {
@@ -94,7 +94,7 @@ func TestOwnerPolicyAndDenialPresentation(t *testing.T) {
 
 func TestMFAAndAPIKeyPolicies(t *testing.T) {
 	t.Parallel()
-	if Secured("", 0) || !Secured("secret", 0) || !Secured("", 1) {
+	if secured("", 0) || !secured("secret", 0) || !secured("", 1) {
 		t.Fatal("secured profile policy changed")
 	}
 	for _, route := range []string{"GET /account", "POST /account/mfa/setup", "POST /account/mfa/enable", "POST /auth/passkeys/register/begin", "POST /auth/passkeys/register/finish", "POST /logout", "DELETE /api/v1/session", "GET /api/v1/me", "POST /api/v1/me/mfa/setup", "PUT /api/v1/me/mfa", "POST /api/v1/passkeys/register/begin", "POST /api/v1/passkeys/register/finish"} {
@@ -134,7 +134,7 @@ func TestMFAAndAPIKeyPolicies(t *testing.T) {
 		{nil, "GET /api/v1/library", false},
 	}
 	for _, test := range tests {
-		if got := AllowsAPI(test.scopes, test.pattern, routes); got != test.allowed {
+		if got := allowsAPI(test.scopes, test.pattern, routes); got != test.allowed {
 			t.Fatalf("AllowsAPI(%v, %q) = %v", test.scopes, test.pattern, got)
 		}
 	}

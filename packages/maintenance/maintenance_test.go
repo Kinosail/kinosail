@@ -68,7 +68,7 @@ func TestManagerDefaultsAreBounded(t *testing.T) {
 
 func TestNewBoundConnectsIdleWait(t *testing.T) {
 	var wait func(context.Context) error
-	manager := NewBound(canceledContext(t), time.Hour, 1, (&fixture{}).dependencies(), func(candidate func(context.Context) error) {
+	manager := newBound(canceledContext(t), time.Hour, 1, (&fixture{}).dependencies(), func(candidate func(context.Context) error) {
 		wait = candidate
 	})
 	if wait == nil {

@@ -135,7 +135,7 @@ func TestWorkerReportsExtractionFailureAndRecovery(t *testing.T) {
 func TestUnchangedScanDoesNotCompleteRunningAnalysis(t *testing.T) {
 	analyzer := NewAnalyzer(Config{})
 	items := movieItems(1)
-	analyzer.records[items[0].ID] = Record{Revision: mediaRevision(items[0]), DetectorVersion: DetectorVersion}
+	analyzer.records[items[0].ID] = Record{Revision: mediaRevision(items[0]), DetectorVersion: detectorVersion}
 	analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{Duration: 200} })
 	entered, release := make(chan struct{}), make(chan struct{})
 	analyzer.extractCredits = func(context.Context, library.Item, float64, float64) ([]byte, error) {
@@ -163,7 +163,7 @@ func TestStaleGeneratedMarkersWaitForReanalysisAndOwnerEditsDoNotMarkComplete(t 
 	item := movieItems(1)[0]
 	analyzer := NewAnalyzer(Config{})
 	analyzer.records[item.ID] = Record{
-		Revision: mediaRevision(item), DetectorVersion: DetectorVersion - 1,
+		Revision: mediaRevision(item), DetectorVersion: detectorVersion - 1,
 		Markers: []Marker{{Type: "intro", Label: "Intro", Start: 1, End: 30, Source: "fingerprint"}},
 	}
 	if got := analyzer.Markers(item, nil); len(got) != 0 {

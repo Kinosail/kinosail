@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	DefaultSubtitleCacheLimit = int64(5) << 30
-	DefaultDownloadCacheLimit = int64(10) << 30
+	defaultSubtitleCacheLimit = int64(5) << 30
+	defaultDownloadCacheLimit = int64(10) << 30
 )
 
 type CacheTrim struct {
@@ -27,13 +27,13 @@ func (trim CacheTrim) Run() error {
 	if trim.Now != nil {
 		now = trim.Now
 	}
-	subtitleLimit := positiveOr(trim.SubtitleLimit, DefaultSubtitleCacheLimit)
+	subtitleLimit := positiveOr(trim.SubtitleLimit, defaultSubtitleCacheLimit)
 	subtitles, subtitleErr := mediaprobe.TrimEmbeddedCache(trim.CacheDir, subtitleLimit, now())
 	logTrim("subtitles", subtitles.Groups+subtitles.Workspaces, subtitles.FreedBytes, subtitles.Bytes, subtitleLimit, subtitleErr)
 	if trim.Downloads == nil {
 		return subtitleErr
 	}
-	downloadLimit := positiveOr(trim.DownloadLimit, DefaultDownloadCacheLimit)
+	downloadLimit := positiveOr(trim.DownloadLimit, defaultDownloadCacheLimit)
 	prepared, downloadErr := trim.Downloads.Trim(downloadLimit, now())
 	logTrim("downloads", prepared.Removed, prepared.FreedBytes, prepared.Bytes, downloadLimit, downloadErr)
 	return errors.Join(subtitleErr, downloadErr)

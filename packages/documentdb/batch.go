@@ -89,7 +89,7 @@ func (store *Store) encodeBatch(batch Batch) (encodedBatch, error) {
 }
 
 func (store *Store) encodeEntries(name string, changes EntryChanges) (encodedEntries, error) {
-	if _, ok := store.allowed[name]; !ok || len(changes.Set)+len(changes.Delete) > EntryCountLimit {
+	if _, ok := store.allowed[name]; !ok || len(changes.Set)+len(changes.Delete) > entryCountLimit {
 		return encodedEntries{}, errors.New("unknown record document")
 	}
 	encoded := encodedEntries{set: make(map[string][]byte, len(changes.Set)), deleted: changes.Delete}
@@ -116,7 +116,7 @@ func (store *Store) entryValue(name, key string, value any) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(data) > EntrySizeLimit {
+	if len(data) > entrySizeLimit {
 		return nil, errors.New("invalid record value")
 	}
 	if store.config.Validate != nil {

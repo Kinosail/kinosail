@@ -1,4 +1,4 @@
-package validation
+package configurationcore
 
 import (
 	"errors"
@@ -56,17 +56,17 @@ func ValidSCIMToken(token string) bool {
 
 func ValidateSupporter(activationRaw, supportRaw string) error {
 	activation, err := url.Parse(activationRaw)
-	if err != nil || !ValidSupporterURL(activation, true) || activation.RawQuery != "" {
+	if err != nil || !validSupporterURL(activation, true) || activation.RawQuery != "" {
 		return errors.New("supporter.activation_url must be an absolute HTTPS URL without credentials or a fragment")
 	}
 	support, err := url.Parse(supportRaw)
-	if err != nil || !ValidSupporterURL(support, false) {
+	if err != nil || !validSupporterURL(support, false) {
 		return errors.New("supporter.url must be an absolute HTTPS URL without credentials or a fragment")
 	}
 	return nil
 }
 
-func ValidSupporterURL(candidate *url.URL, allowLoopbackHTTP bool) bool {
+func validSupporterURL(candidate *url.URL, allowLoopbackHTTP bool) bool {
 	if candidate == nil || candidate.Host == "" || candidate.User != nil || candidate.Fragment != "" {
 		return false
 	}

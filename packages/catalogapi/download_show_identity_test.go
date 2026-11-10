@@ -17,13 +17,13 @@ func TestEpisodeDownloadIdentityMatchesOrganizedShow(t *testing.T) {
 		t.Fatalf("shows = %v", shows)
 	}
 	for _, item := range items {
-		result := ProjectItem(item, catalog.PlaybackState{}, ItemAccess{})
+		result := projectItem(item, catalog.PlaybackState{}, ItemAccess{})
 		if result.ShowID != shows[0].ID || result.Size != item.Size || result.Download != "" {
 			t.Fatalf("episode projection = %#v", result)
 		}
 	}
 	for _, item := range []library.Item{{Kind: "video"}, {Kind: "audio", Show: "Example"}} {
-		if result := ProjectItem(item, catalog.PlaybackState{}, ItemAccess{}); result.ShowID != "" {
+		if result := projectItem(item, catalog.PlaybackState{}, ItemAccess{}); result.ShowID != "" {
 			t.Fatalf("non-episode has show ID: %#v", result)
 		}
 	}

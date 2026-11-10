@@ -18,7 +18,7 @@ func NewPolicy(owner bool, rating string, libraries []string) Policy {
 }
 
 func (policy Policy) Allows(item Item) bool {
-	return Allows(policy.Owner, policy.Rating, policy.Libraries, item)
+	return allows(policy.Owner, policy.Rating, policy.Libraries, item)
 }
 
 type VisibilityIndex interface {
@@ -32,7 +32,7 @@ func VisibleItem(index VisibilityIndex, id string, allow func(Item) bool) (Item,
 	return item, found && index.Safe(item.Path) && allow(item)
 }
 
-func Allows(owner bool, rating string, libraries []string, item Item) bool {
+func allows(owner bool, rating string, libraries []string, item Item) bool {
 	if !owner && !slices.Contains(libraries, "all") && !slices.Contains(libraries, item.Library) {
 		return false
 	}

@@ -103,7 +103,7 @@ func TestDiscoveryPrunesExpiredDevicesAndBoundsResults(t *testing.T) {
 	}
 	now = now.Add(time.Minute)
 	r.discover = func(context.Context) ([]Device, error) { return nil, errors.New("unavailable") }
-	if _, err := r.Discover(t.Context()); !errors.Is(err, ErrUnavailable) || r.scanning {
+	if _, err := r.Discover(t.Context()); !errors.Is(err, errUnavailable) || r.scanning {
 		t.Fatalf("failed scan=%v scanning=%v", err, r.scanning)
 	}
 }

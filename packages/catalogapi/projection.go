@@ -50,7 +50,7 @@ type ClientPerson struct {
 	Image string `json:"image,omitempty"`
 }
 
-func ProjectItem(item library.Item, progress catalog.PlaybackState, access ItemAccess) ClientItem {
+func projectItem(item library.Item, progress catalog.PlaybackState, access ItemAccess) ClientItem {
 	result := ClientItem{ID: item.ID, Kind: item.Kind, Title: item.Title, SortTitle: item.SortTitle, Year: item.Year, Plot: item.Plot, Rating: item.Rating, Tagline: item.Tagline, Genres: item.Genres, Director: item.Director, Studio: item.Studio, Artist: item.Artist, Album: item.Album, Track: item.Track, Show: item.Show, Season: item.Season, Episode: item.Episode, Subtitles: len(item.Subtitles), Container: item.Container, Size: item.Size, Added: item.Added, Cast: projectCast(item), Progress: progress}
 	if item.Kind == "video" && item.Show != "" {
 		result.ShowID = library.ShowID(item.Show)
@@ -73,7 +73,7 @@ func ProjectItem(item library.Item, progress catalog.PlaybackState, access ItemA
 
 func projectedArtwork(item library.Item) string {
 	if item.Artwork != "" {
-		return ArtworkURLForItem(item)
+		return artworkURLForItem(item)
 	}
 	if item.Kind == "video" && (item.Show != "" || item.Backdrop == "") {
 		return "/episode-art/" + item.ID
@@ -96,7 +96,7 @@ func projectCast(item library.Item) []ClientPerson {
 	return cast
 }
 
-func ArtworkURLForItem(item library.Item) string {
+func artworkURLForItem(item library.Item) string {
 	if item.Show != "" {
 		return "/art/" + item.ID + "?variant=episode"
 	}

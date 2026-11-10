@@ -99,7 +99,7 @@ func jellyfinSubtitleURL(item library.Item, index int, format, query string) str
 	if format != "srt" {
 		format = "vtt"
 	}
-	return "/Videos/" + JellyfinID(item.ID) + "/" + JellyfinID(item.ID) + "/Subtitles/" + strconv.Itoa(index) + "/Stream." + format + query
+	return "/Videos/" + jellyfinID(item.ID) + "/" + jellyfinID(item.ID) + "/Subtitles/" + strconv.Itoa(index) + "/Stream." + format + query
 }
 
 func subtitleCodecName(codec string) string {

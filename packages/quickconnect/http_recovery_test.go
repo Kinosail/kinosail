@@ -109,7 +109,7 @@ func TestApprovalCapacityRejectionDoesNotApproveDevice(t *testing.T) {
 	if err := fixture.application.approveRequest(request, pending.Code); !errors.Is(err, ErrCapacity) || approvalStatus(err) != http.StatusTooManyRequests {
 		t.Fatalf("approval capacity = %v", err)
 	}
-	if _, err := fixture.broker.Consume(secret); !errors.Is(err, ErrPending) {
+	if _, err := fixture.broker.Consume(secret); !errors.Is(err, errPending) {
 		t.Fatal("limited approval changed the grant")
 	}
 }

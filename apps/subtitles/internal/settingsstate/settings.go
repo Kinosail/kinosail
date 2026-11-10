@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	MaximumDocumentSize      = 1 << 20
+	maximumDocumentSize      = 1 << 20
 	MaximumSubtitleLanguages = 20
 )
 
@@ -95,7 +95,7 @@ func Parse(data []byte) (Preferences, error) {
 }
 
 func validateDocument(data []byte) (map[string]json.RawMessage, error) {
-	if len(data) > MaximumDocumentSize || !utf8.Valid(data) {
+	if len(data) > maximumDocumentSize || !utf8.Valid(data) {
 		return nil, errors.New("invalid installation settings")
 	}
 	fields, err := fields(data)

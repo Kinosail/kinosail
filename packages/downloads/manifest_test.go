@@ -20,7 +20,7 @@ import (
 
 func TestManifestSealsExactBlocksAndFinalPartialBlock(t *testing.T) {
 	t.Parallel()
-	content := append(bytes.Repeat([]byte{17}, int(ChunkSize)), []byte("last block")...)
+	content := append(bytes.Repeat([]byte{17}, int(chunkSize)), []byte("last block")...)
 	path := filepath.Join(t.TempDir(), "media.mp4")
 	if err := os.WriteFile(path, content, 0o600); err != nil {
 		t.Fatal(err)
@@ -57,9 +57,9 @@ func TestManifestRejectsInvalidMetadataAndEmptyAssets(t *testing.T) {
 	if _, err := sealManifestContext(t.Context(), path, "0123456789abcdef"); err == nil {
 		t.Fatal("empty file accepted")
 	}
-	good := Manifest{Version: 1, ID: "0123456789abcdef", Size: 1, SHA256: hex.EncodeToString(make([]byte, 32)), ChunkSize: ChunkSize, Chunks: []string{hex.EncodeToString(make([]byte, 32))}}
+	good := Manifest{Version: 1, ID: "0123456789abcdef", Size: 1, SHA256: hex.EncodeToString(make([]byte, 32)), ChunkSize: chunkSize, Chunks: []string{hex.EncodeToString(make([]byte, 32))}}
 	job := Job{ID: good.ID, Size: 1, SHA256: good.SHA256, File: path}
-	cases := []func(*Manifest){func(m *Manifest) { m.Version = 2 }, func(m *Manifest) { m.ID = "../bad" }, func(m *Manifest) { m.Size = 0 }, func(m *Manifest) { m.Size = ChunkSize*MaximumChunks + 1 }, func(m *Manifest) { m.ChunkSize = 1 }, func(m *Manifest) { m.Chunks = []string{"bad"} }, func(m *Manifest) { m.Chunks = nil }, func(m *Manifest) { m.SHA256 = "bad" }}
+	cases := []func(*Manifest){func(m *Manifest) { m.Version = 2 }, func(m *Manifest) { m.ID = "../bad" }, func(m *Manifest) { m.Size = 0 }, func(m *Manifest) { m.Size = chunkSize*maximumChunks + 1 }, func(m *Manifest) { m.ChunkSize = 1 }, func(m *Manifest) { m.Chunks = []string{"bad"} }, func(m *Manifest) { m.Chunks = nil }, func(m *Manifest) { m.SHA256 = "bad" }}
 	for _, mutate := range cases {
 		candidate := good
 		mutate(&candidate)
@@ -167,7 +167,7 @@ func TestTrackSelectionRejectsBeforeQueueAndPreservesSubtitles(t *testing.T) {
 
 func TestServeConditionalRangeUsesResponseIntegrity(t *testing.T) {
 	t.Parallel()
-	content := append(bytes.Repeat([]byte{17}, int(ChunkSize)), []byte("last block")...)
+	content := append(bytes.Repeat([]byte{17}, int(chunkSize)), []byte("last block")...)
 	path := filepath.Join(t.TempDir(), "media.mp4")
 	if err := os.WriteFile(path, content, 0o600); err != nil {
 		t.Fatal(err)

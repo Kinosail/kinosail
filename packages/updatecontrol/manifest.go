@@ -44,7 +44,7 @@ type Artifact struct {
 	Size   int64  `json:"size"`
 }
 
-func ParseManifest(input io.Reader) (Manifest, error) {
+func parseManifest(input io.Reader) (Manifest, error) {
 	var manifest Manifest
 	if httpguard.DecodeUniqueJSON(input, manifestLimit, &manifest) != nil || validateManifest(manifest) != nil {
 		return Manifest{}, errors.New("invalid release manifest")
@@ -72,7 +72,7 @@ func (manifest Manifest) Compatible(stateSchema, configurationSchema int) error 
 }
 
 func validateManifest(manifest Manifest) error {
-	if manifest.SchemaVersion != ManifestSchemaVersion || manifest.UpdateSchema != PlanSchemaVersion || !ValidReleaseVersion(manifest.Version) || !validSchemaRange(manifest.MinimumStateSchema, manifest.StateSchema) || !validSchemaRange(manifest.MinimumConfigurationSchema, manifest.ConfigurationSchema) || !slices.Equal(manifest.RuntimeCommands, []string{"ffmpeg", "ffprobe", "fpcalc"}) || !validInstallationContract(manifest.Installation) || len(manifest.Artifacts) != 6 {
+	if manifest.SchemaVersion != ManifestSchemaVersion || manifest.UpdateSchema != PlanSchemaVersion || !validReleaseVersion(manifest.Version) || !validSchemaRange(manifest.MinimumStateSchema, manifest.StateSchema) || !validSchemaRange(manifest.MinimumConfigurationSchema, manifest.ConfigurationSchema) || !slices.Equal(manifest.RuntimeCommands, []string{"ffmpeg", "ffprobe", "fpcalc"}) || !validInstallationContract(manifest.Installation) || len(manifest.Artifacts) != 6 {
 		return errors.New("invalid release manifest")
 	}
 	seen := make(map[string]bool, len(manifest.Artifacts))

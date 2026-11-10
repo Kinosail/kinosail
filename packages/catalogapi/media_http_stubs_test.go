@@ -28,7 +28,7 @@ func (stub *mediaProgressStub) ClientItems(_ *http.Request, items []library.Item
 	stub.itemsCalls++
 	result := make([]ClientItem, 0, len(items))
 	for _, item := range items {
-		result = append(result, ProjectItem(item, stub.state, ItemAccess{}))
+		result = append(result, projectItem(item, stub.state, ItemAccess{}))
 	}
 	return result
 }
@@ -66,7 +66,7 @@ func newMediaListsStub(items []library.Item) *mediaListsStub {
 	return &mediaListsStub{
 		names:    []string{"Queue"},
 		selected: items,
-		document: PlaylistDocument{Format: PlaylistDocumentFormat, Version: 1, Name: "Queue", IDs: []string{"movie"}},
+		document: PlaylistDocument{Format: playlistDocumentFormat, Version: 1, Name: "Queue", IDs: []string{"movie"}},
 	}
 }
 

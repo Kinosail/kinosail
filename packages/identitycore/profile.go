@@ -100,7 +100,7 @@ func FindProfile(profiles []Profile, id string) (Profile, bool) {
 	return Profile{}, false
 }
 
-func FederatedProfile(profile Profile) federation.Profile {
+func federatedProfile(profile Profile) federation.Profile {
 	return federation.Profile{
 		ID: profile.ID, SCIMExternalID: profile.SCIMExternalID,
 		OIDC:        federation.Identity{Issuer: profile.OIDCIssuer, Subject: profile.OIDCSubject},
@@ -109,7 +109,7 @@ func FederatedProfile(profile Profile) federation.Profile {
 	}
 }
 
-func ApplyFederatedIdentity(profile *Profile, protocol federation.Protocol, identity federation.Identity) {
+func applyFederatedIdentity(profile *Profile, protocol federation.Protocol, identity federation.Identity) {
 	if protocol == federation.SAMLProtocol {
 		profile.SAMLIssuer, profile.SAMLSubject = identity.Issuer, identity.Subject
 	} else {
@@ -117,14 +117,14 @@ func ApplyFederatedIdentity(profile *Profile, protocol federation.Protocol, iden
 	}
 }
 
-func (profile Profile) Secured() bool { return Secured(profile.TOTPSecret, len(profile.Passkeys)) }
+func (profile Profile) Secured() bool { return secured(profile.TOTPSecret, len(profile.Passkeys)) }
 
 func (profile Profile) Permits(scope string, allowed bool) bool {
 	return allowed && (!profile.APIKey || slices.Contains(profile.Scopes, scope))
 }
 
 func (profile Profile) AllowsAPI(pattern string, routes APIRoutes) bool {
-	return AllowsAPI(profile.Scopes, pattern, routes)
+	return allowsAPI(profile.Scopes, pattern, routes)
 }
 
 func (profile Profile) Allowed(public bool, now time.Time) bool {
@@ -172,7 +172,7 @@ func (policy ProfilePolicy) Valid() error {
 	return nil
 }
 
-func ApplyProfilePolicy(profile *Profile, policy ProfilePolicy) {
+func applyProfilePolicy(profile *Profile, policy ProfilePolicy) {
 	profile.Downloads, profile.Transcode, profile.Remote = policy.Downloads, policy.Transcode, policy.Remote
 	profile.Rating, profile.Libraries = normalizeRating(policy.Rating), slices.Clone(policy.Libraries)
 	profile.AccessStart, profile.AccessEnd = policy.AccessStart, policy.AccessEnd

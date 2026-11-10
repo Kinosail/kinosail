@@ -50,7 +50,7 @@ func (handlers MediaHandlers) playlist(writer http.ResponseWriter, request *http
 	query := request.URL.Query()
 	if len(query) > 0 {
 		values, ok := query["format"]
-		if !ok || len(values) != 1 || values[0] != PlaylistExportQuery {
+		if !ok || len(values) != 1 || values[0] != playlistExportQuery {
 			apiAction{err: errors.New("playlist format is invalid"), status: http.StatusBadRequest}.serve(writer)
 			return
 		}

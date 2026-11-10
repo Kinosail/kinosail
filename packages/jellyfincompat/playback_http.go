@@ -87,7 +87,7 @@ func (module PlaybackHTTP) PlaybackInfo(writer http.ResponseWriter, request *htt
 	}
 	sourcePolicy := module.SourcePolicy
 	sourcePolicy.SubtitleFormat = playback.JellyfinSubtitleFormat(input.DeviceProfile.SubtitleProfiles)
-	source, err := MediaSource(item, media.Facts, plan, sourcePolicy, playID, token)
+	source, err := mediaSource(item, media.Facts, plan, sourcePolicy, playID, token)
 	if err != nil {
 		http.Error(writer, "could not create playback session", http.StatusInternalServerError)
 		return
@@ -95,7 +95,7 @@ func (module PlaybackHTTP) PlaybackInfo(writer http.ResponseWriter, request *htt
 	JSON(writer, map[string]any{"MediaSources": []any{source}, "PlaySessionId": playID})
 }
 
-func MediaSource(item library.Item, facts playback.MediaFacts, plan playback.PlaybackPlan, policy MediaSourcePolicy, playID, token string) (map[string]any, error) {
+func mediaSource(item library.Item, facts playback.MediaFacts, plan playback.PlaybackPlan, policy MediaSourcePolicy, playID, token string) (map[string]any, error) {
 	if !validRequiredValue(playID, 256) || !validOptionalValue(token, 256) {
 		return nil, errors.New("jellyfin media source identity is invalid")
 	}
@@ -146,7 +146,7 @@ func (module PlaybackHTTP) ArtworkItem(request *http.Request, id string) (librar
 		return item, found
 	}
 	for _, episode := range show.Episodes {
-		if SeasonID(show.ID, episode.Season) == id && episode.Artwork != "" {
+		if seasonID(show.ID, episode.Season) == id && episode.Artwork != "" {
 			return episode, true
 		}
 	}

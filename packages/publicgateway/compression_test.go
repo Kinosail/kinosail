@@ -46,7 +46,7 @@ func TestGatewayPassesApplicationCompressionThroughUnchanged(t *testing.T) {
 			r.Header.Set("Accept-Encoding", encoding)
 		}
 		w := httptest.NewRecorder()
-		Handler("family.duckdns.org", path).ServeHTTP(w, r)
+		handler("family.duckdns.org", path).ServeHTTP(w, r)
 		body := w.Body.Bytes()
 		if encoding == "gzip" {
 			reader, err := gzip.NewReader(bytes.NewReader(body))

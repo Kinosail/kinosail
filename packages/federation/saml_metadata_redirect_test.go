@@ -161,7 +161,7 @@ func TestSAMLMetadataRedirectsBoundTargetsBeforeBegin(t *testing.T) {
 				}
 			}
 			directory := t.TempDir()
-			flow := NewSAML(SAMLConfig{MetadataURL: remote.URL + "/metadata", RootURL: "http://localhost", DataDir: directory})
+			flow := newSAML(SAMLConfig{MetadataURL: remote.URL + "/metadata", RootURL: "http://localhost", DataDir: directory})
 			if !flow.Configured() {
 				t.Fatal("fixture could not reach configured public Begin")
 			}

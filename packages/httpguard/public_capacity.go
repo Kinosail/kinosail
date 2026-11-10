@@ -25,7 +25,7 @@ type PublicCapacity struct {
 	waiting  map[string]int
 }
 
-func NewPublicCapacity() *PublicCapacity {
+func newPublicCapacity() *PublicCapacity {
 	return &PublicCapacity{released: make(chan struct{}), sources: make(map[string]int), prefixes: make(map[string]int), waiting: make(map[string]int)}
 }
 

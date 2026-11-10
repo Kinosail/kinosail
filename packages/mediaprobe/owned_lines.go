@@ -14,7 +14,7 @@ var errCopiedHLSIndex = errors.New("copied HLS timeline is unavailable")
 
 var ErrProbeLifecycle = errors.New("media probe lifecycle failed")
 
-var ErrProbeInputUnsupported = errors.New("owned media probe input is unsupported")
+var errProbeInputUnsupported = errors.New("owned media probe input is unsupported")
 
 type probeLoggerKey struct{}
 
@@ -31,7 +31,7 @@ func ProbeLines(parent context.Context, logger *slog.Logger, executable string, 
 
 func ProbeInputLines(parent context.Context, logger *slog.Logger, executable string, arguments []string, input io.Reader, maximumBytes int64, maximumLines int, visit func(string) error) error {
 	if input != nil && runtime.GOOS != "linux" && runtime.GOOS != "darwin" {
-		return ErrProbeInputUnsupported
+		return errProbeInputUnsupported
 	}
 	parent = context.WithValue(parent, probeLoggerKey{}, logger)
 	ctx, cancel, err := copiedHLSProbeContext(parent)

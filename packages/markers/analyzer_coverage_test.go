@@ -115,7 +115,7 @@ func TestChangedSeasonInvalidatesSiblingEpisodes(t *testing.T) {
 		{ID: "two", Kind: "video", Library: "TV", Show: "Show", Season: 1, Size: 2, Added: time.Unix(2, 0)},
 	}
 	analyzer := NewAnalyzer(Config{})
-	analyzer.records["two"] = Record{Revision: mediaRevision(items[1]), DetectorVersion: DetectorVersion}
+	analyzer.records["two"] = Record{Revision: mediaRevision(items[1]), DetectorVersion: detectorVersion}
 	changed := analyzer.changedItems(items)
 	if len(changed) != 2 {
 		t.Fatalf("changed season = %#v", changed)

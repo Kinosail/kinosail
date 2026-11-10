@@ -17,7 +17,7 @@ const (
 	playerBookHTML       = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>{{.Title}} · Kinosail Player</title><link rel="stylesheet" href="/static/app.css?v=cinema-1"><script src="/static/theme.js?v=cinema-1"></script></head><body class="detail-page"><main class="detail-shell"><a class="back" href="/?view=books">{{icon "back"}} Books</a><section class="media-hero">{{if .Artwork}}<img class="hero-poster" src="/art/{{.ID}}" alt="" loading="eager">{{else}}<div class="hero-poster art">{{icon "book"}}</div>{{end}}<div><span class="eyebrow">Book</span><h1>{{.Title}}</h1><p class="meta-line">{{.Container}}{{if .Year}} · {{.Year}}{{end}}</p>{{if .Plot}}<p>{{.Plot}}</p>{{end}}<div class="hero-actions"><a class="button" href="/read/{{.ID}}">Read now</a>{{if .CanDownload}}<a class="button quiet" href="/download/{{.ID}}">Download {{.Container}}</a>{{end}}<form action="/list/{{.ID}}" method="post"><button class="quiet" name="listed" value="{{if .Listed}}false{{else}}true{{end}}">{{if .Listed}}Remove from{{else}}Add to{{end}} My List</button></form></div></div></section>{{if or .Playlists .Collections}}<details class="curation-menu"><summary>Add to playlist or Collection</summary><div class="curation-options">{{if .Playlists}}<section><h2>Playlists</h2>{{range .Playlists}}<form action="/playlist/{{.Name}}/{{$.ID}}" method="post"><button name="included" value="{{if .Included}}false{{else}}true{{end}}" aria-label="{{if .Included}}Remove from{{else}}Add to{{end}} playlist · {{.Name}}"><span>{{.Name}}</span><small>{{if .Included}}Added{{else}}Add{{end}}</small></button></form>{{end}}</section>{{end}}{{if and .Owner .Collections}}<section><h2>Collections</h2>{{range .Collections}}<form action="/collection/{{.Name}}/{{$.ID}}" method="post"><button name="included" value="{{if .Included}}false{{else}}true{{end}}" aria-label="{{if .Included}}Remove from{{else}}Add to{{end}} Collection · {{.Name}}"><span>{{.Name}}</span><small>{{if .Included}}Added{{else}}Add{{end}}</small></button></form>{{end}}</section>{{end}}</div></details>{{end}}</main></body></html>`
 )
 
-var ErrInvalidDetailPresentation = errors.New("invalid detail presentation")
+var errInvalidDetailPresentation = errors.New("invalid detail presentation")
 
 type DetailPresentation struct {
 	Product, ThemeVersion, StyleVersion string
@@ -27,9 +27,9 @@ type DetailSources struct {
 	Album, Book string
 }
 
-func NewDetailSources(presentation DetailPresentation) (DetailSources, error) {
+func newDetailSources(presentation DetailPresentation) (DetailSources, error) {
 	if !validDetailPresentation(presentation) {
-		return DetailSources{}, ErrInvalidDetailPresentation
+		return DetailSources{}, errInvalidDetailPresentation
 	}
 	replacer := strings.NewReplacer(
 		"Kinosail Player", template.HTMLEscapeString(presentation.Product),
@@ -40,7 +40,7 @@ func NewDetailSources(presentation DetailPresentation) (DetailSources, error) {
 }
 
 func MustDetailSources(presentation DetailPresentation) DetailSources {
-	sources, err := NewDetailSources(presentation)
+	sources, err := newDetailSources(presentation)
 	if err != nil {
 		panic(err)
 	}

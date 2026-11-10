@@ -11,7 +11,7 @@ import (
 
 const ArtworkMaxAge = 6 * 30 * 24 * time.Hour
 
-func CurrentArtwork(cache, path string) string {
+func currentArtwork(cache, path string) string {
 	if _, current := currentArtworkInfo(cache, path); !current {
 		return ""
 	}

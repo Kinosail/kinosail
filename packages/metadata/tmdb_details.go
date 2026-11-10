@@ -15,7 +15,7 @@ type TMDBDetails struct {
 }
 
 func (provider TMDBDetails) TVMetadata(ctx context.Context, item library.Item, id int, name, date string, record *Record, poster *string) {
-	record.Title, record.Year = name, Year(date)
+	record.Title, record.Year = name, year(date)
 	if item.Episode == 0 {
 		return
 	}
@@ -32,7 +32,7 @@ func (provider TMDBDetails) TVMetadata(ctx context.Context, item library.Item, i
 	}
 	path := fmt.Sprintf("%s/tv/%d/season/%d/episode/%d", strings.TrimRight(provider.BaseURL, "/"), id, item.Season, item.Episode)
 	if provider.Fetch(ctx, path, &episode) == nil {
-		record.Title, record.Plot, record.Year = fmt.Sprintf("S%02dE%02d · %s", item.Season, item.Episode, episode.Name), episode.Overview, Year(episode.AirDate)
+		record.Title, record.Plot, record.Year = fmt.Sprintf("S%02dE%02d · %s", item.Season, item.Episode, episode.Name), episode.Overview, year(episode.AirDate)
 		if episode.StillPath != "" {
 			*poster = episode.StillPath
 		}

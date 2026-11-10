@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/catalog"
 )
 
-const MaximumSyncStateSize = 1 << 24
+const maximumSyncStateSize = 1 << 24
 
 const (
 	maximumSyncReadSize  = 16_777_217
@@ -22,7 +22,7 @@ const (
 	maximumSyncSeconds   = 31_622_400
 )
 
-func LoadSyncs(file string, normalize func(Input) (Input, error)) (map[string]Sync, error) {
+func loadSyncs(file string, normalize func(Input) (Input, error)) (map[string]Sync, error) {
 	reader, err := os.Open(file)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -35,7 +35,7 @@ func LoadSyncs(file string, normalize func(Input) (Input, error)) (map[string]Sy
 	if err != nil {
 		return nil, errors.New("viewing activity sync state could not be read")
 	}
-	if len(data) > MaximumSyncStateSize {
+	if len(data) > maximumSyncStateSize {
 		return nil, errors.New("viewing activity sync state could not be read")
 	}
 	decoder, syncs := json.NewDecoder(bytes.NewReader(data)), make(map[string]Sync)
@@ -55,10 +55,10 @@ func LoadSyncs(file string, normalize func(Input) (Input, error)) (map[string]Sy
 
 func normalizeSync(id string, sync Sync, normalize func(Input) (Input, error)) (Sync, error) {
 	input, inputErr := normalize(Input{Source: sync.Source, URL: sync.URL, Token: sync.Token, SourceUser: sync.SourceUser, ProfileID: sync.ProfileID})
-	if inputErr != nil || id != sync.ID || !ValidID(id) || !ValidSyncInterval(sync.Interval) {
+	if inputErr != nil || id != sync.ID || !ValidID(id) || !validSyncInterval(sync.Interval) {
 		return Sync{}, errors.New("viewing activity sync state is invalid")
 	}
-	if !withinMaximum(len(sync.Seen), maximumSyncItems) || !withinMaximum(len(sync.LastError), 1024) || !ValidSummary(sync.LastResult) || !ValidPending(sync.Pending) {
+	if !withinMaximum(len(sync.Seen), maximumSyncItems) || !withinMaximum(len(sync.LastError), 1024) || !validSummary(sync.LastResult) || !validPending(sync.Pending) {
 		return Sync{}, errors.New("viewing activity sync state is invalid")
 	}
 	for key, observation := range sync.Seen {
@@ -77,7 +77,7 @@ func validObservation(key string, observation Observation) bool {
 	return withinMaximum(len(observation.TargetID), 512) && withinMaximum(len(observation.Signature), 2048)
 }
 
-func ValidPending(pending *SyncPending) bool {
+func validPending(pending *SyncPending) bool {
 	if pending == nil {
 		return true
 	}
@@ -87,7 +87,7 @@ func ValidPending(pending *SyncPending) bool {
 	if !withinMaximum(len(pending.ListChanges), maximumSyncItems) {
 		return false
 	}
-	if !ValidSummary(pending.Summary) {
+	if !validSummary(pending.Summary) {
 		return false
 	}
 	return validPendingProgress(pending.Changes) && validPendingLists(pending.ListChanges)
@@ -126,7 +126,7 @@ func validPendingLists(changes []ListChange) bool {
 	return true
 }
 
-func ValidSummary(summary Summary) bool {
+func validSummary(summary Summary) bool {
 	values := []int{summary.SourceItems, summary.Activity, summary.Matched, summary.Importable, summary.Unchanged, summary.Ambiguous, summary.Unmatched, summary.Conflicts, summary.Favorites, summary.PlaylistItems, summary.Applied, summary.ListsApplied}
 	for _, value := range values {
 		if !validSyncCount(value) {
@@ -136,14 +136,14 @@ func ValidSummary(summary Summary) bool {
 	return true
 }
 
-func ValidSyncInterval(interval string) bool {
+func validSyncInterval(interval string) bool {
 	return interval == "15m" || interval == "1h" || interval == "6h" || interval == "24h"
 }
 
-func CloneSyncs(source map[string]Sync) map[string]Sync {
+func cloneSyncs(source map[string]Sync) map[string]Sync {
 	result := make(map[string]Sync, len(source))
 	for id, sync := range source {
-		sync.Seen = CloneObservations(sync.Seen)
+		sync.Seen = cloneObservations(sync.Seen)
 		if sync.Pending != nil {
 			pending := *sync.Pending
 			pending.Changes = slices.Clone(pending.Changes)
@@ -158,11 +158,11 @@ func CloneSyncs(source map[string]Sync) map[string]Sync {
 	return result
 }
 
-func CloneObservations(source map[string]Observation) map[string]Observation {
+func cloneObservations(source map[string]Observation) map[string]Observation {
 	return maps.Clone(source)
 }
 
-func SafeError(err error) string {
+func safeError(err error) string {
 	if err == nil {
 		return ""
 	}

@@ -14,18 +14,18 @@ import (
 )
 
 const (
-	Version             = "12.0.0"
+	version             = "12.0.0"
 	maxCredentialsBytes = 1 << 20
 )
 
 var (
-	ErrPublicPasswordLogin = errors.New("public password login is disabled; use Quick Connect")
-	ErrInvalidCredentials  = errors.New("invalid credentials")
-	ErrCredentialRateLimit = errors.New("too many login attempts")
-	ErrQuickConnectMFA     = errors.New("two-factor authentication requires Quick Connect")
-	ErrCreateSession       = errors.New("could not create session")
-	ErrViewerUnavailable   = errors.New("Viewer Profile is not available")
-	ErrPublicApproval      = errors.New("public Quick Connect approval is unavailable")
+	errPublicPasswordLogin = errors.New("public password login is disabled; use Quick Connect")
+	errInvalidCredentials  = errors.New("invalid credentials")
+	errCredentialRateLimit = errors.New("too many login attempts")
+	errQuickConnectMFA     = errors.New("two-factor authentication requires Quick Connect")
+	errCreateSession       = errors.New("could not create session")
+	errViewerUnavailable   = errors.New("Viewer Profile is not available")
+	errPublicApproval      = errors.New("public Quick Connect approval is unavailable")
 )
 
 var jellyfinPrefixes = []string{
@@ -75,8 +75,8 @@ func RegisterCore(mux *http.ServeMux, handlers CoreHandlers) {
 	mux.HandleFunc("GET /Users", handlers.Users)
 	mux.HandleFunc("POST /Auth/Keys", handlers.CreateAuthKey)
 	mux.HandleFunc("GET /Auth/Keys", handlers.AuthKeys)
-	mux.HandleFunc("POST /Sessions/Capabilities", Empty)
-	mux.HandleFunc("POST /Sessions/Capabilities/Full", Empty)
+	mux.HandleFunc("POST /Sessions/Capabilities", empty)
+	mux.HandleFunc("POST /Sessions/Capabilities/Full", empty)
 	mux.HandleFunc("POST /Sessions/Logout", handlers.Logout)
 }
 
@@ -89,9 +89,9 @@ func RegisterQuickConnect(mux *http.ServeMux, handlers QuickConnectHandlers) {
 	mux.HandleFunc("POST /Users/AuthenticateWithQuickConnect", handlers.Authenticate)
 }
 
-func SystemInfo(id, name, address string, configured bool) map[string]any {
+func systemInfo(id, name, address string, configured bool) map[string]any {
 	return map[string]any{
-		"Id": id, "ServerName": name, "Version": Version, "ProductName": "Jellyfin Server", "OperatingSystem": "Linux",
+		"Id": id, "ServerName": name, "Version": version, "ProductName": "Jellyfin Server", "OperatingSystem": "Linux",
 		"StartupWizardCompleted": configured, "LocalAddress": address,
 	}
 }
@@ -104,14 +104,14 @@ func UserDTO(user User) map[string]any {
 	}
 }
 
-func AuthenticationResult(authentication Authentication) map[string]any {
+func authenticationResult(authentication Authentication) map[string]any {
 	user := authentication.User
 	return map[string]any{"AccessToken": authentication.Token, "ServerId": user.ServerID, "User": UserDTO(user), "SessionInfo": map[string]any{"UserId": user.ID, "UserName": user.Name}}
 }
 
-func JSON(writer http.ResponseWriter, value any) { JSONStatus(writer, value, http.StatusOK) }
+func JSON(writer http.ResponseWriter, value any) { jsonStatus(writer, value, http.StatusOK) }
 
-func JSONStatus(writer http.ResponseWriter, value any, status int) {
+func jsonStatus(writer http.ResponseWriter, value any, status int) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.WriteHeader(status)
@@ -138,17 +138,17 @@ func Value(value any) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) { JSON(writer, value) }
 }
 
-func Empty(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusNoContent) }
+func empty(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusNoContent) }
 
 func PasswordAuthentication(public func(*http.Request) bool, login func(*http.Request, Credentials) (Authentication, error)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if public(request) {
-			passwordError(writer, ErrPublicPasswordLogin)
+			passwordError(writer, errPublicPasswordLogin)
 			return
 		}
 		credentials, valid := readCredentials(request)
 		if !valid {
-			http.Error(writer, ErrInvalidCredentials.Error(), http.StatusBadRequest)
+			http.Error(writer, errInvalidCredentials.Error(), http.StatusBadRequest)
 			return
 		}
 		authentication, err := login(request, credentials)
@@ -156,7 +156,7 @@ func PasswordAuthentication(public func(*http.Request) bool, login func(*http.Re
 			passwordError(writer, err)
 			return
 		}
-		JSON(writer, AuthenticationResult(authentication))
+		JSON(writer, authenticationResult(authentication))
 	}
 }
 
@@ -174,20 +174,20 @@ func readCredentials(request *http.Request) (Credentials, bool) {
 func passwordError(writer http.ResponseWriter, err error) {
 	status := http.StatusInternalServerError
 	switch {
-	case errors.Is(err, ErrPublicPasswordLogin), errors.Is(err, ErrQuickConnectMFA):
+	case errors.Is(err, errPublicPasswordLogin), errors.Is(err, errQuickConnectMFA):
 		status = http.StatusForbidden
-	case errors.Is(err, ErrInvalidCredentials):
+	case errors.Is(err, errInvalidCredentials):
 		status = http.StatusUnauthorized
-	case errors.Is(err, ErrCredentialRateLimit):
+	case errors.Is(err, errCredentialRateLimit):
 		writer.Header().Set("Retry-After", "60")
 		status = http.StatusTooManyRequests
 	default:
-		err = ErrCreateSession
+		err = errCreateSession
 	}
 	http.Error(writer, err.Error(), status)
 }
 
-func QuickConnectRequest(request *http.Request, remote bool) (quickconnect.Request, bool) {
+func quickConnectRequest(request *http.Request, remote bool) (quickconnect.Request, bool) {
 	device, deviceValid := strictMediaBrowserValue(request, "Device")
 	deviceID, deviceIDValid := strictMediaBrowserValue(request, "DeviceId")
 	client, clientValid := strictMediaBrowserValue(request, "Client")
@@ -200,7 +200,7 @@ func QuickConnectRequest(request *http.Request, remote bool) (quickconnect.Reque
 	return identity, deviceValid && deviceIDValid && clientValid && versionValid && device != "" && deviceID != "" && client != "" && version != ""
 }
 
-func QuickConnectDTO(secret string, pending quickconnect.Connection) map[string]any {
+func quickConnectDTO(secret string, pending quickconnect.Connection) map[string]any {
 	return map[string]any{
 		"Authenticated": pending.Approved, "Secret": secret, "Code": pending.Code, "DateAdded": pending.Created,
 		"DeviceId": pending.DeviceID, "DeviceName": pending.Device, "AppName": pending.Client, "AppVersion": pending.Version,
@@ -208,7 +208,7 @@ func QuickConnectDTO(secret string, pending quickconnect.Connection) map[string]
 }
 
 func StartQuickConnect(writer http.ResponseWriter, request *http.Request, connections *quickconnect.Broker, starts *httpguard.Limiter, remote bool) {
-	identity, valid := QuickConnectRequest(request, remote)
+	identity, valid := quickConnectRequest(request, remote)
 	if !valid {
 		http.Error(writer, "device identity is required", http.StatusBadRequest)
 		return
@@ -227,7 +227,7 @@ func StartQuickConnect(writer http.ResponseWriter, request *http.Request, connec
 		http.Error(writer, "could not create Quick Connect request", http.StatusInternalServerError)
 		return
 	}
-	JSON(writer, QuickConnectDTO(secret, pending))
+	JSON(writer, quickConnectDTO(secret, pending))
 }
 
 func QuickConnectStatus(writer http.ResponseWriter, request *http.Request, connections *quickconnect.Broker, polls *httpguard.Limiter) {
@@ -236,7 +236,7 @@ func QuickConnectStatus(writer http.ResponseWriter, request *http.Request, conne
 		http.Error(writer, "too many Quick Connect polls", http.StatusTooManyRequests)
 		return
 	}
-	secret, valid := StrictQuery(request.URL.Query(), "secret", 128)
+	secret, valid := strictQuery(request.URL.Query(), "secret", 128)
 	if !valid || !validQuickConnectSecret(secret) {
 		http.NotFound(writer, request)
 		return
@@ -246,10 +246,10 @@ func QuickConnectStatus(writer http.ResponseWriter, request *http.Request, conne
 		http.NotFound(writer, request)
 		return
 	}
-	JSON(writer, QuickConnectDTO(secret, pending))
+	JSON(writer, quickConnectDTO(secret, pending))
 }
 
-func AuthenticateQuickConnect(writer http.ResponseWriter, request *http.Request, polls *httpguard.Limiter, authenticate func(string) (Authentication, error)) {
+func authenticateQuickConnect(writer http.ResponseWriter, request *http.Request, polls *httpguard.Limiter, authenticate func(string) (Authentication, error)) {
 	if !polls.Allow(httpguard.RemoteHost(request.RemoteAddr), 120) {
 		writer.Header().Set("Retry-After", "60")
 		http.Error(writer, "too many Quick Connect polls", http.StatusTooManyRequests)
@@ -257,7 +257,7 @@ func AuthenticateQuickConnect(writer http.ResponseWriter, request *http.Request,
 	}
 	var input struct{ Secret string }
 	if err := httpguard.DecodeRequestJSON(writer, request, &input); err != nil {
-		JSONStatus(writer, map[string]string{"error": err.Error()}, http.StatusBadRequest)
+		jsonStatus(writer, map[string]string{"error": err.Error()}, http.StatusBadRequest)
 		return
 	}
 	if !validQuickConnectSecret(input.Secret) {
@@ -269,14 +269,14 @@ func AuthenticateQuickConnect(writer http.ResponseWriter, request *http.Request,
 		http.NotFound(writer, request)
 		return
 	}
-	JSON(writer, AuthenticationResult(authentication))
+	JSON(writer, authenticationResult(authentication))
 }
 
-func WriteQuickConnectApproval(writer http.ResponseWriter, request *http.Request, err error) {
+func writeQuickConnectApproval(writer http.ResponseWriter, request *http.Request, err error) {
 	switch {
 	case err == nil:
 		JSON(writer, true)
-	case errors.Is(err, ErrViewerUnavailable), errors.Is(err, quickconnect.ErrRemoteViewer):
+	case errors.Is(err, errViewerUnavailable), errors.Is(err, quickconnect.ErrRemoteViewer):
 		http.Error(writer, err.Error(), http.StatusForbidden)
 	default:
 		http.NotFound(writer, request)

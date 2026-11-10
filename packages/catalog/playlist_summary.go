@@ -26,7 +26,7 @@ func (storage ListStorage) PlaylistSummaries(viewer string, items []library.Item
 		rule, smart := storage.PlaylistRule(viewer, name)
 		summary := PlaylistSummary{Name: name, ItemCount: len(members), ArtworkIDs: []string{}, Mode: "Manual"}
 		if smart {
-			summary.Mode, summary.Rule = "Smart", DescribePlaylistRule(rule)
+			summary.Mode, summary.Rule = "Smart", describePlaylistRule(rule)
 		}
 		summary.Preview, summary.ArtworkIDs = summaryPreview(members)
 		summaries = append(summaries, summary)
@@ -39,7 +39,7 @@ func (storage ListStorage) PlaylistRule(viewer, name string) (PlaylistRule, bool
 	return rule, found
 }
 
-func DescribePlaylistRule(rule PlaylistRule) string {
+func describePlaylistRule(rule PlaylistRule) string {
 	parts := make([]string, 0, 2)
 	if rule.Query != "" {
 		parts = append(parts, fmt.Sprintf("matching %q", rule.Query))

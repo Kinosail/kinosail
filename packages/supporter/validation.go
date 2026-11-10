@@ -24,7 +24,7 @@ var (
 	tiers               = []string{"friend", "crew", "navigator", "patron", "steward", "lighthouse", "commodore", "admiral", "northstar", "legacy"}
 )
 
-func ValidKey(value string) bool { return keyPattern.MatchString(value) }
+func validKey(value string) bool { return keyPattern.MatchString(value) }
 
 func Tiers() []string { return slices.Clone(tiers) }
 
@@ -40,7 +40,7 @@ func ValidEndpoint(value string, allowLoopbackHTTP bool) bool {
 	return allowLoopbackHTTP && parsed.Scheme == "http" && (parsed.Hostname() == "localhost" || ip != nil && ip.IsLoopback())
 }
 
-func ValidRecognitionName(value string, requireValue bool) bool {
+func validRecognitionName(value string, requireValue bool) bool {
 	if value == "" {
 		return !requireValue
 	}

@@ -48,11 +48,11 @@ func (handler api) start(writer http.ResponseWriter, request *http.Request) {
 	job, err := handler.manager.StartSelected(profileID, item, input.Quality, input.Tracks)
 	if err != nil {
 		status := http.StatusBadRequest
-		if errors.Is(err, ErrQueueFull) {
+		if errors.Is(err, errQueueFull) {
 			status = http.StatusServiceUnavailable
 			writer.Header().Set("Retry-After", "15")
 		}
-		if errors.Is(err, ErrCapacity) {
+		if errors.Is(err, errCapacity) {
 			status = http.StatusConflict
 		}
 		writeError(writer, err, status)
@@ -155,7 +155,7 @@ func (handler api) manifest(writer http.ResponseWriter, request *http.Request) {
 	}
 	manifest, err := handler.manager.ManifestContext(request.Context(), profile, request.PathValue("id"))
 	if err != nil {
-		if errors.Is(err, ErrQueueFull) {
+		if errors.Is(err, errQueueFull) {
 			writer.Header().Set("Retry-After", "15")
 			writeError(writer, err, http.StatusServiceUnavailable)
 			return

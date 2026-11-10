@@ -1,9 +1,9 @@
 package server
 
-import "github.com/MikeO7/kinosail/packages/hlsmanifest"
+import "github.com/MikeO7/kinosail/packages/playback"
 
 func hlsSkipInput(arguments []string, directory, path string, duration float64, recipe hlsRecipe) ([]string, string, error) {
-	concat, err := hlsmanifest.WriteSkipConcat(directory, path, duration, recipe.omitted)
+	concat, err := playback.WriteSkipConcat(directory, path, duration, recipe.omitted)
 	if err != nil {
 		return nil, "", err
 	}

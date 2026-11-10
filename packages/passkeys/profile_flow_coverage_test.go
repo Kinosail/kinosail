@@ -49,16 +49,16 @@ func TestProfileFlowFinishesLoginOutcomes(t *testing.T) {
 	}
 	setResult(nil, errors.New("invalid response"))
 	flow.FinishLogin(httptest.NewRecorder(), request)
-	setResult(NewUser(flowProfile{ID: "owner", Owner: true, Remote: true}, "owner", "Owner", nil), nil)
+	setResult(newUser(flowProfile{ID: "owner", Owner: true, Remote: true}, "owner", "Owner", nil), nil)
 	fixture.public = true
 	response := httptest.NewRecorder()
 	flow.FinishLogin(response, request)
 	if response.Code != http.StatusForbidden {
 		t.Fatalf("public owner = %d", response.Code)
 	}
-	setResult(NewUser(flowProfile{ID: "viewer"}, "viewer", "Viewer", nil), nil)
+	setResult(newUser(flowProfile{ID: "viewer"}, "viewer", "Viewer", nil), nil)
 	flow.FinishLogin(httptest.NewRecorder(), request)
-	setResult(NewUser(flowProfile{ID: "viewer", Remote: true}, "viewer", "Viewer", nil), nil)
+	setResult(newUser(flowProfile{ID: "viewer", Remote: true}, "viewer", "Viewer", nil), nil)
 	flow.config.UpdateCredential = func(string, *webauthn.Credential) error { return errors.New("save failed") }
 	flow.FinishLogin(httptest.NewRecorder(), request)
 	flow.config.UpdateCredential = func(string, *webauthn.Credential) error { return nil }

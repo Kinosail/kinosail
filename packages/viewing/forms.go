@@ -11,7 +11,7 @@ import (
 
 const maximumFormBytes = 1 << 20
 
-var ErrPreviewRender = errors.New("viewing activity preview failed")
+var errPreviewRender = errors.New("viewing activity preview failed")
 
 type WebPreviewPage struct {
 	BackPath, BackLabel, Step, ApplyPath string
@@ -23,7 +23,7 @@ type WebPreview struct {
 	WebPreviewPage
 }
 
-func PreviewPage(path string) WebPreviewPage {
+func previewPage(path string) WebPreviewPage {
 	if path == "/onboarding/viewing-imports/preview" {
 		return WebPreviewPage{BackPath: "/onboarding/migrate", BackLabel: "Connection", Step: "Step 4 of 4", ApplyPath: "/onboarding/viewing-imports/apply"}
 	}
@@ -31,19 +31,19 @@ func PreviewPage(path string) WebPreviewPage {
 }
 
 func ServeWebPreview(ctx context.Context, writer http.ResponseWriter, request *http.Request, preview func(context.Context, Input) (Preview, error), render func(WebPreview) error) (int, error) {
-	result, status, err := PreviewForm(ctx, request, preview)
+	result, status, err := previewForm(ctx, request, preview)
 	if err != nil {
 		return status, err
 	}
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	writer.Header().Set("Cache-Control", "no-store")
-	if err := render(WebPreview{result, PreviewPage(request.URL.Path)}); err != nil {
-		return http.StatusInternalServerError, ErrPreviewRender
+	if err := render(WebPreview{result, previewPage(request.URL.Path)}); err != nil {
+		return http.StatusInternalServerError, errPreviewRender
 	}
 	return http.StatusOK, nil
 }
 
-func ParseImportForm(request *http.Request) (Input, error) {
+func parseImportForm(request *http.Request) (Input, error) {
 	if err := parseForm(request, "source", "url", "token", "sourceUser", "profileId", "overwriteExisting"); err != nil {
 		return Input{}, errors.New("invalid viewing import form")
 	}
@@ -64,8 +64,8 @@ func ParseImportForm(request *http.Request) (Input, error) {
 	return Input{Source: source, URL: endpoint, Token: token, SourceUser: sourceUser, ProfileID: profileID, Overwrite: overwrite == "true"}, nil
 }
 
-func PreviewForm(ctx context.Context, request *http.Request, preview func(context.Context, Input) (Preview, error)) (Preview, int, error) {
-	input, err := ParseImportForm(request)
+func previewForm(ctx context.Context, request *http.Request, preview func(context.Context, Input) (Preview, error)) (Preview, int, error) {
+	input, err := parseImportForm(request)
 	if err != nil {
 		return Preview{}, http.StatusBadRequest, err
 	}

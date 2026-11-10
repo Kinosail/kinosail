@@ -21,7 +21,7 @@ func ProgressRevision(seconds float64, watched *bool, session string, revision u
 	}
 }
 
-func ProgressAudit(previous, state PlaybackState, seconds float64, watched *bool, accepted bool, err error) (started, completed bool) {
+func progressAudit(previous, state PlaybackState, seconds float64, watched *bool, accepted bool, err error) (started, completed bool) {
 	if err != nil || !accepted {
 		return false, false
 	}

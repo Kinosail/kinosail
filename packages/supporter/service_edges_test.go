@@ -16,7 +16,7 @@ func TestServiceDefaultsAndPreparationFailurePaths(t *testing.T) {
 		t.Fatal("safe HTTP client defaults changed")
 	}
 	invalid := State{InstallationKey: "invalid"}
-	if next, err := service.Prepare(invalid); !errors.Is(err, ErrInvalid) || !reflect.DeepEqual(next, invalid) {
+	if next, err := service.Prepare(invalid); !errors.Is(err, errInvalid) || !reflect.DeepEqual(next, invalid) {
 		t.Fatalf("Prepare(invalid) = %#v, %v", next, err)
 	}
 }
@@ -25,10 +25,10 @@ func TestActivationPreconditionsCauseNoNetworkOrStateChange(t *testing.T) {
 	service := testServiceAt(t, App{}, testNow())
 	state := State{}
 	next, _, err := service.Activate(context.Background(), state, ActivationInput{Key: "VALID_SUPPORTER_KEY"})
-	if !errors.Is(err, ErrUnavailable) || !reflect.DeepEqual(next, state) {
+	if !errors.Is(err, errUnavailable) || !reflect.DeepEqual(next, state) {
 		t.Fatalf("unconfigured activation = %#v, %v", next, err)
 	}
-	if _, _, _, ok := service.prepareActivation(State{LivingLevel: MaximumLevel + 1}, "VALID_SUPPORTER_KEY"); ok {
+	if _, _, _, ok := service.prepareActivation(State{LivingLevel: maximumLevel + 1}, "VALID_SUPPORTER_KEY"); ok {
 		t.Fatal("out-of-range saved level was prepared")
 	}
 	if _, _, _, ok := service.prepareActivation(State{InstallationKey: "invalid"}, "VALID_SUPPORTER_KEY"); ok {
@@ -37,7 +37,7 @@ func TestActivationPreconditionsCauseNoNetworkOrStateChange(t *testing.T) {
 	service.endpoint = "https://activation.example"
 	malformed := State{InstallationKey: "invalid"}
 	next, _, err = service.Activate(context.Background(), malformed, ActivationInput{Key: "VALID_SUPPORTER_KEY"})
-	if !errors.Is(err, ErrInvalid) || !reflect.DeepEqual(next, malformed) {
+	if !errors.Is(err, errInvalid) || !reflect.DeepEqual(next, malformed) {
 		t.Fatalf("malformed saved activation = %#v, %v", next, err)
 	}
 }
@@ -49,7 +49,7 @@ func TestActivationOutputRejectsIdentityBeforeChangingState(t *testing.T) {
 		t.Fatal(err)
 	}
 	next, grant, decoded, validationErr := service.validateActivationOutput(state, state, activationResponse{ActivationID: "invalid"}, "", hashKey("VALID_SUPPORTER_KEY"), nil)
-	if !errors.Is(validationErr, ErrInvalid) || grant != nil || decoded.valid || !reflect.DeepEqual(next, state) {
+	if !errors.Is(validationErr, errInvalid) || grant != nil || decoded.valid || !reflect.DeepEqual(next, state) {
 		t.Fatalf("invalid output = %#v, %#v, %#v, %v", next, grant, decoded, validationErr)
 	}
 	if acceptsPublicKey(State{PublicKey: "saved"}, "different") {
@@ -63,7 +63,7 @@ func TestNonRejectingAppKeepsHigherPatronWithoutMutation(t *testing.T) {
 	installation := base64.RawURLEncoding.EncodeToString(make([]byte, 32))
 	value := currentCertificateValue(now, installation)
 	existing := legacySignedGrant(t, value)
-	state := State{InstallationKey: installation, PatronOrder: &existing, PatronLevel: MaximumLevel}
+	state := State{InstallationKey: installation, PatronOrder: &existing, PatronLevel: maximumLevel}
 	grant := Grant{ActivationID: "00000000-0000-4000-8000-000000000011"}
 	decoded := decodedGrant{certificate: Certificate{Tier: "friend"}, family: FamilyPatron, valid: true}
 	next, _, err := service.applyActivation(state, cloneState(state), &grant, decoded)

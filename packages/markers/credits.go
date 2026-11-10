@@ -42,7 +42,7 @@ func (analyzer *Analyzer) visualCredits(ctx context.Context, item library.Item, 
 	}
 	path := filepath.Join(analyzer.cache, item.ID+"-credits.json")
 	var cached creditFile
-	if analyzer.cache != "" && readCache(path, &cached) && cached.Revision == mediaRevision(item) && cached.Version == DetectorVersion && validCachedCredits(cached.Markers) {
+	if analyzer.cache != "" && readCache(path, &cached) && cached.Revision == mediaRevision(item) && cached.Version == detectorVersion && validCachedCredits(cached.Markers) {
 		return cached.Markers, nil
 	}
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Minute)
@@ -69,7 +69,7 @@ func (analyzer *Analyzer) visualCredits(ctx context.Context, item library.Item, 
 	}
 	markers := creditMarkers(points, duration-window, duration)
 	if analyzer.cache != "" {
-		_ = saveJSON(path, creditFile{Revision: mediaRevision(item), Version: DetectorVersion, Markers: markers})
+		_ = saveJSON(path, creditFile{Revision: mediaRevision(item), Version: detectorVersion, Markers: markers})
 	}
 	return markers, nil
 }

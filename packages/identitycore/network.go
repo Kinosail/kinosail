@@ -34,7 +34,7 @@ func AllowedResolvedAddress(addresses []net.IP, allowed func(net.IP) bool) (net.
 		return nil, errors.New("outbound host returned no addresses")
 	}
 	if allowed == nil {
-		return nil, ErrInvalidConfig
+		return nil, errInvalidConfig
 	}
 	for _, address := range addresses {
 		if !allowed(address) {

@@ -51,7 +51,7 @@ func (manager *Manager) prepareJob(profileID string, item library.Item, quality 
 	full := !known && len(manager.jobs) >= maximumJobs
 	manager.mu.RUnlock()
 	if full {
-		return Job{}, ErrCapacity
+		return Job{}, errCapacity
 	}
 	if quality != "original" && item.Kind == "video" {
 		if manager.inspect == nil {
@@ -87,7 +87,7 @@ func (manager *Manager) reserveJob(job Job) (Job, *attempt, error) {
 	}
 	if _, known := manager.jobs[job.ID]; !known && len(manager.jobs) >= maximumJobs {
 		manager.mu.Unlock()
-		return Job{}, nil, ErrCapacity
+		return Job{}, nil, errCapacity
 	}
 	if err := manager.ctx.Err(); err != nil {
 		manager.mu.Unlock()
@@ -97,7 +97,7 @@ func (manager *Manager) reserveJob(job Job) (Job, *attempt, error) {
 	case manager.pending <- struct{}{}:
 	default:
 		manager.mu.Unlock()
-		return Job{}, nil, ErrQueueFull
+		return Job{}, nil, errQueueFull
 	}
 	if err := os.MkdirAll(manager.root, 0o700); err != nil {
 		manager.mu.Unlock()

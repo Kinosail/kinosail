@@ -107,7 +107,7 @@ func (module DeliveryHTTP) serveExplicitHLS(writer http.ResponseWriter, request 
 			http.Error(writer, "transcoding is not allowed", http.StatusForbidden)
 			return true
 		}
-		value, valid := StrictQuery(request.URL.Query(), "playbackPlan", 2048)
+		value, valid := strictQuery(request.URL.Query(), "playbackPlan", 2048)
 		recipe, err := playback.ParseHLSRecipe(value, module.Policy.HLS)
 		if !valid || err != nil {
 			http.NotFound(writer, request)

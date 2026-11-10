@@ -92,17 +92,17 @@ func (loader Loader) yamlValue(name string, item any) (string, error) {
 	case string:
 		return value, nil
 	case bool:
-		if !known || field.Kind != Boolean {
+		if !known || field.Kind != boolean {
 			return invalid()
 		}
 		return strconv.FormatBool(value), nil
 	case int:
-		if !known || field.Kind != Number {
+		if !known || field.Kind != number {
 			return invalid()
 		}
 		return strconv.Itoa(value), nil
 	case []any:
-		if !known || field.Kind != List {
+		if !known || field.Kind != list {
 			return invalid()
 		}
 		values := make([]string, len(value))

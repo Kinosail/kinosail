@@ -166,7 +166,7 @@ func (browse Browse) ApplyAccess(ctx context.Context, items []*library.Item, acc
 	var err error
 	if browse.view == "history" {
 		candidates, err = itemCandidates(ctx, items, access.Visible, func(id string) (bool, PlaybackState) {
-			return false, ProfileProgress(*access.Progress, access.ProfileID, access.Owner, id)
+			return false, profileProgress(*access.Progress, access.ProfileID, access.Owner, id)
 		})
 	} else {
 		references, facets, err = browse.accessItems(ctx, items, access)
@@ -203,7 +203,7 @@ func (browse Browse) accessItems(ctx context.Context, items []*library.Item, acc
 		case "list":
 			candidate.Listed = (*access.Listed)[access.ProfileID+":"+item.ID]
 		case "unwatched":
-			candidate.Watched = ProfileProgress(*access.Progress, access.ProfileID, access.Owner, item.ID).Watched
+			candidate.Watched = profileProgress(*access.Progress, access.ProfileID, access.Owner, item.ID).Watched
 		}
 		if !viewMatches(candidate, browse.view) {
 			continue
@@ -212,7 +212,7 @@ func (browse Browse) accessItems(ctx context.Context, items []*library.Item, acc
 		if browse.filters.intrinsic() && !browse.filters.matches(item) {
 			continue
 		}
-		if browse.filters.Watched != "" && !browse.filters.matchesWatched(ProfileProgress(*access.Progress, access.ProfileID, access.Owner, item.ID).Watched) {
+		if browse.filters.Watched != "" && !browse.filters.matchesWatched(profileProgress(*access.Progress, access.ProfileID, access.Owner, item.ID).Watched) {
 			continue
 		}
 		selected = append(selected, item)

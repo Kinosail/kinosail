@@ -40,8 +40,8 @@ func NewProfileStore[T, S, K any](config ProfileStoreConfig[T, S, K]) *ProfileSt
 }
 
 func (store *ProfileStore[T, S, K]) Discover(rawID, userHandle []byte) (webauthn.User, error) {
-	if err := ValidateLookup(rawID, userHandle); err != nil || !store.valid() {
-		return nil, ErrInvalidCredential
+	if err := validateLookup(rawID, userHandle); err != nil || !store.valid() {
+		return nil, errInvalidCredential
 	}
 	store.config.Mutex.RLock()
 	defer store.config.Mutex.RUnlock()
@@ -49,22 +49,22 @@ func (store *ProfileStore[T, S, K]) Discover(rawID, userHandle []byte) (webauthn
 		profile := &(*store.config.Profiles)[index]
 		if store.config.Access.ID(profile) == string(userHandle) && Index(*store.config.Access.Credentials(profile), rawID) >= 0 {
 			clone := store.config.Access.Clone([]T{*profile})[0]
-			return NewUser(clone, store.config.Access.ID(&clone), store.config.Access.Name(&clone), *store.config.Access.Credentials(&clone)), nil
+			return newUser(clone, store.config.Access.ID(&clone), store.config.Access.Name(&clone), *store.config.Access.Credentials(&clone)), nil
 		}
 	}
 	return nil, ErrNotFound
 }
 
 func (store *ProfileStore[T, S, K]) Add(profileID string, credential *webauthn.Credential) error {
-	if err := ValidateCredential(credential); err != nil || !store.valid() {
-		return ErrInvalidCredential
+	if err := validateCredential(credential); err != nil || !store.valid() {
+		return errInvalidCredential
 	}
 	store.config.Mutex.Lock()
 	defer store.config.Mutex.Unlock()
 	profiles := store.config.Access.Clone(*store.config.Profiles)
 	for index := range profiles {
 		if Index(*store.config.Access.Credentials(&profiles[index]), credential.ID) >= 0 {
-			return ErrDuplicate
+			return errDuplicate
 		}
 	}
 	for index := range profiles {
@@ -73,8 +73,8 @@ func (store *ProfileStore[T, S, K]) Add(profileID string, credential *webauthn.C
 			continue
 		}
 		credentials := store.config.Access.Credentials(profile)
-		if len(*credentials) >= MaxCredentials {
-			return ErrLimit
+		if len(*credentials) >= maxCredentials {
+			return errLimit
 		}
 		*credentials = append(*credentials, Clone(*credential))
 		usage := store.config.Access.Usage(profile)
@@ -94,8 +94,8 @@ func (store *ProfileStore[T, S, K]) Add(profileID string, credential *webauthn.C
 }
 
 func (store *ProfileStore[T, S, K]) Update(profileID string, credential *webauthn.Credential) error {
-	if err := ValidateCredential(credential); err != nil || !store.valid() {
-		return ErrInvalidCredential
+	if err := validateCredential(credential); err != nil || !store.valid() {
+		return errInvalidCredential
 	}
 	store.config.Mutex.Lock()
 	defer store.config.Mutex.Unlock()
@@ -109,7 +109,7 @@ func (store *ProfileStore[T, S, K]) Update(profileID string, credential *webauth
 		if *usage == nil {
 			*usage = make(map[string]Usage)
 		}
-		if Update(*store.config.Access.Credentials(profile), *usage, credential, store.config.Now()) {
+		if update(*store.config.Access.Credentials(profile), *usage, credential, store.config.Now()) {
 			if err := store.config.SaveProfiles(profiles); err != nil {
 				return err
 			}
@@ -129,14 +129,14 @@ func (store *ProfileStore[T, S, K]) Inventory(profileID string) []Summary {
 	for index := range *store.config.Profiles {
 		profile := &(*store.config.Profiles)[index]
 		if store.config.Access.ID(profile) == profileID {
-			return Inventory(*store.config.Access.Credentials(profile), *store.config.Access.Usage(profile))
+			return inventory(*store.config.Access.Credentials(profile), *store.config.Access.Usage(profile))
 		}
 	}
 	return []Summary{}
 }
 
 func (store *ProfileStore[T, S, K]) Remove(profileID, id string) error {
-	if err := ValidateID(id); err != nil || !store.valid() {
+	if err := validateID(id); err != nil || !store.valid() {
 		return ErrInvalidID
 	}
 	store.config.Mutex.Lock()

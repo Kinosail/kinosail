@@ -81,7 +81,7 @@ func TestEventsSurviveRestartAndHonorProfileFilters(t *testing.T) {
 		t.Fatal(reopened.err)
 	}
 	mux := http.NewServeMux()
-	gateway, err := Register(mux, testGatewayConfig(OAuthConfig{}, fixture.principals, &testAPI{}, testRoutes{}), reopened)
+	gateway, err := register(mux, testGatewayConfig(OAuthConfig{}, fixture.principals, &testAPI{}, testRoutes{}), reopened)
 	if err != nil {
 		t.Fatal(err)
 	}

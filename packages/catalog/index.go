@@ -150,7 +150,7 @@ func (index *Index) wait(ctx context.Context) bool {
 	index.mu.RLock()
 	interval := index.interval
 	index.mu.RUnlock()
-	return WaitRefresh(ctx, interval, index.reschedule, index.RequestRefresh)
+	return waitRefresh(ctx, interval, index.reschedule, index.RequestRefresh)
 }
 
 func (index *Index) SetFrequency(frequency string) {

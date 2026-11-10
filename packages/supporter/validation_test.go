@@ -17,7 +17,7 @@ func TestConfigurationAndEndpointValidation(t *testing.T) {
 		{App: App{ID: "Bad ID", Name: "Player", Audience: "bad", MasterworkName: "Full Sail"}},
 		{App: App{ID: "kino-player", Name: "Player", Audience: "com.kinosail.player", MasterworkName: "Full Sail", Legacy: LegacyPolicy(255)}},
 	} {
-		if _, err := New(config); !errors.Is(err, ErrInvalid) {
+		if _, err := New(config); !errors.Is(err, errInvalid) {
 			t.Fatalf("New(%#v) = %v", config, err)
 		}
 	}
@@ -36,7 +36,7 @@ func TestParseActivationJSONRejectsAmbiguousValues(t *testing.T) {
 		`{"key":"VALID_SUPPORTER_KEY","recognitionName":null}`, `{"key":"VALID_SUPPORTER_KEY","recognitionName":""}`,
 		`{"key":"VALID_SUPPORTER_KEY","recognitionName":" padded "}`, `{"key":"VALID_SUPPORTER_KEY","unknown":true}`,
 	} {
-		if _, parseErr := ParseActivationJSON([]byte(input)); !errors.Is(parseErr, ErrInvalid) {
+		if _, parseErr := ParseActivationJSON([]byte(input)); !errors.Is(parseErr, errInvalid) {
 			t.Fatalf("ParseActivationJSON(%q) = %v", input, parseErr)
 		}
 	}
@@ -69,7 +69,7 @@ func TestStateValidationAndPreparationRejectMalformedState(t *testing.T) {
 	if next, prepareErr := service.Prepare(partial); prepareErr == nil || next.LivingLevel != partial.LivingLevel {
 		t.Fatalf("Prepare(%#v) = %#v, %v", partial, next, prepareErr)
 	}
-	if !ValidRecognitionName("Visible Name", true) || ValidRecognitionName("\u2060Hidden", true) || ValidRecognitionName(strings.Repeat("x", 81), true) {
+	if !validRecognitionName("Visible Name", true) || validRecognitionName("\u2060Hidden", true) || validRecognitionName(strings.Repeat("x", 81), true) {
 		t.Fatal("recognition name policy changed")
 	}
 }
@@ -97,7 +97,7 @@ func TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy(t *testing.T) {
 	name := "Quiet Name"
 	without := service.Fingerprint(ActivationInput{Key: "VALID_SUPPORTER_KEY"})
 	with := service.Fingerprint(ActivationInput{Key: "VALID_SUPPORTER_KEY", RecognitionName: &name})
-	if without == "" || with == "" || without == with || !ValidKey("VALID_SUPPORTER_KEY") || ValidKey("short") {
+	if without == "" || with == "" || without == with || !validKey("VALID_SUPPORTER_KEY") || validKey("short") {
 		t.Fatal("activation fingerprint or key policy changed")
 	}
 }

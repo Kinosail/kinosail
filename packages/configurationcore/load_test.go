@@ -12,12 +12,12 @@ func testLoader() Loader {
 	return Loader{
 		Schema: Schema{
 			Fields: []Field{
-				{Key: "paths.data", Env: "KINOSAIL_DATA_DIR", Default: "/default", Kind: Text},
-				{Key: "name", Env: "NAME", Default: "base", Kind: Text},
-				{Key: "enabled", Env: "ENABLED", Default: "false", Kind: Boolean},
-				{Key: "count", Env: "COUNT", Default: "1", Kind: Number},
-				{Key: "hosts", Env: "HOSTS", Default: "[]", Kind: List},
-				{Key: "token", Env: "TOKEN", Kind: Text, Secret: true},
+				{Key: "paths.data", Env: "KINOSAIL_DATA_DIR", Default: "/default", Kind: text},
+				{Key: "name", Env: "NAME", Default: "base", Kind: text},
+				{Key: "enabled", Env: "ENABLED", Default: "false", Kind: boolean},
+				{Key: "count", Env: "COUNT", Default: "1", Kind: number},
+				{Key: "hosts", Env: "HOSTS", Default: "[]", Kind: list},
+				{Key: "token", Env: "TOKEN", Kind: text, Secret: true},
 			},
 			Retired: func(key string) bool { return strings.HasPrefix(key, "retired") },
 			Validate: func(key, raw string) error {
@@ -146,7 +146,7 @@ func TestStoredAndYAMLValidation(t *testing.T) {
 	if err := loader.applyStored(values, map[string]string{"retired.value": "x", "name": "saved"}, map[string]string{"token": "saved-token"}); err != nil {
 		t.Fatal(err)
 	}
-	if values["name"].Source != GUI || values["token"].Source != GUI {
+	if values["name"].Source != gui || values["token"].Source != gui {
 		t.Fatalf("stored sources = %#v", values)
 	}
 

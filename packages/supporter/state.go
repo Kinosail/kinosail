@@ -43,10 +43,10 @@ func rememberActivation(activations [activationSlots]Activation, grant Grant) [a
 }
 
 func (service *Service) raiseLevels(state *State) {
-	if decoded := service.decodeGrant(*state, state.Monthly, EditionMonthly, true); decoded.valid {
+	if decoded := service.decodeGrant(*state, state.Monthly, editionMonthly, true); decoded.valid {
 		state.MonthlyLevel = max(state.MonthlyLevel, Rank(decoded.certificate.Tier))
 	}
-	if decoded := service.decodeGrant(*state, state.Yearly, EditionYearly, true); decoded.valid {
+	if decoded := service.decodeGrant(*state, state.Yearly, editionYearly, true); decoded.valid {
 		state.YearlyLevel = max(state.YearlyLevel, Rank(decoded.certificate.Tier))
 	}
 	if decoded := service.decodeGrant(*state, state.PatronOrder, FamilyPatron, true); decoded.valid {
@@ -63,7 +63,7 @@ func (service *Service) Recover(state State) (State, bool) {
 	for _, item := range []struct {
 		grant  **Grant
 		family string
-	}{{&next.PatronOrder, FamilyPatron}, {&next.LivingStandard, FamilyLiving}, {&next.Monthly, EditionMonthly}, {&next.Yearly, EditionYearly}} {
+	}{{&next.PatronOrder, FamilyPatron}, {&next.LivingStandard, FamilyLiving}, {&next.Monthly, editionMonthly}, {&next.Yearly, editionYearly}} {
 		if *item.grant != nil && !service.decodeGrant(next, *item.grant, item.family, true).valid {
 			if validActivationReference(**item.grant) {
 				next.Activations = rememberActivation(next.Activations, **item.grant)
@@ -76,13 +76,13 @@ func (service *Service) Recover(state State) (State, bool) {
 
 func (service *Service) RotatePublicKey(state State, input RotationInput) (State, error) {
 	if input.Version != 1 || !input.Confirm {
-		return state, ErrInvalid
+		return state, errInvalid
 	}
 	if state.InstallationKey == "" {
-		return state, ErrConflict
+		return state, errConflict
 	}
 	if _, ok := decodeValue(input.PublicKey, ed25519.PublicKeySize, 64); !ok || subtle.ConstantTimeCompare([]byte(input.PublicKey), []byte(state.PublicKey)) == 1 {
-		return state, ErrInvalid
+		return state, errInvalid
 	}
 	for _, grant := range []*Grant{state.PatronOrder, state.LivingStandard, state.Monthly, state.Yearly} {
 		if grant != nil && validActivationReference(*grant) {
@@ -111,7 +111,7 @@ func validActivationReference(grant Grant) bool {
 func emptyState(state State) bool { return state == (State{}) }
 
 func validLevels(state State) bool {
-	return state.PatronLevel >= 0 && state.PatronLevel <= MaximumLevel && state.LivingLevel >= 0 && state.LivingLevel <= MaximumLevel && state.MonthlyLevel >= 0 && state.MonthlyLevel <= MaximumLevel && state.YearlyLevel >= 0 && state.YearlyLevel <= MaximumLevel
+	return state.PatronLevel >= 0 && state.PatronLevel <= maximumLevel && state.LivingLevel >= 0 && state.LivingLevel <= maximumLevel && state.MonthlyLevel >= 0 && state.MonthlyLevel <= maximumLevel && state.YearlyLevel >= 0 && state.YearlyLevel <= maximumLevel
 }
 
 func (service *Service) ValidateState(state State) error {
@@ -119,18 +119,18 @@ func (service *Service) ValidateState(state State) error {
 		return nil
 	}
 	if !validLevels(state) {
-		return ErrInvalid
+		return errInvalid
 	}
 	if _, ok := decodeValue(state.InstallationKey, 32, 64); !ok {
-		return ErrInvalid
+		return errInvalid
 	}
 	if state.PublicKey != "" {
 		if _, ok := decodeValue(state.PublicKey, 32, 64); !ok {
-			return ErrInvalid
+			return errInvalid
 		}
 	}
 	if !validStateGrants(state) || !validStateActivations(state.Activations) || !service.validEditionGrants(state) {
-		return ErrInvalid
+		return errInvalid
 	}
 	return nil
 }

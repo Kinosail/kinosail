@@ -13,13 +13,13 @@ func TestApplicationStateUsesInstallationPath(t *testing.T) {
 	reads, writes := 0, 0
 	store := ApplicationState(dir, func(path string, target any) (bool, error) {
 		reads++
-		if path != filepath.Join(dir, StateFilename) || target != value {
+		if path != filepath.Join(dir, stateFilename) || target != value {
 			t.Fatalf("unexpected load: %q, %v", path, target)
 		}
 		return true, readErr
 	}, func(path string, saved any) error {
 		writes++
-		if path != filepath.Join(dir, StateFilename) || saved != value {
+		if path != filepath.Join(dir, stateFilename) || saved != value {
 			t.Fatalf("unexpected save: %q, %v", path, saved)
 		}
 		return writeErr
@@ -42,7 +42,7 @@ func TestApplicationStateWithoutDirectorySkipsLoad(t *testing.T) {
 		return true, nil
 	}, func(path string, value any) error {
 		writes++
-		if path != StateFilename || value != "connection" {
+		if path != stateFilename || value != "connection" {
 			t.Fatalf("unexpected save: %q, %v", path, value)
 		}
 		return nil

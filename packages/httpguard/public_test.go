@@ -48,7 +48,7 @@ func TestPublicTripwireCompoundsTemporaryIPv6AddressesWithoutPrefixLockoutFromOn
 
 func TestPublicCapacityBoundsSourcesAndIPv6Prefixes(t *testing.T) {
 	t.Parallel()
-	capacity := NewPublicCapacity()
+	capacity := newPublicCapacity()
 	keys := make([]string, prefixConcurrentLimit)
 	for index := range keys {
 		keys[index] = "2001:db8:1:2::" + strconv.Itoa(index+1)
@@ -107,16 +107,16 @@ func TestPublicRequestClassifiersRejectAmbiguousInputs(t *testing.T) {
 		"/environment":  false,
 		"/login":        false,
 	} {
-		if got := SuspiciousPublicPath(path); got != want {
+		if got := suspiciousPublicPath(path); got != want {
 			t.Errorf("SuspiciousPublicPath(%q) = %t; want %t", path, got, want)
 		}
 	}
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/session", nil)
-	if !CredentialAttempt(request) {
+	if !credentialAttempt(request) {
 		t.Fatal("credential POST was not classified")
 	}
 	request.Method = http.MethodGet
-	if CredentialAttempt(request) {
+	if credentialAttempt(request) {
 		t.Fatal("credential GET was classified as an attempt")
 	}
 }
@@ -148,7 +148,7 @@ func TestPublicGuardRemainingCapacityAndExpiryEdges(t *testing.T) {
 		t.Fatal("new prefix was quarantined on its first strike")
 	}
 
-	capacity := NewPublicCapacity()
+	capacity := newPublicCapacity()
 	for index := range globalConcurrentLimit {
 		if !capacity.Wait(t.Context(), "192.0.2."+strconv.Itoa(index+1), 0) {
 			t.Fatalf("global request %d rejected early", index)
@@ -162,7 +162,7 @@ func TestPublicGuardRemainingCapacityAndExpiryEdges(t *testing.T) {
 	}
 
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/public/content", nil)
-	if CredentialAttempt(request) {
+	if credentialAttempt(request) {
 		t.Fatal("ordinary public POST was classified as a credential attempt")
 	}
 	for _, value := range []string{"bytes=-", "bytes=0-18446744073709551616"} {

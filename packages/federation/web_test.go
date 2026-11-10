@@ -71,7 +71,7 @@ func TestOIDCHTTPRejectsAndMapsFailures(t *testing.T) {
 	effects := &webEffects{signInErr: errors.New("session failed")}
 	login := NewOIDCHTTP(OIDCConfig{}, webProfiles(&values), webHooks(effects), func(http.ResponseWriter, *http.Request, string) error { return nil })
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
-	for _, err := range []error{ErrInvalidCallback, ErrInvalidState, ErrAuthorizationDenied, ErrProviderUnavailable, ErrCodeExchange, ErrTokenInvalid} {
+	for _, err := range []error{errInvalidCallback, errInvalidState, errAuthorizationDenied, errProviderUnavailable, errCodeExchange, errTokenInvalid} {
 		login.writeCallbackError(httptest.NewRecorder(), request, err)
 	}
 	login.SignInProfile(httptest.NewRecorder(), request, values[0])
@@ -106,7 +106,7 @@ func TestSAMLHTTPRoutesProfilesAndFailures(t *testing.T) {
 	if effects.errors == 0 {
 		t.Fatal("SAML MFA without challenge store was accepted")
 	}
-	for _, err := range []error{ErrInvalidCallback, ErrInvalidState, ErrProviderUnavailable, ErrNotConfigured, ErrTokenInvalid} {
+	for _, err := range []error{errInvalidCallback, errInvalidState, errProviderUnavailable, errNotConfigured, errTokenInvalid} {
 		login.writeCallbackError(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), err)
 	}
 	assertHTTPStatus(t, mux, http.MethodDelete, "/api/v1/me/saml", "", http.StatusNoContent)

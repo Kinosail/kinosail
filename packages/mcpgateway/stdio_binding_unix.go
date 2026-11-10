@@ -14,7 +14,7 @@ func BindStdioCommand[Config any](path string, serve func(context.Context, Confi
 		if serve == nil || open == nil {
 			return errors.New("invalid MCP STDIO application configuration")
 		}
-		return RunStdioCommand(path,
+		return runStdioCommand(path,
 			func() error { return serve(ctx, config, profileID, os.Stdin, os.Stdout) },
 			func() (*os.File, error) { return open(ctx, config, profileID) }, execute)
 	}

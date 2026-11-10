@@ -42,10 +42,10 @@ func TestTVPreviewsAreLocalBoundedAndContainNoSecrets(t *testing.T) {
 			t.Fatal("polling secret exposed")
 		}
 	}
-	if _, err := broker.PendingTVs(Viewer{}); !errors.Is(err, ErrInvalidRequest) {
+	if _, err := broker.PendingTVs(Viewer{}); !errors.Is(err, errInvalidRequest) {
 		t.Fatalf("anonymous read = %v", err)
 	}
-	if _, err := broker.PendingTVs(Viewer{ID: "bad\nviewer"}); !errors.Is(err, ErrInvalidRequest) {
+	if _, err := broker.PendingTVs(Viewer{ID: "bad\nviewer"}); !errors.Is(err, errInvalidRequest) {
 		t.Fatalf("invalid viewer = %v", err)
 	}
 }
@@ -58,7 +58,7 @@ func TestPreviewDoesNotApproveAndExpiresWithRequest(t *testing.T) {
 	secret, request, _ := broker.Create(Request{Device: "Living Room", Numeric: true})
 	viewer := Viewer{ID: "viewer"}
 	for _, code := range []string{"", "12345", "1234567", "12345x", " 123456", "１２３４５６", strings.Repeat("1", 1024)} {
-		if _, err := broker.Preview(code, viewer); !errors.Is(err, ErrInvalidRequest) {
+		if _, err := broker.Preview(code, viewer); !errors.Is(err, errInvalidRequest) {
 			t.Fatalf("invalid code %q: %v", code, err)
 		}
 	}
@@ -66,7 +66,7 @@ func TestPreviewDoesNotApproveAndExpiresWithRequest(t *testing.T) {
 	if err != nil || preview.Device != "Living Room" || preview.Code != request.Code || preview.ExpiresAt.Location() != time.UTC {
 		t.Fatalf("preview = %+v, %v", preview, err)
 	}
-	if _, err := broker.Consume(secret); !errors.Is(err, ErrPending) {
+	if _, err := broker.Consume(secret); !errors.Is(err, errPending) {
 		t.Fatalf("preview changed approval: %v", err)
 	}
 	now = now.Add(time.Minute)
@@ -97,14 +97,14 @@ func TestPreviewHidesRemoteAndApprovedRequests(t *testing.T) {
 	if len(pending) != 0 {
 		t.Fatal("approved request still prompts")
 	}
-	if err := broker.Approve(local.Code, Viewer{ID: "other"}); !errors.Is(err, ErrAlreadyApproved) {
+	if err := broker.Approve(local.Code, Viewer{ID: "other"}); !errors.Is(err, errAlreadyApproved) {
 		t.Fatalf("profile replacement = %v", err)
 	}
 	grant, err := broker.Consume(secret)
 	if err != nil || grant.ProfileID != viewer.ID {
 		t.Fatalf("grant = %+v, %v", grant, err)
 	}
-	if _, err := broker.Consume(secret); !errors.Is(err, ErrNotFound) {
+	if _, err := broker.Consume(secret); !errors.Is(err, errNotFound) {
 		t.Fatalf("replayed consume = %v", err)
 	}
 }
@@ -128,7 +128,7 @@ func TestApprovalReadHTTPBoundaries(t *testing.T) {
 	if recorder.Code != http.StatusOK || recorder.Header().Get("Cache-Control") != "no-store" || strings.Contains(recorder.Body.String(), secret) {
 		t.Fatalf("preview = %d %s", recorder.Code, recorder.Body.String())
 	}
-	if _, err := fixture.broker.Consume(secret); !errors.Is(err, ErrPending) {
+	if _, err := fixture.broker.Consume(secret); !errors.Is(err, errPending) {
 		t.Fatalf("read approved device: %v", err)
 	}
 	recorder = httptest.NewRecorder()
@@ -159,7 +159,7 @@ func TestScannedLinkValidationAndExplicitConfirmation(t *testing.T) {
 	if fixture.rendered.Code != request.Code || fixture.rendered.Device != "Living Room" || fixture.rendered.AutoSubmit {
 		t.Fatalf("confirmation = %+v", fixture.rendered)
 	}
-	if _, err := fixture.broker.Consume(secret); !errors.Is(err, ErrPending) {
+	if _, err := fixture.broker.Consume(secret); !errors.Is(err, errPending) {
 		t.Fatalf("GET approved request: %v", err)
 	}
 }
@@ -170,7 +170,7 @@ func TestCancelRequiresPollingSecretAndCannotAffectOtherRequests(t *testing.T) {
 	secret, pending, _ := broker.Create(Request{Numeric: true})
 	other, _, _ := broker.Create(Request{Numeric: true})
 	for _, invalid := range []string{"", "bad\nsecret", strings.Repeat("x", 129)} {
-		if err := broker.Cancel(invalid); !errors.Is(err, ErrInvalidRequest) {
+		if err := broker.Cancel(invalid); !errors.Is(err, errInvalidRequest) {
 			t.Fatalf("invalid cancel = %v", err)
 		}
 	}

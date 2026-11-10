@@ -10,13 +10,13 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-const InfiniteLibraryHeader = "X-Kinosail-Library-Page"
+const infiniteLibraryHeader = "X-Kinosail-Library-Page"
 
 func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resume, Playlist, Collection], view View, tmdb bool, failure func(http.ResponseWriter, *http.Request, string, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		writer.Header().Add("Vary", InfiniteLibraryHeader)
-		fragment, err := FragmentRequest(request)
+		writer.Header().Add("Vary", infiniteLibraryHeader)
+		fragment, err := fragmentRequest(request)
 		if err != nil {
 			failure(writer, request, "invalid library page request", http.StatusBadRequest)
 			return
@@ -42,9 +42,9 @@ func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resu
 		cards := source.Catalog(request, organizedShows, page, fragment)
 		data := Page[Show, Resume, Playlist, Collection]{
 			ServerName: shell.ServerName, Owner: shell.Owner, ViewerName: shell.ViewerName, ViewerID: shell.ViewerID, CanLogout: shell.CanLogout,
-			Items: movies, Music: music, Audiobooks: Media(page.Items, "audiobook"), Albums: albums, Books: Media(page.Items, "book"), Photos: Media(page.Items, "photo"), Shows: cards.Shows,
+			Items: movies, Music: music, Audiobooks: media(page.Items, "audiobook"), Albums: albums, Books: media(page.Items, "book"), Photos: media(page.Items, "photo"), Shows: cards.Shows,
 			Query: page.Query, View: page.View, Sort: page.Sort, PlaylistCards: cards.PlaylistCards, CustomCollectionCards: cards.CustomCollectionCards, DefaultCollectionCards: cards.DefaultCollectionCards,
-			TMDB: tmdb, Total: page.Total, Previous: page.PreviousURL(), Next: page.NextURL(), Letter: page.Letter, Letters: page.Letters, SearchClear: ClearSearchURL(request), Filters: page.Filters, Facets: page.Facets, FiltersClear: clearFiltersURL(page),
+			TMDB: tmdb, Total: page.Total, Previous: page.PreviousURL(), Next: page.NextURL(), Letter: page.Letter, Letters: page.Letters, SearchClear: clearSearchURL(request), Filters: page.Filters, Facets: page.Facets, FiltersClear: clearFiltersURL(page),
 			NavigationPrimary: shell.NavigationPrimary, NavigationMore: shell.NavigationMore, UpdateAvailable: shell.UpdateAvailable, CommandMenu: true,
 		}
 		if !fragment && page.Query == "" && page.View == "all" && page.Offset == 0 {
@@ -61,7 +61,7 @@ func populateLanding[Show, Resume, Playlist, Collection any](request *http.Reque
 	page.HomeArtwork, page.HomeShowTitle = cached.artwork, cached.titles
 	personal := source.Personal(request, result, view)
 	page.Continue, page.List = personal.Continue, personal.List
-	page.Played = RecentlyPlayed(personal.Played, page.HomeArtwork, page.HomeShowTitle)
+	page.Played = recentlyPlayed(personal.Played, page.HomeArtwork, page.HomeShowTitle)
 	page.Recent = cached.recent
 	page.MovieGenres = cached.genres
 	page.HomeShelves = homeShelves(cached, personal.Watched)

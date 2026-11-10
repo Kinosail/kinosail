@@ -14,7 +14,7 @@ type SAMLHTTP[T any] struct {
 }
 
 func NewSAMLHTTP[T any](config SAMLConfig, profiles Profiles[T], hooks WebHooks[T], mfa ...*OIDCHTTP[T]) *SAMLHTTP[T] {
-	login := &SAMLHTTP[T]{flow: NewSAML(config), profiles: profiles, hooks: hooks}
+	login := &SAMLHTTP[T]{flow: newSAML(config), profiles: profiles, hooks: hooks}
 	if len(mfa) != 0 {
 		login.mfa = mfa[0]
 	}
@@ -93,14 +93,14 @@ func (login *SAMLHTTP[T]) signInProfile(writer http.ResponseWriter, request *htt
 func (login *SAMLHTTP[T]) writeCallbackError(writer http.ResponseWriter, request *http.Request, err error) {
 	message, status := "SAML callback is invalid", http.StatusBadRequest
 	switch {
-	case errors.Is(err, ErrInvalidState):
+	case errors.Is(err, errInvalidState):
 		message = "SAML response is invalid or expired"
-	case errors.Is(err, ErrNotConfigured):
+	case errors.Is(err, errNotConfigured):
 		login.hooks.unavailable(writer, request, err, "SAML provider is unavailable", http.StatusBadGateway)
 		return
-	case errors.Is(err, ErrProviderUnavailable):
+	case errors.Is(err, errProviderUnavailable):
 		message, status = "SAML provider is unavailable", http.StatusBadGateway
-	case errors.Is(err, ErrTokenInvalid):
+	case errors.Is(err, errTokenInvalid):
 		message, status = "SAML response validation failed", http.StatusUnauthorized
 	}
 	login.hooks.Error(writer, request, message, status)
@@ -127,7 +127,7 @@ func (login *SAMLHTTP[T]) startLink(writer http.ResponseWriter, request *http.Re
 func (login *SAMLHTTP[T]) startFor(writer http.ResponseWriter, request *http.Request, profileID string) {
 	start, err := login.flow.Begin(request.Context(), profileID, login.hooks.linkSession(request, profileID))
 	if err != nil {
-		if errors.Is(err, ErrTooManyPending) {
+		if errors.Is(err, errTooManyPending) {
 			login.hooks.Error(writer, request, "too many SSO requests are pending", http.StatusTooManyRequests)
 			return
 		}

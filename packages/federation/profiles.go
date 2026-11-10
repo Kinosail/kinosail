@@ -177,7 +177,7 @@ func validateIdentity(protocol Protocol, identity Identity) error {
 	if err := validateProtocol(protocol); err != nil {
 		return err
 	}
-	if identity.Issuer == "" || !ValidSubject(identity.Subject) {
+	if identity.Issuer == "" || !validSubject(identity.Subject) {
 		return errors.New(string(protocol) + " identity is invalid")
 	}
 	return nil

@@ -12,13 +12,13 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-var ErrPersistence = errors.New("playback segment results could not be saved")
+var errPersistence = errors.New("playback segment results could not be saved")
 
 func (analyzer *Analyzer) storeLocked(item library.Item, markers []Marker, suppressed []string, version int) error {
 	record := Record{Revision: mediaRevision(item), DetectorVersion: version, Markers: markers, Suppressed: suppressed}
 	if err := analyzer.persistLocked(map[string]Record{item.ID: record}); err != nil {
-		analyzer.err = ErrPersistence
-		return ErrPersistence
+		analyzer.err = errPersistence
+		return errPersistence
 	}
 	return nil
 }
@@ -70,7 +70,7 @@ func (analyzer *Analyzer) replaceDetected(item library.Item, markerTypes []strin
 			markers = append(markers, replacement)
 		}
 	}
-	_ = analyzer.storeLocked(item, markers, suppressed, DetectorVersion)
+	_ = analyzer.storeLocked(item, markers, suppressed, detectorVersion)
 }
 
 func hasMarkerSource(markers []Marker, markerType, source string) bool {
@@ -97,7 +97,7 @@ func (analyzer *Analyzer) Markers(item library.Item, chapters []Marker) []Marker
 		}
 		if marker.Source == "manual" {
 			manual = append(manual, marker)
-		} else if record.DetectorVersion == DetectorVersion {
+		} else if record.DetectorVersion == detectorVersion {
 			generated = append(generated, marker)
 		}
 	}
@@ -197,7 +197,7 @@ func (analyzer *Analyzer) Status() (string, int, string) {
 	}
 	items := 0
 	for _, record := range analyzer.records {
-		if record.DetectorVersion == DetectorVersion && record.Failed == 0 {
+		if record.DetectorVersion == detectorVersion && record.Failed == 0 {
 			items++
 		}
 	}

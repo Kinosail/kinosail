@@ -17,11 +17,11 @@ const (
 )
 
 var (
-	ErrProfileNotFound = errors.New("viewer profile was not found")
-	ErrPublicProfile   = errors.New("viewer profile is not available for public access")
-	ErrPublicLimit     = errors.New("too many public sessions")
-	ErrCurrentSession  = errors.New("current session was not found")
-	ErrDeviceNotFound  = errors.New("device session was not found")
+	errProfileNotFound = errors.New("viewer profile was not found")
+	errPublicProfile   = errors.New("viewer profile is not available for public access")
+	errPublicLimit     = errors.New("too many public sessions")
+	errCurrentSession  = errors.New("current session was not found")
+	errDeviceNotFound  = errors.New("device session was not found")
 )
 
 type Session struct {
@@ -71,7 +71,7 @@ type SessionLoader interface {
 	Load(string) ([]byte, bool, error)
 }
 
-func NewSessions(config SessionConfig) *Sessions {
+func newSessions(config SessionConfig) *Sessions {
 	if config.Now == nil {
 		config.Now = time.Now
 	}
@@ -97,7 +97,7 @@ func LoadSessions(path string, database SessionLoader, now func() time.Time) (ma
 		return sessions, err
 	}
 	if err := json.Unmarshal(data, &sessions); err == nil {
-		NormalizeSessions(sessions, now)
+		normalizeSessions(sessions, now)
 		return sessions, nil
 	}
 	legacy := make(map[string]string)
@@ -140,10 +140,10 @@ func (sessions *Sessions) CreateLocalGrant(profileID, name string, revision uint
 
 func (sessions *Sessions) create(profileID, name string, browser, strong bool, channel string, revision *uint64, deviceKey string) (string, error) {
 	if !sessions.valid() {
-		return "", ErrProfileNotFound
+		return "", errProfileNotFound
 	}
 	if channel != "" && channel != "compatibility" && channel != "public" {
-		return "", ErrSessionKind
+		return "", errSessionKind
 	}
 	now := sessions.config.Now()
 	sessions.config.Mutex.Lock()
@@ -161,14 +161,14 @@ func (sessions *Sessions) create(profileID, name string, browser, strong bool, c
 func (sessions *Sessions) prepareSession(profileID, name string, browser, strong bool, channel string, revision *uint64, deviceKey string, now time.Time) (string, sessionChange, error) {
 	profile, found := findSessionProfile(sessions.config.Profiles(), profileID)
 	if !found || profile.Disabled || profile.Deleted {
-		return "", sessionChange{}, ErrProfileNotFound
+		return "", sessionChange{}, errProfileNotFound
 	}
 	if err := validateSessionAuthority(profile, channel, revision, deviceKey); err != nil {
 		return "", sessionChange{}, err
 	}
 	publicInactive, publicAbsolute := sessions.TimeoutsFor(Session{Channel: "public"})
 	if channel == "public" && activePublic(*sessions.config.Values, profileID, now.Unix(), publicInactive, publicAbsolute) >= publicSessionLimit {
-		return "", sessionChange{}, ErrPublicLimit
+		return "", sessionChange{}, errPublicLimit
 	}
 	expires := now.Add(30 * 24 * time.Hour)
 	if browser {
@@ -188,7 +188,7 @@ func (sessions *Sessions) prepareSession(profileID, name string, browser, strong
 	}
 	token := sessions.config.NewToken()
 	if !ValidSessionToken(token) {
-		return "", sessionChange{}, ErrSessionToken
+		return "", sessionChange{}, errSessionToken
 	}
 	inactive, _ := sessions.TimeoutsFor(Session{Channel: channel})
 	created := Session{InactiveSeconds: browserInactiveSeconds(browser, inactive), ManagementDevice: deviceKey, ProfileID: profileID, ExpiresAt: expires.Unix(), Name: CleanDeviceName(name), CreatedAt: now.Unix(), LastSeen: now.Unix(), Browser: browser, StrongAt: strongAt, Channel: channel, ProfileRevision: profile.Revision}
@@ -197,14 +197,14 @@ func (sessions *Sessions) prepareSession(profileID, name string, browser, strong
 
 func (sessions *Sessions) MarkStrong(token string) error {
 	if !sessions.valid() {
-		return ErrCurrentSession
+		return errCurrentSession
 	}
 	key := SessionKey(token)
 	sessions.config.Mutex.Lock()
 	current, found := (*sessions.config.Values)[key]
 	if !found {
 		sessions.config.Mutex.Unlock()
-		return ErrCurrentSession
+		return errCurrentSession
 	}
 	current.StrongAt = sessions.config.Now().Unix()
 	change := applySessionChange(sessions.values(), map[string]Session{key: current}, nil)
@@ -260,7 +260,7 @@ func (sessions *Sessions) RevokeOthers(token string) error {
 	return sessions.replace(func(values map[string]Session) (map[string]Session, error) {
 		current, found := values[key]
 		if !found {
-			return nil, ErrCurrentSession
+			return nil, errCurrentSession
 		}
 		return map[string]Session{key: current}, nil
 	})
@@ -268,13 +268,13 @@ func (sessions *Sessions) RevokeOthers(token string) error {
 
 func validateSessionAuthority(profile SessionProfile, channel string, revision *uint64, deviceKey string) error {
 	if deviceKey != "" && !validManagementSession(profile, channel, deviceKey) {
-		return ErrSessionKind
+		return errSessionKind
 	}
 	if revision != nil && profile.Revision != *revision {
-		return ErrPublicProfile
+		return errPublicProfile
 	}
 	if channel == "public" && (profile.Owner || !profile.Remote || !profile.Secured) {
-		return ErrPublicProfile
+		return errPublicProfile
 	}
 	return nil
 }

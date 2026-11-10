@@ -19,7 +19,7 @@ var (
 )
 
 func SafeCompatibilityPath(request *http.Request, pattern string) string {
-	if pattern != "" || len(request.URL.Path) > 512 || MediaBrowserValue(request, "Client") == "" {
+	if pattern != "" || len(request.URL.Path) > 512 || mediaBrowserValue(request, "Client") == "" {
 		return ""
 	}
 	segments := strings.Split(strings.TrimPrefix(request.URL.Path, "/"), "/")
@@ -76,7 +76,7 @@ func sessionToken(request *http.Request, query QuerySessionToken) (string, strin
 			return value, header.source
 		}
 	}
-	if token := MediaBrowserValue(request, "Token"); token != "" {
+	if token := mediaBrowserValue(request, "Token"); token != "" {
 		return token, "media-browser-authorization"
 	}
 	if query != nil {
@@ -90,7 +90,7 @@ func sessionToken(request *http.Request, query QuerySessionToken) (string, strin
 	return "", "none"
 }
 
-func MediaBrowserValue(request *http.Request, name string) string {
+func mediaBrowserValue(request *http.Request, name string) string {
 	if request == nil {
 		return ""
 	}
@@ -115,13 +115,13 @@ func SessionKey(token string) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func NormalizeSessions(sessions map[string]Session, now func() time.Time) {
+func normalizeSessions(sessions map[string]Session, now func() time.Time) {
 	if now == nil {
 		now = time.Now
 	}
 	created := now().Unix()
 	for key, session := range sessions {
-		normalized := SessionKeyIfNeeded(key)
+		normalized := sessionKeyIfNeeded(key)
 		if normalized != key {
 			delete(sessions, key)
 		}
@@ -135,7 +135,7 @@ func NormalizeSessions(sessions map[string]Session, now func() time.Time) {
 	}
 }
 
-func SessionKeyIfNeeded(key string) string {
+func sessionKeyIfNeeded(key string) string {
 	if _, err := hex.DecodeString(key); len(key) == 64 && err == nil {
 		return key
 	}

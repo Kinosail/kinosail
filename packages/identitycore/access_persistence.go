@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-const AccessRetrySeconds = 30
+const accessRetrySeconds = 30
 
 type AccessPersistence struct {
 	mu    sync.Mutex
@@ -23,7 +23,7 @@ func (persistence *AccessPersistence) Save(ctx context.Context, persist func(str
 		if persistence.retry == nil {
 			persistence.retry = make(map[string]int64, 2)
 		}
-		persistence.retry[file] = now + AccessRetrySeconds
+		persistence.retry[file] = now + accessRetrySeconds
 		slog.WarnContext(ctx, "Access state write failed", "request_id", requestID, "operation", operation, "outcome", "retry-scheduled", "document", document, "error", err)
 		return
 	}

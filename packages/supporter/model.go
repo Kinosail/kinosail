@@ -9,10 +9,10 @@ import (
 const (
 	FamilyPatron    = "patron-order"
 	FamilyLiving    = "living-standard"
-	EditionOnce     = "one-time"
-	EditionMonthly  = "monthly"
-	EditionYearly   = "yearly"
-	MaximumLevel    = 10
+	editionOnce     = "one-time"
+	editionMonthly  = "monthly"
+	editionYearly   = "yearly"
+	maximumLevel    = 10
 	activationSlots = 4
 	completeFleetID = "complete-fleet"
 )
@@ -20,16 +20,16 @@ const (
 type LegacyPolicy uint8
 
 const (
-	LegacyNone LegacyPolicy = iota
+	legacyNone LegacyPolicy = iota
 	LegacyPlayer
 	LegacySubtitles
 )
 
 var (
-	ErrInvalid     = errors.New("invalid supporter activation")
-	ErrUnavailable = errors.New("supporter activation unavailable")
-	ErrUncertain   = errors.New("supporter activation result uncertain")
-	ErrConflict    = errors.New("supporter activation conflicts with saved recognition")
+	errInvalid     = errors.New("invalid supporter activation")
+	errUnavailable = errors.New("supporter activation unavailable")
+	errUncertain   = errors.New("supporter activation result uncertain")
+	errConflict    = errors.New("supporter activation conflicts with saved recognition")
 )
 
 type App struct {

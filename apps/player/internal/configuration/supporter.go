@@ -1,7 +1,7 @@
 package configuration
 
-import sharedvalidation "github.com/MikeO7/kinosail/packages/validation"
+import "github.com/MikeO7/kinosail/packages/configurationcore"
 
 func validateSupporter(configured Snapshot) error {
-	return sharedvalidation.ValidateSupporter(configured.String("supporter.activation_url"), configured.String("supporter.url"))
+	return configurationcore.ValidateSupporter(configured.String("supporter.activation_url"), configured.String("supporter.url"))
 }

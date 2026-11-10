@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	PlaylistDocumentFormat = "kinosail.playlist"
-	PlaylistExportQuery    = "kinosail"
+	playlistDocumentFormat = "kinosail.playlist"
+	playlistExportQuery    = "kinosail"
 	maximumPlaylistBytes   = 1 << 20
 )
 
@@ -29,17 +29,17 @@ type PlaylistDocument struct {
 
 func NewListHandlers(index MediaIndex, lists MediaLists, viewer func(*http.Request) string, failure func(http.ResponseWriter, *http.Request, string, int), notFound func(http.ResponseWriter, *http.Request)) catalog.ListHandlers {
 	return catalog.NewListHandlers(index, lists, viewer, func(request *http.Request, raw string) (string, error) {
-		document, err := DecodePlaylistDocument(raw)
+		document, err := decodePlaylistDocument(raw)
 		if err != nil {
 			return "", err
 		}
-		return CreatePlaylistDocument(request.Context(), viewer(request), document, func(id string) (library.Item, bool) {
+		return createPlaylistDocument(request.Context(), viewer(request), document, func(id string) (library.Item, bool) {
 			return index.VisibleItem(request, id)
 		}, lists.Create)
 	}, failure, notFound)
 }
 
-func DecodePlaylistDocument(raw string) (PlaylistDocument, error) {
+func decodePlaylistDocument(raw string) (PlaylistDocument, error) {
 	if len(raw) == 0 || len(raw) > maximumPlaylistBytes {
 		return PlaylistDocument{}, errors.New("playlist document is invalid")
 	}
@@ -55,22 +55,22 @@ func DecodePlaylistDocument(raw string) (PlaylistDocument, error) {
 	return document, nil
 }
 
-func ValidatePlaylist(name string, ids []string) (string, error) {
+func validatePlaylist(name string, ids []string) (string, error) {
 	return catalog.ValidatePlaylist(name, ids)
 }
 
-func ValidatePlaylistDocument(document PlaylistDocument) (string, error) {
+func validatePlaylistDocument(document PlaylistDocument) (string, error) {
 	if document.Format == "" && document.Version == 0 {
-		return ValidatePlaylist(document.Name, document.IDs)
+		return validatePlaylist(document.Name, document.IDs)
 	}
-	if document.Format != PlaylistDocumentFormat || document.Version != 1 {
+	if document.Format != playlistDocumentFormat || document.Version != 1 {
 		return "", errors.New("playlist document is invalid")
 	}
-	return ValidatePlaylist(document.Name, document.IDs)
+	return validatePlaylist(document.Name, document.IDs)
 }
 
-func CreatePlaylistDocument(ctx context.Context, viewer string, document PlaylistDocument, visible func(string) (library.Item, bool), create func(context.Context, string, string, ...string) error) (string, error) {
-	name, err := ValidatePlaylistDocument(document)
+func createPlaylistDocument(ctx context.Context, viewer string, document PlaylistDocument, visible func(string) (library.Item, bool), create func(context.Context, string, string, ...string) error) (string, error) {
+	name, err := validatePlaylistDocument(document)
 	if err != nil {
 		return "", err
 	}
@@ -105,5 +105,5 @@ func ExportPlaylistDocument(name string, selected map[string]bool, order []strin
 	}
 	sort.Strings(remaining)
 	ids = append(ids, remaining...)
-	return PlaylistDocument{Format: PlaylistDocumentFormat, Version: 1, Name: name, IDs: ids}, nil
+	return PlaylistDocument{Format: playlistDocumentFormat, Version: 1, Name: name, IDs: ids}, nil
 }

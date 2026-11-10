@@ -14,11 +14,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-const QueueCapacity = 32
+const queueCapacity = 32
 
 var (
-	ErrCapacity  = errors.New("remove a prepared download before adding another")
-	ErrQueueFull = errors.New("offline download queue is full")
+	errCapacity  = errors.New("remove a prepared download before adding another")
+	errQueueFull = errors.New("offline download queue is full")
 )
 
 type attempt struct {
@@ -106,7 +106,7 @@ func New(config Config) *Manager {
 	manager := &Manager{
 		serverID: config.ServerID, ctx: ctx, ffmpeg: config.FFmpeg, inspect: config.Inspect, acquireEncoding: config.AcquireEncoding, transcoding: config.Transcoding,
 		acquire: config.Acquire, persist: config.Persist, publish: config.Publish,
-		jobs: make(map[string]Job), attempts: make(map[string]*attempt), restoring: make(map[string]Job), requested: make(chan string, QueueCapacity), manifestWork: make(map[string]*manifestFlight), manifestSlots: make(chan struct{}, 2), pending: make(chan struct{}, QueueCapacity+1), tasks: make(chan task, QueueCapacity),
+		jobs: make(map[string]Job), attempts: make(map[string]*attempt), restoring: make(map[string]Job), requested: make(chan string, queueCapacity), manifestWork: make(map[string]*manifestFlight), manifestSlots: make(chan struct{}, 2), pending: make(chan struct{}, queueCapacity+1), tasks: make(chan task, queueCapacity),
 	}
 	if config.Cache == "" {
 		return manager

@@ -90,11 +90,11 @@ func TestFindAndFederateProfile(t *testing.T) {
 
 	profile := Profile{ID: "viewer", SCIMExternalID: "external", OIDCIssuer: "oidc", OIDCSubject: "oidc-subject", SAMLIssuer: "saml", SAMLSubject: "saml-subject", SCIMManaged: true, Disabled: true, SCIMDeleted: true}
 	want := federation.Profile{ID: "viewer", SCIMExternalID: "external", OIDC: federation.Identity{Issuer: "oidc", Subject: "oidc-subject"}, SAML: federation.Identity{Issuer: "saml", Subject: "saml-subject"}, SCIMManaged: true, Disabled: true, SCIMDeleted: true}
-	if got := FederatedProfile(profile); !reflect.DeepEqual(got, want) {
+	if got := federatedProfile(profile); !reflect.DeepEqual(got, want) {
 		t.Fatalf("FederatedProfile() = %#v; want %#v", got, want)
 	}
-	ApplyFederatedIdentity(&profile, federation.SAMLProtocol, federation.Identity{Issuer: "new-saml", Subject: "new-saml-subject"})
-	ApplyFederatedIdentity(&profile, federation.OIDCProtocol, federation.Identity{Issuer: "new-oidc", Subject: "new-oidc-subject"})
+	applyFederatedIdentity(&profile, federation.SAMLProtocol, federation.Identity{Issuer: "new-saml", Subject: "new-saml-subject"})
+	applyFederatedIdentity(&profile, federation.OIDCProtocol, federation.Identity{Issuer: "new-oidc", Subject: "new-oidc-subject"})
 	if profile.SAMLIssuer != "new-saml" || profile.SAMLSubject != "new-saml-subject" || profile.OIDCIssuer != "new-oidc" || profile.OIDCSubject != "new-oidc-subject" {
 		t.Fatalf("ApplyFederatedIdentity() = %#v", profile)
 	}

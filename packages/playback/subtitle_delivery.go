@@ -29,7 +29,7 @@ type LibrarySubtitleDependencies struct {
 	Delivery SubtitleDeliveryDependencies
 }
 
-func SubtitlePath(paths []string, value string) (string, bool) {
+func subtitlePath(paths []string, value string) (string, bool) {
 	if value == "" {
 		value = "0"
 	}
@@ -67,7 +67,7 @@ func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path strin
 		dependencies.Error(writer, request, "could not read subtitles", http.StatusInternalServerError)
 		return
 	}
-	text, err := DecodeSubtitleText(data, SubtitleFileLanguage(path))
+	text, err := decodeSubtitleText(data, SubtitleFileLanguage(path))
 	if err != nil {
 		slog.WarnContext(request.Context(), "subtitle text could not be decoded", "operation", "subtitles.deliver", "failure", "encoding")
 		dependencies.Error(writer, request, "could not read subtitles", http.StatusUnprocessableEntity)
@@ -97,7 +97,7 @@ func LibrarySubtitleHandler(dependencies LibrarySubtitleDependencies) http.Handl
 			return
 		}
 		item, found := dependencies.Lookup(request, request.PathValue("id"))
-		path, valid := SubtitlePath(item.Subtitles, request.PathValue("track"))
+		path, valid := subtitlePath(item.Subtitles, request.PathValue("track"))
 		if !found || !valid || !dependencies.Safe(path) {
 			dependencies.Delivery.NotFound(writer, request)
 			return

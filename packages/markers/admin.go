@@ -38,7 +38,7 @@ func RegisterAdmin(mux *http.ServeMux, admin Admin) {
 
 func (admin Admin) analysisStatus(writer http.ResponseWriter, _ *http.Request) {
 	state, items, message := admin.Analyzer.Status()
-	admin.JSON(writer, map[string]any{"state": state, "items": items, "detectorVersion": DetectorVersion, "error": message}, http.StatusOK)
+	admin.JSON(writer, map[string]any{"state": state, "items": items, "detectorVersion": detectorVersion, "error": message}, http.StatusOK)
 }
 
 func (admin Admin) runAnalysis(writer http.ResponseWriter, request *http.Request, redirect bool) {
@@ -153,7 +153,7 @@ func (admin Admin) removeManual(writer http.ResponseWriter, request *http.Reques
 
 func (admin Admin) markerError(writer http.ResponseWriter, request *http.Request, err error) {
 	status := http.StatusBadRequest
-	if errors.Is(err, ErrPersistence) {
+	if errors.Is(err, errPersistence) {
 		status = http.StatusInternalServerError
 	}
 	admin.Error(writer, request, err.Error(), status)

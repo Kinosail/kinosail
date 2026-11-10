@@ -18,7 +18,7 @@ func TestBrokerCompletesOneAuthorizationLifecycle(t *testing.T) {
 	if err != nil || !strings.HasPrefix(secret, "qc_") || len(connection.Code) != 8 || connection.Created != now {
 		t.Fatalf("Create() = %q, %#v, %v", secret, connection, err)
 	}
-	if _, err = broker.Consume(secret); !errors.Is(err, ErrPending) {
+	if _, err = broker.Consume(secret); !errors.Is(err, errPending) {
 		t.Fatalf("Consume() before approval error = %v", err)
 	}
 	viewer := Viewer{ID: "viewer", Revision: 7}
@@ -28,7 +28,7 @@ func TestBrokerCompletesOneAuthorizationLifecycle(t *testing.T) {
 	if err = broker.Approve(connection.Code, viewer); err != nil {
 		t.Fatalf("repeated approval by the same Viewer = %v", err)
 	}
-	if err = broker.Approve(connection.Code, Viewer{ID: "other"}); !errors.Is(err, ErrAlreadyApproved) {
+	if err = broker.Approve(connection.Code, Viewer{ID: "other"}); !errors.Is(err, errAlreadyApproved) {
 		t.Fatalf("approval by another Viewer error = %v", err)
 	}
 	status, found := broker.Status(secret)
@@ -42,7 +42,7 @@ func TestBrokerCompletesOneAuthorizationLifecycle(t *testing.T) {
 	if _, found = broker.Status(secret); found {
 		t.Fatal("consumed request remains available")
 	}
-	if _, err = broker.Consume(secret); !errors.Is(err, ErrNotFound) {
+	if _, err = broker.Consume(secret); !errors.Is(err, errNotFound) {
 		t.Fatalf("reused secret error = %v", err)
 	}
 }
@@ -65,7 +65,7 @@ func TestRemoteApprovalRequiresOneSecureRemoteViewer(t *testing.T) {
 			if err = broker.Approve(connection.Code, viewer); !errors.Is(err, ErrRemoteViewer) {
 				t.Fatalf("Approve() error = %v", err)
 			}
-			if _, err = broker.Consume(secret); !errors.Is(err, ErrPending) {
+			if _, err = broker.Consume(secret); !errors.Is(err, errPending) {
 				t.Fatalf("rejected approval changed request: %v", err)
 			}
 		})
@@ -139,7 +139,7 @@ func TestBrokerRejectsUnboundedOrAmbiguousInputBeforeCapacity(t *testing.T) {
 		{Client: "client\nname"},
 		{Version: strings.Repeat("v", 41)},
 	} {
-		if _, _, err := broker.Create(request); !errors.Is(err, ErrInvalidRequest) {
+		if _, _, err := broker.Create(request); !errors.Is(err, errInvalidRequest) {
 			t.Fatalf("Create(%#v) error = %v", request, err)
 		}
 	}
@@ -155,7 +155,7 @@ func TestBrokerRejectsUnboundedOrAmbiguousInputBeforeCapacity(t *testing.T) {
 		if _, found := broker.Status(invalidSecret); found {
 			t.Fatalf("invalid secret %q was found", invalidSecret[:min(len(invalidSecret), 20)])
 		}
-		if _, consumeErr := broker.Consume(invalidSecret); !errors.Is(consumeErr, ErrNotFound) {
+		if _, consumeErr := broker.Consume(invalidSecret); !errors.Is(consumeErr, errNotFound) {
 			t.Fatalf("invalid secret consume error = %v", consumeErr)
 		}
 	}
@@ -169,7 +169,7 @@ func TestBrokerRejectsUnboundedOrAmbiguousInputBeforeCapacity(t *testing.T) {
 		{connection.Code, Viewer{ID: "viewer\n"}},
 	}
 	for _, approval := range invalidApprovals {
-		if err := broker.Approve(approval.code, approval.viewer); !errors.Is(err, ErrInvalidRequest) {
+		if err := broker.Approve(approval.code, approval.viewer); !errors.Is(err, errInvalidRequest) {
 			t.Fatalf("invalid approval error = %v", err)
 		}
 	}
@@ -194,7 +194,7 @@ func TestApprovedRequestCanBeConsumedOnlyOnceConcurrently(t *testing.T) {
 		group.Go(func() {
 			if _, consumeErr := broker.Consume(secret); consumeErr == nil {
 				successes.Add(1)
-			} else if !errors.Is(consumeErr, ErrNotFound) {
+			} else if !errors.Is(consumeErr, errNotFound) {
 				t.Errorf("Consume() error = %v", consumeErr)
 			}
 		})

@@ -29,7 +29,7 @@ func NewMisses() *Misses {
 	return &Misses{entries: make(map[string]miss), now: time.Now}
 }
 
-func MissKey(item library.Item) string {
+func missKey(item library.Item) string {
 	if item.Show != "" {
 		return item.Library + "\x00" + item.Show + "\x00" + item.ShowTitle
 	}
@@ -47,7 +47,7 @@ func (misses *Misses) Blocked(item library.Item) bool {
 	misses.mu.Lock()
 	defer misses.mu.Unlock()
 	now := misses.now()
-	for _, key := range []string{MissKey(item), itemMissKey(item)} {
+	for _, key := range []string{missKey(item), itemMissKey(item)} {
 		if entry, found := misses.entries[key]; found && now.Before(entry.until) {
 			return true
 		}
@@ -56,7 +56,7 @@ func (misses *Misses) Blocked(item library.Item) bool {
 }
 
 func (misses *Misses) Fail(item library.Item) {
-	misses.fail(MissKey(item))
+	misses.fail(missKey(item))
 }
 
 func (misses *Misses) FailItem(item library.Item) {
@@ -84,7 +84,7 @@ func (misses *Misses) Clear(item library.Item) {
 		return
 	}
 	misses.mu.Lock()
-	delete(misses.entries, MissKey(item))
+	delete(misses.entries, missKey(item))
 	delete(misses.entries, itemMissKey(item))
 	misses.mu.Unlock()
 }

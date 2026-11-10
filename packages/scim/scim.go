@@ -21,7 +21,6 @@ const (
 	maxSCIMPageSize     = 200
 	maxSCIMPatchActions = 32
 	maxSCIMQueryLength  = 4096
-	MaxBodySize         = maxSCIMBody
 )
 
 type scimAPI struct {

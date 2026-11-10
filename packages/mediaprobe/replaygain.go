@@ -13,7 +13,7 @@ type ReplayGain struct {
 	AlbumSet bool
 }
 
-func ParseReplayGain(tags map[string]string) ReplayGain {
+func parseReplayGain(tags map[string]string) ReplayGain {
 	result := ReplayGain{}
 	if result.Track, result.TrackSet = gainTag(tags, "replaygain_track_gain", false); !result.TrackSet {
 		result.Track, result.TrackSet = gainTag(tags, "r128_track_gain", true)

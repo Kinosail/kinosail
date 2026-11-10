@@ -19,7 +19,7 @@ func (storage ListStorage) CreateSmart(ctx context.Context, viewer, name string,
 		return errors.New("playlist name already exists")
 	}
 	state.Smart[key] = rule
-	return storage.Commit(ctx, state, SmartListDocument)
+	return storage.Commit(ctx, state, smartListDocument)
 }
 
 func (storage ListStorage) Create(ctx context.Context, viewer, name string, ids ...string) error {
@@ -42,7 +42,7 @@ func (storage ListStorage) Create(ctx context.Context, viewer, name string, ids 
 	} else if len(ids) != 0 {
 		return errors.New("playlist name already exists")
 	}
-	return storage.Commit(ctx, state, PlaylistsDocument|PlaylistOrderDocument)
+	return storage.Commit(ctx, state, playlistsDocument|playlistOrderDocument)
 }
 
 func (storage ListStorage) SetPlaylist(ctx context.Context, viewer, name, id string, included bool) error {
@@ -59,7 +59,7 @@ func (storage ListStorage) SetPlaylist(ctx context.Context, viewer, name, id str
 	} else if !slices.Contains(state.PlaylistOrder[key], id) {
 		state.PlaylistOrder[key] = append(state.PlaylistOrder[key], id)
 	}
-	return storage.Commit(ctx, state, PlaylistsDocument|PlaylistOrderDocument)
+	return storage.Commit(ctx, state, playlistsDocument|playlistOrderDocument)
 }
 
 func (storage ListStorage) Order(ctx context.Context, viewer, name string, ids []string) error {
@@ -76,7 +76,7 @@ func (storage ListStorage) Order(ctx context.Context, viewer, name string, ids [
 		seen[id] = true
 	}
 	state.PlaylistOrder[key] = append([]string(nil), ids...)
-	return storage.Commit(ctx, state, PlaylistOrderDocument)
+	return storage.Commit(ctx, state, playlistOrderDocument)
 }
 
 func (storage ListStorage) DeletePlaylist(ctx context.Context, viewer, name string) error {
@@ -84,13 +84,13 @@ func (storage ListStorage) DeletePlaylist(ctx context.Context, viewer, name stri
 	delete(state.Playlists, viewer+":"+name)
 	delete(state.PlaylistOrder, viewer+":"+name)
 	delete(state.Smart, viewer+":"+name)
-	return storage.Commit(ctx, state, PlaylistsDocument|PlaylistOrderDocument|SmartListDocument)
+	return storage.Commit(ctx, state, playlistsDocument|playlistOrderDocument|smartListDocument)
 }
 
 func (storage ListStorage) SetListed(ctx context.Context, viewer, id string, listed bool) error {
 	state := storage.State()
 	state.Values[viewer+":"+id] = listed
-	return storage.Commit(ctx, state, ListedDocument)
+	return storage.Commit(ctx, state, listedDocument)
 }
 
 func ValidatePlaylist(name string, ids []string) (string, error) {

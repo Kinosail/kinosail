@@ -15,7 +15,7 @@ const maximumHLSPlaylistBytes = 1 << 20
 
 const HLSBandwidthPolicyMarker = "#KINOSAIL-BANDWIDTH:2"
 
-func VariantsReady(source, directory string, qualities []PlaybackQuality) bool {
+func variantsReady(source, directory string, qualities []PlaybackQuality) bool {
 	if len(qualities) == 0 {
 		return false
 	}
@@ -41,11 +41,11 @@ func VariantReady(source, directory string) bool {
 		line = strings.TrimSpace(line)
 		if strings.HasPrefix(line, `#EXT-X-MAP:URI="`) {
 			name := strings.TrimSuffix(strings.TrimPrefix(line, `#EXT-X-MAP:URI="`), `"`)
-			if VariantFile(name) {
+			if variantFile(name) {
 				_, err = os.Stat(filepath.Join(directory, name))
 				initReady = err == nil
 			}
-		} else if line != "" && !strings.HasPrefix(line, "#") && VariantFile(line) {
+		} else if line != "" && !strings.HasPrefix(line, "#") && variantFile(line) {
 			_, err = os.Stat(filepath.Join(directory, line))
 			if err == nil {
 				segments[line] = struct{}{}
@@ -84,7 +84,7 @@ func VariantBandwidth(directory string, fallback int64) (int64, int64) {
 		line = strings.TrimSpace(line)
 		if strings.HasPrefix(line, "#EXTINF:") {
 			segmentDuration, _ = strconv.ParseFloat(strings.TrimSuffix(strings.TrimPrefix(line, "#EXTINF:"), ","), 64)
-		} else if segmentDuration > 0 && VariantFile(line) {
+		} else if segmentDuration > 0 && variantFile(line) {
 			info, statErr := os.Stat(filepath.Join(directory, line))
 			if statErr == nil {
 				bits := float64(info.Size() * 8)

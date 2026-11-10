@@ -7,33 +7,33 @@ const PlanSchemaVersion = 2
 type Phase string
 
 const (
-	PhaseWaitingForIdle   Phase = "waiting-for-idle"
-	PhaseBackingUp        Phase = "backing-up"
-	PhaseVerifyingBackup  Phase = "verifying-backup"
-	PhaseDownloading      Phase = "downloading"
-	PhaseVerifyingRelease Phase = "verifying-release"
-	PhaseStopping         Phase = "stopping"
-	PhaseReplacing        Phase = "replacing"
-	PhaseStarting         Phase = "starting"
-	PhaseCheckingHealth   Phase = "checking-health"
-	PhaseRestoringBackup  Phase = "restoring-backup"
+	phaseWaitingForIdle   Phase = "waiting-for-idle"
+	phaseBackingUp        Phase = "backing-up"
+	phaseVerifyingBackup  Phase = "verifying-backup"
+	phaseDownloading      Phase = "downloading"
+	phaseVerifyingRelease Phase = "verifying-release"
+	phaseStopping         Phase = "stopping"
+	phaseReplacing        Phase = "replacing"
+	phaseStarting         Phase = "starting"
+	phaseCheckingHealth   Phase = "checking-health"
+	phaseRestoringBackup  Phase = "restoring-backup"
 )
 
 type ErrorCode string
 
 const (
-	ErrorDownloadFailed     ErrorCode = "download-failed"
-	ErrorSignatureInvalid   ErrorCode = "signature-invalid"
-	ErrorDigestMismatch     ErrorCode = "digest-mismatch"
-	ErrorBackupFailed       ErrorCode = "backup-failed"
-	ErrorServiceStopFailed  ErrorCode = "service-stop-failed"
-	ErrorInstallFailed      ErrorCode = "install-failed"
-	ErrorServiceStartFailed ErrorCode = "service-start-failed"
-	ErrorHealthCheckFailed  ErrorCode = "health-check-failed"
-	ErrorRestoreFailed      ErrorCode = "restore-failed"
-	ErrorRollbackFailed     ErrorCode = "rollback-failed"
-	ErrorInsufficientSpace  ErrorCode = "insufficient-space"
-	ErrorPermissionDenied   ErrorCode = "permission-denied"
+	errorDownloadFailed     ErrorCode = "download-failed"
+	errorSignatureInvalid   ErrorCode = "signature-invalid"
+	errorDigestMismatch     ErrorCode = "digest-mismatch"
+	errorBackupFailed       ErrorCode = "backup-failed"
+	errorServiceStopFailed  ErrorCode = "service-stop-failed"
+	errorInstallFailed      ErrorCode = "install-failed"
+	errorServiceStartFailed ErrorCode = "service-start-failed"
+	errorHealthCheckFailed  ErrorCode = "health-check-failed"
+	errorRestoreFailed      ErrorCode = "restore-failed"
+	errorRollbackFailed     ErrorCode = "rollback-failed"
+	errorInsufficientSpace  ErrorCode = "insufficient-space"
+	errorPermissionDenied   ErrorCode = "permission-denied"
 )
 
 type RecoveryPlan struct {
@@ -47,9 +47,9 @@ type RecoveryPlan struct {
 }
 
 func validPhase(value Phase) bool {
-	return slices.Contains([]Phase{PhaseWaitingForIdle, PhaseBackingUp, PhaseVerifyingBackup, PhaseDownloading, PhaseVerifyingRelease, PhaseStopping, PhaseReplacing, PhaseStarting, PhaseCheckingHealth, PhaseRestoringBackup}, value)
+	return slices.Contains([]Phase{phaseWaitingForIdle, phaseBackingUp, phaseVerifyingBackup, phaseDownloading, phaseVerifyingRelease, phaseStopping, phaseReplacing, phaseStarting, phaseCheckingHealth, phaseRestoringBackup}, value)
 }
 
 func validErrorCode(value ErrorCode) bool {
-	return slices.Contains([]ErrorCode{ErrorDownloadFailed, ErrorSignatureInvalid, ErrorDigestMismatch, ErrorBackupFailed, ErrorServiceStopFailed, ErrorInstallFailed, ErrorServiceStartFailed, ErrorHealthCheckFailed, ErrorRestoreFailed, ErrorRollbackFailed, ErrorInsufficientSpace, ErrorPermissionDenied}, value)
+	return slices.Contains([]ErrorCode{errorDownloadFailed, errorSignatureInvalid, errorDigestMismatch, errorBackupFailed, errorServiceStopFailed, errorInstallFailed, errorServiceStartFailed, errorHealthCheckFailed, errorRestoreFailed, errorRollbackFailed, errorInsufficientSpace, errorPermissionDenied}, value)
 }

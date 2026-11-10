@@ -15,9 +15,9 @@ const (
 	eventQueue     = 8
 )
 
-const MaximumSeconds = 366 * 24 * 60 * 60
+const maximumSeconds = 366 * 24 * 60 * 60
 
-const MaximumDriftSeconds = 60 * 60
+const maximumDriftSeconds = 60 * 60
 
 type Event struct {
 	Action      string    `json:"action"`
@@ -135,7 +135,7 @@ func (rooms *Rooms) Join(id, viewer string) (Event, *Subscription, bool) {
 }
 
 func (rooms *Rooms) ObserveDrift(subscription *Subscription, seconds float64) bool {
-	if subscription == nil || subscription.rooms != rooms || seconds < 0 || seconds > MaximumDriftSeconds || math.IsNaN(seconds) || math.IsInf(seconds, 0) {
+	if subscription == nil || subscription.rooms != rooms || seconds < 0 || seconds > maximumDriftSeconds || math.IsNaN(seconds) || math.IsInf(seconds, 0) {
 		return false
 	}
 	rooms.mu.Lock()
@@ -270,7 +270,7 @@ func currentSubscriber(current *room, id uint64) (subscriber, bool) {
 }
 
 func validState(action, media string, seconds float64) bool {
-	return (action == "play" || action == "pause" || action == "seek" || action == "media") && validIdentity(media) && seconds >= 0 && seconds <= MaximumSeconds && !math.IsNaN(seconds) && !math.IsInf(seconds, 0)
+	return (action == "play" || action == "pause" || action == "seek" || action == "media") && validIdentity(media) && seconds >= 0 && seconds <= maximumSeconds && !math.IsNaN(seconds) && !math.IsInf(seconds, 0)
 }
 
 func validIdentity(value string) bool {

@@ -20,19 +20,19 @@ func TestOIDCConfigurationKeysAndView(t *testing.T) {
 	t.Parallel()
 	keys := OIDCConfigurationKeys()
 	keys[0] = "changed"
-	if OIDCConfigurationKeys()[0] != OIDCIssuerKey {
+	if OIDCConfigurationKeys()[0] != oidcIssuerKey {
 		t.Fatal("configuration keys exposed shared state")
 	}
 	values := map[string]struct {
 		value      string
 		configured bool
 	}{
-		OIDCIssuerKey:   {"https://identity.example", true},
-		OIDCClientIDKey: {"client", true}, OIDCSecretKey: {"secret", true},
-		OIDCRedirectKey: {"https://media.example/login/oidc/callback", true}, OIDCIdentityKey: {"oid", true},
+		oidcIssuerKey:   {"https://identity.example", true},
+		oidcClientIDKey: {"client", true}, oidcSecretKey: {"secret", true},
+		oidcRedirectKey: {"https://media.example/login/oidc/callback", true}, oidcIdentityKey: {"oid", true},
 	}
 	view := NewOIDCConfigurationView(func(key string) (string, bool) { value := values[key]; return value.value, value.configured }, "control")
-	if view.Issuer != values[OIDCIssuerKey].value || view.ClientID != "client" || view.RedirectURL != values[OIDCRedirectKey].value || view.IdentityClaim != "oid" || !view.Configured || !view.SecretConfigured || view.Control != "control" {
+	if view.Issuer != values[oidcIssuerKey].value || view.ClientID != "client" || view.RedirectURL != values[oidcRedirectKey].value || view.IdentityClaim != "oid" || !view.Configured || !view.SecretConfigured || view.Control != "control" {
 		t.Fatalf("view = %#v", view)
 	}
 }
@@ -45,7 +45,7 @@ func TestOIDCConfigurationStoreRejectsBeforeSideEffects(t *testing.T) {
 	if err := store.Change(OIDCConfig{}, false); err == nil || effects.sets != 0 {
 		t.Fatalf("missing storage = %v %#v", err, effects)
 	}
-	store.File, effects.managedKey, effects.source = "/data/settings.json", OIDCIssuerKey, "yaml"
+	store.File, effects.managedKey, effects.source = "/data/settings.json", oidcIssuerKey, "yaml"
 	if err := store.Change(OIDCConfig{}, false); err == nil || !strings.Contains(err.Error(), "yaml") || effects.sets != 0 {
 		t.Fatalf("managed storage = %v %#v", err, effects)
 	}
@@ -63,7 +63,7 @@ func TestOIDCConfigurationStoreSetAndReset(t *testing.T) {
 	if err := store.Change(config, false); err != nil {
 		t.Fatal(err)
 	}
-	if effects.directory != "/data" || effects.config.ClientSecret != "current-secret" || effects.updates[OIDCSecretKey] != "current-secret" || len(effects.updates) != 5 {
+	if effects.directory != "/data" || effects.config.ClientSecret != "current-secret" || effects.updates[oidcSecretKey] != "current-secret" || len(effects.updates) != 5 {
 		t.Fatalf("set effects = %#v", effects)
 	}
 	effects.updates, effects.deleted = map[string]string{}, map[string]bool{}

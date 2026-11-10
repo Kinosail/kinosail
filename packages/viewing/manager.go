@@ -63,13 +63,13 @@ func NewManager(ctx context.Context, dataDir string, config Config) *Manager {
 	manager.engine = Engine[Profile]{
 		Store: PreviewStore{Mutex: &manager.mu, Values: &manager.previews, Slots: &manager.previewSlots, Limit: previewLimit, Workers: previewWorkers},
 		TTL:   previewTTL, Validate: manager.validate, Fetch: func(ctx context.Context, input Input) ([]Activity, error) {
-			return Fetch(ctx, manager.config.Client, input, true)
+			return fetch(ctx, manager.config.Client, input, true)
 		}, Snapshot: config.Snapshot, Profile: config.Profile,
 		ProfileID: func(profile Profile) string { return profile.ID }, ProfileName: func(profile Profile) string { return profile.Name },
 		Progress: config.Progress, ListAdditions: config.ListAdditions, Commit: config.Commit,
 	}
 	if manager.file != "" {
-		manager.syncs, manager.loadErr = LoadSyncs(manager.file, func(input Input) (Input, error) {
+		manager.syncs, manager.loadErr = loadSyncs(manager.file, func(input Input) (Input, error) {
 			input, _, err := manager.validate(input)
 			return input, err
 		})

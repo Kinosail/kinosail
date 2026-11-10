@@ -21,20 +21,20 @@ func TestSyncStorageRejectsInvalidStateAndClonesSecrets(t *testing.T) {
 		input.Source = strings.ToLower(input.Source)
 		return input, nil
 	}
-	if syncs, err := LoadSyncs(file, normalize); err != nil || len(syncs) != 0 {
+	if syncs, err := loadSyncs(file, normalize); err != nil || len(syncs) != 0 {
 		t.Fatalf("missing state = %#v, error=%v", syncs, err)
 	}
 	valid := `{"ABCDEFGHIJKLMNOP234567":{"id":"ABCDEFGHIJKLMNOP234567","source":"PLEX","url":"https://plex.example","token":"secret","profileId":"viewer","interval":"1h","lastResult":{},"seen":{"movie":{"targetId":"target","signature":"sig"}}}}`
 	if err := os.WriteFile(file, []byte(valid), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	syncs, err := LoadSyncs(file, normalize)
+	syncs, err := loadSyncs(file, normalize)
 	if err != nil || syncs["ABCDEFGHIJKLMNOP234567"].Source != "plex" {
 		t.Fatalf("syncs=%#v error=%v", syncs, err)
 	}
-	cloned := CloneSyncs(syncs)
+	cloned := cloneSyncs(syncs)
 	cloned["ABCDEFGHIJKLMNOP234567"].Seen["movie"] = Observation{TargetID: "changed"}
-	if syncs["ABCDEFGHIJKLMNOP234567"].Seen["movie"].TargetID != "target" || !ValidSyncInterval("15m") || ValidSyncInterval("weekly") {
+	if syncs["ABCDEFGHIJKLMNOP234567"].Seen["movie"].TargetID != "target" || !validSyncInterval("15m") || validSyncInterval("weekly") {
 		t.Fatal("sync clone or interval validation failed")
 	}
 	for _, invalid := range []string{
@@ -47,15 +47,15 @@ func TestSyncStorageRejectsInvalidStateAndClonesSecrets(t *testing.T) {
 		if err := os.WriteFile(file, []byte(invalid), 0o600); err != nil {
 			t.Fatal(err)
 		}
-		if restored, err := LoadSyncs(file, normalize); err == nil || restored != nil {
+		if restored, err := loadSyncs(file, normalize); err == nil || restored != nil {
 			t.Fatalf("invalid state restored: %#v", restored)
 		}
 	}
-	if ValidPending(&SyncPending{Changes: []ProgressChange{{TargetID: ""}}}) || !ValidPending(nil) || ValidSummary(Summary{Applied: -1}) {
+	if validPending(&SyncPending{Changes: []ProgressChange{{TargetID: ""}}}) || !validPending(nil) || validSummary(Summary{Applied: -1}) {
 		t.Fatal("pending or summary validation accepted invalid state")
 	}
-	message := SafeError(errors.New(strings.Repeat("x", 2048) + "\nsecret"))
-	if len(message) != 1024 || strings.Contains(message, "\n") || SafeError(nil) != "" {
+	message := safeError(errors.New(strings.Repeat("x", 2048) + "\nsecret"))
+	if len(message) != 1024 || strings.Contains(message, "\n") || safeError(nil) != "" {
 		t.Fatalf("safe error = %q", message)
 	}
 }
@@ -83,7 +83,7 @@ func TestSyncStorageRejectsEveryPendingBound(t *testing.T) {
 		{ListChanges: []ListChange{{TargetID: "id", Playlists: map[string]int{"Queue": maximumSyncItems}}}},
 	}
 	for index, pending := range cases {
-		if ValidPending(pending) {
+		if validPending(pending) {
 			t.Errorf("invalid pending %d accepted", index)
 		}
 	}
@@ -95,10 +95,10 @@ func TestSyncStorageRejectsEveryPendingBound(t *testing.T) {
 		}
 		manyMemberships.ListChanges[index] = ListChange{TargetID: "id", Playlists: playlists}
 	}
-	if ValidPending(manyMemberships) {
+	if validPending(manyMemberships) {
 		t.Fatal("membership aggregate accepted")
 	}
-	if !ValidPending(&SyncPending{Changes: []ProgressChange{{TargetID: "id"}}, ListChanges: []ListChange{{TargetID: "id", Playlists: map[string]int{"Queue": 0}}}}) {
+	if !validPending(&SyncPending{Changes: []ProgressChange{{TargetID: "id"}}, ListChanges: []ListChange{{TargetID: "id", Playlists: map[string]int{"Queue": 0}}}}) {
 		t.Fatal("valid pending rejected")
 	}
 }
@@ -108,17 +108,17 @@ func TestLoadSyncsRejectsOpenAndSizeFailures(t *testing.T) {
 	if err := os.Symlink("loop", loop); err != nil {
 		t.Fatal(err)
 	}
-	if state, err := LoadSyncs(loop, func(input Input) (Input, error) { return input, nil }); err == nil || state != nil {
+	if state, err := loadSyncs(loop, func(input Input) (Input, error) { return input, nil }); err == nil || state != nil {
 		t.Fatalf("symlink state=%#v error=%v", state, err)
 	}
-	if state, err := LoadSyncs(t.TempDir(), func(input Input) (Input, error) { return input, nil }); err == nil || state != nil {
+	if state, err := loadSyncs(t.TempDir(), func(input Input) (Input, error) { return input, nil }); err == nil || state != nil {
 		t.Fatalf("directory state=%#v error=%v", state, err)
 	}
 	file := filepath.Join(t.TempDir(), "viewing_imports.json")
-	if err := os.WriteFile(file, make([]byte, MaximumSyncStateSize+1), 0o600); err != nil {
+	if err := os.WriteFile(file, make([]byte, maximumSyncStateSize+1), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if state, err := LoadSyncs(file, func(input Input) (Input, error) { return input, nil }); err == nil || state != nil {
+	if state, err := loadSyncs(file, func(input Input) (Input, error) { return input, nil }); err == nil || state != nil {
 		t.Fatalf("large state=%#v error=%v", state, err)
 	}
 }
