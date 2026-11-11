@@ -17,5 +17,3 @@ var libraryAPIFixture = servertest.LibraryAPIFixture{
 	StoredState:     storedState,
 	StoredProfileID: storedProfileID,
 }
-
-var paginatedLibrary = libraryAPIFixture.PaginatedLibrary

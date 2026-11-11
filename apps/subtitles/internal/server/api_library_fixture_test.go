@@ -18,5 +18,3 @@ var libraryAPIFixture = servertest.LibraryAPIFixture{
 	StoredProfileID: storedProfileID,
 	NoPlayback:      true,
 }
-
-var paginatedLibrary = libraryAPIFixture.PaginatedLibrary

@@ -55,4 +55,4 @@ Remote password login is disabled. A remote Viewer uses a verified passkey or a 
 If sign-in fails, do not share a password, passkey credential, TOTP secret, recovery code, or session cookie. Use [Sign-in and access problems]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}).
 
 
-Source of truth: `internal/server/profiles.go`, `profile_policy.go`, and authentication handlers.
+Source of truth: `internal/server/profiles.go`, `packages/identitycore/profile.go`, and authentication handlers.
