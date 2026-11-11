@@ -9,10 +9,7 @@ import (
 
 const hlsDiagnosticLimit = playback.HLSDiagnosticLimit
 
-type (
-	hlsDiagnosticError  = playback.HLSDiagnosticError
-	hlsDiagnosticBuffer = playback.HLSDiagnosticBuffer
-)
+type hlsDiagnosticError = playback.HLSDiagnosticError
 
 func newHLSDiagnosticError(cause error, detail string, private ...string) *hlsDiagnosticError {
 	return playback.NewHLSDiagnosticError(cause, detail, private...)

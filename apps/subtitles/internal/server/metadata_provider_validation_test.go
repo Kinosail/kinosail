@@ -75,36 +75,3 @@ func TestProviderRejectsOversizedShowIdentityWithoutSideEffects(t *testing.T) {
 		t.Fatalf("refresh = %d, provider requests = %d, metadata = %q", refresh.Code, providerRequests, metadata)
 	}
 }
-
-func idFirstTMDB(token, prefix string, legacy bool, finds, searches *int) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		if request.Header.Get("Authorization") != "Bearer "+token {
-			http.Error(writer, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-		switch request.URL.Path {
-		case prefix + "/find/tt0208654":
-			(*finds)++
-			if request.URL.Query().Get("external_source") != "imdb_id" {
-				http.Error(writer, "missing external source", http.StatusBadRequest)
-				return
-			}
-			if legacy {
-				_, _ = writer.Write([]byte(`{"movie_results":[{"id":133}]}`))
-			} else {
-				_, _ = writer.Write([]byte(`{"movie_results":[{"id":133,"title":"'Twas the Night Before Christmas","release_date":"1974-12-08","overview":"A holiday special."}]}`))
-			}
-		case prefix + "/search/movie":
-			(*searches)++
-			http.Error(writer, "title search must not run", http.StatusBadRequest)
-		case prefix + "/movie/133":
-			if legacy {
-				_, _ = writer.Write([]byte(`{"title":"'Twas the Night Before Christmas","release_date":"1974-12-08","overview":"A holiday special."}`))
-			} else {
-				_, _ = writer.Write([]byte(`{"belongs_to_collection":null}`))
-			}
-		default:
-			http.NotFound(writer, request)
-		}
-	}
-}

@@ -20,6 +20,4 @@ func TestDefaultMFADoesNotBlockOpenInitialServer(t *testing.T) {
 	}
 }
 
-var enrollTestAPIFactor = servertest.EnrollTestAPIFactor
-
 var testTOTP = servertest.TestTOTP

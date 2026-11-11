@@ -247,3 +247,10 @@ func medianDuration(values []time.Duration) time.Duration {
 	slices.Sort(sorted)
 	return sorted[len(sorted)/2]
 }
+
+func useHLSWatchHub(t *testing.T, hub *hlsWatchHub) {
+	t.Helper()
+	previous := hlsWatches
+	hlsWatches = hub
+	t.Cleanup(func() { hlsWatches = previous })
+}

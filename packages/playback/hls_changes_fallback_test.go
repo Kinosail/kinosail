@@ -65,13 +65,6 @@ func TestWaitHLSChangePollsAndWarnsWhenWatchesAreExhausted(t *testing.T) {
 	}
 }
 
-func useHLSWatchHub(t *testing.T, hub *hlsWatchHub) {
-	t.Helper()
-	previous := hlsWatches
-	hlsWatches = hub
-	t.Cleanup(func() { hlsWatches = previous })
-}
-
 func exhaustFileDescriptors(t *testing.T, run func()) {
 	t.Helper()
 	var limit syscall.Rlimit
