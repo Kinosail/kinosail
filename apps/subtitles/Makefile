@@ -1,4 +1,4 @@
-.PHONY: bootstrap deploy-nox hooks install-nox-autodeploy browser-test check check-fast container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
+.PHONY: bootstrap deploy-nox hooks install-nox-autodeploy browser-test check check-fast container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck
 
 bootstrap:
 	brew bundle
@@ -19,7 +19,7 @@ browser-test:
 
 check: check-fast test-race vuln
 
-check-fast: max-loc single-container tidy-check lint deadcode coverage installer-test native-build shellcheck actionlint secrets local-pipeline-test
+check-fast: max-loc single-container tidy-check lint deadcode coverage installer-test native-build shellcheck secrets local-pipeline-test
 
 container-test:
 	@./scripts/test-container.sh
@@ -87,7 +87,4 @@ single-container:
 shellcheck:
 	@../../scripts/tooling/shellcheck-tracked.sh
 
-actionlint:
-	actionlint
-
-browser-test check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)
+browser-test check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)

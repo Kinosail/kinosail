@@ -1,6 +1,6 @@
 # Remove Player features from Subtitles
 
-Status: Stage 1 complete (inventory and plan). Stage 2 waits for Owner approval.
+Status: Stages 1 and 2a through 2e are complete. Stage 3 has started with request telemetry (3a). The items under "Still open" in Stage 2e remain.
 Revision inspected: `3f292de8` (2026-10-14).
 
 ## Problem

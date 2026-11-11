@@ -42,7 +42,7 @@
 ## Verification
 
 - Run focused E2E journeys and affected package checks while editing. Use retained isolated checks for their documented E2E gaps.
-- Before publication, run `make max-loc` and, after committing app changes, the affected app's `make verify-changed`. For workflow-only changes, run the CI contract tests and `actionlint` locally. GitHub Actions remains the authority for complete selected suites.
+- Before publication, run `make max-loc` and, after committing app changes, the affected app's `make verify-changed`. For workflow-only changes, run the CI contract tests locally. The Homebrew `actionlint` rejects `parallel:` step groups and `concurrency.queue`; `verify-changed` ignores those two reports, and the hosted source-tools check lints workflows with a pinned build that accepts them. GitHub Actions remains the authority for complete selected suites.
 - Once the relevant checks pass, rerun them only after a change or a concrete failure requires it. Fix task-caused local test failures without routine approval stops.
 - Run container, populated-browser, cross-browser, performance, race, and release gates only when the changed surface requires them.
 - Run root checks serially because the Go linter uses a shared lock.

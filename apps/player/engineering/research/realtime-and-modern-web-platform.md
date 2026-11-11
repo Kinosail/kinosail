@@ -25,7 +25,7 @@ Do not send media through Server-Sent Events, WebSockets, WebTransport, WebRTC, 
 - The first-party browser code does not clearly create a WebSocket. Verify the rendered Watch Together path before treating the route as an active product capability.
 - Library monitoring uses file events, a stability delay, and polling fallback in [`library_watch.go`](../../../../packages/catalog/watch.go).
 - Offline preparation is a bounded server job in [`downloads.go`](../../internal/server/downloads.go).
-- Browser downloads use 8 MiB IndexedDB chunks in [`downloads.js`](../../../../packages/webassets/static/downloads.js).
+- Browser downloads were removed from the web app after this snapshot. Offline viewing is in the iPhone and iPad app.
 - The service worker verifies chunks, creates one full `Blob`, and serves local ranges in [`service-worker.js`](../../internal/server/static/service-worker.js).
 - The service worker also caches authenticated `/watch/` HTML. That creates stale-session and profile-isolation risk.
 - The player uses Media Capabilities with one fixed 1080p sample. It also uses Media Session in [`player.js`](../../../../packages/webassets/static/player-core.js).

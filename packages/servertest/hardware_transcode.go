@@ -89,13 +89,17 @@ func assertProcessStopsBeforeCleanup(t *testing.T, pidFile string) {
 		t.Errorf("parse fake FFmpeg PID: %v", err)
 		return
 	}
+	process, err := os.FindProcess(pid)
+	if err != nil {
+		return
+	}
 	for range 100 {
-		if syscall.Kill(pid, 0) != nil {
+		if process.Signal(syscall.Signal(0)) != nil {
 			return
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
-	_ = syscall.Kill(pid, syscall.SIGKILL)
+	_ = process.Kill()
 	t.Error("fake FFmpeg was still running during test cleanup")
 }
 
