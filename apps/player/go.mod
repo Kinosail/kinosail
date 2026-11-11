@@ -1,6 +1,6 @@
 module github.com/MikeO7/kinosail-player
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/MikeO7/kinosail/packages v0.0.0
