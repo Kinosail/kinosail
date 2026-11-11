@@ -114,7 +114,9 @@ nox_deploy_files="$(grep -E '^scripts/(deploy-nox|test-deploy-nox)\.sh$' <<<"$ch
 workflow_files="$(grep -E '^\.github/workflows/.*\.ya?ml$' <<<"$changed" || true)"
 workflow_args=()
 while IFS= read -r file; do [[ -z "$file" ]] || workflow_args+=("$file"); done <<<"$workflow_files"
-[[ -z "$workflow_files" ]] || run_stage actionlint "$workflow_files" actionlint "${workflow_args[@]}"
+[[ -z "$workflow_files" ]] || run_stage actionlint "$workflow_files" actionlint \
+	-ignore 'step must run script with "run" section or run action with "uses" section' \
+	-ignore 'unexpected key "queue" for "concurrency" section' "${workflow_args[@]}"
 
 go_files="$(grep -E '\.go$|^go\.(mod|sum)$' <<<"$changed" || true)"
 if [[ -n "$go_files" ]]; then

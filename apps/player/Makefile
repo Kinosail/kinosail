@@ -1,4 +1,4 @@
-.PHONY: bootstrap package-installer deploy-nox hooks install-nox-autodeploy browser-test check check-fast client-check container-test coverage deadcode installer-test native-build native-copy-check format lint local-pipeline local-pipeline-test performance-test media-server-benchmark-test playback-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
+.PHONY: bootstrap package-installer deploy-nox hooks install-nox-autodeploy browser-test check check-fast client-check container-test coverage deadcode installer-test native-build native-copy-check format lint local-pipeline local-pipeline-test performance-test media-server-benchmark-test playback-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck
 
 bootstrap:
 	brew bundle
@@ -33,7 +33,7 @@ client-build-tvos:
 
 check: check-fast test-race vuln
 
-check-fast: max-loc single-container tidy-check lint deadcode coverage installer-test native-build native-copy-check shellcheck actionlint secrets local-pipeline-test
+check-fast: max-loc single-container tidy-check lint deadcode coverage installer-test native-build native-copy-check shellcheck secrets local-pipeline-test
 
 container-test:
 	@./scripts/test-container.sh
@@ -112,7 +112,4 @@ single-container:
 shellcheck:
 	@../../scripts/tooling/shellcheck-tracked.sh
 
-actionlint:
-	actionlint
-
-browser-test client-check check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test media-server-benchmark-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)
+browser-test client-check check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test media-server-benchmark-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)

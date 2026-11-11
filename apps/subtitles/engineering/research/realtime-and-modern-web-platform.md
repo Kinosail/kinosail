@@ -37,12 +37,12 @@ Do not send media through Server-Sent Events, WebSockets, WebTransport, WebRTC, 
 ## Baseline Kinosail seams
 
 - Direct files use `http.ServeFile` in [`files.go`](../../internal/server/files.go). HTTP byte ranges already support seek and recovery.
-- HLS publishes playable segment lists in [`hls_playlist.go`](../../internal/server/hls_playlist.go).
-- Watch Together exposes a WebSocket route in [`watch_together.go`](../../internal/server/watch_together.go). It limits messages to 4 KiB and rechecks access each second.
+- HLS publishes playable segment lists in [`hls_playlist.go`](../../../player/internal/server/hls_playlist.go).
+- Watch Together exposes a WebSocket route in [`watch_together.go`](../../../player/internal/server/watch_together.go). It limits messages to 4 KiB and rechecks access each second.
 - The first-party browser code did not create the existing Watch Together WebSocket before this change.
 - Library monitoring uses file events, a stability delay, and polling fallback in [`library_watch.go`](../../../../packages/catalog/watch.go).
-- Offline preparation is a bounded server job in [`downloads.go`](../../internal/server/downloads.go).
-- Browser downloads use 8 MiB IndexedDB chunks in [`downloads.js`](../../../../packages/webassets/static/downloads.js).
+- Offline preparation is a bounded server job in [`downloads.go`](../../../player/internal/server/downloads.go).
+- Browser downloads were removed from the web app after this snapshot. Offline viewing is in the iPhone and iPad app.
 - The prior service worker verified chunks, created one full `Blob`, and served local ranges in [`service-worker.js`](../../internal/server/static/service-worker.js).
 - The prior service worker cached authenticated `/watch/` HTML. That created stale-session and profile-isolation risk.
 - The prior player used Media Capabilities with one fixed 1080p sample. It also used Media Session in [`player.js`](../../../../packages/webassets/static/player-core.js).
