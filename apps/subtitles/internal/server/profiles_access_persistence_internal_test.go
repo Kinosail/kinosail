@@ -65,7 +65,7 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) {
 	if _, ok := store.access(accessStateRequest(t, "active-token")); !ok || attempts["sessions.json"] != 2 || attempts["api_keys.json"] != 1 {
 		t.Fatalf("request retried state writes: ok=%v attempts=%v", ok, attempts)
 	}
-	store.flushAccessState(t.Context())
+	store.accessFlusher().Flush(t.Context())
 	if attempts["sessions.json"] != 3 || attempts["api_keys.json"] != 2 || store.accessState.Pending() != 0 {
 		t.Fatalf("retry attempts=%v pending=%d", attempts, store.accessState.Pending())
 	}
@@ -87,8 +87,8 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) {
 	if attempts["sessions.json"] != 3 || attempts["api_keys.json"] != 2 {
 		t.Fatalf("request path wrote use timestamps: %v", attempts)
 	}
-	store.flushAccessState(t.Context())
-	store.flushAccessState(t.Context())
+	store.accessFlusher().Flush(t.Context())
+	store.accessFlusher().Flush(t.Context())
 	if attempts["sessions.json"] != 4 || attempts["api_keys.json"] != 3 {
 		t.Fatalf("use timestamps were not flushed once: %v", attempts)
 	}

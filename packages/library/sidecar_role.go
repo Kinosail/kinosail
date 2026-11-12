@@ -28,3 +28,18 @@ func SubtitleFileRole(path string) string {
 func SubtitleFileForced(path string) bool {
 	return strings.Contains(strings.ToLower(filepath.Base(path)), ".forced.")
 }
+
+func SubtitleSidecarPath(media, language, variant string) string {
+	base := strings.TrimSuffix(media, filepath.Ext(media)) + "." + language
+	if variant == "sdh" {
+		return base + ".sdh.srt"
+	}
+	return base + ".srt"
+}
+
+func SubtitleSidecarVariant(path string) string {
+	if strings.HasSuffix(path, ".sdh.srt") {
+		return "sdh"
+	}
+	return ""
+}

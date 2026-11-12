@@ -122,5 +122,7 @@ func TestPasskeyRemovalRequiresSessionAndValidIdentifier(t *testing.T) {
 func TestPasskeyCloneWarningCreatesSecuritySignal(t *testing.T) {
 	audit := newAuditStore(t.Context(), "", nil)
 	assertRisk := servertest.PasskeyCloneWarningCreatesSecuritySignal
-	assertRisk(t, audit.passkeyRisk, audit.Query)
+	assertRisk(t, func(request *http.Request, profile viewerProfile, credential *webauthn.Credential) {
+		passkeyRisk(audit, request, profile, credential)
+	}, audit.Query)
 }

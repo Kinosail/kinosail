@@ -174,7 +174,7 @@ func (auth *passkeyAuth) signInPasskey(writer http.ResponseWriter, request *http
 func (auth *passkeyAuth) completePasskeyLogin(request *http.Request, profile viewerProfile, credential *webauthn.Credential) {
 	setAuditViewer(request, profile)
 	if credential.Authenticator.CloneWarning && auth.audit != nil {
-		auth.audit.passkeyRisk(request, profile, credential)
+		passkeyRisk(auth.audit, request, profile, credential)
 	}
 }
 
