@@ -481,7 +481,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78
         with:
           distribution: temurin
           java-version: '25'
@@ -533,7 +533,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78
         with:
           distribution: temurin
           java-version: '25'
@@ -607,13 +607,13 @@ jobs:
       - run: |
           echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
           echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
-      - uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+      - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066
         with:
           languages: javascript-typescript,python,actions
           config-file: .github/codeql-config.yml
           build-mode: none
           queries: security-extended
-      - uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+      - uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066
       - name: Require zero open security findings on this ref
         env:
           GH_TOKEN: ${{ github.token }}
@@ -637,7 +637,7 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78
         with:
           distribution: temurin
           java-version: '25'
@@ -649,7 +649,7 @@ jobs:
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
         with:
           packages: 'platform-tools platforms;android-37.0'
-      - uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+      - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066
         with:
           languages: go,java-kotlin
           config-file: .github/codeql-config.yml
@@ -658,7 +658,7 @@ jobs:
       - run: go build ./apps/player/... ./apps/subtitles/... ./packages/...
       - run: ./gradlew :app:assembleDebug :wear:assembleDebug
         working-directory: apps/player/apps/android
-      - uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+      - uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066
       - name: Require zero open security findings on this ref
         env:
           GH_TOKEN: ${{ github.token }}
@@ -678,7 +678,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+      - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066
         with:
           languages: swift
           config-file: .github/codeql-config.yml
@@ -696,7 +696,7 @@ jobs:
             > "$RUNNER_TEMP/codeql.xcconfig"
           DEVELOPER_DIR=/Applications/Xcode_27.1.app/Contents/Developer \
             XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
-      - uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+      - uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066
 
   diagnostics:
     name: Deep quality metrics
