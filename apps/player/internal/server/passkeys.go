@@ -71,7 +71,7 @@ func newPasskeyAuth(rawURL string, profiles *profileStore) *passkeyAuth {
 			AfterLogin: func(request *http.Request, profile viewerProfile, credential *webauthn.Credential) {
 				setAuditViewer(request, profile)
 				if credential.Authenticator.CloneWarning && auth.audit != nil {
-					auth.audit.passkeyRisk(request, profile, credential)
+					passkeyRisk(auth.audit, request, profile, credential)
 				}
 			},
 			OnboardingNext: func(profile viewerProfile) bool {

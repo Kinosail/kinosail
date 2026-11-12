@@ -95,10 +95,7 @@ func (file *subtitleSidecar) syncDirectory() {
 
 func (file *subtitleSidecar) record(data []byte, record subtitleRecord) subtitleRecord {
 	record.Fingerprint = subtitleFingerprint(data)
-	record.Variant = ""
-	if strings.HasSuffix(file.name, ".sdh.srt") {
-		record.Variant = "sdh"
-	}
+	record.Variant = library.SubtitleSidecarVariant(file.name)
 	if info, err := file.root.Stat(file.name); err == nil {
 		record.Size, record.Modified = info.Size(), info.ModTime().UnixNano()
 	}

@@ -1,6 +1,6 @@
 # Remove Player features from Subtitles
 
-Status: Stages 1 and 2a through 2e are complete. Stage 3 has started with request telemetry (3a). The items under "Still open" in Stage 2e remain.
+Status: Stages 1 and 2a through 2e are complete. Stage 3 steps 3a through 3d are complete. The items under "Still open" in Stage 2e remain.
 Revision inspected: `3f292de8` (2026-10-14).
 
 ## Problem
@@ -212,9 +212,9 @@ Recompute the identical-file list. Move the adapters in [Shared code for package
 The 2026-10-30 recount found 41 byte-identical files with 1,039 lines. Most are thin adapters over `packages/`. The duplicated logic sits in the stores and request observation around them. Stage 3 moves that logic in small pull requests, each with Player regression coverage:
 
 1. **3a, request telemetry.** `operations.RequestTelemetry` counts requests, errors, and panics and keeps recent failures for both apps.
-2. **3b, audit store.** One audit store constructor in `packages/auditjournal`.
-3. **3c, access state.** Session and API-key persistence, retry, and flush (`profiles_access_state.go`) in `packages/identitycore`.
-4. **3d, sidecar naming.** Default, Language, and SDH Subtitle names in `packages/library`, used by Subtitles to write and by Player to read.
+2. **3b, audit store.** One audit store constructor, `operations.NewAuditStore`. It lives in `packages/operations` because that package already imports `packages/auditjournal`.
+3. **3c, access state.** Session and API-key persistence, retry, and flush in `identitycore.AccessFlusher`.
+4. **3d, sidecar naming.** `library.SubtitleSidecarPath` writes regular and SDH names. A contract test proves that the shared readers return the same language and role.
 
 ## Verification limits
 

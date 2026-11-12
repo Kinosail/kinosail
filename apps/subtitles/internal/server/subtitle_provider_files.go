@@ -2,15 +2,13 @@ package server
 
 import (
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/subtitlelanguage"
 )
 
 func subtitleSidecarPath(item library.Item, language string) string {
-	return strings.TrimSuffix(item.Path, filepath.Ext(item.Path)) + "." + language + ".srt"
+	return library.SubtitleSidecarPath(item.Path, language, "")
 }
 
 func validLanguage(language string) bool {
@@ -19,10 +17,7 @@ func validLanguage(language string) bool {
 }
 
 func subtitleVariantPath(item library.Item, language, variant string) string {
-	if variant == "sdh" {
-		return strings.TrimSuffix(item.Path, filepath.Ext(item.Path)) + "." + language + ".sdh.srt"
-	}
-	return subtitleSidecarPath(item, language)
+	return library.SubtitleSidecarPath(item.Path, language, variant)
 }
 
 func (provider *subtitleProvider) managedSidecarPath(item library.Item, language string) string {

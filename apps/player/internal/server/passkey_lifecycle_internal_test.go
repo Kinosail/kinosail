@@ -121,5 +121,7 @@ func TestPasskeyRemovalRequiresRecentStrongAuthentication(t *testing.T) {
 
 func TestPasskeyCloneWarningCreatesSecuritySignalWithoutAutomaticRevocation(t *testing.T) {
 	audit := newAuditStore(t.Context(), "", nil)
-	servertest.PasskeyCloneWarningCreatesSecuritySignal(t, audit.passkeyRisk, audit.Query)
+	servertest.PasskeyCloneWarningCreatesSecuritySignal(t, func(request *http.Request, profile viewerProfile, credential *webauthn.Credential) {
+		passkeyRisk(audit, request, profile, credential)
+	}, audit.Query)
 }
