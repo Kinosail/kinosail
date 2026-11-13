@@ -50,7 +50,7 @@ dependencies {
     implementation("androidx.tv:tv-material:1.1.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.22.4")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.23.0")
     implementation("androidx.media3:media3-exoplayer:1.11.1")
     implementation("androidx.media3:media3-exoplayer-hls:1.11.1")
     implementation("androidx.media3:media3-ui:1.11.1")
