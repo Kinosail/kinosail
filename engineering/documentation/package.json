@@ -2,5 +2,5 @@
   "name": "kinosail-documentation-checks",
   "private": true,
   "scripts": { "test": "node --test test-*.cjs" },
-  "devDependencies": { "jsdom": "31.0.0" }
+  "devDependencies": { "jsdom": "31.0.1" }
 }
