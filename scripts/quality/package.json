@@ -3,10 +3,10 @@
   "private": true,
   "packageManager": "pnpm@12.18.0",
   "devDependencies": {
-    "eslint": "10.14.0",
+    "eslint": "10.15.0",
     "eslint-plugin-import": "2.32.0",
     "globals": "17.14.0",
-    "jscpd": "5.4.2",
+    "jscpd": "5.4.3",
     "typescript": "7.0.2"
   }
 }
