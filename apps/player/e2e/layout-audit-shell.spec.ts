@@ -32,6 +32,9 @@ test("signed-in application pages retain the navigation shell", async ({ page },
 			expect(shell.sidebar).toEqual({ left: 0, right: 240, top: shell.header.bottom, bottom: viewport.height });
 			expect(shell.main.left).toBeGreaterThanOrEqual(shell.sidebar.right);
 			expect(await page.locator(".desktop-sidebar").evaluate((element) => element.scrollTop)).toBe(0);
+			const rail = await page.locator(".desktop-sidebar nav").evaluate((nav) => ({ nav: Math.round(nav.getBoundingClientRect().width), links: [...nav.querySelectorAll(".sidebar-group a")].map((link) => Math.round(link.getBoundingClientRect().width)) }));
+			expect(rail.links.length, "sidebar links").toBeGreaterThan(0);
+			expect(rail.links.filter((width) => width !== rail.nav), `sidebar links must fill the ${rail.nav}px rail`).toEqual([]);
 		} else if (viewport.width > 900) {
 			await expect(page.locator(".desktop-sidebar")).toBeHidden();
 			await expect(page.locator(".mobile-navigation")).toBeVisible();
