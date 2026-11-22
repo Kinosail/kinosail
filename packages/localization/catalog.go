@@ -132,7 +132,9 @@ func (catalog *Catalog) translateBody(source, tag string) string {
 				break
 			}
 			result.WriteString(catalog.translateTag(source[:end+1], tag))
-			source = source[end+1:]
+			literal := literalElementEnd(source[:end+1], source[end+1:])
+			result.WriteString(source[end+1 : end+1+literal])
+			source = source[end+1+literal:]
 			continue
 		}
 		if strings.HasPrefix(source, "{{") {
@@ -182,6 +184,17 @@ func (catalog *Catalog) translateText(source, tag string) string {
 		source = strings.ReplaceAll(source, translationMarker(position), translated)
 	}
 	return source
+}
+
+func literalElementEnd(tag, rest string) int {
+	for _, name := range [...]string{"code", "pre", "kbd", "samp"} {
+		if strings.HasPrefix(tag, "<"+name+">") || strings.HasPrefix(tag, "<"+name+" ") {
+			if end := strings.Index(rest, "</"+name+">"); end >= 0 {
+				return end
+			}
+		}
+	}
+	return 0
 }
 
 func translationMarker(position int) string {

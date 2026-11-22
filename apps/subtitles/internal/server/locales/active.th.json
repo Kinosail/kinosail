@@ -1262,5 +1262,4061 @@
   {
     "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
     "other": "ไม่อนุญาตที่อยู่นี้ เปิด Kinosail ที่ที่อยู่ที่กำหนดค่าไว้ หรือเพิ่มที่อยู่นี้ลงใน KINOSAIL_TLS_HOSTS"
+  },
+  {
+    "id": "Allow connection",
+    "other": "Allow connection"
+  },
+  {
+    "id": "Agent connections",
+    "other": "Agent connections"
+  },
+  {
+    "id": "Private connection",
+    "other": "Private connection"
+  },
+  {
+    "id": "Allow",
+    "other": "Allow"
+  },
+  {
+    "id": "to connect?",
+    "other": "to connect?"
+  },
+  {
+    "id": "Kinosail will share only the capabilities you approve for",
+    "other": "Kinosail will share only the capabilities you approve for"
+  },
+  {
+    "id": ". Media bytes stay on this Server.",
+    "other": ". Media bytes stay on this Server."
+  },
+  {
+    "id": "Browse library and viewing context",
+    "other": "Browse library and viewing context"
+  },
+  {
+    "id": "Update personal library state",
+    "other": "Update personal library state"
+  },
+  {
+    "id": "Administer this Server (requires recent sign-in)",
+    "other": "Administer this Server (requires recent sign-in)"
+  },
+  {
+    "id": "This Server has multiple Owners. Append one Owner Profile ID to",
+    "other": "This Server has multiple Owners. Append one Owner Profile ID to"
+  },
+  {
+    "id": "A locally generated HTTPS certificate may prompt each client to trust the",
+    "other": "A locally generated HTTPS certificate may prompt each client to trust the"
+  },
+  {
+    "id": ". A publicly trusted certificate avoids that prompt.",
+    "other": ". A publicly trusted certificate avoids that prompt."
+  },
+  {
+    "id": "This Server uses an external OAuth provider. Register the agent there, then connect it to",
+    "other": "This Server uses an external OAuth provider. Register the agent there, then connect it to"
+  },
+  {
+    "id": "· expires",
+    "other": "· expires"
+  },
+  {
+    "id": "· last used",
+    "other": "· last used"
+  },
+  {
+    "id": "Add another passkey",
+    "other": "Add another passkey"
+  },
+  {
+    "id": ", sign in, then choose Add",
+    "other": ", sign in, then choose Add"
+  },
+  {
+    "id": "passkey.",
+    "other": "passkey."
+  },
+  {
+    "id": "Passkey",
+    "other": "Passkey"
+  },
+  {
+    "id": "Most recently used",
+    "other": "Most recently used"
+  },
+  {
+    "id": "Last used",
+    "other": "Last used"
+  },
+  {
+    "id": "Never used",
+    "other": "Never used"
+  },
+  {
+    "id": "Last use is unknown",
+    "other": "Last use is unknown"
+  },
+  {
+    "id": "Available on your synced devices",
+    "other": "Available on your synced devices"
+  },
+  {
+    "id": "Can sync across your devices",
+    "other": "Can sync across your devices"
+  },
+  {
+    "id": "Saved only on this device",
+    "other": "Saved only on this device"
+  },
+  {
+    "id": "This passkey may have been copied. Remove it if you do not recognize it.",
+    "other": "This passkey may have been copied. Remove it if you do not recognize it."
+  },
+  {
+    "id": "Remove passkey",
+    "other": "Remove passkey"
+  },
+  {
+    "id": "Turn off extra sign-in protection",
+    "other": "Turn off extra sign-in protection"
+  },
+  {
+    "id": "Organization sign-in",
+    "other": "Organization sign-in"
+  },
+  {
+    "id": "Use a work or school account to sign in to Kinosail.",
+    "other": "Use a work or school account to sign in to Kinosail."
+  },
+  {
+    "id": "Disconnect OpenID Connect",
+    "other": "Disconnect OpenID Connect"
+  },
+  {
+    "id": "Disconnect SAML",
+    "other": "Disconnect SAML"
+  },
+  {
+    "id": "Faster sign-in",
+    "other": "Faster sign-in"
+  },
+  {
+    "id": "A passkey is already set up",
+    "other": "A passkey is already set up"
+  },
+  {
+    "id": "You signed in another way. Use your existing passkey next time, or add another for this device.",
+    "other": "You signed in another way. Use your existing passkey next time, or add another for this device."
+  },
+  {
+    "id": "Make the next sign-in easier",
+    "other": "Make the next sign-in easier"
+  },
+  {
+    "id": "No passkey is saved for this account yet. Add one without replacing your password.",
+    "other": "No passkey is saved for this account yet. Add one without replacing your password."
+  },
+  {
+    "id": "Protect the Owner account",
+    "other": "Protect the Owner account"
+  },
+  {
+    "id": "Every Owner must add a passkey or authenticator app before using Kinosail.",
+    "other": "Every Owner must add a passkey or authenticator app before using Kinosail."
+  },
+  {
+    "id": "Use an authenticator app instead",
+    "other": "Use an authenticator app instead"
+  },
+  {
+    "id": "Extra sign-in protection is required",
+    "other": "Extra sign-in protection is required"
+  },
+  {
+    "id": "Add a passkey or authenticator app to continue.",
+    "other": "Add a passkey or authenticator app to continue."
+  },
+  {
+    "id": "playlist ·",
+    "other": "playlist ·"
+  },
+  {
+    "id": "Add to playlist or Collection",
+    "other": "Add to playlist or Collection"
+  },
+  {
+    "id": "Added",
+    "other": "Added"
+  },
+  {
+    "id": "Add",
+    "other": "Add"
+  },
+  {
+    "id": "Your name",
+    "other": "Your name"
+  },
+  {
+    "id": "At least 12 characters",
+    "other": "At least 12 characters"
+  },
+  {
+    "id": "Your Owner account",
+    "other": "Your Owner account"
+  },
+  {
+    "id": "Local by default",
+    "other": "Local by default"
+  },
+  {
+    "id": "Set up your Server.",
+    "other": "Set up your Server."
+  },
+  {
+    "id": "Use a password you can save in your password manager.",
+    "other": "Use a password you can save in your password manager."
+  },
+  {
+    "id": "Recommended for the account that controls your Server. You can also use a passkey after setup.",
+    "other": "Recommended for the account that controls your Server. You can also use a passkey after setup."
+  },
+  {
+    "id": "Stored on your Server.",
+    "other": "Stored on your Server."
+  },
+  {
+    "id": "Create Owner & continue",
+    "other": "Create Owner & continue"
+  },
+  {
+    "id": "Update checks",
+    "other": "Update checks"
+  },
+  {
+    "id": "Automatic by default",
+    "other": "Automatic by default"
+  },
+  {
+    "id": "Choose when to check",
+    "other": "Choose when to check"
+  },
+  {
+    "id": "Review signed updates yourself from Settings.",
+    "other": "Review signed updates yourself from Settings."
+  },
+  {
+    "id": "Check automatically",
+    "other": "Check automatically"
+  },
+  {
+    "id": "Kinosail checks about once a day and leaves installation under your control.",
+    "other": "Kinosail checks about once a day and leaves installation under your control."
+  },
+  {
+    "id": "Setup progress",
+    "other": "Setup progress"
+  },
+  {
+    "id": "Setup steps",
+    "other": "Setup steps"
+  },
+  {
+    "id": "Sign in with SAML",
+    "other": "Sign in with SAML"
+  },
+  {
+    "id": "Sign in with OpenID Connect",
+    "other": "Sign in with OpenID Connect"
+  },
+  {
+    "id": "Try another title, person, or genre.",
+    "other": "Try another title, person, or genre."
+  },
+  {
+    "id": "Previous",
+    "other": "Previous"
+  },
+  {
+    "id": "Content access",
+    "other": "Content access"
+  },
+  {
+    "id": "Manual only",
+    "other": "Manual only"
+  },
+  {
+    "id": "Check about once a day",
+    "other": "Check about once a day"
+  },
+  {
+    "id": "Set by your deployment environment.",
+    "other": "Set by your deployment environment."
+  },
+  {
+    "id": "Set in your YAML configuration file.",
+    "other": "Set in your YAML configuration file."
+  },
+  {
+    "id": "Using a value saved here.",
+    "other": "Using a value saved here."
+  },
+  {
+    "id": "A secret is configured. Its value is hidden.",
+    "other": "A secret is configured. Its value is hidden."
+  },
+  {
+    "id": "To change this setting, update the external value and restart Kinosail Server.",
+    "other": "To change this setting, update the external value and restart Kinosail Server."
+  },
+  {
+    "id": "Configured via Docker:",
+    "other": "Configured via Docker:"
+  },
+  {
+    "id": "These settings are saved but not active yet:",
+    "other": "These settings are saved but not active yet:"
+  },
+  {
+    "id": "How to restart",
+    "other": "How to restart"
+  },
+  {
+    "id": "Use the tool that runs this Server. For a release Docker Compose install, run",
+    "other": "Use the tool that runs this Server. For a release Docker Compose install, run"
+  },
+  {
+    "id": "in its installation directory. Include your usual override files. For another install method, restart its Server service.",
+    "other": "in its installation directory. Include your usual override files. For another install method, restart its Server service."
+  },
+  {
+    "id": "Reopen Settings after the Server starts. This notice clears when the saved settings are active.",
+    "other": "Reopen Settings after the Server starts. This notice clears when the saved settings are active."
+  },
+  {
+    "id": "Leave blank to keep the current token",
+    "other": "Leave blank to keep the current token"
+  },
+  {
+    "id": "Paste your DuckDNS token",
+    "other": "Paste your DuckDNS token"
+  },
+  {
+    "id": "Restart required. Your sign-in and passkey address becomes the DuckDNS name on this Kinosail port. Sign in there with your password and MFA, then add your passkeys again for the new address.",
+    "other": "Restart required. Your sign-in and passkey address becomes the DuckDNS name on this Kinosail port. Sign in there with your password and MFA, then add your passkeys again for the new address."
+  },
+  {
+    "id": "Move",
+    "other": "Move"
+  },
+  {
+    "id": "Restore the original public limits before using an older Server version. This also shortens existing public sessions.",
+    "other": "Restore the original public limits before using an older Server version. This also shortens existing public sessions."
+  },
+  {
+    "id": "Use original public limits",
+    "other": "Use original public limits"
+  },
+  {
+    "id": "Automatic uses H.264 for broad device support. Choose a newer codec only when every playback device supports it.",
+    "other": "Automatic uses H.264 for broad device support. Choose a newer codec only when every playback device supports it."
+  },
+  {
+    "id": "Video codec",
+    "other": "Video codec"
+  },
+  {
+    "id": "not supported on this Server",
+    "other": "not supported on this Server"
+  },
+  {
+    "id": "Create a tiny synthetic clip on this Server to check FFmpeg, scaling,",
+    "other": "Create a tiny synthetic clip on this Server to check FFmpeg, scaling,"
+  },
+  {
+    "id": ", AAC, and",
+    "other": ", AAC, and"
+  },
+  {
+    "id": ". No Library Content is used.",
+    "other": ". No Library Content is used."
+  },
+  {
+    "id": "Trusted HTTPS with DuckDNS (Recommended)",
+    "other": "Trusted HTTPS with DuckDNS (Recommended)"
+  },
+  {
+    "id": "Use a free DuckDNS name and Let's Encrypt certificate when a device rejects the private certificate.",
+    "other": "Use a free DuckDNS name and Let's Encrypt certificate when a device rejects the private certificate."
+  },
+  {
+    "id": "Saved — restart required",
+    "other": "Saved — restart required"
+  },
+  {
+    "id": "Certificate expires",
+    "other": "Certificate expires"
+  },
+  {
+    "id": "Kinosail stays on your LAN. This option does not open a router port or relay media. First create a subdomain at",
+    "other": "Kinosail stays on your LAN. This option does not open a router port or relay media. First create a subdomain at"
+  },
+  {
+    "id": ", then paste its details below.",
+    "other": ", then paste its details below."
+  },
+  {
+    "id": "Privacy note: the private LAN address is published in public DNS and the hostname appears in public certificate-transparency logs. The DuckDNS token can update every hostname in that account; Kinosail stores it in the protected secrets file and never shows it here.",
+    "other": "Privacy note: the private LAN address is published in public DNS and the hostname appears in public certificate-transparency logs. The DuckDNS token can update every hostname in that account; Kinosail stores it in the protected secrets file and never shows it here."
+  },
+  {
+    "id": "Disable trusted HTTPS after restart",
+    "other": "Disable trusted HTTPS after restart"
+  },
+  {
+    "id": "Read-only.",
+    "other": "Read-only."
+  },
+  {
+    "id": "Configured via YAML:",
+    "other": "Configured via YAML:"
+  },
+  {
+    "id": "Connect address:",
+    "other": "Connect address:"
+  },
+  {
+    "id": "Account",
+    "other": "Account"
+  },
+  {
+    "id": "Leave blank to keep the configured token",
+    "other": "Leave blank to keep the configured token"
+  },
+  {
+    "id": "DuckDNS (Easiest)",
+    "other": "DuckDNS (Easiest)"
+  },
+  {
+    "id": "deSEC (More privacy)",
+    "other": "deSEC (More privacy)"
+  },
+  {
+    "id": "hostname.",
+    "other": "hostname."
+  },
+  {
+    "id": "Active through",
+    "other": "Active through"
+  },
+  {
+    "id": "· Founding",
+    "other": "· Founding"
+  },
+  {
+    "id": "Complete Fleet ·",
+    "other": "Complete Fleet ·"
+  },
+  {
+    "id": "Level",
+    "other": "Level"
+  },
+  {
+    "id": "Kinosail Server",
+    "other": "Kinosail Server"
+  },
+  {
+    "id": "Browse",
+    "other": "Browse"
+  },
+  {
+    "id": "Leave blank to keep the configured secret",
+    "other": "Leave blank to keep the configured secret"
+  },
+  {
+    "id": "Single sign-on is configured outside Kinosail. Update all five values together and restart Kinosail Server.",
+    "other": "Single sign-on is configured outside Kinosail. Update all five values together and restart Kinosail Server."
+  },
+  {
+    "id": "Single sign-on is configured.",
+    "other": "Single sign-on is configured."
+  },
+  {
+    "id": "Disable single sign-on",
+    "other": "Disable single sign-on"
+  },
+  {
+    "id": "SAML single sign-on is configured.",
+    "other": "SAML single sign-on is configured."
+  },
+  {
+    "id": "SAML is configured outside Kinosail. Update the metadata source and identity attribute together, then restart Kinosail Server.",
+    "other": "SAML is configured outside Kinosail. Update the metadata source and identity attribute together, then restart Kinosail Server."
+  },
+  {
+    "id": "Disable SAML",
+    "other": "Disable SAML"
+  },
+  {
+    "id": "Add extra sign-in protection ·",
+    "other": "Add extra sign-in protection ·"
+  },
+  {
+    "id": "Add extra sign-in protection",
+    "other": "Add extra sign-in protection"
+  },
+  {
+    "id": "Open your authenticator app and add Kinosail. Enter the setup key below, or use the setup link if your app supports it.",
+    "other": "Open your authenticator app and add Kinosail. Enter the setup key below, or use the setup link if your app supports it."
+  },
+  {
+    "id": "Setup key",
+    "other": "Setup key"
+  },
+  {
+    "id": "Setup link",
+    "other": "Setup link"
+  },
+  {
+    "id": "Turn on extra sign-in protection",
+    "other": "Turn on extra sign-in protection"
+  },
+  {
+    "id": "Shared with you",
+    "other": "Shared with you"
+  },
+  {
+    "id": "Copy this link now:",
+    "other": "Copy this link now:"
+  },
+  {
+    "id": "Bulk metadata ·",
+    "other": "Bulk metadata ·"
+  },
+  {
+    "id": "No Library Content is available.",
+    "other": "No Library Content is available."
+  },
+  {
+    "id": "Library monitoring:",
+    "other": "Library monitoring:"
+  },
+  {
+    "id": "· Last scan:",
+    "other": "· Last scan:"
+  },
+  {
+    "id": "HTTP requests:",
+    "other": "HTTP requests:"
+  },
+  {
+    "id": "· errors:",
+    "other": "· errors:"
+  },
+  {
+    "id": "· panics:",
+    "other": "· panics:"
+  },
+  {
+    "id": "Activity journal:",
+    "other": "Activity journal:"
+  },
+  {
+    "id": "needs attention",
+    "other": "needs attention"
+  },
+  {
+    "id": "· Failed writes:",
+    "other": "· Failed writes:"
+  },
+  {
+    "id": "My phone",
+    "other": "My phone"
+  },
+  {
+    "id": "On · waiting for paired devices",
+    "other": "On · waiting for paired devices"
+  },
+  {
+    "id": "Unavailable · reconnect at home and finish HTTPS setup",
+    "other": "Unavailable · reconnect at home and finish HTTPS setup"
+  },
+  {
+    "id": "Turning this off disconnects all devices and removes every pairing. You can still manage your Server at home.",
+    "other": "Turning this off disconnects all devices and removes every pairing. You can still manage your Server at home."
+  },
+  {
+    "id": "Turn off management while away",
+    "other": "Turn off management while away"
+  },
+  {
+    "id": "first.",
+    "other": "first."
+  },
+  {
+    "id": "Use your own public hostname, followed by the public UDP port (normally",
+    "other": "Use your own public hostname, followed by the public UDP port (normally"
+  },
+  {
+    "id": "Connect your Owner device",
+    "other": "Connect your Owner device"
+  },
+  {
+    "id": "In your router, forward",
+    "other": "In your router, forward"
+  },
+  {
+    "id": "on this Server. Use",
+    "other": "on this Server. Use"
+  },
+  {
+    "id": "the router guides",
+    "other": "the router guides"
+  },
+  {
+    "id": "if you need help. Do not forward the Server’s local HTTPS port or put it in a DMZ.",
+    "other": "if you need help. Do not forward the Server’s local HTTPS port or put it in a DMZ."
+  },
+  {
+    "id": "Install the",
+    "other": "Install the"
+  },
+  {
+    "id": "WireGuard app",
+    "other": "WireGuard app"
+  },
+  {
+    "id": "on your device.",
+    "other": "on your device."
+  },
+  {
+    "id": "While at home, name the device below and download its private profile. Import that file into WireGuard on that device, then delete the downloaded copy.",
+    "other": "While at home, name the device below and download its private profile. Import that file into WireGuard on that device, then delete the downloaded copy."
+  },
+  {
+    "id": "Turn on the tunnel. Open",
+    "other": "Turn on the tunnel. Open"
+  },
+  {
+    "id": "your private management page",
+    "other": "your private management page"
+  },
+  {
+    "id": "and sign in as the same Owner.",
+    "other": "and sign in as the same Owner."
+  },
+  {
+    "id": "Before leaving home, turn off Wi-Fi and try again using mobile data. Server status cannot confirm that your router or internet provider allows the connection.",
+    "other": "Before leaving home, turn off Wi-Fi and try again using mobile data. Server status cannot confirm that your router or internet provider allows the connection."
+  },
+  {
+    "id": "Device name",
+    "other": "Device name"
+  },
+  {
+    "id": "This device is paired to your current Owner account. Each device needs its own profile.",
+    "other": "This device is paired to your current Owner account. Each device needs its own profile."
+  },
+  {
+    "id": "Download Owner device profile",
+    "other": "Download Owner device profile"
+  },
+  {
+    "id": "Pair new devices when you are home. You can revoke existing devices here.",
+    "other": "Pair new devices when you are home. You can revoke existing devices here."
+  },
+  {
+    "id": "Keep the profile private. It opens a connection, but your Owner passkey or password plus authenticator is still required. The tunnel reaches only Kinosail. While it is on, your Server handles this device’s DNS lookups; other internet traffic keeps its normal route.",
+    "other": "Keep the profile private. It opens a connection, but your Owner passkey or password plus authenticator is still required. The tunnel reaches only Kinosail. While it is on, your Server handles this device’s DNS lookups; other internet traffic keeps its normal route."
+  },
+  {
+    "id": "Search below to add something.",
+    "other": "Search below to add something."
+  },
+  {
+    "id": "Updates automatically",
+    "other": "Updates automatically"
+  },
+  {
+    "id": "This playlist follows its rule whenever your Library changes.",
+    "other": "This playlist follows its rule whenever your Library changes."
+  },
+  {
+    "id": "Nothing matches its rule yet.",
+    "other": "Nothing matches its rule yet."
+  },
+  {
+    "id": "Delete playlist",
+    "other": "Delete playlist"
+  },
+  {
+    "id": "Apple’s native controls",
+    "other": "Apple’s native controls"
+  },
+  {
+    "id": "Sign in away from home ·",
+    "other": "Sign in away from home ·"
+  },
+  {
+    "id": "Sign in away from home",
+    "other": "Sign in away from home"
+  },
+  {
+    "id": "gives you access to your Viewer's allowed Libraries.",
+    "other": "gives you access to your Viewer's allowed Libraries."
+  },
+  {
+    "id": "Connect this browser",
+    "other": "Connect this browser"
+  },
+  {
+    "id": "Ask someone signed in as your Viewer at home to approve a code. They must use an authenticator or passkey to confirm it's them.",
+    "other": "Ask someone signed in as your Viewer at home to approve a code. They must use an authenticator or passkey to confirm it's them."
+  },
+  {
+    "id": "Get a sign-in code",
+    "other": "Get a sign-in code"
+  },
+  {
+    "id": "Your sign-in code:",
+    "other": "Your sign-in code:"
+  },
+  {
+    "id": "On the home device, sign in as your remote-enabled Viewer.",
+    "other": "On the home device, sign in as your remote-enabled Viewer."
+  },
+  {
+    "id": "Open Quick Connect and enter this code. Approve only if the code and requesting device match.",
+    "other": "Open Quick Connect and enter this code. Approve only if the code and requesting device match."
+  },
+  {
+    "id": "Keep this page open. Your library opens after approval.",
+    "other": "Keep this page open. Your library opens after approval."
+  },
+  {
+    "id": "Codes expire after a few minutes. Never share a code you did not request.",
+    "other": "Codes expire after a few minutes. Never share a code you did not request."
+  },
+  {
+    "id": "Cancel sign-in",
+    "other": "Cancel sign-in"
+  },
+  {
+    "id": "Enable JavaScript to use Quick Connect, or connect through the Kinosail app.",
+    "other": "Enable JavaScript to use Quick Connect, or connect through the Kinosail app."
+  },
+  {
+    "id": "Already have another sign-in method?",
+    "other": "Already have another sign-in method?"
+  },
+  {
+    "id": "Use a passkey already registered for this public Server address.",
+    "other": "Use a passkey already registered for this public Server address."
+  },
+  {
+    "id": "Owner settings, passwords, and adding sign-in methods are available on your home network or WireGuard.",
+    "other": "Owner settings, passwords, and adding sign-in methods are available on your home network or WireGuard."
+  },
+  {
+    "id": "Approve",
+    "other": "Approve"
+  },
+  {
+    "id": "using this profile’s access and content settings.",
+    "other": "using this profile’s access and content settings."
+  },
+  {
+    "id": "Only approve if this code matches your TV:",
+    "other": "Only approve if this code matches your TV:"
+  },
+  {
+    "id": "Approve device",
+    "other": "Approve device"
+  },
+  {
+    "id": "Server checks passed. Try a movie using cellular data next.",
+    "other": "Server checks passed. Try a movie using cellular data next."
+  },
+  {
+    "id": "Your public address:",
+    "other": "Your public address:"
+  },
+  {
+    "id": "The configured token expired. Provisioning is disabled until you rotate it.",
+    "other": "The configured token expired. Provisioning is disabled until you rotate it."
+  },
+  {
+    "id": "SCIM is configured.",
+    "other": "SCIM is configured."
+  },
+  {
+    "id": "SCIM is configured outside Kinosail. Update the token and expiration together, then restart Kinosail Server.",
+    "other": "SCIM is configured outside Kinosail. Update the token and expiration together, then restart Kinosail Server."
+  },
+  {
+    "id": "Disable SCIM",
+    "other": "Disable SCIM"
+  },
+  {
+    "id": "Hardware decoding:",
+    "other": "Hardware decoding:"
+  },
+  {
+    "id": ">Automatic per device (",
+    "other": ">Automatic per device ("
+  },
+  {
+    "id": "Open Subtitle settings",
+    "other": "Open Subtitle settings"
+  },
+  {
+    "id": "Return to Subtitles",
+    "other": "Return to Subtitles"
+  },
+  {
+    "id": "Agent connections · Kinosail Subtitles",
+    "other": "Agent connections · Kinosail Subtitles"
+  },
+  {
+    "id": "Connect Codex and other AI agents",
+    "other": "Connect Codex and other AI agents"
+  },
+  {
+    "id": "Choose the connection that fits where your agent runs. Connections stay direct to this Server, and Library Content stays on it.",
+    "other": "Choose the connection that fits where your agent runs. Connections stay direct to this Server, and Library Content stays on it."
+  },
+  {
+    "id": "Recommended: host connection",
+    "other": "Recommended: host connection"
+  },
+  {
+    "id": "No certificate or browser approval is required. This uses the SSH and Docker access already held by a Server administrator.",
+    "other": "No certificate or browser approval is required. This uses the SSH and Docker access already held by a Server administrator."
+  },
+  {
+    "id": "On the Server host, run",
+    "other": "On the Server host, run"
+  },
+  {
+    "id": "From another device with an SSH host alias, run",
+    "other": "From another device with an SSH host alias, run"
+  },
+  {
+    "id": "and replace",
+    "other": "and replace"
+  },
+  {
+    "id": "with that alias.",
+    "other": "with that alias."
+  },
+  {
+    "id": "This host connection has full Owner access and is recorded in activity as",
+    "other": "This host connection has full Owner access and is recorded in activity as"
+  },
+  {
+    "id": "Host MCP",
+    "other": "Host MCP"
+  },
+  {
+    "id": ". Remove its Codex entry or revoke the underlying SSH/Docker access to stop it.",
+    "other": ". Remove its Codex entry or revoke the underlying SSH/Docker access to stop it."
+  },
+  {
+    "id": "HTTPS / OAuth alternative",
+    "other": "HTTPS / OAuth alternative"
+  },
+  {
+    "id": "Use this when an agent cannot use the Server host. It supports revocable read, write, and management grants through browser approval.",
+    "other": "Use this when an agent cannot use the Server host. It supports revocable read, write, and management grants through browser approval."
+  },
+  {
+    "id": "Kinosail local CA certificate",
+    "other": "Kinosail local CA certificate"
+  },
+  {
+    "id": "This option requires an HTTPS certificate already trusted by the client.",
+    "other": "This option requires an HTTPS certificate already trusted by the client."
+  },
+  {
+    "id": "Run",
+    "other": "Run"
+  },
+  {
+    "id": ", then approve the browser prompt.",
+    "other": ", then approve the browser prompt."
+  },
+  {
+    "id": "Active HTTPS / OAuth connections",
+    "other": "Active HTTPS / OAuth connections"
+  },
+  {
+    "id": "No HTTPS / OAuth agents are connected.",
+    "other": "No HTTPS / OAuth agents are connected."
+  },
+  {
+    "id": "HTTPS connection address",
+    "other": "HTTPS connection address"
+  },
+  {
+    "id": "Read access is the default. Write access is optional. Server administration requires an Owner and a recent strong sign-in.",
+    "other": "Read access is the default. Write access is optional. Server administration requires an Owner and a recent strong sign-in."
+  },
+  {
+    "id": "Ways to sign in",
+    "other": "Ways to sign in"
+  },
+  {
+    "id": "Your password continues to work without internet access.",
+    "other": "Your password continues to work without internet access."
+  },
+  {
+    "id": "The browser can save it on this device, use a nearby phone or tablet, or use a security key.",
+    "other": "The browser can save it on this device, use a nearby phone or tablet, or use a security key."
+  },
+  {
+    "id": "Add one directly on another device",
+    "other": "Add one directly on another device"
+  },
+  {
+    "id": "On that device, open",
+    "other": "On that device, open"
+  },
+  {
+    "id": "Passkeys",
+    "other": "Passkeys"
+  },
+  {
+    "id": "See when each passkey was last used. Remove any passkey you no longer recognize or use.",
+    "other": "See when each passkey was last used. Remove any passkey you no longer recognize or use."
+  },
+  {
+    "id": "No passkeys added yet.",
+    "other": "No passkeys added yet."
+  },
+  {
+    "id": "Extra sign-in protection",
+    "other": "Extra sign-in protection"
+  },
+  {
+    "id": "Use an authenticator app as a second step when you sign in.",
+    "other": "Use an authenticator app as a second step when you sign in."
+  },
+  {
+    "id": "Set up an authenticator app",
+    "other": "Set up an authenticator app"
+  },
+  {
+    "id": "6-digit code",
+    "other": "6-digit code"
+  },
+  {
+    "id": "Passkey sign-in · Kinosail Subtitles",
+    "other": "Passkey sign-in · Kinosail Subtitles"
+  },
+  {
+    "id": "Choose a sign-in method",
+    "other": "Choose a sign-in method"
+  },
+  {
+    "id": "Create a passkey when this device supports biometrics, a device PIN, or a security key.",
+    "other": "Create a passkey when this device supports biometrics, a device PIN, or a security key."
+  },
+  {
+    "id": "Use an authenticator app when you prefer a rotating code.",
+    "other": "Use an authenticator app when you prefer a rotating code."
+  },
+  {
+    "id": "Keep your password as a recovery path for local sign-in.",
+    "other": "Keep your password as a recovery path for local sign-in."
+  },
+  {
+    "id": "Extra sign-in protection required · Kinosail Subtitles",
+    "other": "Extra sign-in protection required · Kinosail Subtitles"
+  },
+  {
+    "id": "Create your account, then choose your subtitle settings.",
+    "other": "Create your account, then choose your subtitle settings."
+  },
+  {
+    "id": "Subtitle settings",
+    "other": "Subtitle settings"
+  },
+  {
+    "id": "Media, language, and automation together",
+    "other": "Media, language, and automation together"
+  },
+  {
+    "id": "Your media paths, subtitle state, and credentials stay on this Server.",
+    "other": "Your media paths, subtitle state, and credentials stay on this Server."
+  },
+  {
+    "id": "Account setup",
+    "other": "Account setup"
+  },
+  {
+    "id": "Create the Owner account to manage subtitle providers, media folders, and saved subtitle files.",
+    "other": "Create the Owner account to manage subtitle providers, media folders, and saved subtitle files."
+  },
+  {
+    "id": "MFA - Add extra sign-in protection now",
+    "other": "MFA - Add extra sign-in protection now"
+  },
+  {
+    "id": "Kinosail keeps the media index, subtitle state, and provider credentials on this Server. Remote access is always a separate choice.",
+    "other": "Kinosail keeps the media index, subtitle state, and provider credentials on this Server. Remote access is always a separate choice."
+  },
+  {
+    "id": "Next: review media, language, and automation in Settings.",
+    "other": "Next: review media, language, and automation in Settings."
+  },
+  {
+    "id": "Backups contain your Server settings, accounts, and activity. Media files and cached data are not included.",
+    "other": "Backups contain your Server settings, accounts, and activity. Media files and cached data are not included."
+  },
+  {
+    "id": "Preferred subtitle role",
+    "other": "Preferred subtitle role"
+  },
+  {
+    "id": "Standard dialogue",
+    "other": "Standard dialogue"
+  },
+  {
+    "id": "SDH and captions",
+    "other": "SDH and captions"
+  },
+  {
+    "id": "Update preference",
+    "other": "Update preference"
+  },
+  {
+    "id": "Choose when to update",
+    "other": "Choose when to update"
+  },
+  {
+    "id": "Approve each signed update from Settings.",
+    "other": "Approve each signed update from Settings."
+  },
+  {
+    "id": "Install updates automatically",
+    "other": "Install updates automatically"
+  },
+  {
+    "id": "Back up first, wait for idle playback, verify the signed update, check health, and roll back on failure.",
+    "other": "Back up first, wait for idle playback, verify the signed update, check health, and roll back on failure."
+  },
+  {
+    "id": "Advanced configuration",
+    "other": "Advanced configuration"
+  },
+  {
+    "id": "Change settings normally managed by Docker, environment variables, or YAML. Provider and log detail changes take effect immediately. Other changes apply after a restart.",
+    "other": "Change settings normally managed by Docker, environment variables, or YAML. Provider and log detail changes take effect immediately. Other changes apply after a restart."
+  },
+  {
+    "id": "Using the Kinosail default.",
+    "other": "Using the Kinosail default."
+  },
+  {
+    "id": "No secret is configured.",
+    "other": "No secret is configured."
+  },
+  {
+    "id": "Value",
+    "other": "Value"
+  },
+  {
+    "id": "Save change",
+    "other": "Save change"
+  },
+  {
+    "id": "Changes take effect immediately.",
+    "other": "Changes take effect immediately."
+  },
+  {
+    "id": "Applies after a restart.",
+    "other": "Applies after a restart."
+  },
+  {
+    "id": "Technical details",
+    "other": "Technical details"
+  },
+  {
+    "id": "Configuration key:",
+    "other": "Configuration key:"
+  },
+  {
+    "id": "Environment variable:",
+    "other": "Environment variable:"
+  },
+  {
+    "id": "Restart Kinosail Subtitles Server to apply saved changes",
+    "other": "Restart Kinosail Subtitles Server to apply saved changes"
+  },
+  {
+    "id": "OpenSubtitles API key",
+    "other": "OpenSubtitles API key"
+  },
+  {
+    "id": "Leave blank to keep the configured API key",
+    "other": "Leave blank to keep the configured API key"
+  },
+  {
+    "id": "API key",
+    "other": "API key"
+  },
+  {
+    "id": "OpenSubtitles username",
+    "other": "OpenSubtitles username"
+  },
+  {
+    "id": "Leave blank to keep the configured username",
+    "other": "Leave blank to keep the configured username"
+  },
+  {
+    "id": "Username",
+    "other": "Username"
+  },
+  {
+    "id": "OpenSubtitles password",
+    "other": "OpenSubtitles password"
+  },
+  {
+    "id": "Leave blank to keep the configured password",
+    "other": "Leave blank to keep the configured password"
+  },
+  {
+    "id": "OpenSubtitles is configured outside Kinosail. Update the API key, username, and password together, then restart Kinosail Server.",
+    "other": "OpenSubtitles is configured outside Kinosail. Update the API key, username, and password together, then restart Kinosail Server."
+  },
+  {
+    "id": "OpenSubtitles credentials are configured.",
+    "other": "OpenSubtitles credentials are configured."
+  },
+  {
+    "id": "OpenSubtitles is not configured.",
+    "other": "OpenSubtitles is not configured."
+  },
+  {
+    "id": "Save all three values together. They will be hidden after you leave this page.",
+    "other": "Save all three values together. They will be hidden after you leave this page."
+  },
+  {
+    "id": "Disable OpenSubtitles",
+    "other": "Disable OpenSubtitles"
+  },
+  {
+    "id": "Configuration keys:",
+    "other": "Configuration keys:"
+  },
+  {
+    "id": "Automatic sign-out",
+    "other": "Automatic sign-out"
+  },
+  {
+    "id": "Each access type has its own inactivity and total sign-in limits. Every option signs out eventually.",
+    "other": "Each access type has its own inactivity and total sign-in limits. Every option signs out eventually."
+  },
+  {
+    "id": "Longer limits apply to new sign-ins. Shorter limits also apply to existing sessions, which sign out when either limit is reached.",
+    "other": "Longer limits apply to new sign-ins. Shorter limits also apply to existing sessions, which sign out when either limit is reached."
+  },
+  {
+    "id": "Private access",
+    "other": "Private access"
+  },
+  {
+    "id": "Local network and WireGuard browser sessions.",
+    "other": "Local network and WireGuard browser sessions."
+  },
+  {
+    "id": "After inactivity",
+    "other": "After inactivity"
+  },
+  {
+    "id": "15 minutes (recommended)",
+    "other": "15 minutes (recommended)"
+  },
+  {
+    "id": "1 hour",
+    "other": "1 hour"
+  },
+  {
+    "id": "8 hours",
+    "other": "8 hours"
+  },
+  {
+    "id": "1 day",
+    "other": "1 day"
+  },
+  {
+    "id": "3 days",
+    "other": "3 days"
+  },
+  {
+    "id": "7 days",
+    "other": "7 days"
+  },
+  {
+    "id": "30 days",
+    "other": "30 days"
+  },
+  {
+    "id": "90 days",
+    "other": "90 days"
+  },
+  {
+    "id": "1 year",
+    "other": "1 year"
+  },
+  {
+    "id": "Always after",
+    "other": "Always after"
+  },
+  {
+    "id": "4 hours",
+    "other": "4 hours"
+  },
+  {
+    "id": "8 hours (recommended)",
+    "other": "8 hours (recommended)"
+  },
+  {
+    "id": "Save private timeouts",
+    "other": "Save private timeouts"
+  },
+  {
+    "id": "Public access",
+    "other": "Public access"
+  },
+  {
+    "id": "Public-internet Viewer browser sessions. Other public clients use the absolute limit. Owner access remains private. Longer limits keep signed-in devices authorized for longer.",
+    "other": "Public-internet Viewer browser sessions. Other public clients use the absolute limit. Owner access remains private. Longer limits keep signed-in devices authorized for longer."
+  },
+  {
+    "id": "Until you save public timeouts, public browsers use the private inactivity limit and an absolute limit of at most 8 hours.",
+    "other": "Until you save public timeouts, public browsers use the private inactivity limit and an absolute limit of at most 8 hours."
+  },
+  {
+    "id": "Save public timeouts",
+    "other": "Save public timeouts"
+  },
+  {
+    "id": "Paste your provider token",
+    "other": "Paste your provider token"
+  },
+  {
+    "id": "DNS provider",
+    "other": "DNS provider"
+  },
+  {
+    "id": "DuckDNS is the easiest default.",
+    "other": "DuckDNS is the easiest default."
+  },
+  {
+    "id": "It has the shortest setup.",
+    "other": "It has the shortest setup."
+  },
+  {
+    "id": "deSEC gives a little more privacy.",
+    "other": "deSEC gives a little more privacy."
+  },
+  {
+    "id": "It is nonprofit and open source, and it supports narrow API tokens that can limit Kinosail to this hostname and its certificate records.",
+    "other": "It is nonprofit and open source, and it supports narrow API tokens that can limit Kinosail to this hostname and its certificate records."
+  },
+  {
+    "id": "Create a hostname at",
+    "other": "Create a hostname at"
+  },
+  {
+    "id": ". Then paste its details below.",
+    "other": ". Then paste its details below."
+  },
+  {
+    "id": "Get the provider details",
+    "other": "Get the provider details"
+  },
+  {
+    "id": "Open a provider.",
+    "other": "Open a provider."
+  },
+  {
+    "id": "Use",
+    "other": "Use"
+  },
+  {
+    "id": "Create one hostname.",
+    "other": "Create one hostname."
+  },
+  {
+    "id": "Use a new hostname for this Kinosail Subtitles Server.",
+    "other": "Use a new hostname for this Kinosail Subtitles Server."
+  },
+  {
+    "id": "Create a narrow token.",
+    "other": "Create a narrow token."
+  },
+  {
+    "id": "Limit it to this hostname when your provider supports token policies. Copy it once and keep it private.",
+    "other": "Limit it to this hostname when your provider supports token policies. Copy it once and keep it private."
+  },
+  {
+    "id": "Return here.",
+    "other": "Return here."
+  },
+  {
+    "id": "Choose the provider, enter the hostname, paste the token, and add the Server LAN address.",
+    "other": "Choose the provider, enter the hostname, paste the token, and add the Server LAN address."
+  },
+  {
+    "id": "A provider token can change DNS records. Kinosail stores it in the protected secrets file and never shows it again.",
+    "other": "A provider token can change DNS records. Kinosail stores it in the protected secrets file and never shows it again."
+  },
+  {
+    "id": "Trusted hostname",
+    "other": "Trusted hostname"
+  },
+  {
+    "id": "For DuckDNS, enter either a label or its full",
+    "other": "For DuckDNS, enter either a label or its full"
+  },
+  {
+    "id": "hostname. For deSEC, enter the full",
+    "other": "hostname. For deSEC, enter the full"
+  },
+  {
+    "id": "Example pair:",
+    "other": "Example pair:"
+  },
+  {
+    "id": "for Kinosail Player and",
+    "other": "for Kinosail Player and"
+  },
+  {
+    "id": "for Kinosail Subtitles. Both can use the same DNS account and LAN address.",
+    "other": "for Kinosail Subtitles. Both can use the same DNS account and LAN address."
+  },
+  {
+    "id": "Network ports:",
+    "other": "Network ports:"
+  },
+  {
+    "id": "no router port forwarding is needed. Allow the configured LAN port through the Server firewall for LAN devices only (default",
+    "other": "no router port forwarding is needed. Allow the configured LAN port through the Server firewall for LAN devices only (default"
+  },
+  {
+    "id": "). Do not forward that port on your router. This does not make Kinosail Subtitles available away from home.",
+    "other": "). Do not forward that port on your router. This does not make Kinosail Subtitles available away from home."
+  },
+  {
+    "id": "You need:",
+    "other": "You need:"
+  },
+  {
+    "id": "a DuckDNS or deSEC account, a hostname for this app, a provider token, the Server's private LAN IPv4 address, outbound internet access, and agreement to the Let's Encrypt terms.",
+    "other": "a DuckDNS or deSEC account, a hostname for this app, a provider token, the Server's private LAN IPv4 address, outbound internet access, and agreement to the Let's Encrypt terms."
+  },
+  {
+    "id": "How trusted HTTPS works",
+    "other": "How trusted HTTPS works"
+  },
+  {
+    "id": "Kinosail points the hostname at the private LAN address.",
+    "other": "Kinosail points the hostname at the private LAN address."
+  },
+  {
+    "id": "It creates a temporary DNS TXT record so Let's Encrypt can verify the hostname without connecting through your router.",
+    "other": "It creates a temporary DNS TXT record so Let's Encrypt can verify the hostname without connecting through your router."
+  },
+  {
+    "id": "It downloads the certificate, removes the TXT record, and renews the certificate automatically.",
+    "other": "It downloads the certificate, removes the TXT record, and renews the certificate automatically."
+  },
+  {
+    "id": "After restart, Kinosail serves the certificate on this app's LAN port.",
+    "other": "After restart, Kinosail serves the certificate on this app's LAN port."
+  },
+  {
+    "id": "Provider token",
+    "other": "Provider token"
+  },
+  {
+    "id": "DuckDNS subdomain",
+    "other": "DuckDNS subdomain"
+  },
+  {
+    "id": "DuckDNS token",
+    "other": "DuckDNS token"
+  },
+  {
+    "id": "Kinosail stays on your LAN. This option does not open a router port or relay media.",
+    "other": "Kinosail stays on your LAN. This option does not open a router port or relay media."
+  },
+  {
+    "id": "DuckDNS · Easiest",
+    "other": "DuckDNS · Easiest"
+  },
+  {
+    "id": "Shortest setup for a trusted LAN name.",
+    "other": "Shortest setup for a trusted LAN name."
+  },
+  {
+    "id": "deSEC · More privacy",
+    "other": "deSEC · More privacy"
+  },
+  {
+    "id": "Supports narrow tokens limited to this hostname.",
+    "other": "Supports narrow tokens limited to this hostname."
+  },
+  {
+    "id": "Subtitle cleanup · Kinosail Subtitles",
+    "other": "Subtitle cleanup · Kinosail Subtitles"
+  },
+  {
+    "id": "Subtitle cleanup",
+    "other": "Subtitle cleanup"
+  },
+  {
+    "id": "Keep subtitles in",
+    "other": "Keep subtitles in"
+  },
+  {
+    "id": ". Kinosail will use this language order for playback. The picker will show one regular track per kept language.",
+    "other": ". Kinosail will use this language order for playback. The picker will show one regular track per kept language."
+  },
+  {
+    "id": "Forced tracks in every language will stay. Only selected languages appear in the picker.",
+    "other": "Forced tracks in every language will stay. Only selected languages appear in the picker."
+  },
+  {
+    "id": "Forced subtitle files in every language will be hidden.",
+    "other": "Forced subtitle files in every language will be hidden."
+  },
+  {
+    "id": "to hide",
+    "other": "to hide"
+  },
+  {
+    "id": "Only tagged .srt and .vtt files beside videos are included. Hidden files keep their contents with a .hidden suffix; remove that suffix to restore them. Embedded tracks and files with uncertain language stay in place.",
+    "other": "Only tagged .srt and .vtt files beside videos are included. Hidden files keep their contents with a .hidden suffix; remove that suffix to restore them. Embedded tracks and files with uncertain language stay in place."
+  },
+  {
+    "id": "file was",
+    "other": "file was"
+  },
+  {
+    "id": "files were",
+    "other": "files were"
+  },
+  {
+    "id": "skipped.",
+    "other": "skipped."
+  },
+  {
+    "id": "The first",
+    "other": "The first"
+  },
+  {
+    "id": "matches are shown.",
+    "other": "matches are shown."
+  },
+  {
+    "id": "No files match this cleanup choice.",
+    "other": "No files match this cleanup choice."
+  },
+  {
+    "id": "Hide",
+    "other": "Hide"
+  },
+  {
+    "id": "Save selected languages",
+    "other": "Save selected languages"
+  },
+  {
+    "id": "Subtitle cleanup complete",
+    "other": "Subtitle cleanup complete"
+  },
+  {
+    "id": "is now your preferred language",
+    "other": "is now your preferred language"
+  },
+  {
+    "id": "are now your preferred languages",
+    "other": "are now your preferred languages"
+  },
+  {
+    "id": ". Hidden",
+    "other": ". Hidden"
+  },
+  {
+    "id": "· Subtitle inspector",
+    "other": "· Subtitle inspector"
+  },
+  {
+    "id": "Video with subtitle preview",
+    "other": "Video with subtitle preview"
+  },
+  {
+    "id": "Audio waveform and dialogue activity",
+    "other": "Audio waveform and dialogue activity"
+  },
+  {
+    "id": "Load a preview to edit its text and timestamps",
+    "other": "Load a preview to edit its text and timestamps"
+  },
+  {
+    "id": "Subtitle inspector ·",
+    "other": "Subtitle inspector ·"
+  },
+  {
+    "id": "Current subtitle loaded. Preview a change before saving.",
+    "other": "Current subtitle loaded. Preview a change before saving."
+  },
+  {
+    "id": "Choose a subtitle file to begin.",
+    "other": "Choose a subtitle file to begin."
+  },
+  {
+    "id": "Interactive previews need JavaScript. You can export installed subtitles below or use the subtitle API.",
+    "other": "Interactive previews need JavaScript. You can export installed subtitles below or use the subtitle API."
+  },
+  {
+    "id": "Video preview",
+    "other": "Video preview"
+  },
+  {
+    "id": "Choose a cue below to hear it in context. If this format cannot play here, use the waveform and cue text.",
+    "other": "Choose a cue below to hear it in context. If this format cannot play here, use the waveform and cue text."
+  },
+  {
+    "id": "Preview track",
+    "other": "Preview track"
+  },
+  {
+    "id": "Current",
+    "other": "Current"
+  },
+  {
+    "id": "Proposed",
+    "other": "Proposed"
+  },
+  {
+    "id": "Quality findings",
+    "other": "Quality findings"
+  },
+  {
+    "id": "No subtitle installed. Import one to inspect its text and timing.",
+    "other": "No subtitle installed. Import one to inspect its text and timing."
+  },
+  {
+    "id": "Audio reference",
+    "other": "Audio reference"
+  },
+  {
+    "id": "Analyze the audio on this Server to see where dialogue occurs throughout the video.",
+    "other": "Analyze the audio on this Server to see where dialogue occurs throughout the video."
+  },
+  {
+    "id": "Analyze audio",
+    "other": "Analyze audio"
+  },
+  {
+    "id": "Create a local subtitle draft",
+    "other": "Create a local subtitle draft"
+  },
+  {
+    "id": "Read text from image-based PGS/VobSub subtitles with OCR, or transcribe audio in the selected language. Both run on this Server. Review the generated text before saving.",
+    "other": "Read text from image-based PGS/VobSub subtitles with OCR, or transcribe audio in the selected language. Both run on this Server. Review the generated text before saving."
+  },
+  {
+    "id": "Method",
+    "other": "Method"
+  },
+  {
+    "id": "Read image-based subtitles (OCR)",
+    "other": "Read image-based subtitles (OCR)"
+  },
+  {
+    "id": "Transcribe dialogue",
+    "other": "Transcribe dialogue"
+  },
+  {
+    "id": "Generate draft",
+    "other": "Generate draft"
+  },
+  {
+    "id": "Stop generation",
+    "other": "Stop generation"
+  },
+  {
+    "id": "Review generated draft",
+    "other": "Review generated draft"
+  },
+  {
+    "id": "OCR needs the language's Tesseract data. Transcription needs a local Whisper model in",
+    "other": "OCR needs the language's Tesseract data. Transcription needs a local Whisper model in"
+  },
+  {
+    "id": "configuration",
+    "other": "configuration"
+  },
+  {
+    "id": ". One draft is kept at a time; starting another replaces it. Drafts are cleared when the server restarts.",
+    "other": ". One draft is kept at a time; starting another replaces it. Drafts are cleared when the server restarts."
+  },
+  {
+    "id": "Recognition confidence and estimated word timing",
+    "other": "Recognition confidence and estimated word timing"
+  },
+  {
+    "id": "Highlighted words may need correction. Word times are estimated for transcripts; words read from subtitle images share the timing of their subtitle line.",
+    "other": "Highlighted words may need correction. Word times are estimated for transcripts; words read from subtitle images share the timing of their subtitle line."
+  },
+  {
+    "id": "Show more words",
+    "other": "Show more words"
+  },
+  {
+    "id": "Prepare a change",
+    "other": "Prepare a change"
+  },
+  {
+    "id": "Subtitle language",
+    "other": "Subtitle language"
+  },
+  {
+    "id": "Import a subtitle file",
+    "other": "Import a subtitle file"
+  },
+  {
+    "id": "SRT, WebVTT, ASS/SSA, or TTML · up to 4 MB. The original is retained when you save.",
+    "other": "SRT, WebVTT, ASS/SSA, or TTML · up to 4 MB. The original is retained when you save."
+  },
+  {
+    "id": "Subtitle role",
+    "other": "Subtitle role"
+  },
+  {
+    "id": "Dialogue subtitles",
+    "other": "Dialogue subtitles"
+  },
+  {
+    "id": "Accessibility captions (SDH)",
+    "other": "Accessibility captions (SDH)"
+  },
+  {
+    "id": "Choose captions only after checking sound descriptions and speaker information. A generated transcript does not automatically include this information.",
+    "other": "Choose captions only after checking sound descriptions and speaker information. A generated transcript does not automatically include this information."
+  },
+  {
+    "id": "Text encoding",
+    "other": "Text encoding"
+  },
+  {
+    "id": "Automatic · use language when needed",
+    "other": "Automatic · use language when needed"
+  },
+  {
+    "id": "Synchronize against the video's main dialogue",
+    "other": "Synchronize against the video's main dialogue"
+  },
+  {
+    "id": "Automatic sync and text cleanup are on for previews. Review the result before saving. If audio cannot be matched, turn off sync or use manual timing.",
+    "other": "Automatic sync and text cleanup are on for previews. Review the result before saving. If audio cannot be matched, turn off sync or use manual timing."
+  },
+  {
+    "id": "Timing anchors and cleanup",
+    "other": "Timing anchors and cleanup"
+  },
+  {
+    "id": "Shift all cues (seconds)",
+    "other": "Shift all cues (seconds)"
+  },
+  {
+    "id": "Positive values show subtitles later. Use anchors to correct drift; choose either a shift or anchors.",
+    "other": "Positive values show subtitles later. Use anchors to correct drift; choose either a shift or anchors."
+  },
+  {
+    "id": "Add timing anchor",
+    "other": "Add timing anchor"
+  },
+  {
+    "id": "Remove subtitle credits at the beginning and end",
+    "other": "Remove subtitle credits at the beginning and end"
+  },
+  {
+    "id": "Merge adjacent repeated cues",
+    "other": "Merge adjacent repeated cues"
+  },
+  {
+    "id": "Remove hearing-impaired descriptions, such as [door slams] and speaker names",
+    "other": "Remove hearing-impaired descriptions, such as [door slams] and speaker names"
+  },
+  {
+    "id": "Correct subtitle text",
+    "other": "Correct subtitle text"
+  },
+  {
+    "id": "Load the current preview, edit its numbered SRT cues, and preview again. Loading the preview resets timing controls because these timestamps already include your changes.",
+    "other": "Load the current preview, edit its numbered SRT cues, and preview again. Loading the preview resets timing controls because these timestamps already include your changes."
+  },
+  {
+    "id": "Load preview into text editor",
+    "other": "Load preview into text editor"
+  },
+  {
+    "id": "Editable SRT",
+    "other": "Editable SRT"
+  },
+  {
+    "id": "Discard text corrections",
+    "other": "Discard text corrections"
+  },
+  {
+    "id": "Preview changes",
+    "other": "Preview changes"
+  },
+  {
+    "id": "Save reviewed subtitle",
+    "other": "Save reviewed subtitle"
+  },
+  {
+    "id": "Saving keeps a recovery copy and protects your edit from automatic upgrades.",
+    "other": "Saving keeps a recovery copy and protects your edit from automatic upgrades."
+  },
+  {
+    "id": "Export SRT",
+    "other": "Export SRT"
+  },
+  {
+    "id": "Export WebVTT",
+    "other": "Export WebVTT"
+  },
+  {
+    "id": "Undo last replacement",
+    "other": "Undo last replacement"
+  },
+  {
+    "id": "Before and after",
+    "other": "Before and after"
+  },
+  {
+    "id": "Only cues with findings",
+    "other": "Only cues with findings"
+  },
+  {
+    "id": "Reading-speed and overlap findings are suggestions; signs, songs, and simultaneous speakers may be intentional.",
+    "other": "Reading-speed and overlap findings are suggestions; signs, songs, and simultaneous speakers may be intentional."
+  },
+  {
+    "id": "Cue pages",
+    "other": "Cue pages"
+  },
+  {
+    "id": "cues shown",
+    "other": "cues shown"
+  },
+  {
+    "id": "Next",
+    "other": "Next"
+  },
+  {
+    "id": "Main navigation",
+    "other": "Main navigation"
+  },
+  {
+    "id": "Support Kinosail",
+    "other": "Support Kinosail"
+  },
+  {
+    "id": "Subtitle library",
+    "other": "Subtitle library"
+  },
+  {
+    "id": "Overview",
+    "other": "Overview"
+  },
+  {
+    "id": "Wanted",
+    "other": "Wanted"
+  },
+  {
+    "id": "Support",
+    "other": "Support"
+  },
+  {
+    "id": "Configured media folders",
+    "other": "Configured media folders"
+  },
+  {
+    "id": "Choose your subtitle plan · Kinosail Subtitles",
+    "other": "Choose your subtitle plan · Kinosail Subtitles"
+  },
+  {
+    "id": "Owner account",
+    "other": "Owner account"
+  },
+  {
+    "id": "Subtitle plan",
+    "other": "Subtitle plan"
+  },
+  {
+    "id": "Step 2 of 2 · Subtitle plan",
+    "other": "Step 2 of 2 · Subtitle plan"
+  },
+  {
+    "id": "Connect a provider. Let Kinosail handle the rest.",
+    "other": "Connect a provider. Let Kinosail handle the rest."
+  },
+  {
+    "id": "Your language, folders, and schedule are already set. The defaults handle everyday subtitle maintenance; adjust them only when your household needs something different.",
+    "other": "Your language, folders, and schedule are already set. The defaults handle everyday subtitle maintenance; adjust them only when your household needs something different."
+  },
+  {
+    "id": "Connect a subtitle provider",
+    "other": "Connect a subtitle provider"
+  },
+  {
+    "id": "One provider is enough to start. Provider credentials take effect immediately. Kinosail then finds missing subtitles automatically.",
+    "other": "One provider is enough to start. Provider credentials take effect immediately. Kinosail then finds missing subtitles automatically."
+  },
+  {
+    "id": "Configured",
+    "other": "Configured"
+  },
+  {
+    "id": "Key instructions",
+    "other": "Key instructions"
+  },
+  {
+    "id": "Enter key in Kinosail",
+    "other": "Enter key in Kinosail"
+  },
+  {
+    "id": "Provider searches receive media identity and language metadata, not media bytes. Embedded and existing sidecar subtitles stay local.",
+    "other": "Provider searches receive media identity and language metadata, not media bytes. Embedded and existing sidecar subtitles stay local."
+  },
+  {
+    "id": "Ready-to-use defaults",
+    "other": "Ready-to-use defaults"
+  },
+  {
+    "id": "subtitles, prefer embedded text, and check for missing files every 15 minutes. Preserve original downloads, back up replacements, and leave uncertain timing unchanged.",
+    "other": "subtitles, prefer embedded text, and check for missing files every 15 minutes. Preserve original downloads, back up replacements, and leave uncertain timing unchanged."
+  },
+  {
+    "id": "Optional OCR and transcription create local drafts for review. They never replace subtitles automatically.",
+    "other": "Optional OCR and transcription create local drafts for review. They never replace subtitles automatically."
+  },
+  {
+    "id": "Review language, media scope, and schedule",
+    "other": "Review language, media scope, and schedule"
+  },
+  {
+    "id": "Choose the primary subtitle language",
+    "other": "Choose the primary subtitle language"
+  },
+  {
+    "id": "Embedded text comes first. Select the primary language and preferred subtitle role.",
+    "other": "Embedded text comes first. Select the primary language and preferred subtitle role."
+  },
+  {
+    "id": "Primary language",
+    "other": "Primary language"
+  },
+  {
+    "id": "Common languages appear first. You can choose from the complete catalog.",
+    "other": "Common languages appear first. You can choose from the complete catalog."
+  },
+  {
+    "id": "Save plan",
+    "other": "Save plan"
+  },
+  {
+    "id": "Managed by deployment configuration.",
+    "other": "Managed by deployment configuration."
+  },
+  {
+    "id": "Choose where to save subtitle files",
+    "other": "Choose where to save subtitle files"
+  },
+  {
+    "id": "Kinosail checks subtitle files before saving them beside your videos. The Server needs permission to write to these folders.",
+    "other": "Kinosail checks subtitle files before saving them beside your videos. The Server needs permission to write to these folders."
+  },
+  {
+    "id": "Entire media mount",
+    "other": "Entire media mount"
+  },
+  {
+    "id": "Active",
+    "other": "Active"
+  },
+  {
+    "id": "Once you add a folder, Kinosail will use only the folders you select.",
+    "other": "Once you add a folder, Kinosail will use only the folders you select."
+  },
+  {
+    "id": "Choose a scan schedule",
+    "other": "Choose a scan schedule"
+  },
+  {
+    "id": "Kinosail detects files when copying finishes. Scheduled scans catch changes it may have missed.",
+    "other": "Kinosail detects files when copying finishes. Scheduled scans catch changes it may have missed."
+  },
+  {
+    "id": "Server default",
+    "other": "Server default"
+  },
+  {
+    "id": "Every hour",
+    "other": "Every hour"
+  },
+  {
+    "id": "Only filesystem events",
+    "other": "Only filesystem events"
+  },
+  {
+    "id": "Readiness check",
+    "other": "Readiness check"
+  },
+  {
+    "id": "Your subtitle plan",
+    "other": "Your subtitle plan"
+  },
+  {
+    "id": "Media scope",
+    "other": "Media scope"
+  },
+  {
+    "id": "Provider",
+    "other": "Provider"
+  },
+  {
+    "id": "Ready",
+    "other": "Ready"
+  },
+  {
+    "id": "Filesystem events only",
+    "other": "Filesystem events only"
+  },
+  {
+    "id": "Provider credentials are configured. Kinosail still uses local sidecars and embedded text first.",
+    "other": "Provider credentials are configured. Kinosail still uses local sidecars and embedded text first."
+  },
+  {
+    "id": "Set up one provider to let Kinosail find missing files. Embedded and existing sidecar subtitles work without one.",
+    "other": "Set up one provider to let Kinosail find missing files. Embedded and existing sidecar subtitles work without one."
+  },
+  {
+    "id": "Configure a provider",
+    "other": "Configure a provider"
+  },
+  {
+    "id": "Provider requests do not include your media files. You can review saved subtitle changes in each file’s installation history.",
+    "other": "Provider requests do not include your media files. You can review saved subtitle changes in each file’s installation history."
+  },
+  {
+    "id": "Review all settings",
+    "other": "Review all settings"
+  },
+  {
+    "id": "You can change these choices in Settings.",
+    "other": "You can change these choices in Settings."
+  },
+  {
+    "id": "Finish and open overview",
+    "other": "Finish and open overview"
+  },
+  {
+    "id": "Preferred subtitle languages",
+    "other": "Preferred subtitle languages"
+  },
+  {
+    "id": "Leave blank to keep the configured key",
+    "other": "Leave blank to keep the configured key"
+  },
+  {
+    "id": "Paste your SubSource API key",
+    "other": "Paste your SubSource API key"
+  },
+  {
+    "id": "Subtitle overview",
+    "other": "Subtitle overview"
+  },
+  {
+    "id": "Choose where Kinosail looks, which languages each title needs, and how often it checks for changes.",
+    "other": "Choose where Kinosail looks, which languages each title needs, and how often it checks for changes."
+  },
+  {
+    "id": "Languages",
+    "other": "Languages"
+  },
+  {
+    "id": "Automation",
+    "other": "Automation"
+  },
+  {
+    "id": "Thanks",
+    "other": "Thanks"
+  },
+  {
+    "id": "Preferred languages",
+    "other": "Preferred languages"
+  },
+  {
+    "id": "A media file is ready when it has text subtitles in every selected language. The first language is your primary choice.",
+    "other": "A media file is ready when it has text subtitles in every selected language. The first language is your primary choice."
+  },
+  {
+    "id": "· Primary",
+    "other": "· Primary"
+  },
+  {
+    "id": "Add a language",
+    "other": "Add a language"
+  },
+  {
+    "id": "Add language",
+    "other": "Add language"
+  },
+  {
+    "id": "20-language limit reached",
+    "other": "20-language limit reached"
+  },
+  {
+    "id": "You have selected 20 languages. Remove one before adding another.",
+    "other": "You have selected 20 languages. Remove one before adding another."
+  },
+  {
+    "id": "Save subtitle role",
+    "other": "Save subtitle role"
+  },
+  {
+    "id": "Playback subtitle choices",
+    "other": "Playback subtitle choices"
+  },
+  {
+    "id": "Show every available track",
+    "other": "Show every available track"
+  },
+  {
+    "id": "Show preferred languages only",
+    "other": "Show preferred languages only"
+  },
+  {
+    "id": "Save subtitle choices",
+    "other": "Save subtitle choices"
+  },
+  {
+    "id": "Limiting choices hides extra tracks from subtitle selection menus; it does not rename or delete subtitle files. Off remains available. The picker shows one regular track per selected language. Kept forced tracks appear only in selected languages. Cleanup enables this choice after confirmation. It hides only the files you confirm in its preview.",
+    "other": "Limiting choices hides extra tracks from subtitle selection menus; it does not rename or delete subtitle files. Off remains available. The picker shows one regular track per selected language. Kept forced tracks appear only in selected languages. Cleanup enables this choice after confirmation. It hides only the files you confirm in its preview."
+  },
+  {
+    "id": "Subtitle providers",
+    "other": "Subtitle providers"
+  },
+  {
+    "id": "One provider is enough. Kinosail searches every configured provider automatically and selects one trusted match.",
+    "other": "One provider is enough. Kinosail searches every configured provider automatically and selects one trusted match."
+  },
+  {
+    "id": "remaining",
+    "other": "remaining"
+  },
+  {
+    "id": "· retry",
+    "other": "· retry"
+  },
+  {
+    "id": "Need an account?",
+    "other": "Need an account?"
+  },
+  {
+    "id": "On SubSource, choose Create Account.",
+    "other": "On SubSource, choose Create Account."
+  },
+  {
+    "id": "Test provider credentials",
+    "other": "Test provider credentials"
+  },
+  {
+    "id": "Embedded tracks stay local. Provider searches receive the filename, language, media identity, and a non-cryptographic file hash when supported.",
+    "other": "Embedded tracks stay local. Provider searches receive the filename, language, media identity, and a non-cryptographic file hash when supported."
+  },
+  {
+    "id": "Configure SubDL",
+    "other": "Configure SubDL"
+  },
+  {
+    "id": "Configure OpenSubtitles",
+    "other": "Configure OpenSubtitles"
+  },
+  {
+    "id": "SubSource",
+    "other": "SubSource"
+  },
+  {
+    "id": "A SubSource key and personal-use acceptance are saved.",
+    "other": "A SubSource key and personal-use acceptance are saved."
+  },
+  {
+    "id": "SubSource adds broad free coverage. Its files remain unchanged and stay inside your household.",
+    "other": "SubSource adds broad free coverage. Its files remain unchanged and stay inside your household."
+  },
+  {
+    "id": "SubSource API key",
+    "other": "SubSource API key"
+  },
+  {
+    "id": "Use SubSource only for personal household use and accept its terms",
+    "other": "Use SubSource only for personal household use and accept its terms"
+  },
+  {
+    "id": "Save SubSource",
+    "other": "Save SubSource"
+  },
+  {
+    "id": "Disable SubSource",
+    "other": "Disable SubSource"
+  },
+  {
+    "id": "Give the Kinosail container permission to save subtitle files in these folders.",
+    "other": "Give the Kinosail container permission to save subtitle files in these folders."
+  },
+  {
+    "id": "Add library",
+    "other": "Add library"
+  },
+  {
+    "id": "Library monitoring",
+    "other": "Library monitoring"
+  },
+  {
+    "id": "Kinosail detects new files when copying finishes. Scheduled scans find missing subtitles and replace automatically managed subtitles when a better trusted match is available.",
+    "other": "Kinosail detects new files when copying finishes. Scheduled scans find missing subtitles and replace automatically managed subtitles when a better trusted match is available."
+  },
+  {
+    "id": "Recommended for phones and browsers. Optional.",
+    "other": "Recommended for phones and browsers. Optional."
+  },
+  {
+    "id": "Kinosail LAN address",
+    "other": "Kinosail LAN address"
+  },
+  {
+    "id": "Allow DNS validation and accept the Let's Encrypt subscriber agreement",
+    "other": "Allow DNS validation and accept the Let's Encrypt subscriber agreement"
+  },
+  {
+    "id": "Save trusted HTTPS",
+    "other": "Save trusted HTTPS"
+  },
+  {
+    "id": "Owner and recovery",
+    "other": "Owner and recovery"
+  },
+  {
+    "id": "Manage passkeys, authenticators, sessions, encrypted backups, and advanced deployment values.",
+    "other": "Manage passkeys, authenticators, sessions, encrypted backups, and advanced deployment values."
+  },
+  {
+    "id": "Backups",
+    "other": "Backups"
+  },
+  {
+    "id": "Open setup guide",
+    "other": "Open setup guide"
+  },
+  {
+    "id": "Made possible by",
+    "other": "Made possible by"
+  },
+  {
+    "id": "We are grateful to the people who make local subtitles possible.",
+    "other": "We are grateful to the people who make local subtitles possible."
+  },
+  {
+    "id": "and the",
+    "other": "and the"
+  },
+  {
+    "id": "maintainers give this Server its media tools.",
+    "other": "maintainers give this Server its media tools."
+  },
+  {
+    "id": "Silero VAD",
+    "other": "Silero VAD"
+  },
+  {
+    "id": ", and",
+    "other": ", and"
+  },
+  {
+    "id": "Tesseract",
+    "other": "Tesseract"
+  },
+  {
+    "id": "help with optional local speech and text recognition. When you choose an online provider,",
+    "other": "help with optional local speech and text recognition. When you choose an online provider,"
+  },
+  {
+    "id": "SubDL",
+    "other": "SubDL"
+  },
+  {
+    "id": "help find subtitles.",
+    "other": "help find subtitles."
+  },
+  {
+    "id": "We also thank the people behind the browser, font, networking, and archive tools used here.",
+    "other": "We also thank the people behind the browser, font, networking, and archive tools used here."
+  },
+  {
+    "id": "View third-party notices",
+    "other": "View third-party notices"
+  },
+  {
+    "id": "for licenses, sources, and the terms that apply to each component. The Server image also includes them at",
+    "other": "for licenses, sources, and the terms that apply to each component. The Server image also includes them at"
+  },
+  {
+    "id": "Hide unwanted subtitle files",
+    "other": "Hide unwanted subtitle files"
+  },
+  {
+    "id": "Keep the languages you use so playback has fewer choices. When subtitles are on, Kinosail selects the first available preferred language.",
+    "other": "Keep the languages you use so playback has fewer choices. When subtitles are on, Kinosail selects the first available preferred language."
+  },
+  {
+    "id": "Cleanup is optional and off until you enable it. Preview tagged .srt and .vtt files before hiding them. Hidden files stay beside the video with a .hidden suffix; remove that suffix to restore them. Embedded tracks and files with uncertain language stay in place.",
+    "other": "Cleanup is optional and off until you enable it. Preview tagged .srt and .vtt files before hiding them. Hidden files stay beside the video with a .hidden suffix; remove that suffix to restore them. Embedded tracks and files with uncertain language stay in place."
+  },
+  {
+    "id": "Enable subtitle language cleanup",
+    "other": "Enable subtitle language cleanup"
+  },
+  {
+    "id": "Languages to keep",
+    "other": "Languages to keep"
+  },
+  {
+    "id": "Select at least one language. On a keyboard, hold Command or Ctrl to select several.",
+    "other": "Select at least one language. On a keyboard, hold Command or Ctrl to select several."
+  },
+  {
+    "id": "Forced subtitles in every language",
+    "other": "Forced subtitles in every language"
+  },
+  {
+    "id": "Preview files to hide",
+    "other": "Preview files to hide"
+  },
+  {
+    "id": "Cleanup",
+    "other": "Cleanup"
+  },
+  {
+    "id": "certificate for Kinosail Subtitles",
+    "other": "certificate for Kinosail Subtitles"
+  },
+  {
+    "id": "A privacy-safe supporter certificate with a Kinosail Subtitles caption badge.",
+    "other": "A privacy-safe supporter certificate with a Kinosail Subtitles caption badge."
+  },
+  {
+    "id": "No payment, activation, device, or private installation data is included.",
+    "other": "No payment, activation, device, or private installation data is included."
+  },
+  {
+    "id": "Kinosail Subtitles Perfect Sync masterwork, level",
+    "other": "Kinosail Subtitles Perfect Sync masterwork, level"
+  },
+  {
+    "id": "Subscriber service marks",
+    "other": "Subscriber service marks"
+  },
+  {
+    "id": "badge for Kinosail Subtitles",
+    "other": "badge for Kinosail Subtitles"
+  },
+  {
+    "id": "Supporter badges · Kinosail Subtitles",
+    "other": "Supporter badges · Kinosail Subtitles"
+  },
+  {
+    "id": "Kinosail Subtitles supporter registry",
+    "other": "Kinosail Subtitles supporter registry"
+  },
+  {
+    "id": "Two badge families. Every level has its own shape.",
+    "other": "Two badge families. Every level has its own shape."
+  },
+  {
+    "id": "Support stays voluntary. Kinosail Subtitles keeps every core feature. Monthly and one-time support both earn complete, app-specific badges.",
+    "other": "Support stays voluntary. Kinosail Subtitles keeps every core feature. Monthly and one-time support both earn complete, app-specific badges."
+  },
+  {
+    "id": "Your badge case",
+    "other": "Your badge case"
+  },
+  {
+    "id": "Recognition stored on this Server",
+    "other": "Recognition stored on this Server"
+  },
+  {
+    "id": "Perfect Sync · Level",
+    "other": "Perfect Sync · Level"
+  },
+  {
+    "id": "Both badge families meet here. Perfect Sync rises only when both families reach the next level.",
+    "other": "Both badge families meet here. Perfect Sync rises only when both families reach the next level."
+  },
+  {
+    "id": "Living cadence active",
+    "other": "Living cadence active"
+  },
+  {
+    "id": "Earned permanently · Living cadence dormant",
+    "other": "Earned permanently · Living cadence dormant"
+  },
+  {
+    "id": "Complete Fleet",
+    "other": "Complete Fleet"
+  },
+  {
+    "id": "comes only from signed collection metadata. A Living Complete Fleet follows future configured apps while active. A dated Patron edition stays fixed.",
+    "other": "comes only from signed collection metadata. A Living Complete Fleet follows future configured apps while active. A dated Patron edition stays fixed."
+  },
+  {
+    "id": "Optional local activation",
+    "other": "Optional local activation"
+  },
+  {
+    "id": "Add or refresh either badge",
+    "other": "Add or refresh either badge"
+  },
+  {
+    "id": "The Server sends only the key, app ID, and a random installation mark. It stores no payment details or supporter key. Signed results verify offline.",
+    "other": "The Server sends only the key, app ID, and a random installation mark. It stores no payment details or supporter key. Signed results verify offline."
+  },
+  {
+    "id": "Supporter key",
+    "other": "Supporter key"
+  },
+  {
+    "id": "Public recognition name",
+    "other": "Public recognition name"
+  },
+  {
+    "id": "Optional. Levels 7–10 only. This name appears on shared certificates.",
+    "other": "Optional. Levels 7–10 only. This name appears on shared certificates."
+  },
+  {
+    "id": "Activate or refresh badge",
+    "other": "Activate or refresh badge"
+  },
+  {
+    "id": "One key covers every included app.",
+    "other": "One key covers every included app."
+  },
+  {
+    "id": "Each app keeps its own emblem and Share Certificate. Living follows current apps while active. Dated Patron editions stay fixed.",
+    "other": "Each app keeps its own emblem and Share Certificate. Living follows current apps while active. Dated Patron editions stay fixed."
+  },
+  {
+    "id": "Private by default",
+    "other": "Private by default"
+  },
+  {
+    "id": "Share the honor, not the activation.",
+    "other": "Share the honor, not the activation."
+  },
+  {
+    "id": "Downloaded certificates include the app, badge family, level, dates, and an explicitly supplied high-level recognition name. They exclude keys, supporter marks, signatures, payment data, devices, and installation data.",
+    "other": "Downloaded certificates include the app, badge family, level, dates, and an explicitly supplied high-level recognition name. They exclude keys, supporter marks, signatures, payment data, devices, and installation data."
+  },
+  {
+    "id": "Public supporters",
+    "other": "Public supporters"
+  },
+  {
+    "id": "Shared as",
+    "other": "Shared as"
+  },
+  {
+    "id": "Supported since",
+    "other": "Supported since"
+  },
+  {
+    "id": "Current through",
+    "other": "Current through"
+  },
+  {
+    "id": "apps in this signed edition",
+    "other": "apps in this signed edition"
+  },
+  {
+    "id": "Download SVG certificate",
+    "other": "Download SVG certificate"
+  },
+  {
+    "id": "Share PNG certificate",
+    "other": "Share PNG certificate"
+  },
+  {
+    "id": "Not activated",
+    "other": "Not activated"
+  },
+  {
+    "id": "Your other badge family stays independent.",
+    "other": "Your other badge family stays independent."
+  },
+  {
+    "id": "Elite level ·",
+    "other": "Elite level ·"
+  },
+  {
+    "id": "Archived",
+    "other": "Archived"
+  },
+  {
+    "id": "Yours",
+    "other": "Yours"
+  },
+  {
+    "id": "Collected",
+    "other": "Collected"
+  },
+  {
+    "id": "Available",
+    "other": "Available"
+  },
+  {
+    "id": "· Kinosail Player",
+    "other": "· Kinosail Player"
+  },
+  {
+    "id": "Play album",
+    "other": "Play album"
+  },
+  {
+    "id": "Tracks",
+    "other": "Tracks"
+  },
+  {
+    "id": "Single sign-on return address",
+    "other": "Single sign-on return address"
+  },
+  {
+    "id": "Single sign-on issuer",
+    "other": "Single sign-on issuer"
+  },
+  {
+    "id": "Single sign-on client ID",
+    "other": "Single sign-on client ID"
+  },
+  {
+    "id": "Single sign-on client secret",
+    "other": "Single sign-on client secret"
+  },
+  {
+    "id": "Client secret",
+    "other": "Client secret"
+  },
+  {
+    "id": "Single sign-on identity claim",
+    "other": "Single sign-on identity claim"
+  },
+  {
+    "id": "Use a standards-based OpenID Connect provider. Create a confidential web application. Your return address is your Kinosail HTTPS address followed by",
+    "other": "Use a standards-based OpenID Connect provider. Create a confidential web application. Your return address is your Kinosail HTTPS address followed by"
+  },
+  {
+    "id": ". Register it exactly with the provider.",
+    "other": ". Register it exactly with the provider."
+  },
+  {
+    "id": "Single sign-on is not configured.",
+    "other": "Single sign-on is not configured."
+  },
+  {
+    "id": "Return address",
+    "other": "Return address"
+  },
+  {
+    "id": "Issuer URL",
+    "other": "Issuer URL"
+  },
+  {
+    "id": "Client ID",
+    "other": "Client ID"
+  },
+  {
+    "id": "Identity claim",
+    "other": "Identity claim"
+  },
+  {
+    "id": "Provision the same claim value as the SCIM",
+    "other": "Provision the same claim value as the SCIM"
+  },
+  {
+    "id": "unless your provider uses another stable claim, such as Microsoft Entra",
+    "other": "unless your provider uses another stable claim, such as Microsoft Entra"
+  },
+  {
+    "id": "Save single sign-on",
+    "other": "Save single sign-on"
+  },
+  {
+    "id": "Copy URL for service provider metadata",
+    "other": "Copy URL for service provider metadata"
+  },
+  {
+    "id": "Copy URL for Assertion Consumer Service",
+    "other": "Copy URL for Assertion Consumer Service"
+  },
+  {
+    "id": "SAML provider metadata URL",
+    "other": "SAML provider metadata URL"
+  },
+  {
+    "id": "SAML provider metadata XML",
+    "other": "SAML provider metadata XML"
+  },
+  {
+    "id": "SAML identity attribute",
+    "other": "SAML identity attribute"
+  },
+  {
+    "id": "SAML single sign-on",
+    "other": "SAML single sign-on"
+  },
+  {
+    "id": "Connect a Security Assertion Markup Language (SAML) 2.0 identity provider. Use its metadata URL, or paste a downloaded metadata document.",
+    "other": "Connect a Security Assertion Markup Language (SAML) 2.0 identity provider. Use its metadata URL, or paste a downloaded metadata document."
+  },
+  {
+    "id": "Service provider metadata",
+    "other": "Service provider metadata"
+  },
+  {
+    "id": "Copy URL",
+    "other": "Copy URL"
+  },
+  {
+    "id": "Assertion Consumer Service URL",
+    "other": "Assertion Consumer Service URL"
+  },
+  {
+    "id": "SAML single sign-on is not configured.",
+    "other": "SAML single sign-on is not configured."
+  },
+  {
+    "id": "Provider metadata URL",
+    "other": "Provider metadata URL"
+  },
+  {
+    "id": "Or use a downloaded metadata document.",
+    "other": "Or use a downloaded metadata document."
+  },
+  {
+    "id": "Provider metadata XML",
+    "other": "Provider metadata XML"
+  },
+  {
+    "id": "Identity attribute",
+    "other": "Identity attribute"
+  },
+  {
+    "id": "Provision the same value as the SCIM",
+    "other": "Provision the same value as the SCIM"
+  },
+  {
+    "id": ", or enter one signed assertion attribute name.",
+    "other": ", or enter one signed assertion attribute name."
+  },
+  {
+    "id": "Enter exactly one metadata source. Changes apply after a restart.",
+    "other": "Enter exactly one metadata source. Changes apply after a restart."
+  },
+  {
+    "id": "Entity ID:",
+    "other": "Entity ID:"
+  },
+  {
+    "id": "Metadata URL certificates refresh every hour. Configuration keys:",
+    "other": "Metadata URL certificates refresh every hour. Configuration keys:"
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "Copy the setup key or setup link into your authenticator app."
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "Save every recovery code before you continue. Each code works once."
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "Enter the current 6-digit code to confirm the app."
+  },
+  {
+    "id": "Private Media Share",
+    "other": "Private Media Share"
+  },
+  {
+    "id": "Opening shared media",
+    "other": "Opening shared media"
+  },
+  {
+    "id": "Checking this private link…",
+    "other": "Checking this private link…"
+  },
+  {
+    "id": "Media Shares",
+    "other": "Media Shares"
+  },
+  {
+    "id": "Create an expiring link for selected Library Content and a limited number of devices.",
+    "other": "Create an expiring link for selected Library Content and a limited number of devices."
+  },
+  {
+    "id": "Create a Media Share",
+    "other": "Create a Media Share"
+  },
+  {
+    "id": "Expires",
+    "other": "Expires"
+  },
+  {
+    "id": "One hour",
+    "other": "One hour"
+  },
+  {
+    "id": "24 hours",
+    "other": "24 hours"
+  },
+  {
+    "id": "Devices",
+    "other": "Devices"
+  },
+  {
+    "id": "One",
+    "other": "One"
+  },
+  {
+    "id": "Two",
+    "other": "Two"
+  },
+  {
+    "id": "Four",
+    "other": "Four"
+  },
+  {
+    "id": "I confirm I have the right to share these items with recipients.",
+    "other": "I confirm I have the right to share these items with recipients."
+  },
+  {
+    "id": "Create secure Media Share",
+    "other": "Create secure Media Share"
+  },
+  {
+    "id": "No active Media Shares.",
+    "other": "No active Media Shares."
+  },
+  {
+    "id": "Edit multiple items",
+    "other": "Edit multiple items"
+  },
+  {
+    "id": "Apply the same metadata fields to selected Library Content. Blank fields stay unchanged.",
+    "other": "Apply the same metadata fields to selected Library Content. Blank fields stay unchanged."
+  },
+  {
+    "id": "Select items",
+    "other": "Select items"
+  },
+  {
+    "id": "Metadata changes",
+    "other": "Metadata changes"
+  },
+  {
+    "id": "Apply metadata",
+    "other": "Apply metadata"
+  },
+  {
+    "id": "System sections",
+    "other": "System sections"
+  },
+  {
+    "id": "Review local Server activity, recent playback, and safe diagnostics in one place.",
+    "other": "Review local Server activity, recent playback, and safe diagnostics in one place."
+  },
+  {
+    "id": "The local audit journal records security and administration events without request bodies or secrets. Administrative events can include configured Library folders.",
+    "other": "The local audit journal records security and administration events without request bodies or secrets. Administrative events can include configured Library folders."
+  },
+  {
+    "id": "Playback history stays on this Server and is visible only to Owners.",
+    "other": "Playback history stays on this Server and is visible only to Owners."
+  },
+  {
+    "id": "Healthy",
+    "other": "Healthy"
+  },
+  {
+    "id": "Needs attention",
+    "other": "Needs attention"
+  },
+  {
+    "id": "Version:",
+    "other": "Version:"
+  },
+  {
+    "id": "Manage while away · Kinosail",
+    "other": "Manage while away · Kinosail"
+  },
+  {
+    "id": "Manage while away",
+    "other": "Manage while away"
+  },
+  {
+    "id": "Your Owner controls stay private. At home, sign in at your local Server address. Away from home, connect a paired device first.",
+    "other": "Your Owner controls stay private. At home, sign in at your local Server address. Away from home, connect a paired device first."
+  },
+  {
+    "id": "Private management",
+    "other": "Private management"
+  },
+  {
+    "id": "Off · manage at home",
+    "other": "Off · manage at home"
+  },
+  {
+    "id": "Watching away from home is a",
+    "other": "Watching away from home is a"
+  },
+  {
+    "id": "separate setting",
+    "other": "separate setting"
+  },
+  {
+    "id": ". Enabling public viewing never enables Owner access.",
+    "other": ". Enabling public viewing never enables Owner access."
+  },
+  {
+    "id": "Start at home with your Owner account and two-step sign-in. Use your trusted local HTTPS address, or finish",
+    "other": "Start at home with your Owner account and two-step sign-in. Use your trusted local HTTPS address, or finish"
+  },
+  {
+    "id": "public HTTPS setup",
+    "other": "public HTTPS setup"
+  },
+  {
+    "id": "Public Server hostname and management port",
+    "other": "Public Server hostname and management port"
+  },
+  {
+    "id": "). This is the address your paired device uses to find your Server.",
+    "other": "). This is the address your paired device uses to find your Server."
+  },
+  {
+    "id": "Enable private management",
+    "other": "Enable private management"
+  },
+  {
+    "id": "Paired devices",
+    "other": "Paired devices"
+  },
+  {
+    "id": "No Owner devices are paired.",
+    "other": "No Owner devices are paired."
+  },
+  {
+    "id": "Lost a device or cannot connect?",
+    "other": "Lost a device or cannot connect?"
+  },
+  {
+    "id": "At home, open your local Server address and sign in as an Owner. Revoke the missing device here, or turn management off to disconnect every device. Sign out lost devices in Settings as well.",
+    "other": "At home, open your local Server address and sign in as an Owner. Revoke the missing device here, or turn management off to disconnect every device. Sign out lost devices in Settings as well."
+  },
+  {
+    "id": "After an Owner’s credentials or security policy change, pair that Owner’s devices again at home. Keep your account recovery codes somewhere safe, away from the paired device.",
+    "other": "After an Owner’s credentials or security policy change, pair that Owner’s devices again at home. Keep your account recovery codes somewhere safe, away from the paired device."
+  },
+  {
+    "id": "For local terminal recovery, run",
+    "other": "For local terminal recovery, run"
+  },
+  {
+    "id": "inside the Server container. It disconnects private management within two seconds and clears its pairings.",
+    "other": "inside the Server container. It disconnects private management within two seconds and clears its pairings."
+  },
+  {
+    "id": "If your Server is offline or this device was revoked, turn off its WireGuard tunnel to restore normal DNS. If your home internet address changed, turn the tunnel off and on to reconnect.",
+    "other": "If your Server is offline or this device was revoked, turn off its WireGuard tunnel to restore normal DNS. If your home internet address changed, turn the tunnel off and on to reconnect."
+  },
+  {
+    "id": "If browser secure DNS bypasses the tunnel, use the device’s automatic DNS setting while managing your Server. A certificate warning means you should stop and fix HTTPS setup.",
+    "other": "If browser secure DNS bypasses the tunnel, use the device’s automatic DNS setting while managing your Server. A certificate warning means you should stop and fix HTTPS setup."
+  },
+  {
+    "id": "Close playback settings",
+    "other": "Close playback settings"
+  },
+  {
+    "id": "Playback settings",
+    "other": "Playback settings"
+  },
+  {
+    "id": "Close",
+    "other": "Close"
+  },
+  {
+    "id": "Playback behavior",
+    "other": "Playback behavior"
+  },
+  {
+    "id": "Try the original file first. Use a compatible version if the format cannot play.",
+    "other": "Try the original file first. Use a compatible version if the format cannot play."
+  },
+  {
+    "id": "Use the original file and never convert it.",
+    "other": "Use the original file and never convert it."
+  },
+  {
+    "id": "Use a compatible version, converting only what your device needs.",
+    "other": "Use a compatible version, converting only what your device needs."
+  },
+  {
+    "id": "Loading video…",
+    "other": "Loading video…"
+  },
+  {
+    "id": "Enter fullscreen",
+    "other": "Enter fullscreen"
+  },
+  {
+    "id": "Picture-in-Picture",
+    "other": "Picture-in-Picture"
+  },
+  {
+    "id": "QR scanner camera preview",
+    "other": "QR scanner camera preview"
+  },
+  {
+    "id": "Six-digit code",
+    "other": "Six-digit code"
+  },
+  {
+    "id": "Digit 1 of 6",
+    "other": "Digit 1 of 6"
+  },
+  {
+    "id": "Digit 2 of 6",
+    "other": "Digit 2 of 6"
+  },
+  {
+    "id": "Digit 3 of 6",
+    "other": "Digit 3 of 6"
+  },
+  {
+    "id": "Digit 4 of 6",
+    "other": "Digit 4 of 6"
+  },
+  {
+    "id": "Digit 5 of 6",
+    "other": "Digit 5 of 6"
+  },
+  {
+    "id": "Digit 6 of 6",
+    "other": "Digit 6 of 6"
+  },
+  {
+    "id": "Enter the six-digit code shown by your TV or app. It will use this profile’s access and content settings.",
+    "other": "Enter the six-digit code shown by your TV or app. It will use this profile’s access and content settings."
+  },
+  {
+    "id": "Scan QR code",
+    "other": "Scan QR code"
+  },
+  {
+    "id": "Stop scanning",
+    "other": "Stop scanning"
+  },
+  {
+    "id": "Watch away from home",
+    "other": "Watch away from home"
+  },
+  {
+    "id": "Public access is turned off.",
+    "other": "Public access is turned off."
+  },
+  {
+    "id": "Set up your Server, then add one rule in your router.",
+    "other": "Set up your Server, then add one rule in your router."
+  },
+  {
+    "id": "Your library, with Viewer access",
+    "other": "Your library, with Viewer access"
+  },
+  {
+    "id": "Public HTTPS lets approved Viewers browse and play their allowed Libraries, save viewing progress, and use enabled download features. Owner settings, Profile management, backups, and integrations stay on your home network or an explicitly paired",
+    "other": "Public HTTPS lets approved Viewers browse and play their allowed Libraries, save viewing progress, and use enabled download features. Owner settings, Profile management, backups, and integrations stay on your home network or an explicitly paired"
+  },
+  {
+    "id": "private management device",
+    "other": "private management device"
+  },
+  {
+    "id": "What does opening this port allow?",
+    "other": "What does opening this port allow?"
+  },
+  {
+    "id": "Opening a port makes the sign-in page reachable from the internet. A stolen Viewer session can expose that Viewer's media and activity. Keep Kinosail and your router updated; no internet-facing service can promise protection from every server vulnerability.",
+    "other": "Opening a port makes the sign-in page reachable from the internet. A stolen Viewer session can expose that Viewer's media and activity. Keep Kinosail and your router updated; no internet-facing service can promise protection from every server vulnerability."
+  },
+  {
+    "id": "Your public address will appear here after you configure DuckDNS.",
+    "other": "Your public address will appear here after you configure DuckDNS."
+  },
+  {
+    "id": "Set up access step by step",
+    "other": "Set up access step by step"
+  },
+  {
+    "id": "Router rule for the standard HTTPS installation",
+    "other": "Router rule for the standard HTTPS installation"
+  },
+  {
+    "id": "Router field",
+    "other": "Router field"
+  },
+  {
+    "id": "What to enter",
+    "other": "What to enter"
+  },
+  {
+    "id": "Use port 443 even if a router guide uses a different example.",
+    "other": "Use port 443 even if a router guide uses a different example."
+  },
+  {
+    "id": "Find instructions for your router",
+    "other": "Find instructions for your router"
+  },
+  {
+    "id": "Official manufacturer guides. Use your router model's instructions and the Kinosail values above.",
+    "other": "Official manufacturer guides. Use your router model's instructions and the Kinosail values above."
+  },
+  {
+    "id": "port-forwarding guide (opens a new tab)",
+    "other": "port-forwarding guide (opens a new tab)"
+  },
+  {
+    "id": "Router missing? Check the model on its label and search the manufacturer's support site for “port forwarding.” An internet-provider router may need its provider's app.",
+    "other": "Router missing? Check the model on its label and search the manufacturer's support site for “port forwarding.” An internet-provider router may need its provider's app."
+  },
+  {
+    "id": "Check your Server",
+    "other": "Check your Server"
+  },
+  {
+    "id": "Outside access is unverified. Server checks cannot confirm that your router or internet provider allows incoming connections.",
+    "other": "Outside access is unverified. Server checks cannot confirm that your router or internet provider allows incoming connections."
+  },
+  {
+    "id": "Check again",
+    "other": "Check again"
+  },
+  {
+    "id": "Passed",
+    "other": "Passed"
+  },
+  {
+    "id": "If it does not connect",
+    "other": "If it does not connect"
+  },
+  {
+    "id": "The connection times out",
+    "other": "The connection times out"
+  },
+  {
+    "id": "Check the selected Server device, TCP 443 in both port fields, and the Server firewall. Confirm DuckDNS points to your current public IP address. If port 443 is already used, resolve the conflict before opening anything else.",
+    "other": "Check the selected Server device, TCP 443 in both port fields, and the Server firewall. Confirm DuckDNS points to your current public IP address. If port 443 is already used, resolve the conflict before opening anything else."
+  },
+  {
+    "id": "If you have a router behind an internet-provider router, both need the rule: forward TCP 443 on the outer router to the inner router's WAN address, then on the inner router to the Server. Ask your provider for help if you are unsure.",
+    "other": "If you have a router behind an internet-provider router, both need the rule: forward TCP 443 on the outer router to the inner router's WAN address, then on the inner router to the Server. Ask your provider for help if you are unsure."
+  },
+  {
+    "id": "Ask your internet provider: “Do I have a public IPv4 address, and can I receive incoming TCP 443 connections?” A private WAN address or 100.64.0.0–100.127.255.255 can mean double NAT or carrier-grade NAT (CGNAT). Port forwarding alone cannot fix CGNAT; ask for a public address or use an owner-controlled VPN that supports your network.",
+    "other": "Ask your internet provider: “Do I have a public IPv4 address, and can I receive incoming TCP 443 connections?” A private WAN address or 100.64.0.0–100.127.255.255 can mean double NAT or carrier-grade NAT (CGNAT). Port forwarding alone cannot fix CGNAT; ask for a public address or use an owner-controlled VPN that supports your network."
+  },
+  {
+    "id": "A certificate warning appears",
+    "other": "A certificate warning appears"
+  },
+  {
+    "id": "Stop. Check that you used your exact DuckDNS HTTPS address and that TCP 443 reaches the Server's public HTTPS port. Wait for certificate issuance and check the error in Settings. Never bypass a warning at the public address.",
+    "other": "Stop. Check that you used your exact DuckDNS HTTPS address and that TCP 443 reaches the Server's public HTTPS port. Wait for certificate issuance and check the error in Settings. Never bypass a warning at the public address."
+  },
+  {
+    "id": "The page opens, but sign-in fails",
+    "other": "The page opens, but sign-in fails"
+  },
+  {
+    "id": "Use a remote-enabled Viewer, not an Owner. Password-only public sign-in is disabled. In a browser, choose Get a sign-in code. You can also use Quick Connect in the Kinosail app or a compatible Jellyfin app. Approve the code from a local Viewer session secured with an authenticator or passkey. Enable Jellyfin apps in Settings if you use one. Approvals and adding passkeys stay local; do not try to enroll a new passkey on the public listener.",
+    "other": "Use a remote-enabled Viewer, not an Owner. Password-only public sign-in is disabled. In a browser, choose Get a sign-in code. You can also use Quick Connect in the Kinosail app or a compatible Jellyfin app. Approve the code from a local Viewer session secured with an authenticator or passkey. Enable Jellyfin apps in Settings if you use one. Approvals and adding passkeys stay local; do not try to enroll a new passkey on the public listener."
+  },
+  {
+    "id": "Turn it off whenever you need",
+    "other": "Turn it off whenever you need"
+  },
+  {
+    "id": "At home, open",
+    "other": "At home, open"
+  },
+  {
+    "id": "Settings → Watch away from home",
+    "other": "Settings → Watch away from home"
+  },
+  {
+    "id": "and choose Disable public access now. This stops public viewing, revokes public sessions, and keeps public access off after restart. Remove the Kinosail port-forwarding rule in your router too when you no longer need it. Local access stays available.",
+    "other": "and choose Disable public access now. This stops public viewing, revokes public sessions, and keeps public access off after restart. Remove the Kinosail port-forwarding rule in your router too when you no longer need it. Local access stays available."
+  },
+  {
+    "id": "SCIM base URL",
+    "other": "SCIM base URL"
+  },
+  {
+    "id": "SCIM bearer token",
+    "other": "SCIM bearer token"
+  },
+  {
+    "id": "Bearer token",
+    "other": "Bearer token"
+  },
+  {
+    "id": "SCIM token expiration date",
+    "other": "SCIM token expiration date"
+  },
+  {
+    "id": "SCIM provisioning",
+    "other": "SCIM provisioning"
+  },
+  {
+    "id": "Connect a System for Cross-domain Identity Management (SCIM) 2.0 provider. Kinosail provisions Viewer Profiles and never grants Owner access.",
+    "other": "Connect a System for Cross-domain Identity Management (SCIM) 2.0 provider. Kinosail provisions Viewer Profiles and never grants Owner access."
+  },
+  {
+    "id": "Base URL",
+    "other": "Base URL"
+  },
+  {
+    "id": "Enter this URL in your provider. Use bearer token authentication.",
+    "other": "Enter this URL in your provider. Use bearer token authentication."
+  },
+  {
+    "id": "SCIM is not configured.",
+    "other": "SCIM is not configured."
+  },
+  {
+    "id": "Copy token",
+    "other": "Copy token"
+  },
+  {
+    "id": "Expires on",
+    "other": "Expires on"
+  },
+  {
+    "id": "Copy the generated token into your provider before you save. Kinosail hides it after this page.",
+    "other": "Copy the generated token into your provider before you save. Kinosail hides it after this page."
+  },
+  {
+    "id": "Provider attributes:",
+    "other": "Provider attributes:"
+  },
+  {
+    "id": "Codec and hardware support",
+    "other": "Codec and hardware support"
+  },
+  {
+    "id": "Video codecs",
+    "other": "Video codecs"
+  },
+  {
+    "id": "Video compatibility",
+    "other": "Video compatibility"
+  },
+  {
+    "id": "Automatic prefers a verified H.264 pipeline for broad compatibility. Other formats require matching device and encoder evidence.",
+    "other": "Automatic prefers a verified H.264 pipeline for broad compatibility. Other formats require matching device and encoder evidence."
+  },
+  {
+    "id": "Video formats",
+    "other": "Video formats"
+  },
+  {
+    "id": "Next step:",
+    "other": "Next step:"
+  },
+  {
+    "id": "Ways to convert video",
+    "other": "Ways to convert video"
+  },
+  {
+    "id": "FFmpeg option:",
+    "other": "FFmpeg option:"
+  },
+  {
+    "id": "Video conversion",
+    "other": "Video conversion"
+  },
+  {
+    "id": "Automatic checks each playback device only when Kinosail must convert video. It prefers H.264 and uses only encoding paths that passed a local HLS smoke check. A manual choice forces that format for every playback device.",
+    "other": "Automatic checks each playback device only when Kinosail must convert video. It prefers H.264 and uses only encoding paths that passed a local HLS smoke check. A manual choice forces that format for every playback device."
+  },
+  {
+    "id": "Conversion preference",
+    "other": "Conversion preference"
+  },
+  {
+    "id": "Video format",
+    "other": "Video format"
+  },
+  {
+    "id": "Speed up with",
+    "other": "Speed up with"
+  },
+  {
+    "id": "Processor",
+    "other": "Processor"
+  },
+  {
+    "id": "Automatic will use:",
+    "other": "Automatic will use:"
+  },
+  {
+    "id": "> Improve HDR colors on non-HDR screens",
+    "other": "> Improve HDR colors on non-HDR screens"
+  },
+  {
+    "id": "Season %d",
+    "other": "ซีซัน %d"
+  },
+  {
+    "id": "Level %d",
+    "other": "ระดับ %d"
+  },
+  {
+    "id": "Move %s",
+    "other": "ย้าย %s"
+  },
+  {
+    "id": "Move %s up",
+    "other": "ย้าย %s ขึ้น"
+  },
+  {
+    "id": "Move %s down",
+    "other": "ย้าย %s ลง"
+  },
+  {
+    "id": "Move %s earlier",
+    "other": "ย้าย %s ให้เร็วขึ้น"
+  },
+  {
+    "id": "Move %s later",
+    "other": "ย้าย %s ให้ช้าลง"
+  },
+  {
+    "id": "%s, 1 title",
+    "other": "%s, 1 รายการ"
+  },
+  {
+    "id": "%s, %d titles",
+    "other": "%s, %d รายการ"
+  },
+  {
+    "id": "Add to %s",
+    "other": "เพิ่มไปยัง %s"
+  },
+  {
+    "id": "Delete %s?",
+    "other": "ลบ %s ใช่ไหม"
+  },
+  {
+    "id": "Continue without saving",
+    "other": "ดำเนินการต่อโดยไม่บันทึก"
+  },
+  {
+    "id": "Current track details and actions",
+    "other": "รายละเอียดและการทำงานของแทร็กปัจจุบัน"
+  },
+  {
+    "id": "Loading queue…",
+    "other": "กำลังโหลดคิว…"
+  },
+  {
+    "id": "Next track",
+    "other": "แทร็กถัดไป"
+  },
+  {
+    "id": "Play again",
+    "other": "เล่นอีกครั้ง"
+  },
+  {
+    "id": "Play episode",
+    "other": "เล่นตอน"
+  },
+  {
+    "id": "Previous track",
+    "other": "แทร็กก่อนหน้า"
+  },
+  {
+    "id": "Resume",
+    "other": "เล่นต่อ"
+  },
+  {
+    "id": "Retry loading queue",
+    "other": "ลองโหลดคิวอีกครั้ง"
+  },
+  {
+    "id": "Retry saving position",
+    "other": "ลองบันทึกตำแหน่งอีกครั้ง"
+  },
+  {
+    "id": "Room disconnected · reconnecting…",
+    "other": "ห้องขาดการเชื่อมต่อ · กำลังเชื่อมต่อใหม่…"
+  },
+  {
+    "id": "Saving progress…",
+    "other": "กำลังบันทึกความคืบหน้า…"
+  },
+  {
+    "id": "Signed in. Opening your library…",
+    "other": "ลงชื่อเข้าใช้แล้ว กำลังเปิดคลังของคุณ…"
+  },
+  {
+    "id": "Verifying your passkey…",
+    "other": "กำลังยืนยันพาสคีย์ของคุณ…"
+  },
+  {
+    "id": "Watched status is not saved. Retry or continue without saving.",
+    "other": "สถานะการรับชมไม่ได้ถูกบันทึก ลองอีกครั้งหรือดำเนินการต่อโดยไม่บันทึก"
+  },
+  {
+    "id": "Watched status is not saved. Retry while this page is open.",
+    "other": "สถานะการรับชมไม่ได้ถูกบันทึก ลองอีกครั้งขณะที่หน้านี้ยังเปิดอยู่"
+  },
+  {
+    "id": "Your latest position is not saved. Retry while this page is open.",
+    "other": "ตำแหน่งล่าสุดของคุณไม่ได้ถูกบันทึก ลองอีกครั้งขณะที่หน้านี้ยังเปิดอยู่"
+  },
+  {
+    "id": "Your position is not saved. Reload this page to check access to this title.",
+    "other": "ตำแหน่งของคุณไม่ได้ถูกบันทึก โปรดโหลดหน้านี้ใหม่เพื่อตรวจสอบสิทธิ์การเข้าถึงรายการนี้"
+  },
+  {
+    "id": "Your position is not saved. Reload this page to reconnect to Kinosail Server.",
+    "other": "ตำแหน่งของคุณไม่ได้ถูกบันทึก โปรดโหลดหน้านี้ใหม่เพื่อเชื่อมต่อกับ Kinosail Server อีกครั้ง"
+  },
+  {
+    "id": "Your position is not saved. Reload this page to sign in again.",
+    "other": "ตำแหน่งของคุณไม่ได้ถูกบันทึก โปรดโหลดหน้านี้ใหม่เพื่อลงชื่อเข้าใช้อีกครั้ง"
+  },
+  {
+    "id": "of",
+    "other": "จาก"
+  },
+  {
+    "id": "Patron Order",
+    "other": "Patron Order"
+  },
+  {
+    "id": "Living Standard",
+    "other": "Living Standard"
+  },
+  {
+    "id": "First Token",
+    "other": "First Token"
+  },
+  {
+    "id": "Crew Coin",
+    "other": "Crew Coin"
+  },
+  {
+    "id": "Navigator Compass",
+    "other": "Navigator Compass"
+  },
+  {
+    "id": "Patron Shield",
+    "other": "Patron Shield"
+  },
+  {
+    "id": "Steward Medal",
+    "other": "Steward Medal"
+  },
+  {
+    "id": "Lighthouse Crest",
+    "other": "Lighthouse Crest"
+  },
+  {
+    "id": "Commodore Order",
+    "other": "Commodore Order"
+  },
+  {
+    "id": "Admiral Star",
+    "other": "Admiral Star"
+  },
+  {
+    "id": "North Star Sovereign",
+    "other": "North Star Sovereign"
+  },
+  {
+    "id": "Legacy Seal",
+    "other": "Legacy Seal"
+  },
+  {
+    "id": "Wake Light",
+    "other": "Wake Light"
+  },
+  {
+    "id": "Crew Signal",
+    "other": "Crew Signal"
+  },
+  {
+    "id": "Navigator Pulse",
+    "other": "Navigator Pulse"
+  },
+  {
+    "id": "Helmsman Orbit",
+    "other": "Helmsman Orbit"
+  },
+  {
+    "id": "Beacon Watch",
+    "other": "Beacon Watch"
+  },
+  {
+    "id": "Lighthouse Standard",
+    "other": "Lighthouse Standard"
+  },
+  {
+    "id": "Commodore Vanguard",
+    "other": "Commodore Vanguard"
+  },
+  {
+    "id": "Admiral Array",
+    "other": "Admiral Array"
+  },
+  {
+    "id": "North Star Crown",
+    "other": "North Star Crown"
+  },
+  {
+    "id": "Legacy Constellation",
+    "other": "Legacy Constellation"
+  },
+  {
+    "id": "Wakebound Crest",
+    "other": "Wakebound Crest"
+  },
+  {
+    "id": "Twin Current",
+    "other": "Twin Current"
+  },
+  {
+    "id": "Navigator Union",
+    "other": "Navigator Union"
+  },
+  {
+    "id": "Helmsman's Accord",
+    "other": "Helmsman's Accord"
+  },
+  {
+    "id": "Beacon Pact",
+    "other": "Beacon Pact"
+  },
+  {
+    "id": "Lighthouse Ascendant",
+    "other": "Lighthouse Ascendant"
+  },
+  {
+    "id": "Commodore Full Sail",
+    "other": "Commodore Full Sail"
+  },
+  {
+    "id": "Admiral Full Sail",
+    "other": "Admiral Full Sail"
+  },
+  {
+    "id": "North Star Dominion",
+    "other": "North Star Dominion"
+  },
+  {
+    "id": "Sovereign Full Sail",
+    "other": "Sovereign Full Sail"
+  },
+  {
+    "id": "A quiet enamel sail, marking the beginning.",
+    "other": "A quiet enamel sail, marking the beginning."
+  },
+  {
+    "id": "A stronger edge for a place in the crew.",
+    "other": "A stronger edge for a place in the crew."
+  },
+  {
+    "id": "A compass frame for the journey ahead.",
+    "other": "A compass frame for the journey ahead."
+  },
+  {
+    "id": "A shield around the Kinosail sail.",
+    "other": "A shield around the Kinosail sail."
+  },
+  {
+    "id": "A ribboned mark of lasting stewardship.",
+    "other": "A ribboned mark of lasting stewardship."
+  },
+  {
+    "id": "A raised crest with a guiding star.",
+    "other": "A raised crest with a guiding star."
+  },
+  {
+    "id": "Laurel leaves and a command ribbon.",
+    "other": "Laurel leaves and a command ribbon."
+  },
+  {
+    "id": "A broad star with full admiralty detail.",
+    "other": "A broad star with full admiralty detail."
+  },
+  {
+    "id": "A crowned polar star above the sail.",
+    "other": "A crowned polar star above the sail."
+  },
+  {
+    "id": "The complete sail, laurel, and constellation.",
+    "other": "The complete sail, laurel, and constellation."
+  },
+  {
+    "id": "Your badge",
+    "other": "Your badge"
+  },
+  {
+    "id": "Full Sail",
+    "other": "Full Sail"
+  },
+  {
+    "id": "The supporter key could not be read.",
+    "other": "The supporter key could not be read."
+  },
+  {
+    "id": "The supporter details could not be read.",
+    "other": "The supporter details could not be read."
+  },
+  {
+    "id": "Remux",
+    "other": "Remux"
+  },
+  {
+    "id": "Transcoding audio",
+    "other": "Transcoding audio"
+  },
+  {
+    "id": "Playback unavailable",
+    "other": "Playback unavailable"
+  },
+  {
+    "id": "Original video and audio. No conversion.",
+    "other": "Original video and audio. No conversion."
+  },
+  {
+    "id": "Repackages the original video and audio without conversion.",
+    "other": "Repackages the original video and audio without conversion."
+  },
+  {
+    "id": "Keeps the original video. Converts only the selected audio.",
+    "other": "Keeps the original video. Converts only the selected audio."
+  },
+  {
+    "id": "Converts audio for this device.",
+    "other": "Converts audio for this device."
+  },
+  {
+    "id": "This device cannot decode the original video.",
+    "other": "This device cannot decode the original video."
+  },
+  {
+    "id": "The original resolution exceeds this device limit.",
+    "other": "The original resolution exceeds this device limit."
+  },
+  {
+    "id": "The original exceeds an explicit streaming limit.",
+    "other": "The original exceeds an explicit streaming limit."
+  },
+  {
+    "id": "This device cannot display the original HDR format.",
+    "other": "This device cannot display the original HDR format."
+  },
+  {
+    "id": "The selected subtitles must be added to the video.",
+    "other": "The selected subtitles must be added to the video."
+  },
+  {
+    "id": "Exact automatic skipping requires video conversion.",
+    "other": "Exact automatic skipping requires video conversion."
+  },
+  {
+    "id": "Converts the original video for this device.",
+    "other": "Converts the original video for this device."
+  },
+  {
+    "id": "Playback is unavailable.",
+    "other": "Playback is unavailable."
+  },
+  {
+    "id": "Public listener and DuckDNS update are healthy",
+    "other": "Public listener and DuckDNS update are healthy"
+  },
+  {
+    "id": "Public application socket and DuckDNS update are ready; confirm the gateway using cellular data",
+    "other": "Public application socket and DuckDNS update are ready; confirm the gateway using cellular data"
+  },
+  {
+    "id": "Profile and authorization state is readable",
+    "other": "Profile and authorization state is readable"
+  },
+  {
+    "id": "Dedicated public HTTPS is configured",
+    "other": "Dedicated public HTTPS is configured"
+  },
+  {
+    "id": "Only approved sign-in and Viewer routes are exposed",
+    "other": "Only approved sign-in and Viewer routes are exposed"
+  },
+  {
+    "id": "Public certificate is valid for more than 24 hours",
+    "other": "Public certificate is valid for more than 24 hours"
+  },
+  {
+    "id": "A remote-enabled Viewer has a passkey or authenticator for secure sign-in",
+    "other": "A remote-enabled Viewer has a passkey or authenticator for secure sign-in"
+  },
+  {
+    "id": "Persistent public-only kill switch is available",
+    "other": "Persistent public-only kill switch is available"
+  },
+  {
+    "id": "Update this installation by deploying a newer Kinosail container.",
+    "other": "Update this installation by deploying a newer Kinosail container."
+  },
+  {
+    "id": "Kinosail is current",
+    "other": "Kinosail is current"
+  },
+  {
+    "id": "The last check could not reach GitHub",
+    "other": "The last check could not reach GitHub"
+  },
+  {
+    "id": "No public Kinosail release is available yet",
+    "other": "No public Kinosail release is available yet"
+  },
+  {
+    "id": "The installed update manager has received the update request.",
+    "other": "The installed update manager has received the update request."
+  },
+  {
+    "id": "The installed update manager reports that Kinosail is current.",
+    "other": "The installed update manager reports that Kinosail is current."
+  },
+  {
+    "id": "Kinosail found a usable encoder.",
+    "other": "Kinosail found a usable encoder."
+  },
+  {
+    "id": "Not available yet",
+    "other": "Not available yet"
+  },
+  {
+    "id": "Not ready for streaming",
+    "other": "Not ready for streaming"
+  },
+  {
+    "id": "Browser playback is not reliable enough for Kinosail streaming",
+    "other": "Browser playback is not reliable enough for Kinosail streaming"
+  },
+  {
+    "id": "FFmpeg update needed",
+    "other": "FFmpeg update needed"
+  },
+  {
+    "id": "Hardware setup needed",
+    "other": "Hardware setup needed"
+  },
+  {
+    "id": "An encoder is present, but no usable device or software backend is available",
+    "other": "An encoder is present, but no usable device or software backend is available"
+  },
+  {
+    "id": "Review the hardware entries below, then run the local transcoder test.",
+    "other": "Review the hardware entries below, then run the local transcoder test."
+  },
+  {
+    "id": "Use an x86-64 Linux or Windows Server.",
+    "other": "Use an x86-64 Linux or Windows Server."
+  },
+  {
+    "id": "Use a Linux or x86-64 Windows Server.",
+    "other": "Use a Linux or x86-64 Windows Server."
+  },
+  {
+    "id": "Install the NVIDIA driver and Container Toolkit, then rerun the installer.",
+    "other": "Install the NVIDIA driver and Container Toolkit, then rerun the installer."
+  },
+  {
+    "id": "Use an x86-64 or Arm64 Linux or FreeBSD Server.",
+    "other": "Use an x86-64 or Arm64 Linux or FreeBSD Server."
+  },
+  {
+    "id": "Use an Arm64 Linux Server.",
+    "other": "Use an Arm64 Linux Server."
+  },
+  {
+    "id": "Make the Rockchip video devices available on the host, then rerun the installer.",
+    "other": "Make the Rockchip video devices available on the host, then rerun the installer."
+  },
+  {
+    "id": "Linux V4L2 hardware encoder",
+    "other": "Linux V4L2 hardware encoder"
+  },
+  {
+    "id": "Use a Linux Server.",
+    "other": "Use a Linux Server."
+  },
+  {
+    "id": "Use a native macOS Server. Linux containers cannot access VideoToolbox.",
+    "other": "Use a native macOS Server. Linux containers cannot access VideoToolbox."
+  },
+  {
+    "id": "Use a native x86-64 Windows Server. Linux AMD GPUs use VA-API.",
+    "other": "Use a native x86-64 Windows Server. Linux AMD GPUs use VA-API."
+  },
+  {
+    "id": "Use a native Windows Server.",
+    "other": "Use a native Windows Server."
+  },
+  {
+    "id": "Asahi Linux does not yet provide Apple hardware video encoding.",
+    "other": "Asahi Linux does not yet provide Apple hardware video encoding."
+  },
+  {
+    "id": "Software encoding only",
+    "other": "Software encoding only"
+  },
+  {
+    "id": "Keep Automatic selected. Kinosail will use its software encoders.",
+    "other": "Keep Automatic selected. Kinosail will use its software encoders."
+  },
+  {
+    "id": "Different system",
+    "other": "Different system"
+  },
+  {
+    "id": "Keep Automatic selected. Kinosail will use a backend for this system.",
+    "other": "Keep Automatic selected. Kinosail will use a backend for this system."
+  },
+  {
+    "id": "Detection off",
+    "other": "Detection off"
+  },
+  {
+    "id": "Device access needed",
+    "other": "Device access needed"
+  },
+  {
+    "id": "FFmpeg includes this backend, but Kinosail cannot access its hardware device.",
+    "other": "FFmpeg includes this backend, but Kinosail cannot access its hardware device."
+  },
+  {
+    "id": "Ready to test",
+    "other": "Ready to test"
+  },
+  {
+    "id": "Kinosail found the FFmpeg encoder and its device interface.",
+    "other": "Kinosail found the FFmpeg encoder and its device interface."
+  },
+  {
+    "id": "Run the local transcoder test to confirm this device.",
+    "other": "Run the local transcoder test to confirm this device."
+  },
+  {
+    "id": "Software encoding works on every system, but it uses the CPU.",
+    "other": "Software encoding works on every system, but it uses the CPU."
+  },
+  {
+    "id": "Run the local transcoder test to confirm this FFmpeg installation.",
+    "other": "Run the local transcoder test to confirm this FFmpeg installation."
+  },
+  {
+    "id": "This FFmpeg build has no supported software video encoder.",
+    "other": "This FFmpeg build has no supported software video encoder."
+  },
+  {
+    "id": "Install an FFmpeg build with libx264.",
+    "other": "Install an FFmpeg build with libx264."
+  },
+  {
+    "id": "FFmpeg unavailable",
+    "other": "FFmpeg unavailable"
+  },
+  {
+    "id": "Kinosail could not run the configured FFmpeg executable.",
+    "other": "Kinosail could not run the configured FFmpeg executable."
+  },
+  {
+    "id": "Intel graphics",
+    "other": "Intel graphics"
+  },
+  {
+    "id": "AMD or Intel graphics",
+    "other": "AMD or Intel graphics"
+  },
+  {
+    "id": "Rockchip graphics",
+    "other": "Rockchip graphics"
+  },
+  {
+    "id": "Built-in Linux video hardware",
+    "other": "Built-in Linux video hardware"
+  },
+  {
+    "id": "Windows video hardware",
+    "other": "Windows video hardware"
+  },
+  {
+    "id": "Apple Silicon",
+    "other": "Apple Silicon"
+  },
+  {
+    "id": "Smoke check passed",
+    "other": "Smoke check passed"
+  },
+  {
+    "id": "Needs setup",
+    "other": "Needs setup"
+  },
+  {
+    "id": "Processor only",
+    "other": "Processor only"
+  },
+  {
+    "id": "Other system",
+    "other": "Other system"
+  },
+  {
+    "id": "The local HLS smoke check passed. Processor speed and real media still affect playback.",
+    "other": "The local HLS smoke check passed. Processor speed and real media still affect playback."
+  },
+  {
+    "id": "Apple hardware video encoding is not available on Asahi Linux yet. Automatic uses the processor.",
+    "other": "Apple hardware video encoding is not available on Asahi Linux yet. Automatic uses the processor."
+  },
+  {
+    "id": "A local HLS smoke check passed. This does not certify every input format or playback device.",
+    "other": "A local HLS smoke check passed. This does not certify every input format or playback device."
+  },
+  {
+    "id": "Kinosail found this option, but no encoding operation is currently verified.",
+    "other": "Kinosail found this option, but no encoding operation is currently verified."
+  },
+  {
+    "id": "This option is for a different system.",
+    "other": "This option is for a different system."
+  },
+  {
+    "id": "Works with the widest range of TVs, phones, and browsers.",
+    "other": "Works with the widest range of TVs, phones, and browsers."
+  },
+  {
+    "id": "Can save bandwidth on newer playback devices.",
+    "other": "Can save bandwidth on newer playback devices."
+  },
+  {
+    "id": "Can save more bandwidth, but some older devices cannot play it.",
+    "other": "Can save more bandwidth, but some older devices cannot play it."
+  },
+  {
+    "id": "Useful for compatible browsers and streaming devices.",
+    "other": "Useful for compatible browsers and streaming devices."
+  },
+  {
+    "id": "Not verified. Kinosail decodes on the processor and encodes on this device.",
+    "other": "Not verified. Kinosail decodes on the processor and encodes on this device."
+  },
+  {
+    "id": "AMD AMF is not included in this FFmpeg build.",
+    "other": "AMD AMF is not included in this FFmpeg build."
+  },
+  {
+    "id": "AMD/Intel VA-API is not included in this FFmpeg build.",
+    "other": "AMD/Intel VA-API is not included in this FFmpeg build."
+  },
+  {
+    "id": "Apple VideoToolbox is not included in this FFmpeg build.",
+    "other": "Apple VideoToolbox is not included in this FFmpeg build."
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_amf.",
+    "other": "Install an FFmpeg build that includes h264_amf."
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_mf.",
+    "other": "Install an FFmpeg build that includes h264_mf."
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_nvenc.",
+    "other": "Install an FFmpeg build that includes h264_nvenc."
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_qsv.",
+    "other": "Install an FFmpeg build that includes h264_qsv."
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_rkmpp.",
+    "other": "Install an FFmpeg build that includes h264_rkmpp."
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_v4l2m2m.",
+    "other": "Install an FFmpeg build that includes h264_v4l2m2m."
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_vaapi.",
+    "other": "Install an FFmpeg build that includes h264_vaapi."
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_videotoolbox.",
+    "other": "Install an FFmpeg build that includes h264_videotoolbox."
+  },
+  {
+    "id": "Intel Quick Sync is not included in this FFmpeg build.",
+    "other": "Intel Quick Sync is not included in this FFmpeg build."
+  },
+  {
+    "id": "Kinosail Player did not inspect FFmpeg.",
+    "other": "Kinosail Player did not inspect FFmpeg."
+  },
+  {
+    "id": "Kinosail Player did not inspect this FFmpeg installation.",
+    "other": "Kinosail Player did not inspect this FFmpeg installation."
+  },
+  {
+    "id": "Kinosail Subtitles did not inspect FFmpeg.",
+    "other": "Kinosail Subtitles did not inspect FFmpeg."
+  },
+  {
+    "id": "Kinosail Subtitles did not inspect this FFmpeg installation.",
+    "other": "Kinosail Subtitles did not inspect this FFmpeg installation."
+  },
+  {
+    "id": "Linux V4L2 hardware encoder is not included in this FFmpeg build.",
+    "other": "Linux V4L2 hardware encoder is not included in this FFmpeg build."
+  },
+  {
+    "id": "Make /dev/dri available on the host, then rerun the installer. It adds container access automatically.",
+    "other": "Make /dev/dri available on the host, then rerun the installer. It adds container access automatically."
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC is not included in this FFmpeg build.",
+    "other": "NVIDIA NVENC/NVDEC is not included in this FFmpeg build."
+  },
+  {
+    "id": "Rockchip RKMPP is not included in this FFmpeg build.",
+    "other": "Rockchip RKMPP is not included in this FFmpeg build."
+  },
+  {
+    "id": "Set KINOSAIL_GPU_BACKEND=device and map the encoder, such as /dev/video11:/dev/video11, then rerun the installer.",
+    "other": "Set KINOSAIL_GPU_BACKEND=device and map the encoder, such as /dev/video11:/dev/video11, then rerun the installer."
+  },
+  {
+    "id": "Windows Media Foundation is not included in this FFmpeg build.",
+    "other": "Windows Media Foundation is not included in this FFmpeg build."
+  },
+  {
+    "id": "Install an FFmpeg build with a supported AV1 encoder.",
+    "other": "Install an FFmpeg build with a supported AV1 encoder."
+  },
+  {
+    "id": "Install an FFmpeg build with a supported AV2 encoder.",
+    "other": "Install an FFmpeg build with a supported AV2 encoder."
+  },
+  {
+    "id": "Install an FFmpeg build with a supported AVC / H.264 encoder.",
+    "other": "Install an FFmpeg build with a supported AVC / H.264 encoder."
+  },
+  {
+    "id": "Install an FFmpeg build with a supported HEVC / H.265 encoder.",
+    "other": "Install an FFmpeg build with a supported HEVC / H.265 encoder."
+  },
+  {
+    "id": "Install an FFmpeg build with a supported VP9 encoder.",
+    "other": "Install an FFmpeg build with a supported VP9 encoder."
+  },
+  {
+    "id": "Install an FFmpeg build with a supported VVC / H.266 encoder.",
+    "other": "Install an FFmpeg build with a supported VVC / H.266 encoder."
+  },
+  {
+    "id": "libvvenc is not present in the installed FFmpeg build; Browser playback is not reliable enough for Kinosail streaming",
+    "other": "libvvenc is not present in the installed FFmpeg build; Browser playback is not reliable enough for Kinosail streaming"
+  },
+  {
+    "id": "Privacy note: the private LAN address is published in public DNS and the hostname appears in public certificate-transparency logs. Use the narrowest token your provider supports. Kinosail stores it in the protected secrets file and never shows it here. No certificate install is required.",
+    "other": "Privacy note: the private LAN address is published in public DNS and the hostname appears in public certificate-transparency logs. Use the narrowest token your provider supports. Kinosail stores it in the protected secrets file and never shows it here. No certificate install is required."
+  },
+  {
+    "id": "Restart required. Your sign-in and passkey address becomes the trusted hostname on this Kinosail port. Sign in there with your password and MFA, then add your passkeys again for the new address.",
+    "other": "Restart required. Your sign-in and passkey address becomes the trusted hostname on this Kinosail port. Sign in there with your password and MFA, then add your passkeys again for the new address."
+  },
+  {
+    "id": "Use a supported DNS provider and Let's Encrypt certificate when a device rejects the private certificate.",
+    "other": "Use a supported DNS provider and Let's Encrypt certificate when a device rejects the private certificate."
+  },
+  {
+    "id": "or use trusted HTTPS below.",
+    "other": "or use trusted HTTPS below."
+  },
+  {
+    "id": "use",
+    "other": "use"
+  },
+  {
+    "id": "and",
+    "other": "and"
+  },
+  {
+    "id": "Automatic per device",
+    "other": "Automatic per device"
+  },
+  {
+    "id": "complete",
+    "other": "complete"
+  },
+  {
+    "id": "queued",
+    "other": "queued"
+  },
+  {
+    "id": "failed",
+    "other": "failed"
+  },
+  {
+    "id": "disabled",
+    "other": "disabled"
+  },
+  {
+    "id": "starting",
+    "other": "starting"
+  },
+  {
+    "id": "Connect OpenID Connect",
+    "other": "Connect OpenID Connect"
+  },
+  {
+    "id": "Connect SAML",
+    "other": "Connect SAML"
+  },
+  {
+    "id": "Dark (default)",
+    "other": "Dark (default)"
+  },
+  {
+    "id": "· Active sessions:",
+    "other": "· Active sessions:"
+  },
+  {
+    "id": "Delete Collection",
+    "other": "Delete Collection"
+  },
+  {
+    "id": "· Kinosail Subtitles",
+    "other": "· Kinosail Subtitles"
+  },
+  {
+    "id": "Language · Kinosail Subtitles",
+    "other": "Language · Kinosail Subtitles"
+  },
+  {
+    "id": "Save OpenSubtitles",
+    "other": "Save OpenSubtitles"
+  },
+  {
+    "id": "Media Libraries",
+    "other": "Media Libraries"
+  },
+  {
+    "id": "Kinosail Player masterwork",
+    "other": "Kinosail Player masterwork"
+  },
+  {
+    "id": "Kinosail Player %s, level %d, %s",
+    "other": "Kinosail Player, %s, ระดับ %d, %s"
+  },
+  {
+    "id": "Download %s certificate",
+    "other": "ดาวน์โหลดใบรับรอง %s"
+  },
+  {
+    "id": "Share %s",
+    "other": "แชร์ %s"
+  },
+  {
+    "id": "Preview %s certificate",
+    "other": "ดูตัวอย่างใบรับรอง %s"
+  },
+  {
+    "id": "Your Kinosail Player %s certificate",
+    "other": "ใบรับรอง Kinosail Player %s ของคุณ"
+  },
+  {
+    "id": "%s reader",
+    "other": "ตัวอ่าน %s"
+  },
+  {
+    "id": "Chapter %d of %d",
+    "other": "บทที่ %d จาก %d"
+  },
+  {
+    "id": "Page %d of %d",
+    "other": "หน้าที่ %d จาก %d"
+  },
+  {
+    "id": "Part %d",
+    "other": "ส่วนที่ %d"
+  },
+  {
+    "id": "%d episodes stacked",
+    "other": "%d ตอนซ้อนกัน"
+  },
+  {
+    "id": "Playback method",
+    "other": "วิธีการเล่น"
+  },
+  {
+    "id": "Playback policy",
+    "other": "Playback policy"
+  },
+  {
+    "id": "Direct First",
+    "other": "Direct First"
+  },
+  {
+    "id": "Direct Play only",
+    "other": "Direct Play only"
+  },
+  {
+    "id": "Direct Play stopped",
+    "other": "Direct Play stopped"
   }
 ]

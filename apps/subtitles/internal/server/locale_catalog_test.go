@@ -7,6 +7,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
+func TestTemplateMessagesAreCatalogued(t *testing.T) {
+	t.Parallel()
+	servertest.TemplateMessagesAreCatalogued(t, []string{"..", "../../../../packages"}, readTestCatalog(t, "en"))
+}
+
 func TestLocaleCatalogsAreComplete(t *testing.T) {
 	t.Parallel()
 	servertest.LocaleCatalogsAreComplete(t, testSupportedLocales(), readTestCatalog)

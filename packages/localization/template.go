@@ -61,6 +61,11 @@ func (view *TemplateSet) parse(group int) (*template.Template, error) {
 	catalog := view.catalog
 	page, err := template.New(view.name).Funcs(template.FuncMap{
 		"t": func(value string) string { return catalog.Localize(tag, value) },
+		"tf": func(format string, values ...any) string {
+			return fmt.Sprintf(catalog.Localize(tag, format), values...)
+		},
+		"tn": func(value string) string { return catalog.LocalizeCounted(tag, value) },
+		"tlang": func(code, fallback string) string { return LanguageName(tag, code, fallback) },
 	}).Funcs(view.parseFuncs).Funcs(slots).Parse(source)
 	if err != nil {
 		slog.Error("localized template failed to parse", "template", view.name, "language", tag, "error", err)

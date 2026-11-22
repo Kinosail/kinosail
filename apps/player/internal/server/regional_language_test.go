@@ -15,7 +15,10 @@ import (
 func regionalLanguageHandler(t *testing.T) http.Handler {
 	t.Helper()
 	media := t.TempDir()
-	for _, name := range []string{"Arrival (2016).mp4", "Heat (1995).mp4"} {
+	for _, name := range []string{"Arrival (2016).mp4", "Heat (1995).mp4", filepath.Join("Test Show", "Season 1", "Test Show S01E01.mp4")} {
+		if err := os.MkdirAll(filepath.Dir(filepath.Join(media, name)), 0o700); err != nil {
+			t.Fatal(err)
+		}
 		if err := os.WriteFile(filepath.Join(media, name), []byte("media"), 0o600); err != nil {
 			t.Fatal(err)
 		}
@@ -118,6 +121,66 @@ func TestChineseSettingsPagesTranslateServerBuiltLabels(t *testing.T) {
 			if strings.Contains(body, english) {
 				t.Errorf("%s still shows %q", tc.path, english)
 			}
+		}
+	}
+}
+
+func TestChineseShowAndPlayerTextUsesCatalogFormats(t *testing.T) {
+	t.Parallel()
+	handler := regionalLanguageHandler(t)
+	home, _ := regionalPage(t, handler, "/?view=shows&lang=zh-Hans", "")
+	show := regexp.MustCompile(`/show/[a-f0-9]+`).FindString(home)
+	if show == "" {
+		t.Fatal("shows view lacks the show fixture")
+	}
+	page, _ := regionalPage(t, handler, show+"?lang=zh-Hans", "")
+	for _, want := range []string{"第 1 季", "播放"} {
+		if !strings.Contains(page, want) {
+			t.Errorf("show page lacks %q", want)
+		}
+	}
+	for _, english := range []string{">Season 1<", "Play again", "Play episode"} {
+		if strings.Contains(page, english) {
+			t.Errorf("show page still shows %q", english)
+		}
+	}
+	watch := regexp.MustCompile(`/watch/[a-f0-9]+`).FindString(page)
+	player, _ := regionalPage(t, handler, watch+"?lang=zh-Hans", "")
+	for _, english := range []string{"Saving progress…", "Your position is not saved", "Watched status is not saved"} {
+		if strings.Contains(player, english) {
+			t.Errorf("player still shows %q", english)
+		}
+	}
+}
+
+func TestChinesePagesTranslateGoBuiltStatusAndKeepCode(t *testing.T) {
+	t.Parallel()
+	handler := regionalLanguageHandler(t)
+	for _, tc := range []struct {
+		path          string
+		want, english []string
+	}{
+		{"/settings", []string{"myhome-subtitles.duckdns.org", "阿尔巴尼亚语 · shqip"}, []string{"myhome-字幕", "Albanian · shqip", "Household playback defaults.", "did not inspect FFmpeg", "Install an FFmpeg build with a supported", "No installed update adapter", "Use a supported DNS"}},
+		{"/supporter", nil, []string{", level ", " Friend", ">Friend<", ">Collected<"}},
+		{"/?view=shows", nil, []string{"episodes stacked", ">Play next<"}},
+		{"/settings/remote-readiness", nil, []string{"Public certificate is valid", "Dedicated public HTTPS is configured"}},
+	} {
+		body, _ := regionalPage(t, handler, tc.path+map[bool]string{true: "&", false: "?"}[strings.Contains(tc.path, "?")]+"lang=zh-Hans", "")
+		for _, want := range tc.want {
+			if !strings.Contains(body, want) {
+				t.Errorf("%s lacks %q", tc.path, want)
+			}
+		}
+		for _, english := range tc.english {
+			if strings.Contains(body, english) {
+				t.Errorf("%s still shows %q", tc.path, english)
+			}
+		}
+	}
+	english, _ := regionalPage(t, handler, "/settings", "en")
+	for _, want := range []string{"Albanian · shqip", "Household playback defaults.", "myhome-subtitles.duckdns.org"} {
+		if !strings.Contains(english, want) {
+			t.Errorf("English settings lost %q", want)
 		}
 	}
 }
