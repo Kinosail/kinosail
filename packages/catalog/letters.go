@@ -8,6 +8,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/mozillazg/go-pinyin"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"golang.org/x/text/unicode/norm"
@@ -23,7 +24,25 @@ func parseLetter(values url.Values, locale string) (string, error) {
 	if value == "" {
 		return "", nil
 	}
+	if han, size := utf8.DecodeRuneInString(value); chineseLocale(locale) && size == len(value) && unicode.Is(unicode.Han, han) {
+		if initial := pinyinInitial(han); initial != "" {
+			return initial, nil
+		}
+	}
 	return normalizeLetter(value, locale), nil
+}
+
+func chineseLocale(locale string) bool {
+	base, _ := language.Make(locale).Base()
+	return base.String() == "zh"
+}
+
+func pinyinInitial(value rune) string {
+	readings := pinyin.SinglePinyin(value, pinyin.Args{Style: pinyin.FirstLetter})
+	if len(readings) == 0 || readings[0] == "" || readings[0][0] < 'a' || readings[0][0] > 'z' {
+		return ""
+	}
+	return strings.ToUpper(readings[0][:1])
 }
 
 type letterBucket struct {
@@ -33,9 +52,9 @@ type letterBucket struct {
 
 func letterBuckets(items []*library.Item, locale string) []letterBucket {
 	buckets := make([]letterBucket, 0, 26)
-	upper := cases.Upper(language.Make(locale))
+	upper, chinese := cases.Upper(language.Make(locale)), chineseLocale(locale)
 	for offset, item := range items {
-		label := titleLetterWithCaser(sortTitle(*item), upper)
+		label := titleLetterWithCaser(sortTitle(*item), upper, chinese)
 		if len(buckets) == 0 || buckets[len(buckets)-1].label != label {
 			buckets = append(buckets, letterBucket{label: label, offset: offset})
 		}
@@ -138,8 +157,13 @@ func sortKey(item library.Item) string {
 	return strings.TrimLeftFunc(title, func(value rune) bool { return !unicode.IsLetter(value) && !unicode.IsDigit(value) })
 }
 
-func titleLetterWithCaser(title string, upper cases.Caser) string {
+func titleLetterWithCaser(title string, upper cases.Caser, chinese bool) string {
 	for _, value := range strings.TrimSpace(title) {
+		if chinese && unicode.Is(unicode.Han, value) {
+			if initial := pinyinInitial(value); initial != "" {
+				return initial
+			}
+		}
 		if value >= 'a' && value <= 'z' {
 			value -= 'a' - 'A'
 		}
