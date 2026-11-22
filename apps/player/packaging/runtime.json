@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "components": {
+    "ffmpeg": {
+      "version": "8.1.3-2",
+      "license": "GPL-3.0-or-later",
+      "source": "https://github.com/jellyfin/jellyfin-ffmpeg/releases/tag/v8.1.3-2",
+      "commands": ["ffmpeg", "ffprobe"]
+    },
+    "fpcalc": {
+      "version": "1.6.2",
+      "license": "LGPL-2.1-or-later",
+      "source": "https://github.com/acoustid/chromaprint/releases/tag/v1.6.2",
+      "commands": ["fpcalc"]
+    }
+  },
+  "downloads": {
+    "linux-amd64": [
+      {"component": "ffmpeg", "url": "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-2/jellyfin-ffmpeg_8.1.3-2_portable_linux64-gpl.tar.xz", "sha256": "1df84d04c4322902dba81c290508cdf3d89524d210b9fe03154bea6c4e3bfbb6", "size": 60657368},
+      {"component": "fpcalc", "url": "https://github.com/acoustid/chromaprint/releases/download/v1.6.2/chromaprint-fpcalc-1.6.2-linux-x86_64.tar.gz", "sha256": "c968ad4a0821592a79b158fb2e1f46cbe0a22a0a1dbc0743c67d68e75d15d2bb", "size": 2398043}
+    ],
+    "linux-arm64": [
+      {"component": "ffmpeg", "url": "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-2/jellyfin-ffmpeg_8.1.3-2_portable_linuxarm64-gpl.tar.xz", "sha256": "6522585818059cc886363fb1dee86ac9b8579fec3b914337fb92974ef9eb9884", "size": 54093080},
+      {"component": "fpcalc", "url": "https://github.com/acoustid/chromaprint/releases/download/v1.6.2/chromaprint-fpcalc-1.6.2-linux-arm64.tar.gz", "sha256": "3aa1498126ed272d805bc9d081c77965c9e1e1a0891bb112c13b56ef2ad47bad", "size": 1408792}
+    ],
+    "macos-amd64": [
+      {"component": "ffmpeg", "url": "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-2/jellyfin-ffmpeg_8.1.3-2_portable_mac64-gpl.tar.xz", "sha256": "d394180f1155f84857544a48a99869f5741ccc50c5a1f73d2797429a2b326448", "size": 38099916},
+      {"component": "fpcalc", "url": "https://github.com/acoustid/chromaprint/releases/download/v1.6.2/chromaprint-fpcalc-1.6.2-macos-x86_64.tar.gz", "sha256": "5f7b21964163e9e1719ca76d89e71873e2bdba87e9c01d1bcb06da67132da2bb", "size": 1376075}
+    ],
+    "macos-arm64": [
+      {"component": "ffmpeg", "url": "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-2/jellyfin-ffmpeg_8.1.3-2_portable_macarm64-gpl.tar.xz", "sha256": "d898cc819e7c4e9219d6410ddbdaada0838f14bec6ff89e283639915394cb43f", "size": 32904768},
+      {"component": "fpcalc", "url": "https://github.com/acoustid/chromaprint/releases/download/v1.6.2/chromaprint-fpcalc-1.6.2-macos-arm64.tar.gz", "sha256": "f3bc56cb42d89a01237bb3f3629329e4ec75f7c1b0217acf6e9bf952ac47979b", "size": 1322220}
+    ],
+    "windows-amd64": [
+      {"component": "ffmpeg", "url": "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-2/jellyfin-ffmpeg_8.1.3-2_portable_win64-clang-gpl.zip", "sha256": "b65dd5011a80b5abec08bd559489cf188217238c8e38b5bf553504c974f5694d", "size": 68466554},
+      {"component": "fpcalc", "url": "https://github.com/acoustid/chromaprint/releases/download/v1.6.2/chromaprint-fpcalc-1.6.2-windows-x86_64.zip", "sha256": "b74369726676670af3ab0eadff45f960cf969fdf4a87a971ba37eaf8d530e874", "size": 1817825}
+    ],
+    "windows-arm64": [
+      {"component": "ffmpeg", "url": "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-2/jellyfin-ffmpeg_8.1.3-2_portable_winarm64-clang-gpl.zip", "sha256": "e1e0373cb989440590ce2d124f40988e3165ed338971ae14a97476cd61284785", "size": 55843231},
+      {"component": "fpcalc", "url": "https://github.com/acoustid/chromaprint/releases/download/v1.6.2/chromaprint-fpcalc-1.6.2-windows-x86_64.zip", "sha256": "b74369726676670af3ab0eadff45f960cf969fdf4a87a971ba37eaf8d530e874", "size": 1817825}
+    ]
+  }
+}

@@ -1,6 +1,8 @@
 - title: Start here
   url: /getting-started/
   pages:
+    - title: Download Kinosail
+      url: /download/
     - title: Install with Docker
       url: /quickstart/
     - title: Installation overview

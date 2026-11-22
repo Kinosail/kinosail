@@ -114,9 +114,58 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+  native:
+    name: Build and install-test Linux packages (${{ matrix.arch }})
+    needs: preflight
+    if: needs.preflight.outputs.app == 'player'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: apps/player/go.mod
+          cache-dependency-path: "**/go.sum"
+          cache-scope: player
+      - uses: ./.github/actions/setup-nfpm
+      - name: Build and install-test the release packages
+        env:
+          KINOSAIL_PACKAGE_VERSION: ${{ needs.preflight.outputs.version }}
+          KINOSAIL_PACKAGE_OUTPUT: ${{ runner.temp }}/native-packages
+          KINOSAIL_EVIDENCE_DIR: ${{ runner.temp }}/native-evidence
+        run: apps/player/scripts/test-linux-packages.sh
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-packages-${{ matrix.arch }}
+          path: ${{ runner.temp }}/native-packages
+          if-no-files-found: error
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-evidence-${{ matrix.arch }}
+          path: ${{ runner.temp }}/native-evidence
+          if-no-files-found: ignore
+
   release:
     name: Publish signed ${{ needs.preflight.outputs.app }} version
-    needs: [preflight, images]
+    needs: [preflight, images, native]
+    if: >-
+      always() &&
+      needs.preflight.result == 'success' &&
+      needs.images.result == 'success' &&
+      (needs.native.result == 'success' || (needs.native.result == 'skipped' && needs.preflight.outputs.app != 'player'))
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -142,6 +191,12 @@ jobs:
         with:
           pattern: release-digest-*
           path: digests
+          merge-multiple: true
+      - if: env.APP == 'player'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          pattern: native-packages-*
+          path: native-packages
           merge-multiple: true
       - id: manifest
         name: Assemble both tested architectures
@@ -201,6 +256,17 @@ jobs:
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
         with:
           subject-path: apps/${{ needs.preflight.outputs.app }}/kinosail-${{ needs.preflight.outputs.app }}-install.tar.gz
+      - name: Sign native download checksums
+        if: env.APP == 'player'
+        run: |
+          python3 scripts/ci/native_downloads.py verify native-packages
+          (cd native-packages && sha256sum Kinosail-* > SHA256SUMS)
+          cosign sign-blob --yes --bundle native-packages/SHA256SUMS.sigstore.json native-packages/SHA256SUMS
+      - name: Attest native package provenance
+        if: env.APP == 'player'
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: native-packages/Kinosail-*
       - name: Promote exact version tag
         env:
           DIGEST: ${{ steps.manifest.outputs.digest }}
@@ -214,4 +280,11 @@ jobs:
           title="Kinosail ${APP^} $APP_VERSION"
           assets=("apps/$APP/kinosail-$APP-install.tar.gz" "apps/$APP/kinosail-$APP-install.tar.gz.sha256" \
             "apps/$APP/kinosail-$APP-install.tar.gz.sigstore.json" apps/"$APP"/native-release/*)
-          gh release create "$RELEASE_TAG" --verify-tag --generate-notes --title "$title" "${assets[@]}"
+          latest=false
+          if [[ "$APP" == player ]]; then
+            assets+=(native-packages/*)
+            latest=true
+          fi
+          python3 scripts/ci/native_downloads.py notes "$APP" "$APP_VERSION" > "$RUNNER_TEMP/release-notes.md"
+          gh release create "$RELEASE_TAG" --verify-tag --generate-notes --notes-file "$RUNNER_TEMP/release-notes.md" \
+            --latest="$latest" --title "$title" "${assets[@]}"

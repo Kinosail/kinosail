@@ -343,7 +343,7 @@ jobs:
     needs: plan
     if: needs.plan.outputs.verified != 'true' && needs.plan.outputs.tools != '[]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
@@ -374,6 +374,16 @@ jobs:
           cache-dependency-path: apps/${{ matrix.app }}/e2e/pnpm-lock.yaml
       - run: pnpm --dir e2e install --frozen-lockfile
       - run: make installer-test native-build local-pipeline-test
+      - if: matrix.app == 'player'
+        uses: ./.github/actions/setup-nfpm
+      - if: matrix.app == 'player'
+        run: ./scripts/test-linux-packages.sh
+      - if: always() && matrix.app == 'player'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: linux-package-evidence
+          path: apps/player/.verification/linux-packages
+          if-no-files-found: ignore
 
   client:
     name: Player Swift compilation
