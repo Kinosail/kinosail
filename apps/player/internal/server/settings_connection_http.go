@@ -27,6 +27,7 @@ func onboardingConnectionTemplate() string {
 		`<section><h2>Keep the private certificate</h2><p>No public DNS record is created. Devices will show a warning until they trust the <a href="/api/v1/agent-connections/certificate">Kinosail local CA certificate</a>.</p></section>`, jellyfinOnboardingHTML,
 		`<section><h2>Remote access comes later</h2>`, homeAssistantOnboardingHTML+`<section class="onboarding-optional"><span class="onboarding-optional-label">Optional connection</span><h2>Remote access comes later</h2>`,
 		`<section class="wide" id="updates">`, tmdbOnboardingHTML+`<section class="wide" id="updates">`,
+		`<title>Choose a Server address · Kinosail Player</title>`, `<title>Watch on your devices · Kinosail Player</title>`,
 		`<span class="eyebrow">Step 2 of 4 · Devices</span>`, `<span class="eyebrow">Step 3 of 5 · Devices</span>`,
 		`<div class="settings-flow">`, `<div class="settings-flow">`+onboardingLANHTML+`</div><details class="onboarding-disclosure onboarding-advanced" id="advanced"><summary>Advanced options <span>Trusted HTTPS, Jellyfin apps, Home Assistant, movie details, and updates</span></summary><div class="settings-flow">`,
 		`</div><p><a class="mode" href="/onboarding/household">Continue to household setup</a> <a class="mode" href="/onboarding/finish">Skip optional setup</a></p>`, `</div></details><p class="onboarding-actions"><a class="mode" href="/onboarding/finish">Skip the remaining steps</a></p>`,

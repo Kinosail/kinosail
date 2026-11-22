@@ -70,6 +70,11 @@ func TestOwnerPicksMediaFoldersDuringSetup(t *testing.T) {
 	library := requestWithCookie(t, handler, http.MethodGet, "/api/v1/library", "", owner)
 	assertAPIBody(t, library, http.StatusOK, `"items"`)
 
+	whole := requestWithCookie(t, handler, http.MethodGet, "/onboarding/media", "", owner)
+	assertAPIBody(t, whole, http.StatusOK, "Your folders", "Already included")
+	if strings.Contains(whole.Body.String(), `aria-label="Add Movies"`) {
+		t.Fatalf("covered folder offered an Add button: %q", whole.Body.String())
+	}
 	if removed := wizardForm(t, handler, owner, "/onboarding/media/remove", url.Values{"path": {"."}}); removed.StatusCode != http.StatusSeeOther || removed.Header.Get("Location") != "/onboarding/media" {
 		t.Fatalf("remove whole media folder = %d %q", removed.StatusCode, removed.Header.Get("Location"))
 	}
@@ -91,8 +96,9 @@ func TestOwnerPicksMediaFoldersDuringSetup(t *testing.T) {
 	if added := wizardForm(t, handler, owner, "/onboarding/media", url.Values{"path": {"TV Shows"}}); added.StatusCode != http.StatusSeeOther {
 		t.Fatalf("add TV Shows = %d", added.StatusCode)
 	}
+	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/onboarding/media?path=Movies", "", owner), http.StatusOK, "Already in your folders")
 	chosen := requestWithCookie(t, handler, http.MethodGet, "/onboarding/media", "", owner)
-	assertAPIBody(t, chosen, http.StatusOK, "Your folders", "2 videos found", "1 videos found", `action="/onboarding/media/remove"`, "Continue", `href="/onboarding/connection"`)
+	assertAPIBody(t, chosen, http.StatusOK, "Your folders", "2 videos found", "1 video found", `action="/onboarding/media/remove"`, "Continue", `href="/onboarding/connection"`)
 	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/api/v1/settings", "", owner), http.StatusOK, `"Movies"`, `"TV Shows"`)
 }
 
