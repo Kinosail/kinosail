@@ -64,7 +64,7 @@ func (view *TemplateSet) parse(group int) (*template.Template, error) {
 		"tf": func(format string, values ...any) string {
 			return fmt.Sprintf(catalog.Localize(tag, format), values...)
 		},
-		"tn": func(value string) string { return catalog.LocalizeCounted(tag, value) },
+		"tn":    func(value string) string { return catalog.LocalizeCounted(tag, value) },
 		"tlang": func(code, fallback string) string { return LanguageName(tag, code, fallback) },
 	}).Funcs(view.parseFuncs).Funcs(slots).Parse(source)
 	if err != nil {
