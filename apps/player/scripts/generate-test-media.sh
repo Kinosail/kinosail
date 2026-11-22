@@ -165,6 +165,8 @@ EOF
 )
 rm -rf -- "$epub_source"
 
+printf '\357\273\277Example Text Book\r\n\r\nAn original generated plain text book for the Kinosail reader. It mentions <b>tags</b> that must stay text.\r\nThis line follows a single line break.\r\n\r\nThe last paragraph ends the book.\r\n' >"$output/Books/Example Text Book.txt"
+
 zip -Xj "$output/Books/Example Comic.cbz" \
   "$output/Photos/Geometry/Example Photo One.jpg" \
   "$output/Photos/Geometry/Example Photo Two.jpg" >/dev/null

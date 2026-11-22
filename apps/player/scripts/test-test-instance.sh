@@ -24,6 +24,7 @@ for path in \
   Music/Example\ Album/Example\ Track\ One.m4a \
   Audiobooks/Example\ Audiobook.m4b \
   Books/Example\ PDF\ Book.pdf \
+  Books/Example\ Text\ Book.txt \
   Photos/Geometry/Example\ Photo\ One.jpg \
   TMDB/api/search/movie \
   CC0-1.0.txt; do

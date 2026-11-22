@@ -19,9 +19,11 @@ The scanner accepts these extensions. Extensions are case-insensitive.
 | Audio | `.aac`, `.aif`, `.aiff`, `.flac`, `.m4a`, `.mp3`, `.oga`, `.ogg`, `.opus`, `.wav` |
 | Audiobook | `.m4b`, or audio below a directory named `audiobook` or `audiobooks` |
 | Photo | `.avif`, `.bmp`, `.gif`, `.jpeg`, `.jpg`, `.png`, `.webp` |
-| Book | `.cbz`, `.epub`, `.pdf` |
+| Book | `.cb7`, `.cbt`, `.cbz`, `.epub`, `.pdf`, or `.txt` below a directory named `book`, `books`, `ebook`, or `ebooks` |
 
-Kinosail ignores other extensions. It does not ingest `.cbr` or RAR comics. A `.cbz` file is a ZIP comic archive. A book reader supports PDF, EPUB, and CBZ after the file passes archive and content validation.
+Kinosail ignores other extensions. It does not ingest `.cbr` or RAR comics. A `.cbz` file is a ZIP comic archive. A book reader supports PDF, EPUB, CB7, CBT, CBZ, and TXT after the file passes archive and content validation.
+
+Kinosail ignores a `.txt` file outside a book directory, so license files, notes, and lyrics do not appear as books. A TXT book can be up to 64 MiB. The reader reads it as UTF-8 and shows each byte that is not valid UTF-8 as a replacement character.
 
 The scanner skips symbolic links. It reads optional sidecars beside a media file:
 
@@ -79,7 +81,7 @@ Kinosail burns subtitles into video only when the client cannot show any text su
 
 ## Reader and non-video behavior
 
-The bundled reader displays PDF documents, EPUB spine chapters, and image pages from CBZ archives. Audio uses the source when the client supports its codec and can use audio conversion when it does not. Photos are browsed as images and are not loaded into the video player.
+The bundled reader displays PDF documents, EPUB spine chapters, image pages from comic archives, and TXT text in parts of about 256 KiB. Audio uses the source when the client supports its codec and can use audio conversion when it does not. Photos are browsed as images and are not loaded into the video player.
 
 Offline downloads are prepared files controlled by the Viewer download policy. They do not change Library Content.
 

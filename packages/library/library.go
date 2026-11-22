@@ -233,6 +233,8 @@ func mediaKind(extension string) string {
 		return "photo"
 	case ".cb7", ".cbt", ".cbz", ".epub", ".pdf":
 		return "book"
+	case ".txt":
+		return "text"
 	default:
 		return ""
 	}
@@ -245,6 +247,19 @@ func audiobookPath(namespace, relative string) bool {
 		}
 	}
 	return false
+}
+
+func scanKind(namespace, relative, kind string) string {
+	if kind != "text" {
+		return kind
+	}
+	for part := range strings.SplitSeq(strings.ToLower(filepath.ToSlash(namespace+"/"+filepath.Dir(relative))), "/") {
+		switch part {
+		case "book", "books", "ebook", "ebooks":
+			return "book"
+		}
+	}
+	return ""
 }
 
 var seasonFolder = regexp.MustCompile(`(?i)^(season[ ._-]*\d{1,4}|s\d{1,4}|specials)$`)

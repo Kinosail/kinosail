@@ -18,7 +18,7 @@ Use this page when media is missing, grouped incorrectly, matched to the wrong t
 
 Kinosail watches for filesystem changes when the platform provides events. It also runs a safety scan according to its schedule. The schedule can be **Environment default**, **Off**, **Every 5 minutes**, **Every 15 minutes**, or **Hourly**. An Owner can change it unless deployment configuration manages the setting.
 
-Supported media includes common video extensions such as `.mkv`, `.mp4`, `.mov`, `.webm`, and `.ts`; audio such as `.flac`, `.m4a`, `.mp3`, `.ogg`, and `.wav`; `.m4b` audiobooks; photos such as `.avif`, `.gif`, `.jpeg`, `.jpg`, `.png`, and `.webp`; and books such as `.cb7`, `.cbt`, `.cbz`, `.epub`, and `.pdf`. Other extensions are ignored. A supported extension does not guarantee direct playback on every device.
+Supported media includes common video extensions such as `.mkv`, `.mp4`, `.mov`, `.webm`, and `.ts`; audio such as `.flac`, `.m4a`, `.mp3`, `.ogg`, and `.wav`; `.m4b` audiobooks; photos such as `.avif`, `.gif`, `.jpeg`, `.jpg`, `.png`, and `.webp`; and books such as `.cb7`, `.cbt`, `.cbz`, `.epub`, and `.pdf`. A `.txt` file is a book only below a directory named `book`, `books`, `ebook`, or `ebooks`. Other extensions are ignored. A supported extension does not guarantee direct playback on every device.
 
 The scanner does not follow symbolic links. Mount the real directory into the container and point the Library root at that path.
 
