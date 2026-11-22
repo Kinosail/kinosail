@@ -40,7 +40,7 @@ func TestAutomaticBrowserPlaybackNeverStartsWithSilentSurroundAudio(t *testing.T
 		var info struct {
 			Plan struct {
 				Mode, AudioCodec, VideoCodec string
-				AudioCompatibilityRequired  bool
+				AudioCompatibilityRequired   bool
 			}
 		}
 		mustJSON(t, serveRequest(handler, request), &info)
