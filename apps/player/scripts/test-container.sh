@@ -204,7 +204,7 @@ expect_status 403 --request POST --header 'Origin: https://attacker.example' --d
 expect_status 421 --header 'Host: attacker.example' "$url/healthz"
 dd if=/dev/zero of="$media_dir/oversized-request" bs=1048577 count=1 2>/dev/null
 expect_status 413 --request POST --header 'Content-Type: application/json' --data-binary "@$media_dir/oversized-request" "$url/api/v1/setup"
-grep --quiet 'Set up your Server.' < <(curl --fail --silent --insecure "$url/setup")
+grep --quiet 'Welcome to Kinosail.' < <(curl --fail --silent --insecure "$url/setup")
 assert_container_test_headers "$url"
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   browser_args=()

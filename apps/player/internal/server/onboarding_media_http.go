@@ -138,6 +138,12 @@ func libraryState(configured []string, namespace string) string {
 	return state
 }
 
-func onboardingStep(next string) bool {
-	return next == onboardingFirstStep || next == "/onboarding/connection"
+func onboardingStep(next string) (string, bool) {
+	switch next {
+	case onboardingFirstStep:
+		return onboardingFirstStep, true
+	case "/onboarding/connection":
+		return "/onboarding/connection", true
+	}
+	return "", false
 }

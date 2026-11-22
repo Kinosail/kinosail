@@ -146,7 +146,7 @@ func TestOwnerCanConfigureTrustedHTTPSDuringOnboarding(t *testing.T) {
 		t.Fatalf("Arabic trusted HTTPS setup label = %q", arabic.Body.String())
 	}
 	saved := requestWithCookie(t, handler, http.MethodPost, "/onboarding/trusted-https", "domain=family-media&token="+trustedHTTPSTestToken+"&address=192.168.1.10&termsAccepted=true", owner)
-	if saved.Code != http.StatusSeeOther || saved.Header().Get("Location") != "/onboarding/connection" {
+	if saved.Code != http.StatusSeeOther || saved.Header().Get("Location") != "/onboarding/connection#trusted-https" {
 		t.Fatalf("onboarding save = %d, location = %q", saved.Code, saved.Header().Get("Location"))
 	}
 	page = requestWithCookie(t, handler, http.MethodGet, "/onboarding/connection", "", owner)

@@ -47,11 +47,22 @@ function bindCopyControls() {
 }
 
 function bindDisclosureControls() {
+  const openWithParents = (element) => {
+    let opened = false;
+    for (let node = element; node; node = node.parentElement) if (node instanceof HTMLDetailsElement && !node.open) {
+      node.open = true;
+      opened = true;
+    }
+    return opened;
+  };
   const openHashDisclosure = () => {
     let id;
     try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
-    const disclosure = document.getElementById(id);
-    if (disclosure instanceof HTMLDetailsElement) disclosure.open = true;
+    const target = id && document.getElementById(id);
+    if (!target) return;
+    const revealed = openWithParents(target.parentElement);
+    if (target instanceof HTMLDetailsElement) target.open = true;
+    if (revealed) target.scrollIntoView({ block: "start" });
   };
   openHashDisclosure();
   addEventListener("hashchange", openHashDisclosure);
@@ -61,7 +72,7 @@ function bindDisclosureControls() {
     const summary = disclosure?.querySelector(":scope > summary");
     if (!(disclosure instanceof HTMLDetailsElement) || !summary) return;
     event.preventDefault();
-    disclosure.open = true;
+    openWithParents(disclosure);
     history[location.hash === link.hash ? "replaceState" : "pushState"](null, "", link.hash);
     disclosure.scrollIntoView({ block: "start" });
     summary.focus({ preventScroll: true });

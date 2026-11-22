@@ -31,7 +31,7 @@ async function login(page: Page) {
 test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page, browserName }, testInfo) => {
 	test.setTimeout(120_000);
 	await login(page);
-	await page.goto("/onboarding/connection");
+	await page.goto("/onboarding/connection#jellyfin");
 	const jellyfin = page.locator("#jellyfin");
 	const choice = jellyfin.getByLabel("Allow compatible Jellyfin apps to connect");
 	const disclosure = page.locator("#trusted-https-configuration");
@@ -132,7 +132,7 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 	await expect(testStatus).toContainText("configured sign-in address does not match this trusted HTTPS address");
 	saveFails = false;
 	await trusted.getByRole("button", { name: "Save trusted HTTPS" }).click();
-	await expect(page).toHaveURL("/onboarding/connection");
+	await expect(page).toHaveURL("/onboarding/connection#trusted-https");
 	await expect(disclosure.locator(":scope > summary")).toHaveText(/Review trusted HTTPS setup/);
 	await expect(trusted).toBeHidden();
 	await expect(choice).toBeEnabled();

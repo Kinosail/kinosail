@@ -158,6 +158,11 @@ func TestOwnerSharesKinosailWithHomeDevices(t *testing.T) {
 
 func TestManagedListenAddressKeepsDeploymentChoice(t *testing.T) {
 	t.Parallel()
+	for listen, state := range map[string]string{":38127": "Kinosail is shared with devices on your home network.", "127.0.0.1:8096": "Kinosail only works on this computer."} {
+		media, _ := wizardMedia(t)
+		handler, owner := wizardOwner(t, media, "KINOSAIL_LISTEN", listen)
+		assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/onboarding/connection", "", owner), http.StatusOK, state, "Your installation controls this setting.")
+	}
 	media, _ := wizardMedia(t)
 	handler, owner := wizardOwner(t, media, "KINOSAIL_LISTEN", "0.0.0.0:8096")
 
@@ -171,6 +176,10 @@ func TestManagedListenAddressKeepsDeploymentChoice(t *testing.T) {
 		t.Fatalf("managed sharing change = %d %q", saved.Code, saved.Header().Get("Location"))
 	}
 	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/settings/configuration", "", owner), http.StatusOK, "<code>KINOSAIL_LISTEN</code>")
+	assertAPIBody(t, devices, http.StatusOK, `id="home-assistant"`, `id="advanced"`)
+	if connected := wizardForm(t, handler, owner, "/onboarding/home-assistant", url.Values{}); connected.Header().Get("Location") != "/onboarding/connection#home-assistant" {
+		t.Fatalf("Home Assistant save returned to %q", connected.Header().Get("Location"))
+	}
 }
 
 func TestUnprotectedOwnerMustAddSecondFactorBeforeSensitiveChanges(t *testing.T) {

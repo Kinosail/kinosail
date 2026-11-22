@@ -15,13 +15,13 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.goto('/setup');
   await page.getByLabel('Name').fill('Owner');
   await page.locator('#new-password').fill('test-startup-password');
-  await page.getByLabel(/Add extra sign-in protection now/).uncheck();
-  await page.getByRole('button', {name: 'Create Owner & continue'}).click();
+  await page.getByRole('button', {name: 'Create account & continue'}).click();
   await page.getByRole('button', {name: 'Use an authenticator app instead'}).click();
   const secret = (await page.locator('code').first().textContent())!;
   await page.getByLabel('Authentication code').fill(totp(secret));
   await page.getByRole('button', {name: 'Turn on extra sign-in protection'}).click();
-  await page.getByRole('link', {name: 'Continue to household setup'}).click();
+  await expect(page).toHaveURL(/\/onboarding\/media$/);
+  await page.goto('/onboarding/household');
   await page.getByRole('link', {name: 'Continue to optional viewing history'}).click();
   await page.getByRole('link', {name: 'Finish and open Library'}).click();
   await page.route('**/static/theme.js?v=electric-2', route => route.fulfill({contentType: 'text/javascript', headers: {'Cache-Control': 'public, max-age=31536000, immutable'}, body: 'window.legacyStartupTheme = true;'}));

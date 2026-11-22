@@ -25,10 +25,10 @@ type lanView struct {
 func (store *settingsStore) lanSharing() lanView {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
-	host, port, _ := net.SplitHostPort(store.config.String("listen"))
-	running, _, _ := net.SplitHostPort(store.startupConfig.String("listen"))
-	view := lanView{Managed: store.config.Managed("listen"), Shared: host != "" && !loopbackHost(host), Chosen: store.config.Source("listen") == configuration.GUI}
-	if running != "" && !loopbackHost(running) {
+	host, port, configured := net.SplitHostPort(store.config.String("listen"))
+	running, _, started := net.SplitHostPort(store.startupConfig.String("listen"))
+	view := lanView{Managed: store.config.Managed("listen"), Shared: configured == nil && !loopbackHost(host), Chosen: store.config.Source("listen") == configuration.GUI}
+	if started == nil && !loopbackHost(running) {
 		view.Addresses = lanAddresses(port, store.startupConfig.Bool("tls.enabled"))
 	}
 	return view

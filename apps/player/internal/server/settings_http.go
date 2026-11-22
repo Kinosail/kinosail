@@ -238,9 +238,9 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	mux.Handle("GET /onboarding/household", auth.owner(showOnboardingHousehold(auth.profiles)))
 	mux.Handle("GET /onboarding/finish", auth.owner(finishOnboarding(settings)))
 	mux.Handle("POST /onboarding/household", auth.owner(addOnboardingViewer(auth.profiles)))
-	mux.Handle("POST /onboarding/trusted-https", auth.owner(saveTrustedHTTPS(settings, "/onboarding/connection")))
+	mux.Handle("POST /onboarding/trusted-https", auth.owner(saveTrustedHTTPS(settings, "/onboarding/connection#trusted-https")))
 	mux.Handle("POST /onboarding/jellyfin", auth.owner(saveJellyfinCompatibility(settings, "/onboarding/connection#jellyfin")))
-	mux.Handle("POST /onboarding/home-assistant", auth.owner(saveHomeAssistant(homeAssistant, "/onboarding/connection")))
+	mux.Handle("POST /onboarding/home-assistant", auth.owner(saveHomeAssistant(homeAssistant, "/onboarding/connection#home-assistant")))
 	mux.Handle("POST /onboarding/updates", auth.owner(saveUpdatePreference(updates, "/onboarding/connection#updates")))
 	mux.Handle("POST /onboarding/updates/check", auth.owner(checkForUpdate(updates, "/onboarding/connection#updates")))
 	mux.Handle("POST /onboarding/tmdb", auth.owner(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

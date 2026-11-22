@@ -30,8 +30,8 @@ export async function gotoAuthForm(page: Page, path: "/login" | "/login?next=/" 
       const password = document.querySelector<HTMLInputElement>('input[name="password"][type="password"]');
       const form = password?.form;
       const toggle = password?.closest(".password-control")?.querySelector<HTMLButtonElement>('button.password-toggle[aria-label="Show secret"]');
-      const submitLabel = expectedPath === "/setup" ? "Create Owner & continue" : "Sign in";
-      const submit = form && [...form.querySelectorAll<HTMLButtonElement>("button")].find(button => button.type === "submit" && button.textContent?.trim() === submitLabel);
+      const submitLabels = expectedPath === "/setup" ? ["Create Owner & continue", "Create account & continue"] : ["Sign in"];
+      const submit = form && [...form.querySelectorAll<HTMLButtonElement>("button")].find(button => button.type === "submit" && submitLabels.includes(button.textContent?.trim() ?? ""));
       const visible = (element: HTMLElement | null | undefined) => Boolean(element && !element.closest("[inert]") &&
         element.getBoundingClientRect().width && element.getBoundingClientRect().height && getComputedStyle(element).visibility === "visible");
       const editable = (input: HTMLInputElement | null) => Boolean(input && visible(input) && !input.matches(":disabled") && !input.readOnly);
