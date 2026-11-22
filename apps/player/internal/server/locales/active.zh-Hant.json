@@ -2074,5 +2074,9 @@
   {
     "id": "Enter the current 6-digit code to confirm the app.",
     "other": "輸入目前的 6 位數代碼以確認應用程式。"
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "不允許使用此位址。請透過已設定的位址開啟 Kinosail，或將此位址加入 KINOSAIL_TLS_HOSTS。"
   }
 ]
