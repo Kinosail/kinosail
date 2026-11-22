@@ -47,3 +47,10 @@ are included in the shared third-party notices directory in the container.
 | gVisor userspace network stack | 39ed1f5ac29c (2025-05-03) | Apache-2.0 | [LICENSE](../../packages/third_party/gvisor/LICENSE) |
 | Google B-tree | 1.1.3 | Apache-2.0 | [LICENSE](../../packages/third_party/btree/LICENSE) |
 | Wintun Go adapter (Windows builds) | 0fa3db229ce2 (2023-01-26) | MIT | [LICENSE](../../packages/third_party/wintun/LICENSE) |
+
+Chinese library title navigation includes the following Go dependency. It maps
+Chinese characters to pinyin initials for the title letter bar.
+
+| Component | Version | License | Notice |
+| --- | --- | --- | --- |
+| go-pinyin | 0.21.0 | MIT | [LICENSE](../../packages/third_party/go-pinyin/LICENSE) |

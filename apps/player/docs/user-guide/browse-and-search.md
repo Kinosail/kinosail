@@ -47,6 +47,8 @@ A filter control appears only when titles in the view have that information. **W
 
 When the view is sorted by title without a search, use the letter navigation to jump to a title group. A letter jump is not available with a search or with another sort order.
 
+In Chinese, titles that start with a Chinese character are grouped by the first letter of its pinyin. For example, 阿凡达 and Avatar are both under **A**.
+
 ## Move through a long library
 
 Kinosail loads a bounded page of results. Use **Next** and **Previous** controls, or the page loading control when it appears. The result count describes the current view after Profile policy, search, and filters.
