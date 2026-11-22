@@ -40,8 +40,14 @@ func (scanner *Scanner) directoryItems(dirs map[string]*scanDir, path string, di
 	included := make([]bool, len(directory.entries))
 	parallelEach(len(directory.entries), func(position int) {
 		entry := directory.entries[position]
-		if file, found := directory.files[entry.name]; !entry.dir && found {
-			built[position], included[position] = view.item(scanner.root, scanner.namespace, filepath.Join(path, entry.name), entry.kind, file), true
+		file, found := directory.files[entry.name]
+		if entry.dir || !found {
+			return
+		}
+		full := filepath.Join(path, entry.name)
+		relative, _ := filepath.Rel(scanner.root, full)
+		if kind := scanKind(scanner.namespace, relative, entry.kind); kind != "" {
+			built[position], included[position] = view.item(scanner.root, scanner.namespace, full, kind, file), true
 		}
 	})
 	items := make(map[string]Item, len(directory.files))
@@ -90,7 +96,7 @@ func (scanner *Scanner) scanFile(ctx context.Context) ([]Item, error) {
 		directory.media[strings.TrimSuffix(name, filepath.Ext(name))] = struct{}{}
 	}
 	items := make([]Item, 0, 1)
-	if kind != "" && (kind != "photo" || !directory.sidecarArtwork(name)) {
+	if kind = scanKind(scanner.namespace, name, kind); kind != "" && (kind != "photo" || !directory.sidecarArtwork(name)) {
 		view := scanView{dirs: map[string]*scanDir{parent: directory}}
 		item := view.item(scanner.root, scanner.namespace, scanner.root, kind, mediaFile{size: info.Size(), modified: info.ModTime()})
 		item.Path = scanner.root

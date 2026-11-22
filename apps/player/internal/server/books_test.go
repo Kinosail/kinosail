@@ -16,4 +16,9 @@ func TestReaderServesMainstreamComicArchivesThroughAPIAndWeb(t *testing.T) {
 	libraryAPIFixture.ReaderServesMainstreamComicArchivesThroughAPIAndWeb(t, apiItemsByTitle)
 }
 
+func TestReaderServesPlainTextBooksInBookFolders(t *testing.T) {
+	t.Parallel()
+	libraryAPIFixture.ReaderServesPlainTextBooksInBookFolders(t, apiItemsByTitle)
+}
+
 var writeZip = archivetest.WriteZIP

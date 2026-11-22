@@ -69,6 +69,8 @@ func readerFor(request *http.Request, index *libraryIndex, id string) (readerBoo
 		book.Type, book.Pages = "comic", archiveImages(request.Context(), item)
 	case "epub":
 		book.Pages = epubSpine(item)
+	case "txt":
+		book.Type, book.Pages = "epub", textPages(request, item)
 	}
 	if len(book.Pages) == 0 {
 		return readerBook{}, errors.New("unsupported or empty book")
@@ -187,14 +189,16 @@ func serveReaderAsset(index *libraryIndex) http.HandlerFunc {
 			localizedNotFound(writer, request)
 			return
 		}
+		if strings.EqualFold(item.Container, "TXT") {
+			serveTextPart(writer, request, item)
+			return
+		}
 		data, err := library.ReadArchiveAsset(request.Context(), item, request.PathValue("asset"))
 		if err != nil {
 			localizedNotFound(writer, request)
 			return
 		}
-		writer.Header().Set("Content-Security-Policy", "sandbox allow-same-origin; default-src 'self' data:; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'self'")
-		writer.Header().Set("X-Content-Type-Options", "nosniff")
-		writer.Header().Set("X-Frame-Options", "SAMEORIGIN")
+		readerAssetHeaders(writer)
 		if contentType := mime.TypeByExtension(filepath.Ext(request.PathValue("asset"))); contentType != "" {
 			writer.Header().Set("Content-Type", contentType)
 			if readerChapterType(contentType) {

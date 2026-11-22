@@ -28,8 +28,11 @@ Open **Books**, select a title, then choose **Read now**.
 | EPUB | Choose a chapter in **Reading order**. Selecting a chapter saves it for your Profile; reopening the book returns to that chapter. |
 | PDF | The document opens in the browser's PDF viewer. Available page, zoom, and download controls depend on the browser. |
 | CB7, CBT, CBZ | Comic archive images appear in reading order; scroll through the pages. |
+| TXT | The text appears in parts of about 256 KiB. Each part is a chapter in **Reading order**, and the reader saves it like an EPUB chapter. Blank lines separate paragraphs. |
 
 The web EPUB reader saves chapter selection. Do not rely on exact scroll-position restoration for every format. An unsupported or empty archive cannot be opened by the reader. If **Download** is available for your Profile, you can use a compatible local reader instead.
+
+If a TXT book is missing, put it in a directory named `book`, `books`, `ebook`, or `ebooks`. Save it as UTF-8 if the text shows replacement characters.
 
 If a book is missing, check its format and library access, then ask the Owner to [check the scan]({{ '/troubleshooting/scanning-and-metadata/' | relative_url }}).
 

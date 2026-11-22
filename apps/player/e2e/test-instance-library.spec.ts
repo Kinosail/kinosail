@@ -70,6 +70,16 @@ test("public test instance exercises every media section and local TMDB metadata
   await page.getByRole("link", { name: /Read now/ }).click();
   await expect(page.locator("iframe.book-reader")).toBeVisible();
   await page.goto("/?view=books");
+  await expect(page.getByRole("link", { name: /CC0/ })).toHaveCount(0);
+  await page.getByRole("link", { name: "Example Text Book" }).click();
+  await page.getByRole("link", { name: /Read now/ }).click();
+  await expect(page.locator("[data-reader-page]")).toHaveText("Chapter 1 of 1");
+  const text = page.frameLocator("iframe.book-reader");
+  await expect(text.getByText("This line follows a single line break.")).toBeVisible();
+  await expect(text.getByText("<b>tags</b>", { exact: false })).toBeVisible();
+  await expect(text.locator("b")).toHaveCount(0);
+  await expect(text.locator("p")).toHaveCount(3);
+  await page.goto("/?view=books");
   await page.getByRole("link", { name: "Example Comic" }).click();
   await page.getByRole("link", { name: /Read now/ }).click();
   await expect(page.locator(".reader-pages img")).toHaveCount(2);
