@@ -23,9 +23,9 @@ func AssertOwnerCanRequireMFAForEveryProfile(t *testing.T, fixture MFAPolicyFixt
 		t.Fatalf("create Viewer = %d %q", created.Code, created.Body.String())
 	}
 	settingsPage := APICall(t, handler, owner.Token, http.MethodGet, "/settings", nil)
-	AssertAPIBody(t, settingsPage, http.StatusOK, `action="/settings/mfa"`, `name="required"`, `name="required" value="true" checked`, `TOTP: Enabled`)
+	AssertAPIBody(t, settingsPage, http.StatusOK, `action="/settings/mfa"`, `name="required"`, `TOTP: Enabled`)
 	required := APICall(t, handler, owner.Token, http.MethodPut, "/api/v1/settings/mfa", map[string]any{"required": true})
-	AssertAPIBody(t, required, http.StatusOK, `"required":true`, `"sessionsRevoked":false`)
+	AssertAPIBody(t, required, http.StatusOK, `"required":true`, `"sessionsRevoked":true`)
 
 	ownerLogin := APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": TestTOTP(t, owner.TOTP.Secret, time.Now())})
 	var loggedInOwner struct{ Token string }

@@ -90,5 +90,5 @@ func TestSetupRejectsUnknownUpdateModeBeforeOwnerCreation(t *testing.T) {
 		t.Fatalf("invalid update mode = %d %q", response.Code, response.Body.String())
 	}
 	setup := apiCall(t, handler, "", http.MethodGet, "/setup", nil)
-	assertAPIBody(t, setup, http.StatusOK, "Set up your Server.")
+	assertAPIBody(t, setup, http.StatusOK, "Welcome to Kinosail.")
 }

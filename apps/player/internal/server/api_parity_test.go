@@ -15,7 +15,7 @@ func TestAPIParityContract(t *testing.T) {
 		Bootstrap: func(t *testing.T) http.Handler {
 			return server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
 		},
-		TOTP: testTOTP,
+		TOTP: testTOTP, OptionalOwnerMFA: true,
 	})
 }
 

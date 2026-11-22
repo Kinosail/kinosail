@@ -127,7 +127,7 @@ func (auth *authentication) viewerAccess(access tokenAccess, request *http.Reque
 		Public: publicInternetRequest(request), Owner: access.Profile.Owner, APIKey: access.Profile.APIKey,
 		RecentlyAuthenticated: auth.profiles.accessRecentlyAuthenticated(request, access, auth.publicAuthenticationMaximumAge()), PublicSession: auth.profiles.accessPublic(request, access),
 		RemoteRouteAllowed: publicViewerRouteAllowed(matched), ScheduleAllowed: access.Profile.Allowed(publicInternetRequest(request), time.Now()), APIKeyAllowed: profileAllowsAPI(access.Profile, matched),
-		LocalOwner: access.Profile.ID == "local-owner", MFARequired: auth.settings.requireMFA(), Secured: access.Profile.Secured(), EnrollmentRoute: mfaEnrollmentRoute(matched),
+		LocalOwner: access.Profile.ID == "local-owner", MFARequired: auth.settings.requireMFA() || ownerProtectionRequired(access.Profile, matched), Secured: access.Profile.Secured(), EnrollmentRoute: mfaEnrollmentRoute(matched), OwnerMFAOptional: true,
 	})
 }
 

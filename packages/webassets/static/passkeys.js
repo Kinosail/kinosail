@@ -59,7 +59,7 @@ async function ceremony(kind, {conditional = false, signal} = {}) {
   try { localStorage.setItem(storageKey, "1"); } catch {   }
   if (kind === "login") return location.replace(safeLoginNext(finish.headers.get("X-Kinosail-Login-Next") || loginNext));
   const query = new URLSearchParams(location.search);
-  if (query.get("setup") === "1") return location.replace("/onboarding/connection");
+  if (query.get("setup") === "1") return location.replace(document.body.dataset.setupNext === "/onboarding/media" ? "/onboarding/media" : "/onboarding/connection");
   if (query.get("mfa") === "required") return location.replace("/");
   if (query.get("passkey") === "offer") return location.replace(loginNext);
   if (status) status.textContent = message("passkeyAdded", "Passkey added.");

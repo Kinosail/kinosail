@@ -10,8 +10,9 @@ import (
 )
 
 type MFAPolicyFixture struct {
-	Library LibraryAPIFixture
-	Web     AuthCookieRequest
+	Library          LibraryAPIFixture
+	Web              AuthCookieRequest
+	OptionalOwnerMFA bool
 }
 
 func AssertSingleOwnerMustEnrollOneAuthenticationFactor(t *testing.T, fixture MFAPolicyFixture) {
@@ -21,8 +22,14 @@ func AssertSingleOwnerMustEnrollOneAuthenticationFactor(t *testing.T, fixture MF
 	setup := APICall(t, handler, "", http.MethodPost, "/api/v1/setup", map[string]any{"name": "Owner", "password": "owner-password"})
 	var owner struct{ Token string }
 	MustJSON(t, setup, &owner)
-	AssertAPIBody(t, setup, http.StatusCreated, `"mfaEnrollmentRequired":true`)
-	AssertAPIBody(t, APICall(t, handler, owner.Token, http.MethodGet, "/api/v1/library", nil), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+	if fixture.OptionalOwnerMFA {
+		AssertAPIBody(t, setup, http.StatusCreated, `"mfaEnrollmentRequired":false`)
+		AssertAPIBody(t, APICall(t, handler, owner.Token, http.MethodGet, "/api/v1/library", nil), http.StatusOK, `"items":[]`)
+		AssertAPIBody(t, APICall(t, handler, owner.Token, http.MethodPost, "/api/v1/api-keys", map[string]any{"name": "Installer"}), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+	} else {
+		AssertAPIBody(t, setup, http.StatusCreated, `"mfaEnrollmentRequired":true`)
+		AssertAPIBody(t, APICall(t, handler, owner.Token, http.MethodGet, "/api/v1/library", nil), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+	}
 
 	enrollmentResponse := APICall(t, handler, owner.Token, http.MethodPost, "/api/v1/me/mfa/setup", map[string]any{})
 	var enrollment struct{ Secret string }
@@ -42,7 +49,14 @@ func assertWebMFASignup(t *testing.T, fixture MFAPolicyFixture) {
 	t.Helper()
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	page := APICall(t, handler, "", http.MethodGet, "/setup", nil)
-	AssertAPIBody(t, page, http.StatusOK, `name="totp" value="true" checked`, "MFA - Add extra sign-in protection now")
+	if fixture.OptionalOwnerMFA {
+		AssertAPIBody(t, page, http.StatusOK, `name="password"`)
+		if strings.Contains(page.Body.String(), `name="totp"`) {
+			t.Fatalf("setup asks for an authenticator before the Owner exists: %q", page.Body.String())
+		}
+	} else {
+		AssertAPIBody(t, page, http.StatusOK, `name="totp" value="true" checked`, "MFA - Add extra sign-in protection now")
+	}
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/setup", strings.NewReader("name=Owner&password=owner-password&totp=true"))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	response := httptest.NewRecorder()

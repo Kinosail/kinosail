@@ -20,13 +20,16 @@ var onboardingConnectionView = newLazyLocalizedTemplate("onboarding-connection",
 func onboardingConnectionTemplate() string {
 	content := strings.NewReplacer(
 		`{{template "onboardingProgress"}}`, `{{template "onboardingProgress" .Step}}`,
-		`<h1>Make every device feel at home.</h1><p>Choose the address your phones, TVs, and browsers will trust. Kinosail stays on your network unless you separately enable remote access.</p>`, `<h1>Connect the devices you already own.</h1><p>Local access is ready now. Add trusted HTTPS only if a phone, TV, or app needs it; you can change these choices later in Settings.</p>`,
+		`<h1>Make every device feel at home.</h1><p>Choose the address your phones, TVs, and browsers will trust. Kinosail stays on your network unless you separately enable remote access.</p>`, `<h1>Watch on every screen in your home.</h1><p>Share Kinosail with your TVs, phones, and tablets on your home Wi-Fi. You can change this later in Settings.</p>`,
 		`<section class="wide"><h2>Trusted HTTPS with DuckDNS</h2>`, secureLocalOnboardingHTML+`<section class="wide onboarding-recommended" id="trusted-https"><h2>Trusted HTTPS for phones, TVs, and Jellyfin apps</h2>`,
 		`<p>Use a free DuckDNS name and Let's Encrypt certificate`, `<p><strong>Required for Jellyfin apps. Recommended for phones and TVs.</strong> Use a free DuckDNS name and Let's Encrypt certificate`,
 		`<details class="onboarding-disclosure" id="trusted-https-configuration">`, `<details class="onboarding-disclosure" id="trusted-https-configuration" {{if not .Trusted.Configured}}open{{end}}>`,
 		`<section><h2>Keep the private certificate</h2><p>No public DNS record is created. Devices will show a warning until they trust the <a href="/api/v1/agent-connections/certificate">Kinosail local CA certificate</a>.</p></section>`, jellyfinOnboardingHTML,
 		`<section><h2>Remote access comes later</h2>`, homeAssistantOnboardingHTML+`<section class="onboarding-optional"><span class="onboarding-optional-label">Optional connection</span><h2>Remote access comes later</h2>`,
 		`<section class="wide" id="updates">`, tmdbOnboardingHTML+`<section class="wide" id="updates">`,
+		`<span class="eyebrow">Step 2 of 4 · Devices</span>`, `<span class="eyebrow">Step 3 of 5 · Devices</span>`,
+		`<div class="settings-flow">`, `<div class="settings-flow">`+onboardingLANHTML+`</div><details class="onboarding-disclosure onboarding-advanced" id="advanced"><summary>Advanced options <span>Trusted HTTPS, Jellyfin apps, Home Assistant, movie details, and updates</span></summary><div class="settings-flow">`,
+		`</div><p><a class="mode" href="/onboarding/household">Continue to household setup</a> <a class="mode" href="/onboarding/finish">Skip optional setup</a></p>`, `</div></details><p class="onboarding-actions"><a class="mode" href="/onboarding/finish">Skip the remaining steps</a></p>`,
 	).Replace(onboardingConnectionHTML)
 	return ignoreNonPasswordSecretAutofill(settingControlHTML + `{{define "onboardingProgress"}}` + onboardingProgressHTML + `{{end}}` + providerNeutralTrustedHTTPSPage(updateChoicePage(content)))
 }
@@ -49,7 +52,8 @@ func showOnboardingConnection(settings *settingsStore, updates *updateChecker, a
 			HomeAssistantControl  settingControl
 			TMDB                  tmdbConfigurationView
 			Step                  string
-		}{settings.trustedHTTPS(), configurationControl(configured, "tls.duckdns"), trustedHTTPSRequirementView(configured), settings.jellyfinCompatibility(), configurationControl(configured, "integrations.jellyfin.enabled"), updateView, updateStatusText(updateView), updateManagerStatusText(updateView.Manager), settings.homeAssistant(), configurationControl(configured, "integrations.home_assistant.enabled"), settings.tmdbConfiguration(), "devices"}
+			LAN                   lanView
+		}{settings.trustedHTTPS(), configurationControl(configured, "tls.duckdns"), trustedHTTPSRequirementView(configured), settings.jellyfinCompatibility(), configurationControl(configured, "integrations.jellyfin.enabled"), updateView, updateStatusText(updateView), updateManagerStatusText(updateView.Manager), settings.homeAssistant(), configurationControl(configured, "integrations.home_assistant.enabled"), settings.tmdbConfiguration(), "devices", settings.lanSharing()}
 		if data.JellyfinCompatibility {
 			data.JellyfinControl.ConnectionURL = trustedConnectionURL(authURL, data.Trusted.Hostname)
 		}

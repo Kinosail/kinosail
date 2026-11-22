@@ -46,7 +46,7 @@ func (fixture LocaleWebFixture) SetupAndLoginCanUseSpanish(t *testing.T) {
 	handler := fixture.NewHandler(t, false)
 	setup := httptest.NewRecorder()
 	handler.ServeHTTP(setup, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/setup?lang=es", nil))
-	if !strings.Contains(setup.Body.String(), "Propietario account") || !strings.Contains(setup.Body.String(), `lang="es"`) {
+	if !strings.Contains(setup.Body.String(), "Contraseña") || !strings.Contains(setup.Body.String(), `lang="es"`) {
 		t.Fatalf("Spanish setup = %q", setup.Body.String())
 	}
 	login := httptest.NewRecorder()

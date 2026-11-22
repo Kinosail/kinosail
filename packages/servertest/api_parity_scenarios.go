@@ -9,9 +9,10 @@ import (
 )
 
 type APIParityFixture struct {
-	Server    func(*testing.T) (http.Handler, string)
-	Bootstrap func(*testing.T) http.Handler
-	TOTP      func(*testing.T, string, time.Time) string
+	Server           func(*testing.T) (http.Handler, string)
+	Bootstrap        func(*testing.T) http.Handler
+	TOTP             func(*testing.T, string, time.Time) string
+	OptionalOwnerMFA bool
 }
 
 func APIParityContract(t *testing.T, fixture APIParityFixture) {

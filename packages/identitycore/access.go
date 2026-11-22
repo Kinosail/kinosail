@@ -24,6 +24,7 @@ type AccessInput struct {
 	Public, Owner, APIKey, RecentlyAuthenticated, PublicSession bool
 	RemoteRouteAllowed, ScheduleAllowed, APIKeyAllowed          bool
 	LocalOwner, MFARequired, Secured, EnrollmentRoute           bool
+	OwnerMFAOptional                                            bool
 }
 
 func EvaluateAccess(input AccessInput) Denial {
@@ -61,7 +62,7 @@ func EvaluateAccess(input AccessInput) Denial {
 	if input.EnrollmentRoute {
 		return Allowed
 	}
-	if input.Owner {
+	if input.Owner && !input.OwnerMFAOptional {
 		return mfaEnrollmentRequired
 	}
 	if input.MFARequired {
