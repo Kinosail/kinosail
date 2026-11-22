@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 דקות"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 דקות"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 דקות"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 דקות"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "גישה"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "חשבון · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "פעולות"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "הוספת מפתח גישה"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "הוספת תיקייה"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "הוסיפו מדיה או נסו חיפוש אחר."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "הוספת פרופיל"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,35 +53,35 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "הוספה אל"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "ניהול השרת"
   },
   {
     "id": "Album",
-    "other": "Album"
+    "other": "אלבום"
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "אלבומים"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "הכול"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "כל הדירוגים"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "אפשרות הורדה"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "אפשרות המרת קידוד"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "ניתוח קטעי ההשמעה עכשיו"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "שם מפתח ה-API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "היקף מפתח ה-API אינו מאפשר בקשה זו"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "מפתח API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "מפתחות API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "מראה"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "החלה"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "שמע"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "ספרי שמע"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "קוד אימות"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "קוד אימות או שחזור"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "נדרש אימות"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "אישור מכשיר"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "אוטומטי"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "אוטומטי"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "אוטומטי (הטוב ביותר שזוהה)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "אוטומטי (דפדפן)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "גיבויים אוטומטיים"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "תחזוקה אוטומטית"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "מכשירים זמינים משתמשים בחיבור ישיר לשרת הזה."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "חזרה לספרייה"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "חזרה להגדרות"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "גיבוי עכשיו"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "גיבוי ושחזור"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "הגיבויים דורשים הגדרה."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "הגיבויים פועלים אוטומטית ללא הצפנה."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "גיבויים · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "ספר"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "ספרים"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "ספרים וקומיקס"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "עיון בספרייה"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "ביטול"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "שידור"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "פרקים"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "בחרו את השפה לדפדפן הזה."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "ניקוי מטמון המרת קידוד"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "קוד"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "אוסף"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "אוספים"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "פרסומת"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "תאימות"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "חיבור תואם"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "תואם"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "זרמים במקביל"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "שגיאת הגדרה"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "הגדרות · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "מוגדר; הערך מוסתר"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "אישור מחיקה"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "אישור הסרה"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "חיבור"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "חיבור מכשיר"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "מחובר"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "מתחבר"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "מתחבר…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "שגיאת חיבור"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "תוכן"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "המשך צפייה"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "המשך צפייה"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "מהמשך צפייה"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "יצירה"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "יצירת מפתח גישה"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "יצירת מפתח API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "יצירת מפתח גישה"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "יצירת רשימת השמעה חכמה"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "יצירת פרופיל הבעלים שלכם"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "פרטי הזיהוי הוגדרו"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "כתוביות סיום"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "אוצרות"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "כהה"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "ברירת מחדל"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "השמעת ברירת מחדל"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "מחיקה"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "הגדרות פריסה"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "יעד"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "זוהה, לא זמין"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "מכשיר או אפליקציה"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "אבחון"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "ישיר"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "ישיר"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "חיבור ישיר אינו זמין"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "ישירות מ-"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "בימוי"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "השבתה וביטול"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "השבתת אימות דו-שלבי"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "שחזור אחרי אסון"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "הורדה"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "הורדת מדיה"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "הורדת המקור"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "הורדת אבחון בטוח"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "הורדות"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "עריכת מטא-נתונים"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "עריכת סמני דילוג"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "הפעלת DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "הפעלת אימות דו-שלבי"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "מופעל"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "גיבויים מוצפנים פועלים אוטומטית."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "ההצפנה כבויה כברירת מחדל."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "ההצפנה פעילה."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "סיום בשניות"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "ברירת מחדל של הסביבה"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook לאירועים"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "כל 15 דקות"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "כל 5 דקות"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "הכול"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "ייצוא יומן הפעילות המלא"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "מנוהל חיצונית"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "חיפוש"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "חיפוש משהו"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "סיום הגדרה"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "תיקייה בתוך נקודת חיבור המדיה"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "עוקב אחרי מנהל החדר"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "מ-"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "מ-"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "כללי"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "ז'אנרים"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "הבנתי"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "קבוצה"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "חומרה"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "היסטוריה"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "בית"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "כל שעה"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "אם מופעל"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "התקנה"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "התקנת Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "אינטגרציות"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "פתיחה"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "קישור הזמנה"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "שמירה"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "שמרו את הגיבויים באחסון מחוץ למארח הזה. גיבויים אינם מוצפנים, אלא אם הוגדר מפתח גיבוי. בצעו שחזור כשהשרת מושהה."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "השאירו את Kinosail Player בהישג יד"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,11 +741,11 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "‏Kinosail Player אינו מצליח להגיע לשרת הזה. בדקו את הרשת או את החיבור הישיר, ונסו שוב."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail מתחזק את עצמו אוטומטית."
   },
   {
     "id": "Kinosail Player Reader",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "שפה"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "שגיאה אחרונה"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "שגיאת הסריקה האחרונה"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "הגיבוי המוצלח האחרון"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "הסריקה המוצלחת האחרונה"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "אומת לאחרונה"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "החדשים ביותר"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "ספריות"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "ספרייה"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "גילוי ספרייה"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "תיקיות ספרייה"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "פריטי ספרייה"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "ארגון הספרייה"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "תצוגות ספרייה"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "פרטי זיהוי מורשים הוגדרו"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "בהיר"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "קישור OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "חשבון מקומי"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "רשימת השמעה M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "ניהול מצב הספרייה האישית"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "מנוהל חיצונית ובקריאה בלבד."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "גישה מרחוק מנוהלת"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "סימון"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "סמן"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "טקסט התאמה"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "מדיה"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "מידע על המדיה"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "נקודת חיבור מדיה"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "ספק מטא-נתונים"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "מדדים"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "סרטים"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "מוזיקה"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "מוזיקה וספרי שמע"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "הרשימה שלי"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "שם"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "לעולם לא"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "אוסף חדש"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "שם לאוסף החדש"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "סיסמה חדשה"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "רשימת השמעה חדשה"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "שם לרשימת ההשמעה החדשה"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "שם לפרופיל החדש"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "סיסמה לפרופיל החדש"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "סוד חדש"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "רשימת השמעה חכמה חדשה"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "צופים חדשים מתחילים עם דירוגי משפחה וללא ספריות. הוסיפו שמות תיקיות או"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "החדשים ביותר"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "עדיין לא נרשמה פעילות."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "לא הוגדרו ערוצים."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "לא נבחר מכשיר"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "עדיין אין הורדות לא מקוונות."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "עדיין לא נרשמה השמעה."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "אין"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "אין; השתמשו ב'הכול' או בשמות תיקיות"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "לא הוגדר"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "לא זוהה"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "לא עכשיו"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "לא נמצא דבר."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "צפייה כעת"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "כבוי"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "לא מקוון"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "הורדות לא מקוונות"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "הורדות לא מקוונות · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "מופעל"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "ב-iPhone או ב-iPad, הקישו על Share, בחרו Add to Home Screen, הפעילו Open as Web App, והקישו על Add."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "הצגה חד-פעמית"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "סיום"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "בעלים"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "נדרשת גישת בעלים"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "בקרות בעלים"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "מפתח הגישה נוסף."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "סיסמה"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "תמונות"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "השמעה"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "השמעה במכשיר"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "השמעה"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "היסטוריית השמעה"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "ניתוח קטעי השמעה"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "מהירות השמעה"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "מתנגן כאן"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "מתנגן במכשיר"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "רשימת השמעה"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "רשימות השמעה"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "עלילה"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "בודק שינויים"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "עדיפות לאיכות"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "עדיפות למהירות"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "שפה מועדפת"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "הכנה"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "פרטיות מובנית"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "פרופיל"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "פרופיל לאיפוס"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "סוג פרופיל"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "פרופילים"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "מוגן אוטומטית"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - דרישת הגנת כניסה נוספת לכל פרופיל צופה"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "איכות"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "איכות"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "חיבור מהיר"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "חיבור מהיר · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "דירוג"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "קריאה עכשיו"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "קורא"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "סדר קריאה"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "מוכן"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "סיכום"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "פעילות אחרונה"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "השמעה אחרונה"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "נוספו לאחרונה"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "הושמעו לאחרונה"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "שחזור"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "קודי שחזור"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "רענון מ-TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "רענון מטא-נתונים חסרים"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "מומלץ"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "גישה מרחוק"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "הסרה"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "הסרה מ-"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "בקשה"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "לא ניתן היה להשלים את הבקשה."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "איפוס סיסמה"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "חזרה להגדרות"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "ביטול"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "החדר מחובר · עוקב אחרי המנהל"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "החדר מחובר · אתם מנהלים"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "החדר נותק · רעננו את הדף כדי להתחבר מחדש"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "הפעלת סריקת ספרייה עכשיו"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "הפעלת תחזוקה עכשיו"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "סריקת בטיחות"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "שמירה"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "שמירת קובץ"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "שמירה להפעלה מחדש"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "שמירת סמן"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "שמירת מטא-נתונים"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "שמירת לוח זמנים"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "לוח זמנים"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "חיפוש בספרייה"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "תוצאות חיפוש"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "סודות מוסתרים וכלולים רק בגיבויי שחזור מוצפנים."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "אבטחת החשבון שלכם"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "אבטחת החשבון שלכם · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "שלחו את כתובת החיבור הפרטית לצופה. היא מוצגת פעם אחת בלבד."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "שם השרת"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "הגדרות השרת"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "השרת אינו זמין"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "השרת אינו זמין · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "הגדרת Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "הגדרה או החלפה של אפליקציית אימות"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "הגדרת אימות דו-שלבי"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "הגדרת אימות דו-שלבי · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "הגדרות"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "קטעי הגדרות"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "הגדרות · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "סדרה"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "סדרות"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "כניסה"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "כניסה עם מפתח גישה"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "כניסה עם SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "כניסה · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "יציאה"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "יציאה ממכשירים אחרים"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "שיטות כניסה"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "הגנות כניסה, הגנות דפדפן לאותו מקור, תגובות פרטיות, בקשות מוגבלות וגישה הניתנת לביטול פועלות תמיד. אין מתגי אבטחה לניהול."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "כניסה יחידה"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "דילוג"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "דילוג אוטומטי על פרסומות"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "דילוג אוטומטי על כתוביות סיום"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "דילוג אוטומטי על פתיחות"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "דילוג אוטומטי על סיומות"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "דילוג אוטומטי על סיכומים"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "מעבר לתוכן"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "טיימר שינה"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "טיימר השינה הסתיים"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "רשימת השמעה חכמה"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "שם רשימת ההשמעה החכמה"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "תוכנה"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "מיון"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "מקור"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "מהירות"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "התחלה בשניות"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "התחלת צפייה משותפת"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "מצב"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "ייעצר בעוד {minutes} דקות"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "שמרו את הקודים האלה במקום בטוח. כל קוד עובד פעם אחת."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "נשמר כאן. מוזרם ישירות."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "הזרמת מדיה"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "נדרש מנוי"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "ספק כתוביות"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "כתוביות"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "כתוביות"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "סנכרון"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "מערכת"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "סלוגן"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "הגיבוי כולל מצב חשבון והפעלה. שמרו את אחסון הגיבוי הלא מוצפן בפרטיות, או הגדירו מפתח גיבוי."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "ערכת נושא"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "ההגדרות האלה לקריאה בלבד עד שיוסרו מ-YAML או מהסביבה"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "האוסף הזה ריק."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "הפעולה תמחק את האוסף לצמיתות."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "הפעולה תמחק את רשימת ההשמעה לצמיתות."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "רשימת ההשמעה הזאת ריקה."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "מוצר זה משתמש ב-API של TMDB, אך אינו מאושר או מוסמך על ידי TMDB."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "עד PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "עד PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "כותרת"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "כותרת, אמן, ז'אנר"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "כותרת, אמן, ז'אנר…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "המרת HDR ל-SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "יותר מדי ניסיונות כניסה"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "יותר מדי חדרים לצפייה משותפת"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "רצועה"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "מטמון המרת קידוד"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "ממיר קידוד"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "המרת קידוד אינה מותרת"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "ניסיון חוזר"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "אימות דו-שלבי"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "אימות דו-שלבי · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "סוג"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "ביטול קישור OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "עד"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "לא נצפה"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "לא נצפה"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "שימוש בברירת מחדל"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "כניסה באמצעות Face ID, Touch ID, Windows Hello או קוד PIN של המכשיר. הסיסמה שלכם תמשיך לעבוד."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,135 +1773,135 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "אימות הגיבוי האחרון"
   },
   {
     "id": "Video",
-    "other": "Video"
+    "other": "וידאו"
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "צופה"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "הגישה לצופה אינה זמינה"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "שם צופה"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "ממתין למפתח הגישה שלכם…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "מצב הצפייה המשותפת אינו תקין"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "נצפה"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "נצפה"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "נצפה ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "צופה לשינויים"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "ברוכים הבאים"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "כשיהיה מוכן."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "מדריך XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "שנה"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "אתם מנהלים את החדר הזה"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "הספרייה שלכם"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "הספרייה והפעילות שלכם נשארות בשרת הזה."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← ספרים"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← ספרייה"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← הגדרות"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "מפתח API שנוצר"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "העתקת מפתח API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "הועתק."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "בחרו Copy בדפדפן."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "הגדרת HTTPS מהימן"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "בדיקת הגדרת HTTPS מהימן"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "עותק לא מקוון"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "קובץ מאומת נשמר במכשיר הזה."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "מוכן לשימוש לא מקוון במכשיר הזה"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "שיטת השמעה"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "פתיחת הגדרות השמעה."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "העותק הלא מקוון אינו זמין."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "נשמר במכשיר הזה"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "אין במכשיר הזה מספיק מקום לההורדה הזאת"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "הדפדפן הזה אינו יכול לשמור מדיה לא מקוונת בבטחה"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "לא ניתן היה לאמת את ההורדה"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "ההורדה אינה זמינה עוד"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "פתחו את Kinosail מחובר לרשת ובחרו קודם פרופיל צופה."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "כל הספריות"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "רצועות שמע"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "חזרה להורדות"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "לא ניתן לשמור את ההתקדמות. חזרו להורדות ונסו שוב."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "ניהול הורדות לא מקוונות"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "סרט"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "פתיחת הורדות השרת"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "פתיחת הדף הקודם"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "התנהגות השמעה"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "הכנת עותק לא מקוון"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "ההתקדמות נשמרה במכשיר הזה. פתחו הורדות שרת כדי לסנכרן."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "חזרה לטופס"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "חיפוש בכל הספריות"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "חיפוש בכול"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "לא ניתן היה להשמיע את הקובץ. חזרו להורדות, התחברו מחדש לשרת והורידו אותו שוב."
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "השמע קבוע בעותק המורד הזה."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "הגנת כניסה"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "חזרה לסרטים"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "חזרה לסדרות"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "חזרה לתוצאות החיפוש"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "חזרה לספרייה"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "פרק %lld מתוך %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "עמוד %lld מתוך %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "מסמך"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "סורק את הספרייה שלכם"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail קורא את תיקיות המדיה שלכם. הספרייה שלכם תופיע כאן כשהסריקה תסתיים."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "לא מקוון"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "אתם לא מקוונים"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "התחברו מחדש לשרת כדי להמשיך לצפות."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "העתיקו את מפתח ההגדרה או קישור ההגדרה לאפליקציית האימות שלכם."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "שמרו את כל קודי השחזור לפני שתמשיכו. כל קוד עובד פעם אחת."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "הזינו את הקוד הנוכחי בן 6 הספרות לאישור האפליקציה."
   }
 ]

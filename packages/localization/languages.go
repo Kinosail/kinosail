@@ -26,6 +26,7 @@ var rtlLanguageBases = map[string]struct{}{
 
 var translatedLanguageTags = map[string]struct{}{
 	"en": {}, "es": {}, "de": {}, "fr": {}, "pt-BR": {}, "zh-Hans": {}, "it": {}, "nl": {}, "pl": {}, "ru": {}, "ja": {}, "ko": {}, "ar": {}, "tr": {}, "uk": {}, "pt-PT": {}, "zh-Hant": {}, "sv": {},
+	"hi-IN": {}, "bn": {}, "id": {}, "vi": {}, "th": {}, "fa": {}, "he": {}, "cs": {}, "el": {}, "hu": {}, "ro": {}, "da": {}, "fi": {}, "nb": {}, "sk": {}, "bg-BG": {}, "hr": {}, "ca": {}, "ms": {}, "fil": {},
 }
 
 func SupportedLanguages() []Language {

@@ -1,23 +1,23 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 minuto"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 minuto"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 minuto"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 minuto"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Pag-access"
   },
   {
     "id": "Account · Kinosail Player",
@@ -25,7 +25,7 @@
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Mga aksyon"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Magdagdag ng passkey"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Magdagdag ng folder"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Magdagdag ng media o subukan ang ibang paghahanap."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Magdagdag ng Profile"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,11 +53,11 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Idagdag sa"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Pamahalaan ang server"
   },
   {
     "id": "Album",
@@ -65,23 +65,23 @@
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Mga album"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "lahat"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Lahat ng rating"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Payagan ang mga download"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Payagan ang transcoding"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Suriin ngayon ang mga segment ng playback"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Pangalan ng API key"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Hindi pinapayagan ng saklaw ng API key ang kahilingang ito"
   },
   {
     "id": "API key view failed",
@@ -113,11 +113,11 @@
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "Mga API key"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Itsura"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,7 +125,7 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Ilapat"
   },
   {
     "id": "Audio",
@@ -133,67 +133,67 @@
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Mga audiobook"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Code ng authentication"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Authentication o recovery code"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "kailangan ng authentication"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Pahintulutan ang device"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Awtomatiko"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "awtomatiko"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Awtomatiko (pinakamahusay na natukoy)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Awtomatiko (browser)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Awtomatikong backup"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Awtomatikong maintenance"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Direktang kumokonekta sa server na ito ang mga available na device."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Bumalik sa library"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Bumalik sa settings"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "I-backup ngayon"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Backup at recovery"
   },
   {
     "id": "backup is unavailable",
@@ -201,35 +201,35 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Kailangan pang i-setup ang mga backup."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Awtomatikong tumatakbo ang mga backup nang walang encryption."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Mga backup · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Libro"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Mga libro"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Mga libro at comic"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Mag-browse sa library"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Kanselahin"
   },
   {
     "id": "Cast",
@@ -237,15 +237,15 @@
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Mga kabanata"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Piliin ang wika para sa browser na ito."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "I-clear ang transcode cache"
   },
   {
     "id": "Code",
@@ -253,23 +253,23 @@
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Koleksyon"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Mga koleksyon"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Komersyal"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Pagkakatugma"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Connection na may pagkakatugma"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "tugma"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Sabayang stream"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Error sa configuration"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Pag-configure · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Naka-configure; nakatago ang value"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Kumpirmahin ang pagbura"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Kumpirmahin ang pag-alis"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Kumonekta"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Kumonekta ng device"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Nakakonekta"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Kumokonekta"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Kumokonekta…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Error sa koneksyon"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Nilalaman"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Ipagpatuloy ang Panonood"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Ipagpatuloy ang panonood"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "mula sa Ipagpatuloy ang Panonood"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Gumawa"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Gumawa ng passkey"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Gumawa ng API key"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Gumawa ng passkey"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Gumawa ng smart playlist"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Gumawa ng iyong Owner Profile"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Naka-configure ang mga credential"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Mga credit"
   },
   {
     "id": "cross-origin request denied",
@@ -409,11 +409,11 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "I-curate"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Madilim"
   },
   {
     "id": "default",
@@ -421,47 +421,47 @@
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Default na playback"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Burahin"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Configuration ng deployment"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Destinasyon"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "natukoy, hindi available"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Device o app"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Mga Diagnostic"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Direkta"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "direkta"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Hindi available ang direct connection"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Direct mula sa"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Dinirek ni"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "I-disable at bawiin"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "I-disable ang two-factor authentication"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Pagbawi sa sakuna"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "I-download"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "I-download ang media"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "I-download ang original"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "I-download ang safe diagnostics"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Mga download"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "I-edit ang metadata"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "I-edit ang skip markers"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "I-enable ang DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "I-enable ang two-factor authentication"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Naka-enable"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Awtomatikong tumatakbo ang mga encrypted na backup."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Naka-off ang encryption bilang default."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Naka-on ang encryption."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Magtapos sa mga segundo"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Default ng environment"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook ng event"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "Kada 15 minuto"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "Kada 5 minuto"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Lahat"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "I-export ang buong activity journal"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Pinamamahalaan sa labas"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Hanapin"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Maghanap ng isang bagay"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Tapusin ang setup"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Folder sa loob ng media mount"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,31 +621,31 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Sumusunod sa room leader"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Mula sa"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "mula sa"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Pangkalahatan"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Mga genre"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Sige"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Grupo"
   },
   {
     "id": "Hardware",
@@ -653,7 +653,7 @@
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Kasaysayan"
   },
   {
     "id": "Home",
@@ -661,23 +661,23 @@
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Kada oras"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "kung naka-enable"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "I-install"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "I-install ang Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Mga integration"
   },
   {
     "id": "Intel Quick Sync",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Link ng imbitasyon"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Panatilihin"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Panatilihin ang mga backup sa storage sa labas ng host na ito. Hindi naka-encrypt ang mga backup maliban kung may naka-configure na backup key. I-restore habang nakatigil ang Server."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Panatilihing malapit ang Kinosail Player"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,11 +741,11 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Hindi maabot ng Kinosail Player ang Server na ito. Suriin ang iyong network o Direct Connection, saka subukan ulit."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Awtomatikong nagma-maintain ang Kinosail ng sarili nito."
   },
   {
     "id": "Kinosail Player Reader",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Wika"
   },
   {
     "id": "language is invalid",
@@ -761,31 +761,31 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Huling error"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Huling error sa scan"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Huling matagumpay na backup"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Huling matagumpay na scan"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Huling na-verify"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Pinakabago"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Mga library"
   },
   {
     "id": "Library",
@@ -793,59 +793,59 @@
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Pagtuklas sa library"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Mga folder ng library"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Mga item sa library"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Organisasyon ng library"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Mga view ng library"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Naka-configure ang licensed na credential"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Maliwanag"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "I-link ang OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Local na account"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "M3U na playlist"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Pamahalaan ang personal na estado ng library"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Pinamamahalaan sa labas at read-only."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Pinamamahalaang remote access"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Markahan"
   },
   {
     "id": "marker",
@@ -853,7 +853,7 @@
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Tugmang text"
   },
   {
     "id": "Media",
@@ -861,11 +861,11 @@
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Impormasyon ng media"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Mount ng media"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Tagapagbigay ng metadata"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Mga sukatan"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Mga pelikula"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Musika"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Musika at mga audiobook"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Aking listahan"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Pangalan"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Hindi kailanman"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Bagong Koleksyon"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Pangalan ng bagong Koleksyon"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Bagong password"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Bagong playlist"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Pangalan ng bagong playlist"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Pangalan ng bagong profile"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Password ng bagong profile"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Bagong secret"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Bagong smart playlist"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Ang mga bagong Viewer ay magsisimula sa family ratings at walang library. Magdagdag ng mga pangalan ng folder o"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Pinakabago"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Wala pang naitalang aktibidad."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Walang naka-configure na channel."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Walang napiling device"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Wala pang offline download."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Wala pang naitalang playback."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Wala"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Wala; gamitin ang all o mga pangalan ng folder"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Hindi naka-configure"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "hindi natukoy"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Hindi ngayon"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Walang nahanap."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Kasalukuyang pinapanood"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,7 +1021,7 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Naka-off"
   },
   {
     "id": "offline",
@@ -1029,23 +1029,23 @@
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Mga offline download"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Mga offline download · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Naka-on"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "Sa iPhone o iPad, i-tap ang Share, piliin ang Add to Home Screen, i-on ang Open as Web App, saka i-tap ang Add."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Isang beses lang ipapakita"
   },
   {
     "id": "OpenID Connect",
@@ -1065,15 +1065,15 @@
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Kailangan ng Owner access"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Mga kontrol ng Owner"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Naidagdag ang passkey."
   },
   {
     "id": "Passkey failed.",
@@ -1089,15 +1089,15 @@
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Mga larawan"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "I-play"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "I-play sa device"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1109,23 +1109,23 @@
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Kasaysayan ng playback"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Pagsusuri ng playback segment"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Bilis ng playback"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Nagpe-play dito"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Nagpe-play sa device"
   },
   {
     "id": "Playlist",
@@ -1133,31 +1133,31 @@
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Mga playlist"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Buod"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Tinitingnan ang mga pagbabago"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Unahin ang kalidad"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Unahin ang bilis"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Gustong wika"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Ihanda"
   },
   {
     "id": "preview unavailable",
@@ -1165,7 +1165,7 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Pribado by design"
   },
   {
     "id": "Profile",
@@ -1177,31 +1177,31 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Profile na ire-reset"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Uri ng profile"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Mga profile"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Awtomatikong protektado"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - Mangailangan ng dagdag na sign-in protection para sa bawat Viewer Profile"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Kalidad"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "kalidad"
   },
   {
     "id": "Quick Connect",
@@ -1217,7 +1217,7 @@
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Basahin na ngayon"
   },
   {
     "id": "reader",
@@ -1225,11 +1225,11 @@
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Pagkakasunod ng pagbasa"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "handa"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Buod ng nakaraan"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Mga kamakailang aktibidad"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Mga kamakailang playback"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Kamakailang idinagdag"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Kamakailang pinatugtog"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Pagbawi"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Mga recovery code"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "I-refresh mula sa TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "I-refresh ang mga nawawalang metadata"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Inirerekomenda"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Malayuang access"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Alisin"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Alisin sa"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "kahilingan"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Hindi natapos ang kahilingan."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "I-reset ang password"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Bumalik sa settings"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Bawiin"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Connected ang room · sumusunod sa leader"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Connected ang room · ikaw ang leader"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Disconnected ang room · i-reload para kumonekta ulit"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "I-run ngayon ang library scan"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "I-run ngayon ang maintenance"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Pag-scan para sa kaligtasan"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "I-save"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "I-save ang file"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "I-save para sa restart"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "I-save ang marker"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "I-save ang metadata"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "I-save ang schedule"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Iskedyul"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Maghanap sa library"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Mga resulta ng paghahanap"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Nakatago ang mga secret at kasama lang sa mga encrypted recovery backup."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "I-secure ang iyong account"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "I-secure ang iyong account · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Ipadala ang pribadong connection URL na ito sa Viewer. Isang beses lang ito ipapakita."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Pangalan ng server"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Settings ng server"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Hindi available ang server"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Hindi available ang server · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "I-set up ang Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "I-set up o palitan ang authenticator"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "I-set up ang two-factor authentication"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "I-set up ang two-factor authentication · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Mga Setting"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Mga seksyon ng settings"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Mga Setting · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1445,11 +1445,11 @@
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Mga show"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Mag-sign in"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,31 +1457,31 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Mag-sign in gamit ang passkey"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Mag-sign in gamit ang SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Mag-sign in · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Mag-sign out"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Mag-sign out sa ibang device"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Mga paraan ng sign-in"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Laging naka-on ang sign-in, mga proteksyon ng browser para sa same origin, pribadong response, limitadong request, at revocable na access. Walang security switch na kailangang i-manage."
   },
   {
     "id": "Single sign-on",
@@ -1489,47 +1489,47 @@
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Laktawan"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Awtomatikong laktawan ang mga komersyal"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Awtomatikong laktawan ang credits"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Awtomatikong laktawan ang mga intro"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Awtomatikong laktawan ang mga outro"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Awtomatikong laktawan ang mga recap"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Lumaktaw sa content"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Timer ng pagtulog"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Natapos na ang sleep timer"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Smart na playlist"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Pangalan ng smart playlist"
   },
   {
     "id": "Software",
@@ -1537,15 +1537,15 @@
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "I-sort"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Pinagmulan"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "bilis"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Magsimula sa mga segundo"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Simulan ang Watch Together"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Katayuan"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Hihinto sa loob ng {minutes} minuto"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Itago ang mga code na ito sa ligtas na lugar. Isang beses lang gagana ang bawat code."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Naka-store dito. Direktang sine-stream."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "I-stream ang media"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Kailangan ng subscription"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Tagapagbigay ng subtitle"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,19 +1621,19 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Mga Subtitle"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "mga subtitle"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "I-sync"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Sistema"
   },
   {
     "id": "Tagline",
@@ -1641,35 +1641,35 @@
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Naglalaman ang backup ng estado ng account at session. Panatilihing pribado ang unencrypted na backup storage, o mag-configure ng backup key."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Tema"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Read-only ang mga setting na ito hangga't hindi ito tinatanggal sa YAML o environment"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Walang laman ang Koleksyon na ito."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Permanenteng bubura nito ang Koleksyon."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Permanenteng bubura nito ang playlist."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Walang laman ang playlist na ito."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Gumagamit ang produktong ito ng TMDB API pero hindi ito in-endorso o na-certify ng TMDB."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Hanggang PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Hanggang PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Pamagat"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Pamagat, artist, genre"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Pamagat, artist, genre…"
   },
   {
     "id": "TMDB",
@@ -1701,15 +1701,15 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "I-tone-map ang HDR sa SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "masyadong maraming login attempt"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "masyadong maraming Watch Together room"
   },
   {
     "id": "Track",
@@ -1717,7 +1717,7 @@
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "cache ng transcode"
   },
   {
     "id": "Transcoder",
@@ -1725,47 +1725,47 @@
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "hindi pinapayagan ang transcoding"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Subukan ulit"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Two-factor na authentication"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Two-factor na authentication · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Uri"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "I-unlink ang OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Hanggang"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Hindi pa napapanood"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "hindi pa napapanood"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Gamitin ang default"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Mag-sign in gamit ang Face ID, Touch ID, Windows Hello, o PIN ng device mo. Gagana pa rin ang password mo."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,7 +1773,7 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "I-verify ang pinakabagong backup"
   },
   {
     "id": "Video",
@@ -1785,67 +1785,67 @@
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Hindi available ang access ng Viewer"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Pangalan ng Viewer"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Naghihintay ng iyong passkey…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Hindi wasto ang estado ng Watch Together"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "napanood na"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Napanood na"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Napanood na ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Nagbabantay ng mga pagbabago"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Maligayang pagdating"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "kapag handa na."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "Gabay ng XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Taon"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Ikaw ang namumuno sa room na ito"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Iyong library"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Mananatili sa Server na ito ang iyong library at aktibidad sa panonood."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Mga libro"
   },
   {
     "id": "← Library",
@@ -1853,55 +1853,55 @@
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Mga Setting"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Nabuong API key"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Kopyahin ang API key"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Nakopya."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Piliin ang Copy sa iyong browser."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "I-set up ang trusted HTTPS"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Suriin ang setup ng trusted HTTPS"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Offline na kopya"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Naka-store sa device na ito ang na-verify na file."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Handa nang offline sa device na ito"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Paraan ng playback"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Buksan ang playback settings."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Hindi available ang offline copy."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "naka-store sa device na ito"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Walang sapat na storage ang device na ito para sa download na ito"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Hindi ligtas na maitatago ng browser na ito ang offline media"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Hindi ma-verify ang download"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Hindi na available ang download"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Buksan ang Kinosail online at pumili muna ng Viewer Profile."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Lahat ng library"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Mga audio track"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Bumalik sa mga download"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Hindi na-save ang progreso. Bumalik sa Downloads at subukan ulit."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Pamahalaan ang mga offline download"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Pelikula"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Buksan ang mga download ng Server"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Buksan ang nakaraang pahina"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Gawi ng playback"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Ihanda ang offline copy"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Naka-save sa device na ito ang progreso. Buksan ang mga download ng Server para mag-sync."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Bumalik sa form"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Maghanap sa lahat ng library"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Maghanap ng lahat"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Hindi ma-play ang file na ito. Bumalik sa Downloads, kumonekta ulit sa Server, at i-download ulit ito."
   },
   {
     "id": "invalid title request",
@@ -2009,47 +2009,47 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Naka-fix ang audio sa na-download na kopyang ito."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Proteksyon sa sign-in"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Bumalik sa Mga pelikula"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Bumalik sa Mga show"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Bumalik sa mga resulta ng paghahanap"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Bumalik sa Library"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Kabanata %lld ng %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Pahina %lld ng %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Dokumento"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Ini-scan ang iyong Library"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Binabasa ng Kinosail ang iyong mga media folder. Lalabas dito ang iyong Library kapag natapos na ang scan."
   },
   {
     "id": "Offline",
@@ -2057,22 +2057,22 @@
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Offline ka"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Kumonekta ulit sa iyong Server para magpatuloy sa panonood."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Kopyahin ang setup key o setup link sa iyong authenticator app."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "I-save ang bawat recovery code bago magpatuloy. Isang beses lang gagana ang bawat code."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Ilagay ang kasalukuyang 6-digit na code para kumpirmahin ang app."
   }
 ]

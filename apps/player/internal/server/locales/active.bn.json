@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "১৫ মিনিট"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "৩০ মিনিট"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "৪৫ মিনিট"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "৬০ মিনিট"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "অ্যাক্সেস"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "অ্যাকাউন্ট · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "কাজসমূহ"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "পাসকি যোগ করুন"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "ফোল্ডার যোগ করুন"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "মিডিয়া যোগ করুন বা অন্যভাবে খুঁজে দেখুন।"
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "প্রোফাইল যোগ করুন"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,35 +53,35 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "যোগ করুন"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "সার্ভার পরিচালনা করুন"
   },
   {
     "id": "Album",
-    "other": "Album"
+    "other": "অ্যালবাম"
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "অ্যালবাম"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "সব"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "সব রেটিং"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "ডাউনলোডের অনুমতি দিন"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "ট্রান্সকোডিংয়ের অনুমতি দিন"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "এখনই প্লেব্যাক অংশগুলো বিশ্লেষণ করুন"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "API কী-এর নাম"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "API কী-এর সীমা এই অনুরোধের অনুমতি দেয় না"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "API কী · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "API কী"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "চেহারা"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "প্রয়োগ করুন"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "অডিও"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "অডিওবুক"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "প্রমাণীকরণ কোড"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "প্রমাণীকরণ বা পুনরুদ্ধার কোড"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "প্রমাণীকরণ প্রয়োজন"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "ডিভাইসকে অনুমোদন দিন"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "স্বয়ংক্রিয়"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "স্বয়ংক্রিয়"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "স্বয়ংক্রিয় (সবচেয়ে ভালো শনাক্ত করা)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "স্বয়ংক্রিয় (ব্রাউজার)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "স্বয়ংক্রিয় ব্যাকআপ"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "স্বয়ংক্রিয় রক্ষণাবেক্ষণ"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "উপলব্ধ ডিভাইসগুলো এই সার্ভারের সঙ্গে সরাসরি সংযুক্ত হয়।"
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "লাইব্রেরিতে ফিরুন"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "সেটিংসে ফিরুন"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "এখনই ব্যাকআপ নিন"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "ব্যাকআপ ও পুনরুদ্ধার"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "ব্যাকআপের জন্য সেটআপ প্রয়োজন।"
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "ব্যাকআপ এনক্রিপশন ছাড়াই স্বয়ংক্রিয়ভাবে চলে।"
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "ব্যাকআপ · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "বই"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "বই"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "বই ও কমিক্স"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "লাইব্রেরি দেখুন"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "বাতিল করুন"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "কাস্ট"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "অধ্যায়"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "এই ব্রাউজারের জন্য ভাষা বেছে নিন।"
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "ট্রান্সকোড ক্যাশে মুছুন"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "কোড"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "সংগ্রহ"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "সংগ্রহ"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "বিজ্ঞাপন"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "সামঞ্জস্য"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "সামঞ্জস্যপূর্ণ সংযোগ"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "সামঞ্জস্যপূর্ণ"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "একই সময়ের স্ট্রিম"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "কনফিগারেশন ত্রুটি"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "কনফিগারেশন · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "কনফিগার করা; মান লুকানো আছে"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "মুছে ফেলা নিশ্চিত করুন"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "সরানো নিশ্চিত করুন"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "সংযোগ করুন"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "একটি ডিভাইস সংযুক্ত করুন"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "সংযুক্ত"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "সংযুক্ত হচ্ছে"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "সংযুক্ত হচ্ছে…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "সংযোগের ত্রুটি"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "কনটেন্ট"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "দেখা চালিয়ে যান"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "দেখা চালিয়ে যান"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "দেখা চালিয়ে যান থেকে"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "তৈরি করুন"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "পাসকি তৈরি করুন"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "API কী তৈরি করুন"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "পাসকি তৈরি করুন"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "স্মার্ট প্লেলিস্ট তৈরি করুন"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "আপনার মালিকের প্রোফাইল তৈরি করুন"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "ক্রেডেনশিয়াল কনফিগার করা হয়েছে"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "ক্রেডিট"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "বাছাই করুন"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "ডার্ক"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "ডিফল্ট"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "ডিফল্ট প্লেব্যাক"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "মুছুন"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "ডিপ্লয়মেন্ট কনফিগারেশন"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "গন্তব্য"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "শনাক্ত হয়েছে, উপলব্ধ নয়"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "ডিভাইস বা অ্যাপ"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "ডায়াগনস্টিকস"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "সরাসরি"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "সরাসরি"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "সরাসরি সংযোগ উপলব্ধ নয়"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "সরাসরি থেকে"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "পরিচালনায়"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "বন্ধ করুন এবং বাতিল করুন"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "টু-ফ্যাক্টর প্রমাণীকরণ বন্ধ করুন"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "দুর্যোগ পুনরুদ্ধার"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "ডাউনলোড"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "মিডিয়া ডাউনলোড করুন"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "মূল ফাইল ডাউনলোড করুন"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "নিরাপদ ডায়াগনস্টিকস ডাউনলোড করুন"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "ডাউনলোড"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "মেটাডেটা সম্পাদনা করুন"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "স্কিপ মার্কার সম্পাদনা করুন"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "DLNA চালু করুন"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "টু-ফ্যাক্টর প্রমাণীকরণ চালু করুন"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "চালু"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "এনক্রিপ্টেড ব্যাকআপ স্বয়ংক্রিয়ভাবে চলে।"
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "এনক্রিপশন ডিফল্টভাবে বন্ধ থাকে।"
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "এনক্রিপশন চালু আছে।"
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "সেকেন্ডে শেষ"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "পরিবেশের ডিফল্ট"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "ইভেন্ট ওয়েবহুক"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "প্রতি ১৫ মিনিটে"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "প্রতি ৫ মিনিটে"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "সবকিছু"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "সম্পূর্ণ কার্যকলাপের জার্নাল রপ্তানি করুন"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "বাইরে থেকে পরিচালিত"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "খুঁজুন"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "কিছু খুঁজুন"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "সেটআপ শেষ করুন"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "মিডিয়া মাউন্টের ভেতরের ফোল্ডার"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "রুম লিডারকে অনুসরণ করা হচ্ছে"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "থেকে"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "থেকে"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "সাধারণ"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "ধরন"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "বুঝেছি"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "গোষ্ঠী"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "হার্ডওয়্যার"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "ইতিহাস"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "হোম"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "প্রতি ঘণ্টায়"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "চালু থাকলে"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "ইনস্টল করুন"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Kinosail Player ইনস্টল করুন"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "ইন্টিগ্রেশন"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "ইন্ট্রো"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "আমন্ত্রণ লিংক"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "রাখুন"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "ব্যাকআপ এই হোস্টের বাইরের স্টোরেজে রাখুন। ব্যাকআপ কী কনফিগার না করলে ব্যাকআপ এনক্রিপ্ট হয় না। সার্ভার বন্ধ থাকা অবস্থায় পুনরুদ্ধার করুন।"
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Kinosail Player কাছে রাখুন"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,19 +741,19 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player এই সার্ভারে পৌঁছাতে পারছে না। আপনার নেটওয়ার্ক বা সরাসরি সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail নিজেই স্বয়ংক্রিয়ভাবে নিজের রক্ষণাবেক্ষণ করে।"
   },
   {
     "id": "Kinosail Player Reader",
-    "other": "Kinosail Player Reader"
+    "other": "Kinosail Player রিডার"
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "ভাষা"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "শেষ ত্রুটি"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "শেষ স্ক্যানের ত্রুটি"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "শেষ সফল ব্যাকআপ"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "শেষ সফল স্ক্যান"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "শেষবার যাচাই করা হয়েছে"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "সর্বশেষ"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "লাইব্রেরি"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "লাইব্রেরি"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "লাইব্রেরি আবিষ্কার"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "লাইব্রেরি ফোল্ডার"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "লাইব্রেরির আইটেম"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "লাইব্রেরি সাজানো"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "লাইব্রেরির দৃশ্য"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "লাইসেন্সযুক্ত ক্রেডেনশিয়াল কনফিগার করা হয়েছে"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "লাইট"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "OpenID Connect যুক্ত করুন"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "স্থানীয় অ্যাকাউন্ট"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "M3U প্লেলিস্ট"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "ব্যক্তিগত লাইব্রেরির অবস্থা পরিচালনা করুন"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "বাইরে থেকে পরিচালিত এবং শুধু-পড়ার জন্য।"
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "পরিচালিত রিমোট অ্যাক্সেস"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "চিহ্নিত করুন"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "মার্কার"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "লেখা মেলান"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "মিডিয়া"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "মিডিয়ার তথ্য"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "মিডিয়া মাউন্ট"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "মেটাডেটা প্রদানকারী"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "মেট্রিকস"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "সিনেমা"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "গান"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "গান ও অডিওবুক"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "আমার তালিকা"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "নাম"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "কখনো না"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "নতুন সংগ্রহ"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "নতুন সংগ্রহের নাম"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "নতুন পাসওয়ার্ড"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "নতুন প্লেলিস্ট"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "নতুন প্লেলিস্টের নাম"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "নতুন প্রোফাইলের নাম"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "নতুন প্রোফাইলের পাসওয়ার্ড"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "নতুন সিক্রেট"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "নতুন স্মার্ট প্লেলিস্ট"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "নতুন দর্শকেরা পারিবারিক রেটিং নিয়ে শুরু করেন এবং তাদের কোনো লাইব্রেরি থাকে না। ফোল্ডারের নাম যোগ করুন অথবা"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "সবচেয়ে নতুন"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "এখনো কোনো কার্যকলাপ নথিভুক্ত হয়নি।"
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "কোনো চ্যানেল কনফিগার করা নেই।"
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "কোনো ডিভাইস বেছে নেওয়া হয়নি"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "এখনো কোনো অফলাইন ডাউনলোড নেই।"
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "এখনো কোনো প্লেব্যাক নথিভুক্ত হয়নি।"
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "কোনোটিই না"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "কিছু না; সব বা ফোল্ডারের নাম ব্যবহার করুন"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "কনফিগার করা নেই"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "শনাক্ত হয়নি"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "এখন নয়"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "কিছু পাওয়া যায়নি।"
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "এখন দেখছেন"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "বন্ধ"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "অফলাইন"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "অফলাইন ডাউনলোড"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "অফলাইন ডাউনলোড · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "চালু"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "iPhone বা iPad-এ শেয়ার ট্যাপ করুন, হোম স্ক্রিনে যোগ করুন বেছে নিন, ওয়েব অ্যাপ হিসেবে খুলুন চালু করুন, তারপর যোগ করুন ট্যাপ করুন।"
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "একবারই দেখানো হবে"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "আউট্রো"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "মালিক"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "মালিকের অ্যাক্সেস প্রয়োজন"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "মালিকের নিয়ন্ত্রণ"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "পাসকি যোগ করা হয়েছে।"
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "পাসওয়ার্ড"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "ছবি"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "চালান"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "ডিভাইসে চালান"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "প্লেব্যাক"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "প্লেব্যাকের ইতিহাস"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "প্লেব্যাক অংশের বিশ্লেষণ"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "প্লেব্যাকের গতি"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "এখানে চলছে"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "ডিভাইসে চলছে"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "প্লেলিস্ট"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "প্লেলিস্ট"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "কাহিনি"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "পরিবর্তনের জন্য খোঁজা হচ্ছে"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "মান অগ্রাধিকার দিন"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "গতি অগ্রাধিকার দিন"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "পছন্দের ভাষা"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "প্রস্তুত করুন"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "ডিজাইনেই ব্যক্তিগত"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "প্রোফাইল"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,31 +1177,31 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "রিসেট করার প্রোফাইল"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "প্রোফাইলের ধরন"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "প্রোফাইল"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "স্বয়ংক্রিয়ভাবে সুরক্ষিত"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - প্রতিটি দর্শক প্রোফাইলের জন্য অতিরিক্ত সাইন-ইন সুরক্ষা আবশ্যক করুন"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "মান"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "মান"
   },
   {
     "id": "Quick Connect",
@@ -1213,23 +1213,23 @@
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "রেটিং"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "এখন পড়ুন"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "রিডার"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "পড়ার ক্রম"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "প্রস্তুত"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "পূর্বাভাস"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "সাম্প্রতিক কার্যকলাপ"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "সাম্প্রতিক প্লেব্যাক"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "সম্প্রতি যোগ করা হয়েছে"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "সম্প্রতি চালানো হয়েছে"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "পুনরুদ্ধার"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "পুনরুদ্ধার কোড"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "TMDB থেকে আবার আনুন"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "অনুপস্থিত মেটাডেটা আবার আনুন"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "সুপারিশকৃত"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "রিমোট অ্যাক্সেস"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "সরান"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "এখান থেকে সরান"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "অনুরোধ"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "অনুরোধটি সম্পন্ন করা যায়নি।"
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "পাসওয়ার্ড রিসেট করুন"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "সেটিংসে ফিরে যান"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "বাতিল করুন"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "রুম সংযুক্ত · লিডারকে অনুসরণ করা হচ্ছে"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "রুম সংযুক্ত · আপনি লিড করছেন"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "রুমের সংযোগ বিচ্ছিন্ন · আবার যুক্ত হতে রিলোড করুন"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "এখনই লাইব্রেরি স্ক্যান চালান"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "এখনই রক্ষণাবেক্ষণ চালান"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "নিরাপত্তা স্ক্যান"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "সংরক্ষণ করুন"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "ফাইল সংরক্ষণ করুন"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "পুনরায় চালুর জন্য সংরক্ষণ করুন"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "মার্কার সংরক্ষণ করুন"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "মেটাডেটা সংরক্ষণ করুন"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "সময়সূচি সংরক্ষণ করুন"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "সময়সূচি"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "লাইব্রেরিতে খুঁজুন"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "অনুসন্ধানের ফলাফল"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "সিক্রেট লুকানো থাকে এবং শুধু এনক্রিপ্টেড পুনরুদ্ধার ব্যাকআপে যুক্ত হয়।"
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "আপনার অ্যাকাউন্ট সুরক্ষিত করুন"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "আপনার অ্যাকাউন্ট সুরক্ষিত করুন · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "এই ব্যক্তিগত সংযোগ URL দর্শককে পাঠান। এটি শুধু একবার দেখানো হবে।"
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "সার্ভারের নাম"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "সার্ভার সেটিংস"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "সার্ভার উপলব্ধ নয়"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "সার্ভার উপলব্ধ নয় · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Kinosail Player সেটআপ করুন"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "অথেনটিকেটর সেটআপ বা প্রতিস্থাপন করুন"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "টু-ফ্যাক্টর প্রমাণীকরণ সেটআপ করুন"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "টু-ফ্যাক্টর প্রমাণীকরণ সেটআপ করুন · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "সেটিংস"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "সেটিংসের বিভাগ"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "সেটিংস · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "শো"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "শো"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "সাইন ইন"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "পাসকি দিয়ে সাইন ইন করুন"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "SSO দিয়ে সাইন ইন করুন"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "সাইন ইন · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "সাইন আউট"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "অন্য ডিভাইস থেকে সাইন আউট করুন"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "সাইন ইনের পদ্ধতি"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "সাইন ইন, same-origin ব্রাউজার সুরক্ষা, ব্যক্তিগত প্রতিক্রিয়া, সীমিত অনুরোধ এবং বাতিলযোগ্য অ্যাক্সেস সব সময় চালু থাকে। পরিচালনার জন্য কোনো নিরাপত্তা সুইচ নেই।"
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "সিঙ্গল সাইন-অন"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "এড়িয়ে যান"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "বিজ্ঞাপন স্বয়ংক্রিয়ভাবে এড়িয়ে যান"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "ক্রেডিট স্বয়ংক্রিয়ভাবে এড়িয়ে যান"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "ইন্ট্রো স্বয়ংক্রিয়ভাবে এড়িয়ে যান"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "আউট্রো স্বয়ংক্রিয়ভাবে এড়িয়ে যান"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "পূর্বাভাস স্বয়ংক্রিয়ভাবে এড়িয়ে যান"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "কনটেন্টে যান"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "স্লিপ টাইমার"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "স্লিপ টাইমার শেষ হয়েছে"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "স্মার্ট প্লেলিস্ট"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "স্মার্ট প্লেলিস্টের নাম"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "সফটওয়্যার"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "সাজান"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "উৎস"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "গতি"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "সেকেন্ডে শুরু"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "একসাথে দেখা শুরু করুন"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "অবস্থা"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "{minutes} মিনিটে বন্ধ হবে"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "এই কোডগুলো কোনো নিরাপদ জায়গায় রাখুন। প্রতিটি কোড একবার কাজ করে।"
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "এখানে সংরক্ষিত। সরাসরি স্ট্রিম হয়।"
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "মিডিয়া স্ট্রিম করুন"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "সাবস্ক্রিপশন প্রয়োজন"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "সাবটাইটেল প্রদানকারী"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "সাবটাইটেল"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "সাবটাইটেল"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "সিঙ্ক"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "সিস্টেম"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "ট্যাগলাইন"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "ব্যাকআপে অ্যাকাউন্ট ও সেশনের তথ্য থাকে। এনক্রিপশনহীন ব্যাকআপ স্টোরেজ ব্যক্তিগত রাখুন, অথবা একটি ব্যাকআপ কী কনফিগার করুন।"
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "থিম"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "YAML বা পরিবেশ থেকে সরানো না হওয়া পর্যন্ত এই সেটিংসগুলো শুধু-পড়ার জন্য"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "এই সংগ্রহটি খালি।"
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "এটি সংগ্রহটি স্থায়ীভাবে মুছে দেবে।"
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "এটি প্লেলিস্টটি স্থায়ীভাবে মুছে দেবে।"
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "এই প্লেলিস্টটি খালি।"
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "এই পণ্যটি TMDB API ব্যবহার করে, তবে TMDB এটি অনুমোদন বা প্রত্যয়ন করেনি।"
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "PG / TV-PG পর্যন্ত"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "PG-13 / TV-14 পর্যন্ত"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "শিরোনাম"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "শিরোনাম, শিল্পী, ধরন"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "শিরোনাম, শিল্পী, ধরন…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "HDR থেকে SDR-এ টোন-ম্যাপ করুন"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "সাইন ইনের চেষ্টা অনেক বেশি"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "একসাথে দেখার রুম অনেক বেশি"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "ট্র্যাক"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "ট্রান্সকোড ক্যাশে"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "ট্রান্সকোডার"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "ট্রান্সকোডিংয়ের অনুমতি নেই"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "আবার চেষ্টা করুন"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "টু-ফ্যাক্টর প্রমাণীকরণ"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "টু-ফ্যাক্টর প্রমাণীকরণ · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "ধরন"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "OpenID Connect সরান"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "পর্যন্ত"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "দেখা হয়নি"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "দেখা হয়নি"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "ডিফল্ট ব্যবহার করুন"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "সাইন ইনের জন্য Face ID, Touch ID, Windows Hello বা আপনার ডিভাইসের PIN ব্যবহার করুন। আপনার পাসওয়ার্ডও কাজ করবে।"
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,135 +1773,135 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "সর্বশেষ ব্যাকআপ যাচাই করুন"
   },
   {
     "id": "Video",
-    "other": "Video"
+    "other": "ভিডিও"
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "দর্শক"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "দর্শকের অ্যাক্সেস উপলব্ধ নয়"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "দর্শকের নাম"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "আপনার পাসকির জন্য অপেক্ষা করা হচ্ছে…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "একসাথে দেখার অবস্থা অবৈধ"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "দেখা হয়েছে"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "দেখা হয়েছে"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "দেখা হয়েছে ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "পরিবর্তনের জন্য নজর রাখা হচ্ছে"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "স্বাগতম"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "প্রস্তুত হলে।"
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "XMLTV গাইড"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "বছর"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "আপনি এই রুমের লিড করছেন"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "আপনার লাইব্রেরি"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "আপনার লাইব্রেরি ও দেখার কার্যকলাপ এই সার্ভারেই থাকে।"
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← বই"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← লাইব্রেরি"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← সেটিংস"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "তৈরি করা API কী"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "API কী কপি করুন"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "কপি হয়েছে।"
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "আপনার ব্রাউজারে কপি বেছে নিন।"
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "বিশ্বস্ত HTTPS সেটআপ করুন"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "বিশ্বস্ত HTTPS সেটআপ পর্যালোচনা করুন"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "অফলাইন কপি"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "যাচাই করা ফাইলটি এই ডিভাইসে সংরক্ষিত আছে।"
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "এই ডিভাইসে অফলাইনে প্রস্তুত"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "প্লেব্যাকের পদ্ধতি"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "প্লেব্যাক সেটিংস খুলুন।"
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "অফলাইন কপি উপলব্ধ নয়।"
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "এই ডিভাইসে সংরক্ষিত"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "এই ডাউনলোডের জন্য এই ডিভাইসে যথেষ্ট স্টোরেজ নেই"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "এই ব্রাউজার অফলাইন মিডিয়া নিরাপদে সংরক্ষণ করতে পারে না"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "ডাউনলোডটি যাচাই করা যায়নি"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "ডাউনলোডটি আর উপলব্ধ নেই"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "প্রথমে Kinosail অনলাইনে খুলুন এবং একটি দর্শক প্রোফাইল বেছে নিন।"
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "সব লাইব্রেরি"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "অডিও ট্র্যাক"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "ডাউনলোডে ফিরুন"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "অগ্রগতি সংরক্ষণ করা যায়নি। ডাউনলোডে ফিরে আবার চেষ্টা করুন।"
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "অফলাইন ডাউনলোড পরিচালনা করুন"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "সিনেমা"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "সার্ভার ডাউনলোড খুলুন"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "আগের পাতা খুলুন"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "প্লেব্যাকের আচরণ"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "অফলাইন কপি প্রস্তুত করুন"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "অগ্রগতি এই ডিভাইসে সংরক্ষিত হয়েছে। সিঙ্ক করতে সার্ভার ডাউনলোড খুলুন।"
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "ফর্মে ফিরুন"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "সব লাইব্রেরিতে খুঁজুন"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "সবকিছুতে খুঁজুন"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "এই ফাইলটি চালানো যায়নি। ডাউনলোডে ফিরুন, সার্ভারে আবার সংযুক্ত হন এবং আবার ডাউনলোড করুন।"
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "এই ডাউনলোড করা কপিতে অডিও স্থির আছে।"
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "সাইন-ইন সুরক্ষা"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "সিনেমায় ফিরুন"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "শোতে ফিরুন"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "অনুসন্ধানের ফলাফলে ফিরুন"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "লাইব্রেরিতে ফিরুন"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "অধ্যায় %lld / %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "পাতা %lld / %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "নথি"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "আপনার লাইব্রেরি স্ক্যান হচ্ছে"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail আপনার মিডিয়া ফোল্ডার পড়ছে। স্ক্যান শেষ হলে আপনার লাইব্রেরি এখানে দেখা যাবে।"
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "অফলাইন"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "আপনি অফলাইনে আছেন"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "দেখা চালিয়ে যেতে সার্ভারে আবার সংযুক্ত হন।"
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "সেটআপ কী বা সেটআপ লিংক আপনার অথেনটিকেটর অ্যাপে কপি করুন।"
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "এগিয়ে যাওয়ার আগে প্রতিটি পুনরুদ্ধার কোড সংরক্ষণ করুন। প্রতিটি কোড একবার কাজ করে।"
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "অ্যাপ নিশ্চিত করতে বর্তমান ৬-অঙ্কের কোড লিখুন।"
   }
 ]

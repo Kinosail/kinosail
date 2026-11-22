@@ -1,1 +1,1262 @@
-[{"id":"15 minutes","other":"15 minutes"},{"id":"30 minutes","other":"30 minutes"},{"id":"Access","other":"Access"},{"id":"Account · Kinosail Subtitles","other":"Account · Kinosail Subtitles"},{"id":"Actions","other":"Actions"},{"id":"active session(s)","other":"active session(s)"},{"id":"Add a passkey","other":"Add a passkey"},{"id":"Add folder","other":"Add folder"},{"id":"Add media or try another search.","other":"Add media or try another search."},{"id":"Add to","other":"Add to"},{"id":"Album","other":"Album"},{"id":"Albums","other":"Albums"},{"id":"all","other":"all"},{"id":"All ratings","other":"All ratings"},{"id":"AMD AMF","other":"AMD AMF"},{"id":"API key name","other":"API key name"},{"id":"API key scope does not allow this request","other":"API key scope does not allow this request"},{"id":"API key view failed","other":"API key view failed"},{"id":"API key · Kinosail Subtitles","other":"API key · Kinosail Subtitles"},{"id":"API keys","other":"API keys"},{"id":"Appearance","other":"Appearance"},{"id":"Apple VideoToolbox","other":"Apple VideoToolbox"},{"id":"Apply","other":"Apply"},{"id":"Audio","other":"Audio"},{"id":"Audiobooks","other":"Audiobooks"},{"id":"Authentication code","other":"Authentication code"},{"id":"Authentication or recovery code","other":"Authentication or recovery code"},{"id":"authentication required","other":"authentication required"},{"id":"Authorize device","other":"Authorize device"},{"id":"Automatic","other":"Automatic"},{"id":"automatic","other":"automatic"},{"id":"Automatic (browser)","other":"Automatic (browser)"},{"id":"Automatic backups","other":"Automatic backups"},{"id":"Automatic maintenance","other":"Automatic maintenance"},{"id":"Back to library","other":"Back to library"},{"id":"Back up now","other":"Back up now"},{"id":"backup is unavailable","other":"backup is unavailable"},{"id":"Backups need setup.","other":"Backups need setup."},{"id":"Backups · Kinosail Subtitles","other":"Backups · Kinosail Subtitles"},{"id":"Book","other":"Book"},{"id":"Books","other":"Books"},{"id":"Books and comics","other":"Books and comics"},{"id":"Browse library","other":"Browse library"},{"id":"Cancel","other":"Cancel"},{"id":"Cast","other":"Cast"},{"id":"Chapters","other":"Chapters"},{"id":"Choose the language for this browser.","other":"Choose the language for this browser."},{"id":"Code","other":"Code"},{"id":"Collection","other":"Collection"},{"id":"Collections","other":"Collections"},{"id":"Commercial","other":"Commercial"},{"id":"Compatibility","other":"Compatibility"},{"id":"Compatibility stream","other":"Compatibility stream"},{"id":"compatible","other":"compatible"},{"id":"Configuration error","other":"Configuration error"},{"id":"Configuration · Kinosail Subtitles","other":"Configuration · Kinosail Subtitles"},{"id":"Connect","other":"Connect"},{"id":"Connect a device","other":"Connect a device"},{"id":"Connected","other":"Connected"},{"id":"Connecting","other":"Connecting"},{"id":"Connecting…","other":"Connecting…"},{"id":"Content","other":"Content"},{"id":"Continue watching","other":"Continue watching"},{"id":"Copy this key now. Kinosail stores only its hash.","other":"Copy this key now. Kinosail stores only its hash."},{"id":"could not create MFA enrollment","other":"could not create MFA enrollment"},{"id":"could not create Owner Profile","other":"could not create Owner Profile"},{"id":"could not create session","other":"could not create session"},{"id":"could not end session","other":"could not end session"},{"id":"could not read subtitles","other":"could not read subtitles"},{"id":"Create","other":"Create"},{"id":"Create a passkey","other":"Create a passkey"},{"id":"Create passkey","other":"Create passkey"},{"id":"Created once","other":"Created once"},{"id":"Credentials configured","other":"Credentials configured"},{"id":"Credits","other":"Credits"},{"id":"cross-origin request denied","other":"cross-origin request denied"},{"id":"Curate","other":"Curate"},{"id":"Dark","other":"Dark"},{"id":"default","other":"default"},{"id":"Delete","other":"Delete"},{"id":"Deployment configuration","other":"Deployment configuration"},{"id":"Destination","other":"Destination"},{"id":"detected, unavailable","other":"detected, unavailable"},{"id":"Diagnostics","other":"Diagnostics"},{"id":"Direct","other":"Direct"},{"id":"direct","other":"direct"},{"id":"Direct connection unavailable","other":"Direct connection unavailable"},{"id":"Direct stream","other":"Direct stream"},{"id":"Directed by","other":"Directed by"},{"id":"Disaster recovery","other":"Disaster recovery"},{"id":"DLNA","other":"DLNA"},{"id":"Download","other":"Download"},{"id":"Download original","other":"Download original"},{"id":"Download portable state archive","other":"Download portable state archive"},{"id":"Download safe diagnostics","other":"Download safe diagnostics"},{"id":"Downloads","other":"Downloads"},{"id":"downloads are not enabled for this Viewer Profile","other":"downloads are not enabled for this Viewer Profile"},{"id":"embedded subtitles are unavailable","other":"embedded subtitles are unavailable"},{"id":"Enabled","other":"Enabled"},{"id":"Encryption is on.","other":"Encryption is on."},{"id":"Every 15 minutes","other":"Every 15 minutes"},{"id":"Every 5 minutes","other":"Every 5 minutes"},{"id":"Export full activity journal","other":"Export full activity journal"},{"id":"Find","other":"Find"},{"id":"Find something","other":"Find something"},{"id":"Finish sign in","other":"Finish sign in"},{"id":"Folder inside media mount","other":"Folder inside media mount"},{"id":"Follow this device or choose a fixed theme.","other":"Follow this device or choose a fixed theme."},{"id":"From","other":"From"},{"id":"from","other":"from"},{"id":"General","other":"General"},{"id":"Genres","other":"Genres"},{"id":"Group","other":"Group"},{"id":"Hardware","other":"Hardware"},{"id":"History","other":"History"},{"id":"Home","other":"Home"},{"id":"if enabled","other":"if enabled"},{"id":"Install","other":"Install"},{"id":"Intel Quick Sync","other":"Intel Quick Sync"},{"id":"Intro","other":"Intro"},{"id":"invalid authentication code","other":"invalid authentication code"},{"id":"invalid Collection state","other":"invalid Collection state"},{"id":"invalid credentials","other":"invalid credentials"},{"id":"invalid list state","other":"invalid list state"},{"id":"invalid playlist state","other":"invalid playlist state"},{"id":"invalid progress","other":"invalid progress"},{"id":"invalid watched state","other":"invalid watched state"},{"id":"Keep","other":"Keep"},{"id":"Kinosail","other":"Kinosail"},{"id":"Language","other":"Language"},{"id":"language is invalid","other":"language is invalid"},{"id":"Last error","other":"Last error"},{"id":"Last successful backup","other":"Last successful backup"},{"id":"Last verified","other":"Last verified"},{"id":"Latest","other":"Latest"},{"id":"Libraries","other":"Libraries"},{"id":"Library","other":"Library"},{"id":"Library folders","other":"Library folders"},{"id":"Library items","other":"Library items"},{"id":"Library organization","other":"Library organization"},{"id":"Licensed credential configured","other":"Licensed credential configured"},{"id":"Light","other":"Light"},{"id":"Local account","other":"Local account"},{"id":"Mark","other":"Mark"},{"id":"marker","other":"marker"},{"id":"Media","other":"Media"},{"id":"Media mount","other":"Media mount"},{"id":"metadata could not be saved","other":"metadata could not be saved"},{"id":"metadata is invalid","other":"metadata is invalid"},{"id":"metadata provider unavailable","other":"metadata provider unavailable"},{"id":"Metrics","other":"Metrics"},{"id":"Movies","other":"Movies"},{"id":"Music","other":"Music"},{"id":"My List","other":"My List"},{"id":"Name","other":"Name"},{"id":"Never","other":"Never"},{"id":"New password","other":"New password"},{"id":"New profile name","other":"New profile name"},{"id":"New profile password","other":"New profile password"},{"id":"New secret","other":"New secret"},{"id":"No activity recorded yet.","other":"No activity recorded yet."},{"id":"No device selected","other":"No device selected"},{"id":"No playback recorded yet.","other":"No playback recorded yet."},{"id":"None","other":"None"},{"id":"Not configured","other":"Not configured"},{"id":"not detected","other":"not detected"},{"id":"not found","other":"not found"},{"id":"Not now","other":"Not now"},{"id":"Nothing found.","other":"Nothing found."},{"id":"NVIDIA NVENC/NVDEC","other":"NVIDIA NVENC/NVDEC"},{"id":"Off","other":"Off"},{"id":"offline","other":"offline"},{"id":"Offline downloads","other":"Offline downloads"},{"id":"On","other":"On"},{"id":"OpenID Connect","other":"OpenID Connect"},{"id":"OpenSubtitles","other":"OpenSubtitles"},{"id":"Outro","other":"Outro"},{"id":"Owner","other":"Owner"},{"id":"Owner access required","other":"Owner access required"},{"id":"Owner controls","other":"Owner controls"},{"id":"Passkey added.","other":"Passkey added."},{"id":"Passkey failed.","other":"Passkey failed."},{"id":"Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.","other":"Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."},{"id":"Password","other":"Password"},{"id":"Photos","other":"Photos"},{"id":"Play","other":"Play"},{"id":"Play on device","other":"Play on device"},{"id":"Playback","other":"Playback"},{"id":"Playback history","other":"Playback history"},{"id":"Playback speed","other":"Playback speed"},{"id":"Playing here","other":"Playing here"},{"id":"Playing on device","other":"Playing on device"},{"id":"Playlist","other":"Playlist"},{"id":"Playlists","other":"Playlists"},{"id":"Plot","other":"Plot"},{"id":"Preferred language","other":"Preferred language"},{"id":"Prepare","other":"Prepare"},{"id":"preview unavailable","other":"preview unavailable"},{"id":"Profile","other":"Profile"},{"id":"profile storage is unavailable","other":"profile storage is unavailable"},{"id":"Profile type","other":"Profile type"},{"id":"Profiles","other":"Profiles"},{"id":"Protected automatically","other":"Protected automatically"},{"id":"Quality","other":"Quality"},{"id":"quality","other":"quality"},{"id":"Quick Connect","other":"Quick Connect"},{"id":"Rating","other":"Rating"},{"id":"Read now","other":"Read now"},{"id":"reader","other":"reader"},{"id":"ready","other":"ready"},{"id":"Ready offline","other":"Ready offline"},{"id":"Recap","other":"Recap"},{"id":"Recent activity","other":"Recent activity"},{"id":"Recent playback","other":"Recent playback"},{"id":"Recently added","other":"Recently added"},{"id":"Recently played","other":"Recently played"},{"id":"Recovery","other":"Recovery"},{"id":"Recovery codes","other":"Recovery codes"},{"id":"Recommended","other":"Recommended"},{"id":"Remote access","other":"Remote access"},{"id":"Remove","other":"Remove"},{"id":"Remove from","other":"Remove from"},{"id":"request","other":"request"},{"id":"Request could not be completed.","other":"Request could not be completed."},{"id":"request is too large","other":"request is too large"},{"id":"Return to settings","other":"Return to settings"},{"id":"Revoke","other":"Revoke"},{"id":"Rockchip RKMPP","other":"Rockchip RKMPP"},{"id":"Room disconnected · reload to reconnect","other":"Room disconnected · reload to reconnect"},{"id":"Safety scan","other":"Safety scan"},{"id":"Save","other":"Save"},{"id":"Save schedule","other":"Save schedule"},{"id":"Schedule","other":"Schedule"},{"id":"Search library","other":"Search library"},{"id":"Search results","other":"Search results"},{"id":"Secrets are hidden and included only in encrypted recovery backups.","other":"Secrets are hidden and included only in encrypted recovery backups."},{"id":"Secure your account","other":"Secure your account"},{"id":"Secure your account · Kinosail Subtitles","other":"Secure your account · Kinosail Subtitles"},{"id":"Server settings","other":"Server settings"},{"id":"Set up Kinosail Subtitles","other":"Set up Kinosail Subtitles"},{"id":"Settings","other":"Settings"},{"id":"Settings sections","other":"Settings sections"},{"id":"Settings · Kinosail Subtitles","other":"Settings · Kinosail Subtitles"},{"id":"Show","other":"Show"},{"id":"Shows","other":"Shows"},{"id":"Sign in","other":"Sign in"},{"id":"Sign in to your private media universe.","other":"Sign in to your private media universe."},{"id":"Sign in with passkey","other":"Sign in with passkey"},{"id":"Sign in with SSO","other":"Sign in with SSO"},{"id":"Sign in · Kinosail Subtitles","other":"Sign in · Kinosail Subtitles"},{"id":"Sign out","other":"Sign out"},{"id":"Single sign-on","other":"Single sign-on"},{"id":"Skip","other":"Skip"},{"id":"Skip to content","other":"Skip to content"},{"id":"Software","other":"Software"},{"id":"Sort","other":"Sort"},{"id":"Source","other":"Source"},{"id":"speed","other":"speed"},{"id":"SSO challenge is invalid or expired","other":"SSO challenge is invalid or expired"},{"id":"SSO code exchange failed","other":"SSO code exchange failed"},{"id":"SSO identity is not linked to a Viewer Profile","other":"SSO identity is not linked to a Viewer Profile"},{"id":"SSO is unavailable","other":"SSO is unavailable"},{"id":"SSO session could not be created","other":"SSO session could not be created"},{"id":"SSO state is invalid or expired","other":"SSO state is invalid or expired"},{"id":"SSO token validation failed","other":"SSO token validation failed"},{"id":"Status","other":"Status"},{"id":"Store these codes somewhere safe. Each works once.","other":"Store these codes somewhere safe. Each works once."},{"id":"Subtitle provider","other":"Subtitle provider"},{"id":"subtitle provider unavailable","other":"subtitle provider unavailable"},{"id":"Subtitles","other":"Subtitles"},{"id":"subtitles","other":"subtitles"},{"id":"Sync","other":"Sync"},{"id":"System","other":"System"},{"id":"Tagline","other":"Tagline"},{"id":"Theme","other":"Theme"},{"id":"This Collection is empty.","other":"This Collection is empty."},{"id":"This permanently deletes the Collection.","other":"This permanently deletes the Collection."},{"id":"This permanently deletes the playlist.","other":"This permanently deletes the playlist."},{"id":"This playlist is empty.","other":"This playlist is empty."},{"id":"This product uses the TMDB API but is not endorsed or certified by TMDB.","other":"This product uses the TMDB API but is not endorsed or certified by TMDB."},{"id":"Through PG / TV-PG","other":"Through PG / TV-PG"},{"id":"Through PG-13 / TV-14","other":"Through PG-13 / TV-14"},{"id":"Title","other":"Title"},{"id":"Title, artist, genre","other":"Title, artist, genre"},{"id":"Title, artist, genre…","other":"Title, artist, genre…"},{"id":"TMDB","other":"TMDB"},{"id":"Tone-map HDR to SDR","other":"Tone-map HDR to SDR"},{"id":"too many login attempts","other":"too many login attempts"},{"id":"too many Watch Together rooms","other":"too many Watch Together rooms"},{"id":"Track","other":"Track"},{"id":"Transcoder","other":"Transcoder"},{"id":"transcoding is not allowed","other":"transcoding is not allowed"},{"id":"Try again","other":"Try again"},{"id":"Two-factor authentication","other":"Two-factor authentication"},{"id":"Two-factor authentication · Kinosail Subtitles","other":"Two-factor authentication · Kinosail Subtitles"},{"id":"Type","other":"Type"},{"id":"Until","other":"Until"},{"id":"Unwatched","other":"Unwatched"},{"id":"unwatched","other":"unwatched"},{"id":"Use default","other":"Use default"},{"id":"VA-API (AMD/Intel)","other":"VA-API (AMD/Intel)"},{"id":"Verify latest backup","other":"Verify latest backup"},{"id":"Video","other":"Video"},{"id":"Viewer","other":"Viewer"},{"id":"Viewer access is not available","other":"Viewer access is not available"},{"id":"Waiting for your passkey…","other":"Waiting for your passkey…"},{"id":"Watch Together state is invalid","other":"Watch Together state is invalid"},{"id":"watched","other":"watched"},{"id":"Watched","other":"Watched"},{"id":"Welcome aboard","other":"Welcome aboard"},{"id":"when ready.","other":"when ready."},{"id":"Year","other":"Year"},{"id":"Your library","other":"Your library"},{"id":"Scanning your Library","other":"Scanning your Library"},{"id":"Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.","other":"Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete."}]
+[
+  {
+    "id": "15 minutes",
+    "other": "15 menit"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 menit"
+  },
+  {
+    "id": "Access",
+    "other": "Akses"
+  },
+  {
+    "id": "Account · Kinosail Subtitles",
+    "other": "Akun · Kinosail Subtitles"
+  },
+  {
+    "id": "Actions",
+    "other": "Tindakan"
+  },
+  {
+    "id": "active session(s)",
+    "other": "active session(s)"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "Tambah passkey"
+  },
+  {
+    "id": "Add folder",
+    "other": "Tambah folder"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "Tambahkan media atau coba pencarian lain."
+  },
+  {
+    "id": "Add to",
+    "other": "Tambahkan ke"
+  },
+  {
+    "id": "Album",
+    "other": "Album"
+  },
+  {
+    "id": "Albums",
+    "other": "Album"
+  },
+  {
+    "id": "all",
+    "other": "semua"
+  },
+  {
+    "id": "All ratings",
+    "other": "Semua rating"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "API key name",
+    "other": "Nama Kunci API"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "Cakupan Kunci API tidak mengizinkan permintaan ini"
+  },
+  {
+    "id": "API key view failed",
+    "other": "API key view failed"
+  },
+  {
+    "id": "API key · Kinosail Subtitles",
+    "other": "Kunci API · Kinosail Subtitles"
+  },
+  {
+    "id": "API keys",
+    "other": "Kunci API"
+  },
+  {
+    "id": "Appearance",
+    "other": "Tampilan"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "Terapkan"
+  },
+  {
+    "id": "Audio",
+    "other": "Audio"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "Buku audio"
+  },
+  {
+    "id": "Authentication code",
+    "other": "Kode autentikasi"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "Kode autentikasi atau pemulihan"
+  },
+  {
+    "id": "authentication required",
+    "other": "perlu autentikasi"
+  },
+  {
+    "id": "Authorize device",
+    "other": "Izinkan perangkat"
+  },
+  {
+    "id": "Automatic",
+    "other": "Otomatis"
+  },
+  {
+    "id": "automatic",
+    "other": "otomatis"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "Otomatis (browser)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "Cadangan otomatis"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "Pemeliharaan otomatis"
+  },
+  {
+    "id": "Back to library",
+    "other": "Kembali ke pustaka"
+  },
+  {
+    "id": "Back up now",
+    "other": "Cadangkan sekarang"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "backup is unavailable"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "Cadangan perlu diatur."
+  },
+  {
+    "id": "Backups · Kinosail Subtitles",
+    "other": "Cadangan · Kinosail Subtitles"
+  },
+  {
+    "id": "Book",
+    "other": "Buku"
+  },
+  {
+    "id": "Books",
+    "other": "Buku"
+  },
+  {
+    "id": "Books and comics",
+    "other": "Buku dan komik"
+  },
+  {
+    "id": "Browse library",
+    "other": "Jelajahi pustaka"
+  },
+  {
+    "id": "Cancel",
+    "other": "Batal"
+  },
+  {
+    "id": "Cast",
+    "other": "Siarkan"
+  },
+  {
+    "id": "Chapters",
+    "other": "Bab"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "Pilih bahasa untuk browser ini."
+  },
+  {
+    "id": "Code",
+    "other": "Kode"
+  },
+  {
+    "id": "Collection",
+    "other": "Koleksi"
+  },
+  {
+    "id": "Collections",
+    "other": "Koleksi"
+  },
+  {
+    "id": "Commercial",
+    "other": "Iklan"
+  },
+  {
+    "id": "Compatibility",
+    "other": "Kompatibilitas"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "Compatibility stream"
+  },
+  {
+    "id": "compatible",
+    "other": "kompatibel"
+  },
+  {
+    "id": "Configuration error",
+    "other": "Kesalahan konfigurasi"
+  },
+  {
+    "id": "Configuration · Kinosail Subtitles",
+    "other": "Konfigurasi · Kinosail Subtitles"
+  },
+  {
+    "id": "Connect",
+    "other": "Hubungkan"
+  },
+  {
+    "id": "Connect a device",
+    "other": "Hubungkan perangkat"
+  },
+  {
+    "id": "Connected",
+    "other": "Terhubung"
+  },
+  {
+    "id": "Connecting",
+    "other": "Menghubungkan"
+  },
+  {
+    "id": "Connecting…",
+    "other": "Menghubungkan…"
+  },
+  {
+    "id": "Content",
+    "other": "Konten"
+  },
+  {
+    "id": "Continue watching",
+    "other": "Lanjutkan menonton"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "Copy this key now. Kinosail stores only its hash."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "could not create MFA enrollment"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "could not create Owner Profile"
+  },
+  {
+    "id": "could not create session",
+    "other": "could not create session"
+  },
+  {
+    "id": "could not end session",
+    "other": "could not end session"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "could not read subtitles"
+  },
+  {
+    "id": "Create",
+    "other": "Buat"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "Buat passkey"
+  },
+  {
+    "id": "Create passkey",
+    "other": "Buat passkey"
+  },
+  {
+    "id": "Created once",
+    "other": "Created once"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "Kredensial sudah diatur"
+  },
+  {
+    "id": "Credits",
+    "other": "Kredit"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "cross-origin request denied"
+  },
+  {
+    "id": "Curate",
+    "other": "Kurasi"
+  },
+  {
+    "id": "Dark",
+    "other": "Gelap"
+  },
+  {
+    "id": "default",
+    "other": "bawaan"
+  },
+  {
+    "id": "Delete",
+    "other": "Hapus"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "Konfigurasi deployment"
+  },
+  {
+    "id": "Destination",
+    "other": "Tujuan"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "terdeteksi, tidak tersedia"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "Diagnostik"
+  },
+  {
+    "id": "Direct",
+    "other": "Langsung"
+  },
+  {
+    "id": "direct",
+    "other": "langsung"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "Koneksi langsung tidak tersedia"
+  },
+  {
+    "id": "Direct stream",
+    "other": "Direct stream"
+  },
+  {
+    "id": "Directed by",
+    "other": "Sutradara"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "Pemulihan bencana"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "Unduh"
+  },
+  {
+    "id": "Download original",
+    "other": "Unduh versi asli"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "Download portable state archive"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "Unduh diagnostik aman"
+  },
+  {
+    "id": "Downloads",
+    "other": "Unduhan"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "downloads are not enabled for this Viewer Profile"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "embedded subtitles are unavailable"
+  },
+  {
+    "id": "Enabled",
+    "other": "Aktif"
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "Enkripsi aktif."
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "Setiap 15 menit"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "Setiap 5 menit"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "Ekspor jurnal aktivitas lengkap"
+  },
+  {
+    "id": "Find",
+    "other": "Cari"
+  },
+  {
+    "id": "Find something",
+    "other": "Cari sesuatu"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "Finish sign in"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "Folder di dalam mount media"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "Follow this device or choose a fixed theme."
+  },
+  {
+    "id": "From",
+    "other": "Dari"
+  },
+  {
+    "id": "from",
+    "other": "dari"
+  },
+  {
+    "id": "General",
+    "other": "Umum"
+  },
+  {
+    "id": "Genres",
+    "other": "Genre"
+  },
+  {
+    "id": "Group",
+    "other": "Grup"
+  },
+  {
+    "id": "Hardware",
+    "other": "Perangkat keras"
+  },
+  {
+    "id": "History",
+    "other": "Riwayat"
+  },
+  {
+    "id": "Home",
+    "other": "Beranda"
+  },
+  {
+    "id": "if enabled",
+    "other": "jika diaktifkan"
+  },
+  {
+    "id": "Install",
+    "other": "Pasang"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "Pembuka"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "invalid authentication code"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "invalid Collection state"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "invalid credentials"
+  },
+  {
+    "id": "invalid list state",
+    "other": "invalid list state"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "invalid playlist state"
+  },
+  {
+    "id": "invalid progress",
+    "other": "invalid progress"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "invalid watched state"
+  },
+  {
+    "id": "Keep",
+    "other": "Simpan"
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Language",
+    "other": "Bahasa"
+  },
+  {
+    "id": "language is invalid",
+    "other": "language is invalid"
+  },
+  {
+    "id": "Last error",
+    "other": "Kesalahan terakhir"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "Cadangan terakhir yang berhasil"
+  },
+  {
+    "id": "Last verified",
+    "other": "Terakhir diverifikasi"
+  },
+  {
+    "id": "Latest",
+    "other": "Terbaru"
+  },
+  {
+    "id": "Libraries",
+    "other": "Pustaka"
+  },
+  {
+    "id": "Library",
+    "other": "Pustaka"
+  },
+  {
+    "id": "Library folders",
+    "other": "Folder pustaka"
+  },
+  {
+    "id": "Library items",
+    "other": "Item pustaka"
+  },
+  {
+    "id": "Library organization",
+    "other": "Pengaturan pustaka"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "Kredensial berlisensi sudah diatur"
+  },
+  {
+    "id": "Light",
+    "other": "Terang"
+  },
+  {
+    "id": "Local account",
+    "other": "Akun lokal"
+  },
+  {
+    "id": "Mark",
+    "other": "Tandai"
+  },
+  {
+    "id": "marker",
+    "other": "penanda"
+  },
+  {
+    "id": "Media",
+    "other": "Media"
+  },
+  {
+    "id": "Media mount",
+    "other": "Mount media"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "metadata could not be saved"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "metadata is invalid"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "metadata provider unavailable"
+  },
+  {
+    "id": "Metrics",
+    "other": "Metrik"
+  },
+  {
+    "id": "Movies",
+    "other": "Film"
+  },
+  {
+    "id": "Music",
+    "other": "Musik"
+  },
+  {
+    "id": "My List",
+    "other": "Daftar Saya"
+  },
+  {
+    "id": "Name",
+    "other": "Nama"
+  },
+  {
+    "id": "Never",
+    "other": "Tidak pernah"
+  },
+  {
+    "id": "New password",
+    "other": "Kata sandi baru"
+  },
+  {
+    "id": "New profile name",
+    "other": "Nama profil baru"
+  },
+  {
+    "id": "New profile password",
+    "other": "Kata sandi profil baru"
+  },
+  {
+    "id": "New secret",
+    "other": "Rahasia baru"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "Belum ada aktivitas yang tercatat."
+  },
+  {
+    "id": "No device selected",
+    "other": "Belum ada perangkat dipilih"
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "Belum ada pemutaran yang tercatat."
+  },
+  {
+    "id": "None",
+    "other": "Tidak ada"
+  },
+  {
+    "id": "Not configured",
+    "other": "Belum diatur"
+  },
+  {
+    "id": "not detected",
+    "other": "tidak terdeteksi"
+  },
+  {
+    "id": "not found",
+    "other": "not found"
+  },
+  {
+    "id": "Not now",
+    "other": "Nanti saja"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "Tidak ada yang ditemukan."
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "Mati"
+  },
+  {
+    "id": "offline",
+    "other": "luring"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "Unduhan luring"
+  },
+  {
+    "id": "On",
+    "other": "Nyala"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "Penutup"
+  },
+  {
+    "id": "Owner",
+    "other": "Pemilik"
+  },
+  {
+    "id": "Owner access required",
+    "other": "Perlu akses Pemilik"
+  },
+  {
+    "id": "Owner controls",
+    "other": "Kontrol pemilik"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "Passkey ditambahkan."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "Passkey failed."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "Kata sandi"
+  },
+  {
+    "id": "Photos",
+    "other": "Foto"
+  },
+  {
+    "id": "Play",
+    "other": "Putar"
+  },
+  {
+    "id": "Play on device",
+    "other": "Putar di perangkat"
+  },
+  {
+    "id": "Playback",
+    "other": "Pemutaran"
+  },
+  {
+    "id": "Playback history",
+    "other": "Riwayat pemutaran"
+  },
+  {
+    "id": "Playback speed",
+    "other": "Kecepatan pemutaran"
+  },
+  {
+    "id": "Playing here",
+    "other": "Diputar di sini"
+  },
+  {
+    "id": "Playing on device",
+    "other": "Diputar di perangkat"
+  },
+  {
+    "id": "Playlist",
+    "other": "Daftar putar"
+  },
+  {
+    "id": "Playlists",
+    "other": "Daftar putar"
+  },
+  {
+    "id": "Plot",
+    "other": "Alur cerita"
+  },
+  {
+    "id": "Preferred language",
+    "other": "Bahasa pilihan"
+  },
+  {
+    "id": "Prepare",
+    "other": "Siapkan"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "preview unavailable"
+  },
+  {
+    "id": "Profile",
+    "other": "Profil"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "profile storage is unavailable"
+  },
+  {
+    "id": "Profile type",
+    "other": "Jenis profil"
+  },
+  {
+    "id": "Profiles",
+    "other": "Profil"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "Dilindungi otomatis"
+  },
+  {
+    "id": "Quality",
+    "other": "Kualitas"
+  },
+  {
+    "id": "quality",
+    "other": "kualitas"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "Quick Connect"
+  },
+  {
+    "id": "Rating",
+    "other": "Rating"
+  },
+  {
+    "id": "Read now",
+    "other": "Baca sekarang"
+  },
+  {
+    "id": "reader",
+    "other": "pembaca"
+  },
+  {
+    "id": "ready",
+    "other": "siap"
+  },
+  {
+    "id": "Ready offline",
+    "other": "Ready offline"
+  },
+  {
+    "id": "Recap",
+    "other": "Ringkasan"
+  },
+  {
+    "id": "Recent activity",
+    "other": "Aktivitas terbaru"
+  },
+  {
+    "id": "Recent playback",
+    "other": "Pemutaran terbaru"
+  },
+  {
+    "id": "Recently added",
+    "other": "Baru ditambahkan"
+  },
+  {
+    "id": "Recently played",
+    "other": "Baru diputar"
+  },
+  {
+    "id": "Recovery",
+    "other": "Pemulihan"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "Kode pemulihan"
+  },
+  {
+    "id": "Recommended",
+    "other": "Direkomendasikan"
+  },
+  {
+    "id": "Remote access",
+    "other": "Akses jarak jauh"
+  },
+  {
+    "id": "Remove",
+    "other": "Hapus"
+  },
+  {
+    "id": "Remove from",
+    "other": "Hapus dari"
+  },
+  {
+    "id": "request",
+    "other": "permintaan"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "Permintaan tidak dapat diselesaikan."
+  },
+  {
+    "id": "request is too large",
+    "other": "request is too large"
+  },
+  {
+    "id": "Return to settings",
+    "other": "Kembali ke pengaturan"
+  },
+  {
+    "id": "Revoke",
+    "other": "Cabut"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "Ruangan terputus · muat ulang untuk terhubung kembali"
+  },
+  {
+    "id": "Safety scan",
+    "other": "Pemindaian keamanan"
+  },
+  {
+    "id": "Save",
+    "other": "Simpan"
+  },
+  {
+    "id": "Save schedule",
+    "other": "Simpan jadwal"
+  },
+  {
+    "id": "Schedule",
+    "other": "Jadwal"
+  },
+  {
+    "id": "Search library",
+    "other": "Cari di pustaka"
+  },
+  {
+    "id": "Search results",
+    "other": "Hasil pencarian"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "Rahasia disembunyikan dan hanya disertakan dalam cadangan pemulihan terenkripsi."
+  },
+  {
+    "id": "Secure your account",
+    "other": "Amankan akun Anda"
+  },
+  {
+    "id": "Secure your account · Kinosail Subtitles",
+    "other": "Amankan akun Anda · Kinosail Subtitles"
+  },
+  {
+    "id": "Server settings",
+    "other": "Pengaturan server"
+  },
+  {
+    "id": "Set up Kinosail Subtitles",
+    "other": "Atur Kinosail Subtitles"
+  },
+  {
+    "id": "Settings",
+    "other": "Pengaturan"
+  },
+  {
+    "id": "Settings sections",
+    "other": "Bagian pengaturan"
+  },
+  {
+    "id": "Settings · Kinosail Subtitles",
+    "other": "Pengaturan · Kinosail Subtitles"
+  },
+  {
+    "id": "Show",
+    "other": "Serial"
+  },
+  {
+    "id": "Shows",
+    "other": "Serial"
+  },
+  {
+    "id": "Sign in",
+    "other": "Masuk"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "Sign in to your private media universe."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "Masuk dengan passkey"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "Masuk dengan SSO"
+  },
+  {
+    "id": "Sign in · Kinosail Subtitles",
+    "other": "Masuk · Kinosail Subtitles"
+  },
+  {
+    "id": "Sign out",
+    "other": "Keluar"
+  },
+  {
+    "id": "Single sign-on",
+    "other": "Masuk tunggal"
+  },
+  {
+    "id": "Skip",
+    "other": "Lewati"
+  },
+  {
+    "id": "Skip to content",
+    "other": "Lewati ke konten"
+  },
+  {
+    "id": "Software",
+    "other": "Perangkat lunak"
+  },
+  {
+    "id": "Sort",
+    "other": "Urutkan"
+  },
+  {
+    "id": "Source",
+    "other": "Sumber"
+  },
+  {
+    "id": "speed",
+    "other": "kecepatan"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO challenge is invalid or expired"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "SSO code exchange failed"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "SSO identity is not linked to a Viewer Profile"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO is unavailable"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "SSO session could not be created"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "SSO state is invalid or expired"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "SSO token validation failed"
+  },
+  {
+    "id": "Status",
+    "other": "Status"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "Simpan kode ini di tempat yang aman. Setiap kode hanya bisa dipakai sekali."
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "Penyedia subtitel"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "subtitle provider unavailable"
+  },
+  {
+    "id": "Subtitles",
+    "other": "Subtitel"
+  },
+  {
+    "id": "subtitles",
+    "other": "subtitel"
+  },
+  {
+    "id": "Sync",
+    "other": "Sinkronkan"
+  },
+  {
+    "id": "System",
+    "other": "Sistem"
+  },
+  {
+    "id": "Tagline",
+    "other": "Slogan"
+  },
+  {
+    "id": "Theme",
+    "other": "Tema"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "Koleksi ini kosong."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "Ini akan menghapus Koleksi secara permanen."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "Ini akan menghapus daftar putar secara permanen."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "Daftar putar ini kosong."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "Produk ini memakai API TMDB, tetapi tidak didukung atau disertifikasi oleh TMDB."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "Sampai PG / TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "Sampai PG-13 / TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "Judul"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "Judul, artis, genre"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "Judul, artis, genre…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "Ubah HDR ke SDR (tone-map)"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "terlalu banyak percobaan masuk"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "terlalu banyak ruangan Tonton Bersama"
+  },
+  {
+    "id": "Track",
+    "other": "Trek"
+  },
+  {
+    "id": "Transcoder",
+    "other": "Transkoder"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "transkode tidak diizinkan"
+  },
+  {
+    "id": "Try again",
+    "other": "Coba lagi"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "Autentikasi dua faktor"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Subtitles",
+    "other": "Autentikasi dua faktor · Kinosail Subtitles"
+  },
+  {
+    "id": "Type",
+    "other": "Jenis"
+  },
+  {
+    "id": "Until",
+    "other": "Sampai"
+  },
+  {
+    "id": "Unwatched",
+    "other": "Belum ditonton"
+  },
+  {
+    "id": "unwatched",
+    "other": "belum ditonton"
+  },
+  {
+    "id": "Use default",
+    "other": "Gunakan bawaan"
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "Verifikasi cadangan terbaru"
+  },
+  {
+    "id": "Video",
+    "other": "Video"
+  },
+  {
+    "id": "Viewer",
+    "other": "Penonton"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "Akses Penonton tidak tersedia"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "Menunggu passkey Anda…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Status Tonton Bersama tidak valid"
+  },
+  {
+    "id": "watched",
+    "other": "sudah ditonton"
+  },
+  {
+    "id": "Watched",
+    "other": "Sudah ditonton"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "Selamat datang"
+  },
+  {
+    "id": "when ready.",
+    "other": "saat siap."
+  },
+  {
+    "id": "Year",
+    "other": "Tahun"
+  },
+  {
+    "id": "Your library",
+    "other": "Pustaka Anda"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "Memindai Pustaka Anda"
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "Kinosail Subtitles sedang membaca folder media Anda. Cakupan subtitel akan tampil di sini setelah pemindaian selesai."
+  }
+]

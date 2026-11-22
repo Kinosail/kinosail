@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 minuts"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 minuts"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 minuts"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 minuts"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Accés"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Compte · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Accions"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Afegeix una clau d'accés"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Afegeix una carpeta"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Afegeix contingut multimèdia o prova una altra cerca."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Afegeix un perfil"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,35 +53,35 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Afegeix a"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Administra el servidor"
   },
   {
     "id": "Album",
-    "other": "Album"
+    "other": "Àlbum"
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Àlbums"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "tots"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Totes les valoracions"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Permet les descàrregues"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Permet la transcodificació"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Analitza ara els segments de reproducció"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Nom de la clau d'API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "L'àmbit de la clau d'API no permet aquesta sol·licitud"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "Clau d'API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "Claus d'API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Aparença"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Aplica"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Àudio"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Audiollibres"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Codi d'autenticació"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Codi d'autenticació o de recuperació"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "cal autenticació"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Autoritza el dispositiu"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Automàtic"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "automàtic"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Automàtic (el millor detectat)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Automàtic (navegador)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Còpies de seguretat automàtiques"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Manteniment automàtic"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Els dispositius disponibles fan servir una connexió directa amb aquest servidor."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Torna a la biblioteca"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Torna a la configuració"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Fes una còpia de seguretat ara"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Còpia de seguretat i recuperació"
   },
   {
     "id": "backup is unavailable",
@@ -201,35 +201,35 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Cal configurar les còpies de seguretat."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Les còpies de seguretat es fan automàticament sense xifrar."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Còpies de seguretat · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Llibre"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Llibres"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Llibres i còmics"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Explora la biblioteca"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Cancel·la"
   },
   {
     "id": "Cast",
@@ -237,39 +237,39 @@
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Capítols"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Tria l'idioma d'aquest navegador."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Buida la memòria cau de transcodificació"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Codi"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Col·lecció"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Col·leccions"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Anunci"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Compatibilitat"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Connexió de compatibilitat"
   },
   {
     "id": "Compatibility stream",
@@ -281,67 +281,67 @@
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Transmissions simultànies"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Error de configuració"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Configuració · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Configurat; valor amagat"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Confirma l'eliminació"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Confirma la supressió"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Connecta"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Connecta un dispositiu"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Connectat"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "S'està connectant"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "S'està connectant…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Error de connexió"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Contingut"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Continua mirant"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Continua mirant"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "des de Continua mirant"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Crea"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Crea una clau d'accés"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Crea una clau d'API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Crea una clau d'accés"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Crea una llista de reproducció intel·ligent"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Crea el perfil de propietari"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Credencials configurades"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Crèdits"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Cura"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Fosc"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "predeterminat"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Reproducció predeterminada"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Suprimeix"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Configuració del desplegament"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Destinació"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "detectat, no disponible"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Dispositiu o aplicació"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Diagnòstic"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Directe"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "directe"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Connexió directa no disponible"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Directament des de"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Dirigit per"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Desactiva i revoca"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Desactiva l'autenticació de dos factors"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Recuperació en cas de desastre"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Descarrega"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Descarrega el contingut multimèdia"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Descarrega l'original"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Descarrega el diagnòstic segur"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Descàrregues"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Edita les metadades"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Edita els marcadors de salt"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Activa DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Activa l'autenticació de dos factors"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Activat"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Les còpies de seguretat xifrades es fan automàticament."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "El xifratge està desactivat per defecte."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "El xifratge està activat."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Final en segons"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Predeterminat de l'entorn"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook d'esdeveniments"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "Cada 15 minuts"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "Cada 5 minuts"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Tot"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Exporta el registre complet d'activitat"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Gestionat externament"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Cerca"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Cerca alguna cosa"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Acaba la configuració"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Carpeta dins del punt de muntatge de multimèdia"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,15 +621,15 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Seguint el líder de la sala"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Des de"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "des de"
   },
   {
     "id": "General",
@@ -637,47 +637,47 @@
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Gèneres"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Entesos"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Grup"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Maquinari"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Historial"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Inici"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Cada hora"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "si està activat"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Instal·la"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Instal·la Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Integracions"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Introducció"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Enllaç d'invitació"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Mantén"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Guarda les còpies de seguretat en un emmagatzematge fora d'aquest host. Les còpies no estan xifrades tret que hi hagi configurada una clau de còpia. Restaura-les mentre el servidor estigui aturat."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Mantén Kinosail Player a prop"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,11 +741,11 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player no pot arribar a aquest servidor. Comprova la xarxa o la connexió directa i torna-ho a provar."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail es manté automàticament."
   },
   {
     "id": "Kinosail Player Reader",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Idioma"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Últim error"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Error de l'últim escaneig"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Última còpia de seguretat correcta"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Últim escaneig correcte"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Última verificació"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Més recent"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Biblioteques"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Biblioteca"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Descoberta de biblioteques"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Carpetes de la biblioteca"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Elements de la biblioteca"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Organització de la biblioteca"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Vistes de la biblioteca"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Credencial amb llicència configurada"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Clar"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Enllaça OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Compte local"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "Llista de reproducció M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Gestiona l'estat personal de la biblioteca"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Gestionat externament i només de lectura."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Accés remot gestionat"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Marca"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "marcador"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Text de coincidència"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "Multimèdia"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Informació multimèdia"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Punt de muntatge multimèdia"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Proveïdor de metadades"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Mètriques"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Pel·lícules"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Música"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Música i audiollibres"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "La meva llista"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Nom"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Mai"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Nova col·lecció"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Nom de la nova col·lecció"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Contrasenya nova"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Nova llista de reproducció"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Nom de la nova llista de reproducció"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Nom del perfil nou"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Contrasenya del perfil nou"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Secret nou"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Nova llista de reproducció intel·ligent"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Els espectadors nous comencen amb valoracions familiars i sense biblioteques. Afegeix noms de carpetes o"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Més recent"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Encara no hi ha activitat registrada."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "No hi ha canals configurats."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "No hi ha cap dispositiu seleccionat"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Encara no hi ha descàrregues fora de línia."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Encara no hi ha reproduccions registrades."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Cap"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Cap; fes servir tots o noms de carpetes"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "No configurat"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "no detectat"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Ara no"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "No s'ha trobat res."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Mirant ara"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Desactivat"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "fora de línia"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Descàrregues fora de línia"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Descàrregues fora de línia · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Activat"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "A l'iPhone o a l'iPad, toca Compartir, tria Afegeix a la pantalla d'inici, activa Obre com a aplicació web i després toca Afegeix."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Revelació d'un sol ús"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Final"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Propietari"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Cal accés de propietari"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Controls del propietari"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "S'ha afegit la clau d'accés."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Contrasenya"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Fotografies"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Reprodueix"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Reprodueix al dispositiu"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Reproducció"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Historial de reproducció"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Anàlisi dels segments de reproducció"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Velocitat de reproducció"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "S'està reproduint aquí"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "S'està reproduint al dispositiu"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Llista de reproducció"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Llistes de reproducció"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Argument"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Comprovant canvis"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Prefereix la qualitat"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Prefereix la velocitat"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Idioma preferit"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Prepara"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Privat pel seu disseny"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Perfil"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Perfil per restablir"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Tipus de perfil"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Perfils"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Protegit automàticament"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA: exigeix protecció addicional d'inici de sessió per a cada perfil d'espectador"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Qualitat"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "qualitat"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "Connexió ràpida"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "Connexió ràpida · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Valoració"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Llegeix ara"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "lector"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Ordre de lectura"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "preparat"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Resum"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Activitat recent"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Reproducció recent"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Afegits recentment"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Reproduïts recentment"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Recuperació"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Codis de recuperació"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Actualitza des de TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Actualitza les metadades que falten"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Recomanat"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Accés remot"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Elimina"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Elimina de"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "sol·licitud"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "La sol·licitud no s'ha pogut completar."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Restableix la contrasenya"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Torna a la configuració"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Revoca"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Sala connectada · seguint el líder"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Sala connectada · diriges tu"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Sala desconnectada · recarrega per tornar a connectar"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Executa ara l'escaneig de la biblioteca"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Executa ara el manteniment"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Escaneig de seguretat"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Desa"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Desa el fitxer"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Desa per reiniciar"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Desa el marcador"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Desa les metadades"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Desa la programació"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Programació"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Cerca a la biblioteca"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Resultats de la cerca"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Els secrets estan amagats i només s'inclouen a les còpies de recuperació xifrades."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Protegeix el compte"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Protegeix el compte · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Envia aquesta URL privada de connexió a l'espectador. Es mostra només una vegada."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Nom del servidor"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Configuració del servidor"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Servidor no disponible"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Servidor no disponible · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Configura Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Configura o substitueix l'autenticador"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Configura l'autenticació de dos factors"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Configura l'autenticació de dos factors · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Configuració"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Seccions de configuració"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Configuració · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Sèrie"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Sèries"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Inicia la sessió"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Inicia la sessió amb una clau d'accés"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Inicia la sessió amb SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Inicia la sessió · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Tanca la sessió"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Tanca la sessió en altres dispositius"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Mètodes d'inici de sessió"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "L'inici de sessió, les proteccions del navegador per al mateix origen, les respostes privades, les sol·licituds limitades i l'accés revocable estan sempre activats. No hi ha interruptors de seguretat per gestionar."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Inici de sessió únic"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Omet"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Omet automàticament els anuncis"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Omet automàticament els crèdits"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Omet automàticament les introduccions"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Omet automàticament els finals"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Omet automàticament els resums"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Vés al contingut"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Temporitzador de repòs"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "El temporitzador de repòs ha acabat"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Llista de reproducció intel·ligent"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Nom de la llista de reproducció intel·ligent"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Programari"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Ordena"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Font"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "velocitat"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Inici en segons"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Inicia Mira junts"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Estat"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "S'aturarà d'aquí a {minutes} minuts"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Guarda aquests codis en un lloc segur. Cada codi funciona una sola vegada."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Emmagatzemat aquí. Transmès directament."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Transmet el contingut multimèdia"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Cal una subscripció"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Proveïdor de subtítols"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Subtítols"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "subtítols"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Sincronitza"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Sistema"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Lema"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "La còpia de seguretat conté l'estat dels comptes i de les sessions. Mantén privat l'emmagatzematge de les còpies no xifrades o configura una clau de còpia."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Tema"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Aquests paràmetres són només de lectura fins que s'eliminin del YAML o de l'entorn"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Aquesta col·lecció és buida."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Això suprimeix la col·lecció de manera permanent."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Això suprimeix la llista de reproducció de manera permanent."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Aquesta llista de reproducció és buida."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Aquest producte fa servir l'API de TMDB, però TMDB no el recomana ni el certifica."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Fins a PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Fins a PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Títol"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Títol, artista, gènere"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Títol, artista, gènere…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Mapatge de tons de HDR a SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "massa intents d'inici de sessió"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "massa sales de Mira junts"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Pista"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "memòria cau de transcodificació"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Transcodificador"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "la transcodificació no està permesa"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Torna-ho a provar"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Autenticació de dos factors"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Autenticació de dos factors · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Tipus"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Desenllaça OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Fins a"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Sense veure"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "sense veure"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Usa el predeterminat"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Fes servir Face ID, Touch ID, Windows Hello o el PIN del dispositiu per iniciar la sessió. La contrasenya continuarà funcionant."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,135 +1773,135 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Verifica l'última còpia de seguretat"
   },
   {
     "id": "Video",
-    "other": "Video"
+    "other": "Vídeo"
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Espectador"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "L'accés d'espectador no està disponible"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Nom de l'espectador"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "S'està esperant la clau d'accés…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "L'estat de Mira junts no és vàlid"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "vist"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Vist"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Vist ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Vigilant els canvis"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Benvingut"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "quan estigui preparat."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "Guia XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Any"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Diriges aquesta sala"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "La teva biblioteca"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "La biblioteca i l'activitat de visualització es mantenen en aquest servidor."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Llibres"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Biblioteca"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Configuració"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Clau d'API generada"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Copia la clau d'API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Copiat."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Selecciona Copia al navegador."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Configura un HTTPS de confiança"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Revisa la configuració de l'HTTPS de confiança"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Còpia fora de línia"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Fitxer verificat emmagatzemat en aquest dispositiu."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Preparat per al mode fora de línia en aquest dispositiu"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Mètode de reproducció"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Obre la configuració de reproducció."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "La còpia fora de línia no està disponible."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "emmagatzemat en aquest dispositiu"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Aquest dispositiu no té prou espai per a aquesta descàrrega"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Aquest navegador no pot emmagatzemar el contingut multimèdia fora de línia de manera segura"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "No s'ha pogut verificar la descàrrega"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "La descàrrega ja no està disponible"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Obre primer Kinosail en línia i tria un perfil d'espectador."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Totes les biblioteques"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Pistes d'àudio"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Torna a les descàrregues"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "No s'ha pogut desar el progrés. Torna a Descàrregues i prova-ho de nou."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Gestiona les descàrregues fora de línia"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Pel·lícula"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Obre les descàrregues del servidor"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Obre la pàgina anterior"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Comportament de la reproducció"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Prepara una còpia fora de línia"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Progrés desat en aquest dispositiu. Obre les descàrregues del servidor per sincronitzar."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Torna al formulari"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Cerca en totes les biblioteques"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Cerca-ho tot"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Aquest fitxer no s'ha pogut reproduir. Torna a Descàrregues, torna a connectar-te al servidor i descarrega'l de nou."
   },
   {
     "id": "invalid title request",
@@ -2009,35 +2009,35 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "L'àudio està fixat en aquesta còpia descarregada."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Protecció de l'inici de sessió"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Torna a les pel·lícules"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Torna a les sèries"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Torna als resultats de la cerca"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Torna a la biblioteca"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Capítol %lld de %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Pàgina %lld de %lld"
   },
   {
     "id": "Document",
@@ -2045,34 +2045,34 @@
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "S'està escanejant la biblioteca"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail està llegint les carpetes de multimèdia. La biblioteca apareixerà aquí quan acabi l'escaneig."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "Fora de línia"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "No hi ha connexió"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Torna a connectar-te al servidor per continuar mirant."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Copia la clau de configuració o l'enllaç de configuració a l'aplicació d'autenticació."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Desa tots els codis de recuperació abans de continuar. Cada codi funciona una sola vegada."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Introdueix el codi actual de 6 dígits per confirmar l'aplicació."
   }
 ]

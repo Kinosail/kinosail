@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 минути"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 минути"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 минути"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 минути"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Достъп"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Акаунт · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Действия"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Добавяне на ключ за достъп"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Добавяне на папка"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Добавете медия или опитайте друго търсене."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Добавяне на профил"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,35 +53,35 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Добавяне към"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Администриране на сървъра"
   },
   {
     "id": "Album",
-    "other": "Album"
+    "other": "Албум"
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Албуми"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "всички"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Всички оценки"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Разрешаване на изтегляния"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Разрешаване на транскодиране"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Анализиране на сегментите за възпроизвеждане сега"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Име на API ключ"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Обхватът на API ключа не позволява тази заявка"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "API ключ · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "API ключове"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Външен вид"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Прилагане"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Аудио"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Аудиокниги"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Код за удостоверяване"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Код за удостоверяване или възстановяване"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "изисква се удостоверяване"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Упълномощаване на устройство"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Автоматично"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "автоматично"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Автоматично (най-добрият открит)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Автоматично (браузър)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Автоматични резервни копия"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Автоматична поддръжка"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Наличните устройства използват директна връзка с този сървър."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Назад към библиотеката"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Назад към настройките"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Създаване на резервно копие сега"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Резервно копие и възстановяване"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Резервните копия изискват настройка."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Резервните копия се създават автоматично без криптиране."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Резервни копия · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Книга"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Книги"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Книги и комикси"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Преглед на библиотеката"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Отказ"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "Предаване"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Глави"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Изберете езика за този браузър."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Изчистване на кеша за транскодиране"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Код"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Колекция"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Колекции"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Реклама"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Съвместимост"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Връзка за съвместимост"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "съвместим"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Едновременни потоци"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Грешка в конфигурацията"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Конфигурация · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Конфигурирано; стойността е скрита"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Потвърждаване на изтриването"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Потвърждаване на премахването"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Свързване"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Свързване на устройство"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Свързано"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Свързване"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Свързване…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Грешка при връзката"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Съдържание"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Продължете да гледате"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Продължете да гледате"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "от Продължете да гледате"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Създаване"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Създаване на ключ за достъп"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Създаване на API ключ"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Създаване на ключ за достъп"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Създаване на интелигентен плейлист"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Създайте профила си на собственик"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Идентификационните данни са конфигурирани"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Финални титри"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Подбор"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Тъмна"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "по подразбиране"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Възпроизвеждане по подразбиране"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Изтриване"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Конфигурация на внедряването"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Местоназначение"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "открита, недостъпна"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Устройство или приложение"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Диагностика"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Директно"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "директно"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Директната връзка не е налична"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Директно от"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Режисьор"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Деактивиране и отмяна"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Деактивиране на двуфакторно удостоверяване"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Възстановяване след авария"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Изтегляне"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Изтегляне на медия"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Изтегляне на оригинала"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Изтегляне на безопасна диагностика"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Изтегляния"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Редактиране на метаданни"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Редактиране на маркерите за пропускане"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Включване на DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Включване на двуфакторно удостоверяване"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Включено"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Криптираните резервни копия се създават автоматично."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Криптирането е изключено по подразбиране."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Криптирането е включено."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Край в секунди"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Стойност по подразбиране на средата"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Уеб кука за събития"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "На всеки 15 минути"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "На всеки 5 минути"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Всичко"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Експортиране на пълния дневник на дейността"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Управлява се външно"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Търсене"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Намерете нещо"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Завършване на настройката"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Папка в медийното монтиране"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Следване на водещия на стаята"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "От"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "от"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Общи"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Жанрове"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Разбрах"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Група"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Хардуер"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "История"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Начало"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "На всеки час"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "ако е включено"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Инсталиране"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Инсталиране на Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Интеграции"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Уводна част"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Линк за покана"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Запазване"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Съхранявайте резервните копия на хранилище извън този хост. Резервните копия не са криптирани, освен ако не е конфигуриран резервен ключ. Възстановявайте, докато сървърът е спрян."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Дръжте Kinosail Player близо"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,11 +741,11 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player не може да се свърже с този сървър. Проверете мрежата или директната връзка и опитайте отново."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail се поддържа автоматично."
   },
   {
     "id": "Kinosail Player Reader",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Език"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Последна грешка"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Грешка при последното сканиране"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Последно успешно резервно копие"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Последно успешно сканиране"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Последна проверка"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Най-нови"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Библиотеки"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Библиотека"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Откриване на библиотека"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Папки на библиотеката"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Елементи в библиотеката"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Организация на библиотеката"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Изгледи на библиотеката"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Конфигуриран е лицензиран идентификатор"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Светла"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Свързване с OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Локален акаунт"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "M3U плейлист"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Управление на личното състояние в библиотеката"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Управлява се външно и е само за четене."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Управляван отдалечен достъп"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Маркиране"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "маркер"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Съвпадащ текст"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "Медия"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Информация за медията"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Медийно монтиране"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Доставчик на метаданни"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Показатели"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Филми"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Музика"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Музика и аудиокниги"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Моят списък"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Име"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Никога"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Нова колекция"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Име на нова колекция"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Нова парола"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Нов плейлист"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Име на нов плейлист"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Ново име на профил"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Нова парола за профил"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Нова тайна"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Нов интелигентен плейлист"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Новите зрители започват с оценки за семейство и без библиотеки. Добавете имена на папки или"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Най-нови"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Все още няма записана дейност."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Няма конфигурирани канали."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Няма избрано устройство"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Все още няма изтегляния за офлайн."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Все още няма записано възпроизвеждане."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Няма"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Няма; използвайте всички или имена на папки"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Не е конфигурирано"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "не е открито"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Не сега"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Нищо не е намерено."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Гледате сега"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Изкл."
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "офлайн"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Изтегляния за офлайн"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Изтегляния за офлайн · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Вкл."
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "На iPhone или iPad докоснете Споделяне, изберете Добавяне към началния екран, включете Отваряне като уеб приложение и докоснете Добавяне."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Еднократно показване"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Заключителна част"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Собственик"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Изисква се достъп на собственик"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Контроли за собственика"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Ключът за достъп е добавен."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Парола"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Снимки"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Възпроизвеждане"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Възпроизвеждане на устройство"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Възпроизвеждане"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "История на възпроизвеждането"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Анализ на сегментите за възпроизвеждане"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Скорост на възпроизвеждане"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Възпроизвежда се тук"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Възпроизвежда се на устройство"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Плейлист"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Плейлисти"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Сюжет"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Проверка за промени"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Предпочитание към качеството"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Предпочитание към скоростта"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Предпочитан език"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Подготовка"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Личен по дизайн"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Профил"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Профил за нулиране"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Тип профил"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Профили"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Защитено автоматично"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - Изискване на допълнителна защита при вход за всеки профил на зрител"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Качество"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "качество"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "Бързо свързване"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "Бързо свързване · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Оценка"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Четете сега"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "четец"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Ред на четене"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "готово"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Резюме"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Скорошна активност"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Скорошно възпроизвеждане"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Добавени наскоро"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Пуснати наскоро"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Възстановяване"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Кодове за възстановяване"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Обновяване от TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Обновяване на липсващите метаданни"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Препоръчано"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Отдалечен достъп"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Премахване"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Премахване от"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "заявка"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Заявката не можа да бъде завършена."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Нулиране на паролата"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Връщане към настройките"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Отмяна"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Стаята е свързана · следва водещия"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Стаята е свързана · вие водите"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Стаята е прекъсната · презаредете, за да се свържете отново"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Стартиране на сканиране на библиотеката сега"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Стартиране на поддръжка сега"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Сканиране за безопасност"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Запазване"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Запазване на файл"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Запазване за рестартиране"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Запазване на маркер"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Запазване на метаданни"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Запазване на графика"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "График"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Търсене в библиотеката"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Резултати от търсенето"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Тайните са скрити и се включват само в криптирани резервни копия за възстановяване."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Защитете акаунта си"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Защитете акаунта си · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Изпратете този личен URL адрес за връзка на зрителя. Показва се само веднъж."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Име на сървъра"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Настройки на сървъра"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Сървърът не е наличен"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Сървърът не е наличен · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Настройте Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Настройване или смяна на приложение за удостоверяване"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Настройване на двуфакторно удостоверяване"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Настройване на двуфакторно удостоверяване · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Настройки"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Раздели с настройки"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Настройки · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Сериал"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Сериали"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Вход"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Вход с ключ за достъп"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Вход с SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Вход · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Изход"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Изход от другите устройства"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Методи за вход"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Входът, защитите на браузъра за един и същ произход, личните отговори, ограничените заявки и отменимият достъп са винаги включени. Няма защитни превключватели за управление."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Единен вход (SSO)"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Пропускане"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Автоматично пропускане на реклами"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Автоматично пропускане на финалните титри"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Автоматично пропускане на уводните части"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Автоматично пропускане на заключителните части"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Автоматично пропускане на резюметата"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Към съдържанието"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Таймер за заспиване"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Таймерът за заспиване приключи"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Интелигентен плейлист"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Име на интелигентен плейлист"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Софтуер"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Сортиране"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Източник"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "скорост"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Начало в секунди"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Стартиране на Гледане заедно"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Състояние"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Спира след {minutes} минути"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Съхранете тези кодове на сигурно място. Всеки работи еднократно."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Съхранява се тук. Предава се директно."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Поточно предаване на медия"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Изисква се абонамент"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Доставчик на субтитри"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Субтитри"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "субтитри"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Синхронизиране"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Системна"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Слоган"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Резервното копие съдържа състоянието на акаунта и сесията. Пазете некриптираното хранилище на резервни копия поверително или конфигурирайте резервен ключ."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Тема"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Тези настройки са само за четене, докато не се премахнат от YAML или средата"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Тази колекция е празна."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Това окончателно изтрива колекцията."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Това окончателно изтрива плейлиста."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Този плейлист е празен."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Този продукт използва API на TMDB, но не се одобрява и не е сертифициран от TMDB."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "До PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "До PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Заглавие"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Заглавие, изпълнител, жанр"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Заглавие, изпълнител, жанр…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Тонално картографиране от HDR към SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "твърде много опити за вход"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "твърде много стаи за Гледане заедно"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Песен"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "кеш за транскодиране"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Транскодер"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "транскодирането не е разрешено"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Опитайте отново"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Двуфакторно удостоверяване"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Двуфакторно удостоверяване · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Тип"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Прекратяване на връзката с OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "До"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Непрегледано"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "непрегледано"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Използване по подразбиране"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Използвайте Face ID, Touch ID, Windows Hello или ПИН кода на устройството си за вход. Паролата ви ще продължи да работи."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,135 +1773,135 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Проверка на последното резервно копие"
   },
   {
     "id": "Video",
-    "other": "Video"
+    "other": "Видео"
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Зрител"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Достъпът за зрители не е наличен"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Име на зрител"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Изчакване на ключа ви за достъп…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Състоянието на Гледане заедно е невалидно"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "гледано"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Гледано"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Гледано ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Наблюдение за промени"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Добре дошли"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "когато е готово."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "XMLTV справочник"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Година"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Вие водите тази стая"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Вашата библиотека"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Вашата библиотека и дейността по гледане остават на този сървър."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Книги"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Библиотека"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Настройки"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Генериран API ключ"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Копиране на API ключ"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Копирано."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Изберете Копиране в браузъра си."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Настройване на доверен HTTPS"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Преглед на настройката за доверен HTTPS"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Копие за офлайн"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Проверен файл, съхранен на това устройство."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Готово за офлайн на това устройство"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Метод на възпроизвеждане"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Отворете настройките за възпроизвеждане."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Копието за офлайн не е налично."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "съхранено на това устройство"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Това устройство няма достатъчно място за това изтегляне"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Този браузър не може да съхранява медия за офлайн безопасно"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Изтеглянето не можа да бъде проверено"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Изтеглянето вече не е налично"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Първо отворете Kinosail онлайн и изберете профил на зрител."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Всички библиотеки"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Аудио записи"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Назад към изтеглянията"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Напредъкът не можа да бъде записан. Върнете се към Изтеглянията и опитайте отново."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Управление на изтеглянията за офлайн"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Филм"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Отваряне на изтеглянията от сървъра"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Отваряне на предишната страница"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Поведение при възпроизвеждане"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Подготовка на копие за офлайн"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Напредъкът е запазен на това устройство. Отворете изтеглянията от сървъра, за да синхронизирате."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Връщане към формуляра"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Търсене във всички библиотеки"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Търсене във всичко"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Файлът не можа да се възпроизведе. Върнете се към Изтеглянията, свържете се отново със сървъра и го изтеглете отново."
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Звукът е фиксиран в това изтеглено копие."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Защита при вход"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Назад към филмите"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Назад към сериалите"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Назад към резултатите от търсенето"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Назад към библиотеката"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Глава %lld от %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Страница %lld от %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Документ"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Сканиране на вашата библиотека"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail чете папките ви с медия. Вашата библиотека се показва тук, когато сканирането приключи."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "Офлайн"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Вие сте офлайн"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Свържете се отново със сървъра си, за да продължите да гледате."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Копирайте ключа за настройка или връзката за настройка в приложението си за удостоверяване."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Запазете всеки код за възстановяване, преди да продължите. Всеки код работи еднократно."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Въведете текущия 6-цифрен код, за да потвърдите приложението."
   }
 ]

@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 นาที"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 นาที"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 นาที"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 นาที"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "การเข้าถึง"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "บัญชี · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "การดำเนินการ"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "เพิ่มพาสคีย์"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "เพิ่มโฟลเดอร์"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "เพิ่มสื่อ หรือลองค้นหาอีกครั้ง"
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "เพิ่มโปรไฟล์"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,35 +53,35 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "เพิ่มลงใน"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "จัดการเซิร์ฟเวอร์"
   },
   {
     "id": "Album",
-    "other": "Album"
+    "other": "อัลบั้ม"
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "อัลบั้ม"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "ทั้งหมด"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "ทุกเรตติ้ง"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "อนุญาตการดาวน์โหลด"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "อนุญาตการแปลงรหัส"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "วิเคราะห์ส่วนของการเล่นตอนนี้"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "ชื่อคีย์ API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "ขอบเขตของคีย์ API ไม่อนุญาตคำขอนี้"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "คีย์ API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "คีย์ API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "รูปลักษณ์"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "นำไปใช้"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "เสียง"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "หนังสือเสียง"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "รหัสยืนยันตัวตน"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "รหัสยืนยันตัวตนหรือรหัสกู้คืน"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "ต้องยืนยันตัวตน"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "อนุญาตอุปกรณ์"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "อัตโนมัติ"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "อัตโนมัติ"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "อัตโนมัติ (ตัวที่ตรวจพบว่าดีที่สุด)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "อัตโนมัติ (เบราว์เซอร์)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "การสำรองข้อมูลอัตโนมัติ"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "การบำรุงรักษาอัตโนมัติ"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "อุปกรณ์ที่พร้อมใช้งานเชื่อมต่อโดยตรงกับเซิร์ฟเวอร์นี้"
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "กลับไปที่ไลบรารี"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "กลับไปที่การตั้งค่า"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "สำรองข้อมูลตอนนี้"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "การสำรองและกู้คืนข้อมูล"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "การสำรองข้อมูลต้องตั้งค่าก่อน"
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "การสำรองข้อมูลทำงานอัตโนมัติโดยไม่เข้ารหัส"
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "การสำรองข้อมูล · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "หนังสือ"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "หนังสือ"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "หนังสือและการ์ตูน"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "เรียกดูไลบรารี"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "ยกเลิก"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "แคสต์"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "บท"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "เลือกภาษาสำหรับเบราว์เซอร์นี้"
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "ล้างแคชการแปลงรหัส"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "รหัส"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "คอลเลกชัน"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "คอลเลกชัน"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "โฆษณา"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "ความเข้ากันได้"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "การเชื่อมต่อแบบเข้ากันได้"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "เข้ากันได้"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "สตรีมพร้อมกัน"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "ข้อผิดพลาดการกำหนดค่า"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "การกำหนดค่า · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "กำหนดค่าแล้ว; ซ่อนค่าไว้"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "ยืนยันการลบ"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "ยืนยันการนำออก"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "เชื่อมต่อ"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "เชื่อมต่ออุปกรณ์"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "เชื่อมต่อแล้ว"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "กำลังเชื่อมต่อ"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "กำลังเชื่อมต่อ…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "ข้อผิดพลาดการเชื่อมต่อ"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "เนื้อหา"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "รับชมต่อ"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "รับชมต่อ"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "จาก รับชมต่อ"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "สร้าง"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "สร้างพาสคีย์"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "สร้างคีย์ API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "สร้างพาสคีย์"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "สร้างเพลย์ลิสต์อัจฉริยะ"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "สร้างโปรไฟล์ผู้ดูแลระบบของคุณ"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "กำหนดค่าข้อมูลยืนยันตัวตนแล้ว"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "เครดิตท้ายเรื่อง"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "คัดสรร"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "มืด"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "ค่าเริ่มต้น"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "การเล่นเริ่มต้น"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "ลบ"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "การกำหนดค่าการติดตั้ง"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "ปลายทาง"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "ตรวจพบแล้ว ไม่พร้อมใช้งาน"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "อุปกรณ์หรือแอป"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "การวินิจฉัย"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "โดยตรง"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "โดยตรง"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "การเชื่อมต่อโดยตรงไม่พร้อมใช้งาน"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "โดยตรงจาก"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "กำกับโดย"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "ปิดใช้งานและเพิกถอน"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "ปิดการยืนยันตัวตนสองขั้นตอน"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "การกู้คืนเมื่อเกิดภัยพิบัติ"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "ดาวน์โหลด"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "ดาวน์โหลดสื่อ"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "ดาวน์โหลดต้นฉบับ"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "ดาวน์โหลดการวินิจฉัยที่ปลอดภัย"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "การดาวน์โหลด"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "แก้ไขเมทาดาทา"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "แก้ไขเครื่องหมายข้าม"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "เปิดใช้ DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "เปิดการยืนยันตัวตนสองขั้นตอน"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "เปิดใช้งานแล้ว"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "การสำรองข้อมูลที่เข้ารหัสทำงานอัตโนมัติ"
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "การเข้ารหัสปิดอยู่โดยค่าเริ่มต้น"
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "เปิดการเข้ารหัสอยู่"
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "สิ้นสุดใน (วินาที)"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "ค่าเริ่มต้นของสภาพแวดล้อม"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "เว็บฮุกเหตุการณ์"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "ทุก 15 นาที"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "ทุก 5 นาที"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "ทุกอย่าง"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "ส่งออกบันทึกกิจกรรมทั้งหมด"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "จัดการจากภายนอก"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "ค้นหา"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "ค้นหาบางอย่าง"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "ตั้งค่าให้เสร็จ"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "โฟลเดอร์ภายในจุดเชื่อมต่อสื่อ"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "กำลังติดตามผู้นำห้อง"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "จาก"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "จาก"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "ทั่วไป"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "ประเภท"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "เข้าใจแล้ว"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "กลุ่ม"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "ฮาร์ดแวร์"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "ประวัติ"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "หน้าหลัก"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "รายชั่วโมง"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "หากเปิดใช้งาน"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "ติดตั้ง"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "ติดตั้ง Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "การผสานรวม"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "ช่วงเปิดเรื่อง"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "ลิงก์คำเชิญ"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "เก็บไว้"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "เก็บการสำรองข้อมูลไว้ในที่จัดเก็บนอกโฮสต์นี้ การสำรองข้อมูลไม่ได้เข้ารหัส เว้นแต่จะกำหนดค่าคีย์สำรองข้อมูลไว้ กู้คืนขณะที่เซิร์ฟเวอร์หยุดทำงาน"
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "เก็บ Kinosail Player ไว้ใกล้ตัว"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,19 +741,19 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player เข้าถึงเซิร์ฟเวอร์นี้ไม่ได้ ตรวจสอบเครือข่ายหรือการเชื่อมต่อโดยตรง แล้วลองอีกครั้ง"
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail บำรุงรักษาตัวเองโดยอัตโนมัติ"
   },
   {
     "id": "Kinosail Player Reader",
-    "other": "Kinosail Player Reader"
+    "other": "ตัวอ่าน Kinosail Player"
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "ภาษา"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "ข้อผิดพลาดล่าสุด"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "ข้อผิดพลาดการสแกนล่าสุด"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "การสำรองข้อมูลสำเร็จครั้งล่าสุด"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "การสแกนสำเร็จครั้งล่าสุด"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "ตรวจสอบล่าสุด"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "ล่าสุด"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "ไลบรารี"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "ไลบรารี"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "การค้นหาไลบรารี"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "โฟลเดอร์ไลบรารี"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "รายการในไลบรารี"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "การจัดระเบียบไลบรารี"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "มุมมองไลบรารี"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "กำหนดค่าข้อมูลยืนยันตัวตนแบบได้รับอนุญาตแล้ว"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "สว่าง"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "เชื่อม OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "บัญชีในเครื่อง"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "เพลย์ลิสต์ M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "จัดการสถานะไลบรารีส่วนตัว"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "จัดการจากภายนอกและอ่านได้อย่างเดียว"
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "การเข้าถึงระยะไกลที่จัดการไว้"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "ทำเครื่องหมาย"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "เครื่องหมาย"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "จับคู่ข้อความ"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "สื่อ"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "ข้อมูลสื่อ"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "จุดเชื่อมต่อสื่อ"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "ผู้ให้บริการเมทาดาทา"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "ตัวชี้วัด"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "ภาพยนตร์"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "เพลง"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "เพลงและหนังสือเสียง"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "รายการของฉัน"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "ชื่อ"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "ไม่เคย"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "คอลเลกชันใหม่"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "ชื่อคอลเลกชันใหม่"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "รหัสผ่านใหม่"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "เพลย์ลิสต์ใหม่"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "ชื่อเพลย์ลิสต์ใหม่"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "ชื่อโปรไฟล์ใหม่"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "รหัสผ่านโปรไฟล์ใหม่"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "รหัสลับใหม่"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "เพลย์ลิสต์อัจฉริยะใหม่"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "ผู้ชมใหม่จะเริ่มด้วยเรตติ้งสำหรับครอบครัวและไม่มีไลบรารี เพิ่มชื่อโฟลเดอร์ หรือ"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "ใหม่สุด"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "ยังไม่มีกิจกรรมที่บันทึกไว้"
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "ยังไม่ได้กำหนดค่าช่อง"
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "ยังไม่ได้เลือกอุปกรณ์"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "ยังไม่มีรายการดาวน์โหลดสำหรับใช้งานออฟไลน์"
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "ยังไม่มีการเล่นที่บันทึกไว้"
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "ไม่มี"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "ไม่มี; ใช้ทั้งหมดหรือชื่อโฟลเดอร์"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "ยังไม่ได้กำหนดค่า"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "ไม่พบ"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "ไว้ทีหลัง"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "ไม่พบอะไร"
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "กำลังรับชม"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "ปิด"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "ออฟไลน์"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "ดาวน์โหลดสำหรับออฟไลน์"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "ดาวน์โหลดสำหรับออฟไลน์ · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "เปิด"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "บน iPhone หรือ iPad แตะแชร์ เลือกเพิ่มไปยังหน้าจอโฮม เปิดเป็นเว็บแอป แล้วแตะเพิ่ม"
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "แสดงครั้งเดียว"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "ช่วงปิดเรื่อง"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "ผู้ดูแลระบบ"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "ต้องมีสิทธิ์ผู้ดูแลระบบ"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "การควบคุมของผู้ดูแลระบบ"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "เพิ่มพาสคีย์แล้ว"
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "รหัสผ่าน"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "รูปภาพ"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "เล่น"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "เล่นบนอุปกรณ์"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "การเล่น"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "ประวัติการเล่น"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "การวิเคราะห์ส่วนการเล่น"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "ความเร็วในการเล่น"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "กำลังเล่นที่นี่"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "กำลังเล่นบนอุปกรณ์"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "เพลย์ลิสต์"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "เพลย์ลิสต์"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "เนื้อเรื่องย่อ"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "กำลังตรวจสอบการเปลี่ยนแปลง"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "เน้นคุณภาพ"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "เน้นความเร็ว"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "ภาษาที่ต้องการ"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "เตรียม"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "ออกแบบให้เป็นส่วนตัว"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "โปรไฟล์"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,31 +1177,31 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "โปรไฟล์ที่จะรีเซ็ต"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "ประเภทโปรไฟล์"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "โปรไฟล์"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "ได้รับการป้องกันโดยอัตโนมัติ"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - ต้องใช้การป้องกันการลงชื่อเข้าใช้เพิ่มเติมสำหรับโปรไฟล์ผู้ชมทุกโปรไฟล์"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "คุณภาพ"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "คุณภาพ"
   },
   {
     "id": "Quick Connect",
@@ -1213,23 +1213,23 @@
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "เรตติ้ง"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "อ่านเลย"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "ตัวอ่าน"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "ลำดับการอ่าน"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "พร้อม"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "สรุปก่อนหน้า"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "กิจกรรมล่าสุด"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "การเล่นล่าสุด"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "เพิ่มล่าสุด"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "เล่นล่าสุด"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "การกู้คืน"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "รหัสกู้คืน"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "รีเฟรชจาก TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "รีเฟรชเมทาดาทาที่ขาดหายไป"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "แนะนำ"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "การเข้าถึงระยะไกล"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "นำออก"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "นำออกจาก"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "คำขอ"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "ไม่สามารถดำเนินคำขอให้เสร็จได้"
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "รีเซ็ตรหัสผ่าน"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "กลับไปที่การตั้งค่า"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "เพิกถอน"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "เชื่อมต่อห้องแล้ว · กำลังติดตามผู้นำ"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "เชื่อมต่อห้องแล้ว · คุณเป็นผู้นำ"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "ตัดการเชื่อมต่อห้องแล้ว · โหลดใหม่เพื่อเชื่อมต่ออีกครั้ง"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "สแกนไลบรารีตอนนี้"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "เรียกการบำรุงรักษาตอนนี้"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "การสแกนความปลอดภัย"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "บันทึก"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "บันทึกไฟล์"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "บันทึกเพื่อเริ่มใหม่"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "บันทึกเครื่องหมาย"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "บันทึกเมทาดาทา"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "บันทึกตารางเวลา"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "ตารางเวลา"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "ค้นหาในไลบรารี"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "ผลการค้นหา"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "ข้อมูลลับถูกซ่อนไว้และรวมอยู่เฉพาะในการสำรองข้อมูลกู้คืนที่เข้ารหัสเท่านั้น"
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "รักษาความปลอดภัยบัญชีของคุณ"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "รักษาความปลอดภัยบัญชี · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "ส่ง URL การเชื่อมต่อส่วนตัวนี้ให้ผู้ชม URL จะแสดงเพียงครั้งเดียว"
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "ชื่อเซิร์ฟเวอร์"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "การตั้งค่าเซิร์ฟเวอร์"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "เซิร์ฟเวอร์ไม่พร้อมใช้งาน"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "เซิร์ฟเวอร์ไม่พร้อมใช้งาน · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "ตั้งค่า Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "ตั้งค่าหรือเปลี่ยนแอปยืนยันตัวตน"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "ตั้งค่าการยืนยันตัวตนสองขั้นตอน"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "ตั้งค่าการยืนยันตัวตนสองขั้นตอน · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "การตั้งค่า"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "ส่วนของการตั้งค่า"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "การตั้งค่า · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "ซีรีส์"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "ซีรีส์"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "ลงชื่อเข้าใช้"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "ลงชื่อเข้าใช้ด้วยพาสคีย์"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "ลงชื่อเข้าใช้ด้วย SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "ลงชื่อเข้าใช้ · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "ออกจากระบบ"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "ออกจากระบบอุปกรณ์อื่น"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "วิธีลงชื่อเข้าใช้"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "การลงชื่อเข้าใช้ การป้องกันเบราว์เซอร์แบบ same-origin การตอบสนองส่วนตัว คำขอที่จำกัดขนาด และการเพิกถอนการเข้าถึง เปิดใช้งานตลอดเวลา ไม่มีสวิตช์ความปลอดภัยให้จัดการ"
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "การลงชื่อเข้าใช้ครั้งเดียว (SSO)"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "ข้าม"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "ข้ามโฆษณาอัตโนมัติ"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "ข้ามเครดิตท้ายเรื่องอัตโนมัติ"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "ข้ามช่วงเปิดเรื่องอัตโนมัติ"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "ข้ามช่วงปิดเรื่องอัตโนมัติ"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "ข้ามสรุปก่อนหน้าอัตโนมัติ"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "ข้ามไปยังเนื้อหา"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "ตั้งเวลาปิด"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "หมดเวลาปิดอัตโนมัติแล้ว"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "เพลย์ลิสต์อัจฉริยะ"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "ชื่อเพลย์ลิสต์อัจฉริยะ"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "ซอฟต์แวร์"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "เรียงลำดับ"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "แหล่งที่มา"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "ความเร็ว"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "เริ่มที่ (วินาที)"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "เริ่มรับชมร่วมกัน"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "สถานะ"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "จะหยุดใน {minutes} นาที"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "เก็บรหัสเหล่านี้ไว้ในที่ปลอดภัย แต่ละรหัสใช้ได้ครั้งเดียว"
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "จัดเก็บที่นี่ สตรีมโดยตรง"
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "สตรีมสื่อ"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "ต้องสมัครสมาชิก"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "ผู้ให้บริการคำบรรยาย"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "คำบรรยาย"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "คำบรรยาย"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "ซิงค์"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "ระบบ"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "คำโปรย"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "การสำรองข้อมูลมีข้อมูลบัญชีและสถานะเซสชัน เก็บที่จัดเก็บการสำรองข้อมูลที่ไม่ได้เข้ารหัสให้เป็นส่วนตัว หรือกำหนดค่าคีย์สำรองข้อมูล"
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "ธีม"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "การตั้งค่าเหล่านี้อ่านได้อย่างเดียวจนกว่าจะนำออกจาก YAML หรือตัวแปรสภาพแวดล้อม"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "คอลเลกชันนี้ว่างเปล่า"
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "การดำเนินการนี้ลบคอลเลกชันอย่างถาวร"
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "การดำเนินการนี้ลบเพลย์ลิสต์อย่างถาวร"
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "เพลย์ลิสต์นี้ว่างเปล่า"
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "ผลิตภัณฑ์นี้ใช้ API ของ TMDB แต่ไม่ได้รับการรับรองหรือเห็นชอบจาก TMDB"
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "ถึง PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "ถึง PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "ชื่อเรื่อง"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "ชื่อเรื่อง ศิลปิน ประเภท"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "ชื่อเรื่อง ศิลปิน ประเภท…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "แปลง HDR เป็น SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "พยายามลงชื่อเข้าใช้มากเกินไป"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "ห้องรับชมร่วมกันมากเกินไป"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "แทร็ก"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "แคชการแปลงรหัส"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "ตัวแปลงรหัส"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "ไม่อนุญาตให้แปลงรหัส"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "ลองอีกครั้ง"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "การยืนยันตัวตนสองขั้นตอน"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "การยืนยันตัวตนสองขั้นตอน · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "ประเภท"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "ยกเลิกการเชื่อม OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "จนถึง"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "ยังไม่ได้ดู"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "ยังไม่ได้ดู"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "ใช้ค่าเริ่มต้น"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "ใช้ Face ID, Touch ID, Windows Hello หรือรหัส PIN ของอุปกรณ์เพื่อลงชื่อเข้าใช้ รหัสผ่านยังใช้ได้"
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,135 +1773,135 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "ตรวจสอบการสำรองข้อมูลล่าสุด"
   },
   {
     "id": "Video",
-    "other": "Video"
+    "other": "วิดีโอ"
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "ผู้ชม"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "ไม่สามารถเข้าถึงสิทธิ์ผู้ชมได้"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "ชื่อผู้ชม"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "กำลังรอพาสคีย์ของคุณ…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "สถานะรับชมร่วมกันไม่ถูกต้อง"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "ดูแล้ว"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "ดูแล้ว"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "ดูแล้ว ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "กำลังดูการเปลี่ยนแปลง"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "ยินดีต้อนรับ"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "เมื่อพร้อม"
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "คู่มือ XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "ปี"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "คุณเป็นผู้นำห้องนี้"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "ไลบรารีของคุณ"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "ไลบรารีและกิจกรรมการรับชมของคุณจะอยู่บนเซิร์ฟเวอร์นี้"
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← หนังสือ"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← ไลบรารี"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← การตั้งค่า"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "คีย์ API ที่สร้างแล้ว"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "คัดลอกคีย์ API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "คัดลอกแล้ว"
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "เลือกคัดลอกในเบราว์เซอร์ของคุณ"
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "ตั้งค่า HTTPS ที่เชื่อถือได้"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "ตรวจสอบการตั้งค่า HTTPS ที่เชื่อถือได้"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "สำเนาสำหรับออฟไลน์"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "ไฟล์ที่ตรวจสอบแล้วถูกเก็บไว้ในอุปกรณ์นี้"
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "พร้อมใช้งานออฟไลน์บนอุปกรณ์นี้"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "วิธีการเล่น"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "เปิดการตั้งค่าการเล่น"
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "สำเนาสำหรับออฟไลน์ไม่พร้อมใช้งาน"
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "เก็บไว้ในอุปกรณ์นี้"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "อุปกรณ์นี้มีพื้นที่จัดเก็บไม่พอสำหรับการดาวน์โหลดนี้"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "เบราว์เซอร์นี้ไม่สามารถจัดเก็บสื่อออฟไลน์อย่างปลอดภัย"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "ไม่สามารถตรวจสอบการดาวน์โหลดได้"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "การดาวน์โหลดนี้ไม่พร้อมใช้งานแล้ว"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "เปิด Kinosail ขณะออนไลน์และเลือกโปรไฟล์ผู้ชมก่อน"
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "ทุกไลบรารี"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "แทร็กเสียง"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "กลับไปที่การดาวน์โหลด"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "บันทึกความคืบหน้าไม่ได้ กลับไปที่การดาวน์โหลดแล้วลองอีกครั้ง"
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "จัดการการดาวน์โหลดสำหรับออฟไลน์"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "ภาพยนตร์"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "เปิดการดาวน์โหลดจากเซิร์ฟเวอร์"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "เปิดหน้าก่อนหน้า"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "พฤติกรรมการเล่น"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "เตรียมสำเนาสำหรับออฟไลน์"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "บันทึกความคืบหน้าในอุปกรณ์นี้แล้ว เปิดการดาวน์โหลดจากเซิร์ฟเวอร์เพื่อซิงค์"
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "กลับไปที่แบบฟอร์ม"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "ค้นหาในทุกไลบรารี"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "ค้นหาทุกอย่าง"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "ไม่สามารถเล่นไฟล์นี้ได้ กลับไปที่การดาวน์โหลด เชื่อมต่อกับเซิร์ฟเวอร์อีกครั้ง แล้วดาวน์โหลดใหม่"
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "เสียงถูกกำหนดไว้แล้วในสำเนาที่ดาวน์โหลดนี้"
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "การป้องกันการลงชื่อเข้าใช้"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "กลับไปที่ภาพยนตร์"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "กลับไปที่ซีรีส์"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "กลับไปที่ผลการค้นหา"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "กลับไปที่ไลบรารี"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "บท %lld จาก %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "หน้า %lld จาก %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "เอกสาร"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "กำลังสแกนไลบรารีของคุณ"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail กำลังอ่านโฟลเดอร์สื่อของคุณ ไลบรารีจะแสดงที่นี่เมื่อการสแกนเสร็จ"
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "ออฟไลน์"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "คุณกำลังออฟไลน์"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "เชื่อมต่อกับเซิร์ฟเวอร์อีกครั้งเพื่อรับชมต่อ"
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "คัดลอกคีย์การตั้งค่าหรือลิงก์การตั้งค่าไปยังแอปยืนยันตัวตนของคุณ"
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "บันทึกรหัสกู้คืนทุกรหัสก่อนดำเนินการต่อ แต่ละรหัสใช้ได้ครั้งเดียว"
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "ป้อนรหัส 6 หลักปัจจุบันเพื่อยืนยันแอป"
   }
 ]

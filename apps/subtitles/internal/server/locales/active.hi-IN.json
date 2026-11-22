@@ -1,1 +1,1262 @@
-[{"id":"15 minutes","other":"15 minutes"},{"id":"30 minutes","other":"30 minutes"},{"id":"Access","other":"Access"},{"id":"Account · Kinosail Subtitles","other":"Account · Kinosail Subtitles"},{"id":"Actions","other":"Actions"},{"id":"active session(s)","other":"active session(s)"},{"id":"Add a passkey","other":"Add a passkey"},{"id":"Add folder","other":"Add folder"},{"id":"Add media or try another search.","other":"Add media or try another search."},{"id":"Add to","other":"Add to"},{"id":"Album","other":"Album"},{"id":"Albums","other":"Albums"},{"id":"all","other":"all"},{"id":"All ratings","other":"All ratings"},{"id":"AMD AMF","other":"AMD AMF"},{"id":"API key name","other":"API key name"},{"id":"API key scope does not allow this request","other":"API key scope does not allow this request"},{"id":"API key view failed","other":"API key view failed"},{"id":"API key · Kinosail Subtitles","other":"API key · Kinosail Subtitles"},{"id":"API keys","other":"API keys"},{"id":"Appearance","other":"Appearance"},{"id":"Apple VideoToolbox","other":"Apple VideoToolbox"},{"id":"Apply","other":"Apply"},{"id":"Audio","other":"Audio"},{"id":"Audiobooks","other":"Audiobooks"},{"id":"Authentication code","other":"Authentication code"},{"id":"Authentication or recovery code","other":"Authentication or recovery code"},{"id":"authentication required","other":"authentication required"},{"id":"Authorize device","other":"Authorize device"},{"id":"Automatic","other":"Automatic"},{"id":"automatic","other":"automatic"},{"id":"Automatic (browser)","other":"Automatic (browser)"},{"id":"Automatic backups","other":"Automatic backups"},{"id":"Automatic maintenance","other":"Automatic maintenance"},{"id":"Back to library","other":"Back to library"},{"id":"Back up now","other":"Back up now"},{"id":"backup is unavailable","other":"backup is unavailable"},{"id":"Backups need setup.","other":"Backups need setup."},{"id":"Backups · Kinosail Subtitles","other":"Backups · Kinosail Subtitles"},{"id":"Book","other":"Book"},{"id":"Books","other":"Books"},{"id":"Books and comics","other":"Books and comics"},{"id":"Browse library","other":"Browse library"},{"id":"Cancel","other":"Cancel"},{"id":"Cast","other":"Cast"},{"id":"Chapters","other":"Chapters"},{"id":"Choose the language for this browser.","other":"Choose the language for this browser."},{"id":"Code","other":"Code"},{"id":"Collection","other":"Collection"},{"id":"Collections","other":"Collections"},{"id":"Commercial","other":"Commercial"},{"id":"Compatibility","other":"Compatibility"},{"id":"Compatibility stream","other":"Compatibility stream"},{"id":"compatible","other":"compatible"},{"id":"Configuration error","other":"Configuration error"},{"id":"Configuration · Kinosail Subtitles","other":"Configuration · Kinosail Subtitles"},{"id":"Connect","other":"Connect"},{"id":"Connect a device","other":"Connect a device"},{"id":"Connected","other":"Connected"},{"id":"Connecting","other":"Connecting"},{"id":"Connecting…","other":"Connecting…"},{"id":"Content","other":"Content"},{"id":"Continue watching","other":"Continue watching"},{"id":"Copy this key now. Kinosail stores only its hash.","other":"Copy this key now. Kinosail stores only its hash."},{"id":"could not create MFA enrollment","other":"could not create MFA enrollment"},{"id":"could not create Owner Profile","other":"could not create Owner Profile"},{"id":"could not create session","other":"could not create session"},{"id":"could not end session","other":"could not end session"},{"id":"could not read subtitles","other":"could not read subtitles"},{"id":"Create","other":"Create"},{"id":"Create a passkey","other":"Create a passkey"},{"id":"Create passkey","other":"Create passkey"},{"id":"Created once","other":"Created once"},{"id":"Credentials configured","other":"Credentials configured"},{"id":"Credits","other":"Credits"},{"id":"cross-origin request denied","other":"cross-origin request denied"},{"id":"Curate","other":"Curate"},{"id":"Dark","other":"Dark"},{"id":"default","other":"default"},{"id":"Delete","other":"Delete"},{"id":"Deployment configuration","other":"Deployment configuration"},{"id":"Destination","other":"Destination"},{"id":"detected, unavailable","other":"detected, unavailable"},{"id":"Diagnostics","other":"Diagnostics"},{"id":"Direct","other":"Direct"},{"id":"direct","other":"direct"},{"id":"Direct connection unavailable","other":"Direct connection unavailable"},{"id":"Direct stream","other":"Direct stream"},{"id":"Directed by","other":"Directed by"},{"id":"Disaster recovery","other":"Disaster recovery"},{"id":"DLNA","other":"DLNA"},{"id":"Download","other":"Download"},{"id":"Download original","other":"Download original"},{"id":"Download portable state archive","other":"Download portable state archive"},{"id":"Download safe diagnostics","other":"Download safe diagnostics"},{"id":"Downloads","other":"Downloads"},{"id":"downloads are not enabled for this Viewer Profile","other":"downloads are not enabled for this Viewer Profile"},{"id":"embedded subtitles are unavailable","other":"embedded subtitles are unavailable"},{"id":"Enabled","other":"Enabled"},{"id":"Encryption is on.","other":"Encryption is on."},{"id":"Every 15 minutes","other":"Every 15 minutes"},{"id":"Every 5 minutes","other":"Every 5 minutes"},{"id":"Export full activity journal","other":"Export full activity journal"},{"id":"Find","other":"Find"},{"id":"Find something","other":"Find something"},{"id":"Finish sign in","other":"Finish sign in"},{"id":"Folder inside media mount","other":"Folder inside media mount"},{"id":"Follow this device or choose a fixed theme.","other":"Follow this device or choose a fixed theme."},{"id":"From","other":"From"},{"id":"from","other":"from"},{"id":"General","other":"General"},{"id":"Genres","other":"Genres"},{"id":"Group","other":"Group"},{"id":"Hardware","other":"Hardware"},{"id":"History","other":"History"},{"id":"Home","other":"Home"},{"id":"if enabled","other":"if enabled"},{"id":"Install","other":"Install"},{"id":"Intel Quick Sync","other":"Intel Quick Sync"},{"id":"Intro","other":"Intro"},{"id":"invalid authentication code","other":"invalid authentication code"},{"id":"invalid Collection state","other":"invalid Collection state"},{"id":"invalid credentials","other":"invalid credentials"},{"id":"invalid list state","other":"invalid list state"},{"id":"invalid playlist state","other":"invalid playlist state"},{"id":"invalid progress","other":"invalid progress"},{"id":"invalid watched state","other":"invalid watched state"},{"id":"Keep","other":"Keep"},{"id":"Kinosail","other":"Kinosail"},{"id":"Language","other":"Language"},{"id":"language is invalid","other":"language is invalid"},{"id":"Last error","other":"Last error"},{"id":"Last successful backup","other":"Last successful backup"},{"id":"Last verified","other":"Last verified"},{"id":"Latest","other":"Latest"},{"id":"Libraries","other":"Libraries"},{"id":"Library","other":"Library"},{"id":"Library folders","other":"Library folders"},{"id":"Library items","other":"Library items"},{"id":"Library organization","other":"Library organization"},{"id":"Licensed credential configured","other":"Licensed credential configured"},{"id":"Light","other":"Light"},{"id":"Local account","other":"Local account"},{"id":"Mark","other":"Mark"},{"id":"marker","other":"marker"},{"id":"Media","other":"Media"},{"id":"Media mount","other":"Media mount"},{"id":"metadata could not be saved","other":"metadata could not be saved"},{"id":"metadata is invalid","other":"metadata is invalid"},{"id":"metadata provider unavailable","other":"metadata provider unavailable"},{"id":"Metrics","other":"Metrics"},{"id":"Movies","other":"Movies"},{"id":"Music","other":"Music"},{"id":"My List","other":"My List"},{"id":"Name","other":"Name"},{"id":"Never","other":"Never"},{"id":"New password","other":"New password"},{"id":"New profile name","other":"New profile name"},{"id":"New profile password","other":"New profile password"},{"id":"New secret","other":"New secret"},{"id":"No activity recorded yet.","other":"No activity recorded yet."},{"id":"No device selected","other":"No device selected"},{"id":"No playback recorded yet.","other":"No playback recorded yet."},{"id":"None","other":"None"},{"id":"Not configured","other":"Not configured"},{"id":"not detected","other":"not detected"},{"id":"not found","other":"not found"},{"id":"Not now","other":"Not now"},{"id":"Nothing found.","other":"Nothing found."},{"id":"NVIDIA NVENC/NVDEC","other":"NVIDIA NVENC/NVDEC"},{"id":"Off","other":"Off"},{"id":"offline","other":"offline"},{"id":"Offline downloads","other":"Offline downloads"},{"id":"On","other":"On"},{"id":"OpenID Connect","other":"OpenID Connect"},{"id":"OpenSubtitles","other":"OpenSubtitles"},{"id":"Outro","other":"Outro"},{"id":"Owner","other":"Owner"},{"id":"Owner access required","other":"Owner access required"},{"id":"Owner controls","other":"Owner controls"},{"id":"Passkey added.","other":"Passkey added."},{"id":"Passkey failed.","other":"Passkey failed."},{"id":"Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.","other":"Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."},{"id":"Password","other":"Password"},{"id":"Photos","other":"Photos"},{"id":"Play","other":"Play"},{"id":"Play on device","other":"Play on device"},{"id":"Playback","other":"Playback"},{"id":"Playback history","other":"Playback history"},{"id":"Playback speed","other":"Playback speed"},{"id":"Playing here","other":"Playing here"},{"id":"Playing on device","other":"Playing on device"},{"id":"Playlist","other":"Playlist"},{"id":"Playlists","other":"Playlists"},{"id":"Plot","other":"Plot"},{"id":"Preferred language","other":"Preferred language"},{"id":"Prepare","other":"Prepare"},{"id":"preview unavailable","other":"preview unavailable"},{"id":"Profile","other":"Profile"},{"id":"profile storage is unavailable","other":"profile storage is unavailable"},{"id":"Profile type","other":"Profile type"},{"id":"Profiles","other":"Profiles"},{"id":"Protected automatically","other":"Protected automatically"},{"id":"Quality","other":"Quality"},{"id":"quality","other":"quality"},{"id":"Quick Connect","other":"Quick Connect"},{"id":"Rating","other":"Rating"},{"id":"Read now","other":"Read now"},{"id":"reader","other":"reader"},{"id":"ready","other":"ready"},{"id":"Ready offline","other":"Ready offline"},{"id":"Recap","other":"Recap"},{"id":"Recent activity","other":"Recent activity"},{"id":"Recent playback","other":"Recent playback"},{"id":"Recently added","other":"Recently added"},{"id":"Recently played","other":"Recently played"},{"id":"Recovery","other":"Recovery"},{"id":"Recovery codes","other":"Recovery codes"},{"id":"Recommended","other":"Recommended"},{"id":"Remote access","other":"Remote access"},{"id":"Remove","other":"Remove"},{"id":"Remove from","other":"Remove from"},{"id":"request","other":"request"},{"id":"Request could not be completed.","other":"Request could not be completed."},{"id":"request is too large","other":"request is too large"},{"id":"Return to settings","other":"Return to settings"},{"id":"Revoke","other":"Revoke"},{"id":"Rockchip RKMPP","other":"Rockchip RKMPP"},{"id":"Room disconnected · reload to reconnect","other":"Room disconnected · reload to reconnect"},{"id":"Safety scan","other":"Safety scan"},{"id":"Save","other":"Save"},{"id":"Save schedule","other":"Save schedule"},{"id":"Schedule","other":"Schedule"},{"id":"Search library","other":"Search library"},{"id":"Search results","other":"Search results"},{"id":"Secrets are hidden and included only in encrypted recovery backups.","other":"Secrets are hidden and included only in encrypted recovery backups."},{"id":"Secure your account","other":"Secure your account"},{"id":"Secure your account · Kinosail Subtitles","other":"Secure your account · Kinosail Subtitles"},{"id":"Server settings","other":"Server settings"},{"id":"Set up Kinosail Subtitles","other":"Set up Kinosail Subtitles"},{"id":"Settings","other":"Settings"},{"id":"Settings sections","other":"Settings sections"},{"id":"Settings · Kinosail Subtitles","other":"Settings · Kinosail Subtitles"},{"id":"Show","other":"Show"},{"id":"Shows","other":"Shows"},{"id":"Sign in","other":"Sign in"},{"id":"Sign in to your private media universe.","other":"Sign in to your private media universe."},{"id":"Sign in with passkey","other":"Sign in with passkey"},{"id":"Sign in with SSO","other":"Sign in with SSO"},{"id":"Sign in · Kinosail Subtitles","other":"Sign in · Kinosail Subtitles"},{"id":"Sign out","other":"Sign out"},{"id":"Single sign-on","other":"Single sign-on"},{"id":"Skip","other":"Skip"},{"id":"Skip to content","other":"Skip to content"},{"id":"Software","other":"Software"},{"id":"Sort","other":"Sort"},{"id":"Source","other":"Source"},{"id":"speed","other":"speed"},{"id":"SSO challenge is invalid or expired","other":"SSO challenge is invalid or expired"},{"id":"SSO code exchange failed","other":"SSO code exchange failed"},{"id":"SSO identity is not linked to a Viewer Profile","other":"SSO identity is not linked to a Viewer Profile"},{"id":"SSO is unavailable","other":"SSO is unavailable"},{"id":"SSO session could not be created","other":"SSO session could not be created"},{"id":"SSO state is invalid or expired","other":"SSO state is invalid or expired"},{"id":"SSO token validation failed","other":"SSO token validation failed"},{"id":"Status","other":"Status"},{"id":"Store these codes somewhere safe. Each works once.","other":"Store these codes somewhere safe. Each works once."},{"id":"Subtitle provider","other":"Subtitle provider"},{"id":"subtitle provider unavailable","other":"subtitle provider unavailable"},{"id":"Subtitles","other":"Subtitles"},{"id":"subtitles","other":"subtitles"},{"id":"Sync","other":"Sync"},{"id":"System","other":"System"},{"id":"Tagline","other":"Tagline"},{"id":"Theme","other":"Theme"},{"id":"This Collection is empty.","other":"This Collection is empty."},{"id":"This permanently deletes the Collection.","other":"This permanently deletes the Collection."},{"id":"This permanently deletes the playlist.","other":"This permanently deletes the playlist."},{"id":"This playlist is empty.","other":"This playlist is empty."},{"id":"This product uses the TMDB API but is not endorsed or certified by TMDB.","other":"This product uses the TMDB API but is not endorsed or certified by TMDB."},{"id":"Through PG / TV-PG","other":"Through PG / TV-PG"},{"id":"Through PG-13 / TV-14","other":"Through PG-13 / TV-14"},{"id":"Title","other":"Title"},{"id":"Title, artist, genre","other":"Title, artist, genre"},{"id":"Title, artist, genre…","other":"Title, artist, genre…"},{"id":"TMDB","other":"TMDB"},{"id":"Tone-map HDR to SDR","other":"Tone-map HDR to SDR"},{"id":"too many login attempts","other":"too many login attempts"},{"id":"too many Watch Together rooms","other":"too many Watch Together rooms"},{"id":"Track","other":"Track"},{"id":"Transcoder","other":"Transcoder"},{"id":"transcoding is not allowed","other":"transcoding is not allowed"},{"id":"Try again","other":"Try again"},{"id":"Two-factor authentication","other":"Two-factor authentication"},{"id":"Two-factor authentication · Kinosail Subtitles","other":"Two-factor authentication · Kinosail Subtitles"},{"id":"Type","other":"Type"},{"id":"Until","other":"Until"},{"id":"Unwatched","other":"Unwatched"},{"id":"unwatched","other":"unwatched"},{"id":"Use default","other":"Use default"},{"id":"VA-API (AMD/Intel)","other":"VA-API (AMD/Intel)"},{"id":"Verify latest backup","other":"Verify latest backup"},{"id":"Video","other":"Video"},{"id":"Viewer","other":"Viewer"},{"id":"Viewer access is not available","other":"Viewer access is not available"},{"id":"Waiting for your passkey…","other":"Waiting for your passkey…"},{"id":"Watch Together state is invalid","other":"Watch Together state is invalid"},{"id":"watched","other":"watched"},{"id":"Watched","other":"Watched"},{"id":"Welcome aboard","other":"Welcome aboard"},{"id":"when ready.","other":"when ready."},{"id":"Year","other":"Year"},{"id":"Your library","other":"Your library"},{"id":"Scanning your Library","other":"Scanning your Library"},{"id":"Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.","other":"Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete."}]
+[
+  {
+    "id": "15 minutes",
+    "other": "15 मिनट"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 मिनट"
+  },
+  {
+    "id": "Access",
+    "other": "पहुँच"
+  },
+  {
+    "id": "Account · Kinosail Subtitles",
+    "other": "खाता · Kinosail Subtitles"
+  },
+  {
+    "id": "Actions",
+    "other": "कार्रवाइयाँ"
+  },
+  {
+    "id": "active session(s)",
+    "other": "active session(s)"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "पासकी जोड़ें"
+  },
+  {
+    "id": "Add folder",
+    "other": "फ़ोल्डर जोड़ें"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "मीडिया जोड़ें या दूसरी खोज आज़माएँ।"
+  },
+  {
+    "id": "Add to",
+    "other": "में जोड़ें"
+  },
+  {
+    "id": "Album",
+    "other": "एल्बम"
+  },
+  {
+    "id": "Albums",
+    "other": "एल्बम"
+  },
+  {
+    "id": "all",
+    "other": "सभी"
+  },
+  {
+    "id": "All ratings",
+    "other": "सभी रेटिंग"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "API key name",
+    "other": "API key का नाम"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "API key का दायरा इस अनुरोध की अनुमति नहीं देता"
+  },
+  {
+    "id": "API key view failed",
+    "other": "API key view failed"
+  },
+  {
+    "id": "API key · Kinosail Subtitles",
+    "other": "API key · Kinosail Subtitles"
+  },
+  {
+    "id": "API keys",
+    "other": "API keys"
+  },
+  {
+    "id": "Appearance",
+    "other": "रूप"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "लागू करें"
+  },
+  {
+    "id": "Audio",
+    "other": "ऑडियो"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "ऑडियोबुक"
+  },
+  {
+    "id": "Authentication code",
+    "other": "प्रमाणीकरण कोड"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "प्रमाणीकरण या पुनर्प्राप्ति कोड"
+  },
+  {
+    "id": "authentication required",
+    "other": "प्रमाणीकरण आवश्यक है"
+  },
+  {
+    "id": "Authorize device",
+    "other": "डिवाइस को अधिकृत करें"
+  },
+  {
+    "id": "Automatic",
+    "other": "स्वचालित"
+  },
+  {
+    "id": "automatic",
+    "other": "स्वचालित"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "स्वचालित (ब्राउज़र)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "स्वचालित बैकअप"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "स्वचालित रखरखाव"
+  },
+  {
+    "id": "Back to library",
+    "other": "लाइब्रेरी पर वापस जाएँ"
+  },
+  {
+    "id": "Back up now",
+    "other": "अभी बैकअप लें"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "backup is unavailable"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "बैकअप के लिए सेटअप ज़रूरी है।"
+  },
+  {
+    "id": "Backups · Kinosail Subtitles",
+    "other": "बैकअप · Kinosail Subtitles"
+  },
+  {
+    "id": "Book",
+    "other": "किताब"
+  },
+  {
+    "id": "Books",
+    "other": "किताबें"
+  },
+  {
+    "id": "Books and comics",
+    "other": "किताबें और कॉमिक्स"
+  },
+  {
+    "id": "Browse library",
+    "other": "लाइब्रेरी देखें"
+  },
+  {
+    "id": "Cancel",
+    "other": "रद्द करें"
+  },
+  {
+    "id": "Cast",
+    "other": "कास्ट"
+  },
+  {
+    "id": "Chapters",
+    "other": "अध्याय"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "इस ब्राउज़र के लिए भाषा चुनें।"
+  },
+  {
+    "id": "Code",
+    "other": "कोड"
+  },
+  {
+    "id": "Collection",
+    "other": "संग्रह"
+  },
+  {
+    "id": "Collections",
+    "other": "संग्रह"
+  },
+  {
+    "id": "Commercial",
+    "other": "विज्ञापन"
+  },
+  {
+    "id": "Compatibility",
+    "other": "संगतता"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "Compatibility stream"
+  },
+  {
+    "id": "compatible",
+    "other": "संगत"
+  },
+  {
+    "id": "Configuration error",
+    "other": "कॉन्फ़िगरेशन त्रुटि"
+  },
+  {
+    "id": "Configuration · Kinosail Subtitles",
+    "other": "कॉन्फ़िगरेशन · Kinosail Subtitles"
+  },
+  {
+    "id": "Connect",
+    "other": "जुड़ें"
+  },
+  {
+    "id": "Connect a device",
+    "other": "डिवाइस जोड़ें"
+  },
+  {
+    "id": "Connected",
+    "other": "जुड़ा हुआ"
+  },
+  {
+    "id": "Connecting",
+    "other": "जुड़ रहा है"
+  },
+  {
+    "id": "Connecting…",
+    "other": "जुड़ रहा है…"
+  },
+  {
+    "id": "Content",
+    "other": "सामग्री"
+  },
+  {
+    "id": "Continue watching",
+    "other": "देखना जारी रखें"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "Copy this key now. Kinosail stores only its hash."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "could not create MFA enrollment"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "could not create Owner Profile"
+  },
+  {
+    "id": "could not create session",
+    "other": "could not create session"
+  },
+  {
+    "id": "could not end session",
+    "other": "could not end session"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "could not read subtitles"
+  },
+  {
+    "id": "Create",
+    "other": "बनाएँ"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "पासकी बनाएँ"
+  },
+  {
+    "id": "Create passkey",
+    "other": "पासकी बनाएँ"
+  },
+  {
+    "id": "Created once",
+    "other": "Created once"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "क्रेडेंशियल कॉन्फ़िगर किए गए"
+  },
+  {
+    "id": "Credits",
+    "other": "क्रेडिट"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "cross-origin request denied"
+  },
+  {
+    "id": "Curate",
+    "other": "क्यूरेट करें"
+  },
+  {
+    "id": "Dark",
+    "other": "गहरा"
+  },
+  {
+    "id": "default",
+    "other": "डिफ़ॉल्ट"
+  },
+  {
+    "id": "Delete",
+    "other": "हटाएँ"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "डिप्लॉयमेंट कॉन्फ़िगरेशन"
+  },
+  {
+    "id": "Destination",
+    "other": "गंतव्य"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "पाया गया, उपलब्ध नहीं"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "निदान"
+  },
+  {
+    "id": "Direct",
+    "other": "डायरेक्ट"
+  },
+  {
+    "id": "direct",
+    "other": "डायरेक्ट"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "डायरेक्ट कनेक्शन उपलब्ध नहीं है"
+  },
+  {
+    "id": "Direct stream",
+    "other": "Direct stream"
+  },
+  {
+    "id": "Directed by",
+    "other": "निर्देशक"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "आपदा पुनर्प्राप्ति"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "डाउनलोड"
+  },
+  {
+    "id": "Download original",
+    "other": "मूल फ़ाइल डाउनलोड करें"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "Download portable state archive"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "सुरक्षित निदान डाउनलोड करें"
+  },
+  {
+    "id": "Downloads",
+    "other": "डाउनलोड"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "downloads are not enabled for this Viewer Profile"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "embedded subtitles are unavailable"
+  },
+  {
+    "id": "Enabled",
+    "other": "चालू"
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "एन्क्रिप्शन चालू है।"
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "हर 15 मिनट में"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "हर 5 मिनट में"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "पूरी गतिविधि जर्नल निर्यात करें"
+  },
+  {
+    "id": "Find",
+    "other": "खोजें"
+  },
+  {
+    "id": "Find something",
+    "other": "कुछ खोजें"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "Finish sign in"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "मीडिया माउंट के अंदर का फ़ोल्डर"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "Follow this device or choose a fixed theme."
+  },
+  {
+    "id": "From",
+    "other": "से"
+  },
+  {
+    "id": "from",
+    "other": "से"
+  },
+  {
+    "id": "General",
+    "other": "सामान्य"
+  },
+  {
+    "id": "Genres",
+    "other": "शैलियाँ"
+  },
+  {
+    "id": "Group",
+    "other": "समूह"
+  },
+  {
+    "id": "Hardware",
+    "other": "हार्डवेयर"
+  },
+  {
+    "id": "History",
+    "other": "इतिहास"
+  },
+  {
+    "id": "Home",
+    "other": "होम"
+  },
+  {
+    "id": "if enabled",
+    "other": "चालू होने पर"
+  },
+  {
+    "id": "Install",
+    "other": "इंस्टॉल करें"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "परिचय"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "invalid authentication code"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "invalid Collection state"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "invalid credentials"
+  },
+  {
+    "id": "invalid list state",
+    "other": "invalid list state"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "invalid playlist state"
+  },
+  {
+    "id": "invalid progress",
+    "other": "invalid progress"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "invalid watched state"
+  },
+  {
+    "id": "Keep",
+    "other": "रखें"
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Language",
+    "other": "भाषा"
+  },
+  {
+    "id": "language is invalid",
+    "other": "language is invalid"
+  },
+  {
+    "id": "Last error",
+    "other": "पिछली त्रुटि"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "आखिरी सफल बैकअप"
+  },
+  {
+    "id": "Last verified",
+    "other": "आखिरी बार सत्यापित"
+  },
+  {
+    "id": "Latest",
+    "other": "नवीनतम"
+  },
+  {
+    "id": "Libraries",
+    "other": "लाइब्रेरी"
+  },
+  {
+    "id": "Library",
+    "other": "लाइब्रेरी"
+  },
+  {
+    "id": "Library folders",
+    "other": "लाइब्रेरी फ़ोल्डर"
+  },
+  {
+    "id": "Library items",
+    "other": "लाइब्रेरी आइटम"
+  },
+  {
+    "id": "Library organization",
+    "other": "लाइब्रेरी व्यवस्था"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "लाइसेंस वाला क्रेडेंशियल कॉन्फ़िगर किया गया"
+  },
+  {
+    "id": "Light",
+    "other": "हल्का"
+  },
+  {
+    "id": "Local account",
+    "other": "स्थानीय खाता"
+  },
+  {
+    "id": "Mark",
+    "other": "चिह्नित करें"
+  },
+  {
+    "id": "marker",
+    "other": "मार्कर"
+  },
+  {
+    "id": "Media",
+    "other": "मीडिया"
+  },
+  {
+    "id": "Media mount",
+    "other": "मीडिया माउंट"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "metadata could not be saved"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "metadata is invalid"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "metadata provider unavailable"
+  },
+  {
+    "id": "Metrics",
+    "other": "मेट्रिक्स"
+  },
+  {
+    "id": "Movies",
+    "other": "फ़िल्में"
+  },
+  {
+    "id": "Music",
+    "other": "संगीत"
+  },
+  {
+    "id": "My List",
+    "other": "मेरी सूची"
+  },
+  {
+    "id": "Name",
+    "other": "नाम"
+  },
+  {
+    "id": "Never",
+    "other": "कभी नहीं"
+  },
+  {
+    "id": "New password",
+    "other": "नया पासवर्ड"
+  },
+  {
+    "id": "New profile name",
+    "other": "नई प्रोफ़ाइल का नाम"
+  },
+  {
+    "id": "New profile password",
+    "other": "नई प्रोफ़ाइल का पासवर्ड"
+  },
+  {
+    "id": "New secret",
+    "other": "नया सीक्रेट"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "अभी तक कोई गतिविधि दर्ज नहीं है।"
+  },
+  {
+    "id": "No device selected",
+    "other": "कोई डिवाइस चुना नहीं गया"
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "अभी तक कोई प्लेबैक दर्ज नहीं है।"
+  },
+  {
+    "id": "None",
+    "other": "कोई नहीं"
+  },
+  {
+    "id": "Not configured",
+    "other": "कॉन्फ़िगर नहीं है"
+  },
+  {
+    "id": "not detected",
+    "other": "पाया नहीं गया"
+  },
+  {
+    "id": "not found",
+    "other": "not found"
+  },
+  {
+    "id": "Not now",
+    "other": "अभी नहीं"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "कुछ नहीं मिला।"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "बंद"
+  },
+  {
+    "id": "offline",
+    "other": "ऑफ़लाइन"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "ऑफ़लाइन डाउनलोड"
+  },
+  {
+    "id": "On",
+    "other": "चालू"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "समापन"
+  },
+  {
+    "id": "Owner",
+    "other": "स्वामी"
+  },
+  {
+    "id": "Owner access required",
+    "other": "स्वामी की पहुँच आवश्यक है"
+  },
+  {
+    "id": "Owner controls",
+    "other": "स्वामी नियंत्रण"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "पासकी जोड़ दी गई।"
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "Passkey failed."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "पासवर्ड"
+  },
+  {
+    "id": "Photos",
+    "other": "फ़ोटो"
+  },
+  {
+    "id": "Play",
+    "other": "चलाएँ"
+  },
+  {
+    "id": "Play on device",
+    "other": "डिवाइस पर चलाएँ"
+  },
+  {
+    "id": "Playback",
+    "other": "प्लेबैक"
+  },
+  {
+    "id": "Playback history",
+    "other": "प्लेबैक इतिहास"
+  },
+  {
+    "id": "Playback speed",
+    "other": "प्लेबैक गति"
+  },
+  {
+    "id": "Playing here",
+    "other": "यहाँ चल रहा है"
+  },
+  {
+    "id": "Playing on device",
+    "other": "डिवाइस पर चल रहा है"
+  },
+  {
+    "id": "Playlist",
+    "other": "प्लेलिस्ट"
+  },
+  {
+    "id": "Playlists",
+    "other": "प्लेलिस्ट"
+  },
+  {
+    "id": "Plot",
+    "other": "कथानक"
+  },
+  {
+    "id": "Preferred language",
+    "other": "पसंदीदा भाषा"
+  },
+  {
+    "id": "Prepare",
+    "other": "तैयार करें"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "preview unavailable"
+  },
+  {
+    "id": "Profile",
+    "other": "प्रोफ़ाइल"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "profile storage is unavailable"
+  },
+  {
+    "id": "Profile type",
+    "other": "प्रोफ़ाइल प्रकार"
+  },
+  {
+    "id": "Profiles",
+    "other": "प्रोफ़ाइल"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "अपने आप सुरक्षित"
+  },
+  {
+    "id": "Quality",
+    "other": "गुणवत्ता"
+  },
+  {
+    "id": "quality",
+    "other": "गुणवत्ता"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "Quick Connect"
+  },
+  {
+    "id": "Rating",
+    "other": "रेटिंग"
+  },
+  {
+    "id": "Read now",
+    "other": "अभी पढ़ें"
+  },
+  {
+    "id": "reader",
+    "other": "रीडर"
+  },
+  {
+    "id": "ready",
+    "other": "तैयार"
+  },
+  {
+    "id": "Ready offline",
+    "other": "Ready offline"
+  },
+  {
+    "id": "Recap",
+    "other": "सारांश"
+  },
+  {
+    "id": "Recent activity",
+    "other": "हाल की गतिविधि"
+  },
+  {
+    "id": "Recent playback",
+    "other": "हाल का प्लेबैक"
+  },
+  {
+    "id": "Recently added",
+    "other": "हाल में जोड़ा गया"
+  },
+  {
+    "id": "Recently played",
+    "other": "हाल में चलाया गया"
+  },
+  {
+    "id": "Recovery",
+    "other": "पुनर्प्राप्ति"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "पुनर्प्राप्ति कोड"
+  },
+  {
+    "id": "Recommended",
+    "other": "अनुशंसित"
+  },
+  {
+    "id": "Remote access",
+    "other": "रिमोट पहुँच"
+  },
+  {
+    "id": "Remove",
+    "other": "हटाएँ"
+  },
+  {
+    "id": "Remove from",
+    "other": "इससे हटाएँ"
+  },
+  {
+    "id": "request",
+    "other": "अनुरोध"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "अनुरोध पूरा नहीं हो सका।"
+  },
+  {
+    "id": "request is too large",
+    "other": "request is too large"
+  },
+  {
+    "id": "Return to settings",
+    "other": "सेटिंग पर लौटें"
+  },
+  {
+    "id": "Revoke",
+    "other": "रद्द करें"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "कमरा कनेक्शन से बाहर है · फिर से जुड़ने के लिए रीलोड करें"
+  },
+  {
+    "id": "Safety scan",
+    "other": "सुरक्षा स्कैन"
+  },
+  {
+    "id": "Save",
+    "other": "सहेजें"
+  },
+  {
+    "id": "Save schedule",
+    "other": "शेड्यूल सहेजें"
+  },
+  {
+    "id": "Schedule",
+    "other": "शेड्यूल"
+  },
+  {
+    "id": "Search library",
+    "other": "लाइब्रेरी खोजें"
+  },
+  {
+    "id": "Search results",
+    "other": "खोज परिणाम"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "सीक्रेट छिपे रहते हैं और केवल एन्क्रिप्टेड पुनर्प्राप्ति बैकअप में शामिल होते हैं।"
+  },
+  {
+    "id": "Secure your account",
+    "other": "अपने खाते को सुरक्षित करें"
+  },
+  {
+    "id": "Secure your account · Kinosail Subtitles",
+    "other": "अपने खाते को सुरक्षित करें · Kinosail Subtitles"
+  },
+  {
+    "id": "Server settings",
+    "other": "सर्वर सेटिंग"
+  },
+  {
+    "id": "Set up Kinosail Subtitles",
+    "other": "Kinosail Subtitles सेट अप करें"
+  },
+  {
+    "id": "Settings",
+    "other": "सेटिंग"
+  },
+  {
+    "id": "Settings sections",
+    "other": "सेटिंग के भाग"
+  },
+  {
+    "id": "Settings · Kinosail Subtitles",
+    "other": "सेटिंग · Kinosail Subtitles"
+  },
+  {
+    "id": "Show",
+    "other": "शो"
+  },
+  {
+    "id": "Shows",
+    "other": "शो"
+  },
+  {
+    "id": "Sign in",
+    "other": "साइन इन"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "Sign in to your private media universe."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "पासकी से साइन इन करें"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "SSO से साइन इन करें"
+  },
+  {
+    "id": "Sign in · Kinosail Subtitles",
+    "other": "साइन इन · Kinosail Subtitles"
+  },
+  {
+    "id": "Sign out",
+    "other": "साइन आउट"
+  },
+  {
+    "id": "Single sign-on",
+    "other": "सिंगल साइन-ऑन"
+  },
+  {
+    "id": "Skip",
+    "other": "छोड़ें"
+  },
+  {
+    "id": "Skip to content",
+    "other": "सामग्री पर जाएँ"
+  },
+  {
+    "id": "Software",
+    "other": "सॉफ़्टवेयर"
+  },
+  {
+    "id": "Sort",
+    "other": "क्रमबद्ध करें"
+  },
+  {
+    "id": "Source",
+    "other": "स्रोत"
+  },
+  {
+    "id": "speed",
+    "other": "गति"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO challenge is invalid or expired"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "SSO code exchange failed"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "SSO identity is not linked to a Viewer Profile"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO is unavailable"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "SSO session could not be created"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "SSO state is invalid or expired"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "SSO token validation failed"
+  },
+  {
+    "id": "Status",
+    "other": "स्थिति"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "इन कोड को किसी सुरक्षित जगह रखें। हर कोड एक बार काम करता है।"
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "सबटाइटल प्रदाता"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "subtitle provider unavailable"
+  },
+  {
+    "id": "Subtitles",
+    "other": "सबटाइटल"
+  },
+  {
+    "id": "subtitles",
+    "other": "सबटाइटल"
+  },
+  {
+    "id": "Sync",
+    "other": "सिंक"
+  },
+  {
+    "id": "System",
+    "other": "सिस्टम"
+  },
+  {
+    "id": "Tagline",
+    "other": "टैगलाइन"
+  },
+  {
+    "id": "Theme",
+    "other": "थीम"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "यह संग्रह खाली है।"
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "इससे संग्रह हमेशा के लिए हट जाएगा।"
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "इससे प्लेलिस्ट हमेशा के लिए हट जाएगी।"
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "यह प्लेलिस्ट खाली है।"
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "यह उत्पाद TMDB API का उपयोग करता है, लेकिन TMDB द्वारा इसका समर्थन या प्रमाणन नहीं है।"
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "PG / TV-PG तक"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "PG-13 / TV-14 तक"
+  },
+  {
+    "id": "Title",
+    "other": "शीर्षक"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "शीर्षक, कलाकार, शैली"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "शीर्षक, कलाकार, शैली…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "HDR को SDR में टोन-मैप करें"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "साइन इन के बहुत अधिक प्रयास"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "साथ मिलकर देखने के बहुत अधिक कमरे"
+  },
+  {
+    "id": "Track",
+    "other": "ट्रैक"
+  },
+  {
+    "id": "Transcoder",
+    "other": "ट्रांसकोडर"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "ट्रांसकोडिंग की अनुमति नहीं है"
+  },
+  {
+    "id": "Try again",
+    "other": "फिर से कोशिश करें"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "टू-फ़ैक्टर प्रमाणीकरण"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Subtitles",
+    "other": "टू-फ़ैक्टर प्रमाणीकरण · Kinosail Subtitles"
+  },
+  {
+    "id": "Type",
+    "other": "प्रकार"
+  },
+  {
+    "id": "Until",
+    "other": "तक"
+  },
+  {
+    "id": "Unwatched",
+    "other": "बिना देखा"
+  },
+  {
+    "id": "unwatched",
+    "other": "बिना देखा"
+  },
+  {
+    "id": "Use default",
+    "other": "डिफ़ॉल्ट इस्तेमाल करें"
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "नवीनतम बैकअप सत्यापित करें"
+  },
+  {
+    "id": "Video",
+    "other": "वीडियो"
+  },
+  {
+    "id": "Viewer",
+    "other": "दर्शक"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "दर्शक पहुँच उपलब्ध नहीं है"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "आपकी पासकी का इंतज़ार है…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "साथ मिलकर देखने की स्थिति अमान्य है"
+  },
+  {
+    "id": "watched",
+    "other": "देखा गया"
+  },
+  {
+    "id": "Watched",
+    "other": "देखा गया"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "स्वागत है"
+  },
+  {
+    "id": "when ready.",
+    "other": "तैयार होने पर।"
+  },
+  {
+    "id": "Year",
+    "other": "वर्ष"
+  },
+  {
+    "id": "Your library",
+    "other": "आपकी लाइब्रेरी"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "आपकी लाइब्रेरी स्कैन हो रही है"
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "Kinosail Subtitles आपके मीडिया फ़ोल्डर पढ़ रहा है। स्कैन पूरा होने पर सबटाइटल कवरेज यहाँ दिखेगा।"
+  }
+]

@@ -52,6 +52,8 @@ Double-click the video to enter or leave fullscreen. The browser remembers your 
 
 Use the theme control to choose the appearance you prefer. Language choices apply to supported interface translations; media titles and descriptions come from your library metadata.
 
+The web app, Android, and Apple apps are fully translated into these languages: Arabic, Bengali, Bulgarian, Catalan, Chinese (Simplified and Traditional), Croatian, Czech, Danish, Dutch, English, Filipino, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Malay, Norwegian Bokmål, Persian, Polish, Portuguese (Brazil and Portugal), Romanian, Russian, Slovak, Spanish, Swedish, Thai, Turkish, Ukrainian, and Vietnamese. The language menu lists more languages. Those are partly translated and show English for the rest.
+
 On a phone, open **More → Customize tabs** to choose and order up to four destinations. Other destinations remain in **More**. Use **Reset to default tabs** to restore Home, TV Shows, Movies, and Search. These choices are saved for this Viewer Profile in this browser, so another browser or Profile can have different tabs.
 
 Owners can change household desktop navigation in **Settings → Appearance → Navigation**. Desktop changes do not change personal mobile tabs. If a destination is missing from both places, check library permissions. See [Profiles and household access]({{ '/user-guide/profiles/' | relative_url }}).
