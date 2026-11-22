@@ -63,7 +63,7 @@ func (auth *authentication) apiSessionConfig() identitycore.APISessionConfig {
 		AllowCredential: auth.allowCredentialLogin, Authenticate: auth.profiles.authenticate,
 		VerifySecondFactor: auth.profiles.verifySecondFactor, CredentialSucceeded: auth.credentialLoginSucceeded,
 		CreateSession: auth.profiles.createSession, CreateStrongSession: auth.profiles.createStrongSession,
-		MFARequired: func(viewerProfile) bool { return auth.settings.requireMFA() },
+		MFARequired: auth.mfaRequired,
 		SetAudit:    setAuditViewer, Error: apiError, JSON: writeJSON,
 	}
 }
@@ -96,7 +96,7 @@ func (auth *authentication) createAPISetup(writer http.ResponseWriter, request *
 		return
 	}
 	setAuditViewer(request, profile)
-	result := map[string]any{"token": token, "expiresIn": 2592000, "mfaEnrollmentRequired": auth.settings.requireMFA() && !profile.Secured(), "mfaRecommended": !profile.Secured()}
+	result := map[string]any{"token": token, "expiresIn": 2592000, "mfaEnrollmentRequired": auth.mfaRequired(profile) && !profile.Secured(), "mfaRecommended": !profile.Secured()}
 	if enrollment != nil {
 		result["totp"] = enrollmentJSON(*enrollment)
 	}

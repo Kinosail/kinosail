@@ -72,7 +72,8 @@ function bindDisclosureControls() {
     const summary = disclosure?.querySelector(":scope > summary");
     if (!(disclosure instanceof HTMLDetailsElement) || !summary) return;
     event.preventDefault();
-    openWithParents(disclosure);
+    disclosure.open = true;
+    openWithParents(disclosure.parentElement);
     history[location.hash === link.hash ? "replaceState" : "pushState"](null, "", link.hash);
     disclosure.scrollIntoView({ block: "start" });
     summary.focus({ preventScroll: true });

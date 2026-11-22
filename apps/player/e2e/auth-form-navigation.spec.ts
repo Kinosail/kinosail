@@ -12,7 +12,7 @@ for (const path of ["/login", "/login?next=/", "/setup"] as const) for (const sc
   if (scenario === "normal-delayed-script" && path !== "/setup") continue;
   test(`${path} navigation recovery preserves the first document's ${scenario} evidence`, {tag: "@smoke"}, async ({browser}, info) => {
     const formPath = new URL(path, "http://fixture").pathname;
-    const submitLabel = formPath === "/setup" ? "Create account & continue" : "Sign in";
+    const submitLabel = formPath === "/setup" ? "Create Owner & continue" : "Sign in";
     let gets = 0, posts = 0, calls = 0, settled = false, release!: () => void;
     const barrier = new Promise<void>(resolve => release = resolve);
     const server = createServer(async (request, response) => {

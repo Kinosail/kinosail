@@ -16,6 +16,10 @@ func ownerProtectionRequired(profile viewerProfile, pattern string) bool {
 	return profile.Owner && profile.ID != "local-owner" && !profile.Secured() && protectedOwnerRoutes[pattern]
 }
 
+func (auth *authentication) mfaRequired(profile viewerProfile) bool {
+	return !profile.Owner && auth.settings.requireMFA()
+}
+
 func defaultLibraries(mediaRoot string) []string {
 	root := filepath.Clean(mediaRoot)
 	if mediaRoot != "" && filepath.Dir(root) == root {

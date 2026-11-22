@@ -201,3 +201,32 @@ func TestUnprotectedOwnerMustAddSecondFactorBeforeSensitiveChanges(t *testing.T)
 	assertAPIBody(t, listing, http.StatusOK, `[]`)
 	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/settings/configuration", "", owner), http.StatusOK, `value="127.0.0.1:38127"`)
 }
+
+func TestFreshInstallRequiresViewerProtectionButLetsOwnersChoose(t *testing.T) {
+	t.Parallel()
+	media, _ := wizardMedia(t)
+	handler, owner := wizardOwner(t, media)
+	for _, body := range []string{"name=Sam&password=viewer-password&rating=all&libraries=all", "name=Partner&password=partner-password&owner=true"} {
+		if created := requestWithCookie(t, handler, http.MethodPost, "/settings/profiles", body, owner); created.Code != http.StatusSeeOther {
+			t.Fatalf("create profile = %d %q", created.Code, created.Body.String())
+		}
+	}
+	viewerLogin := webFormCall(t, handler, "", "/login", url.Values{"name": {"Sam"}, "password": {"viewer-password"}})
+	if viewerLogin.Code != http.StatusSeeOther || viewerLogin.Header().Get("Location") != "/account?mfa=required" {
+		t.Fatalf("Viewer sign-in = %d %q", viewerLogin.Code, viewerLogin.Header().Get("Location"))
+	}
+	if library := requestWithCookie(t, handler, http.MethodGet, "/api/v1/library", "", viewerLogin.Result().Cookies()[0]); library.Code != http.StatusForbidden {
+		t.Fatalf("unprotected Viewer library = %d", library.Code)
+	}
+	partnerLogin := webFormCall(t, handler, "", "/login", url.Values{"name": {"Partner"}, "password": {"partner-password"}})
+	if partnerLogin.Code != http.StatusSeeOther || strings.Contains(partnerLogin.Header().Get("Location"), "mfa=required") {
+		t.Fatalf("Owner sign-in = %d %q", partnerLogin.Code, partnerLogin.Header().Get("Location"))
+	}
+	partner := partnerLogin.Result().Cookies()[0]
+	if library := requestWithCookie(t, handler, http.MethodGet, "/api/v1/library", "", partner); library.Code != http.StatusOK {
+		t.Fatalf("unprotected Owner library = %d", library.Code)
+	}
+	if key := requestWithCookie(t, handler, http.MethodPost, "/api/v1/api-keys", `{"name":"Script"}`, partner); key.Code != http.StatusForbidden {
+		t.Fatalf("unprotected Owner API key = %d %q", key.Code, key.Body.String())
+	}
+}

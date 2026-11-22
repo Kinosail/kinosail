@@ -68,7 +68,7 @@ func (auth *authentication) login(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 	setAuditViewer(request, profile)
-	if auth.settings.requireMFA() && !profile.Secured() {
+	if auth.mfaRequired(profile) && !profile.Secured() {
 		http.Redirect(writer, request, "/account?mfa=required", http.StatusSeeOther)
 		return
 	}
