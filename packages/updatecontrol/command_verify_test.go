@@ -14,7 +14,7 @@ import (
 
 type recordedClient struct {
 	requests  []string
-	responses map[string]*http.Response
+	responses map[string]fakeResponse
 	err       error
 }
 
@@ -27,13 +27,18 @@ func (client *recordedClient) Do(request *http.Request) (*http.Response, error) 
 		return nil, client.err
 	}
 	if response, ok := client.responses[request.URL.String()]; ok {
-		return response, nil
+		return &http.Response{StatusCode: response.status, Body: io.NopCloser(bytes.NewReader(response.body))}, nil
 	}
 	return &http.Response{StatusCode: http.StatusNotFound, Body: io.NopCloser(strings.NewReader("missing"))}, nil
 }
 
-func okResponse(body []byte) *http.Response {
-	return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(bytes.NewReader(body))}
+type fakeResponse struct {
+	status int
+	body   []byte
+}
+
+func okResponse(body []byte) fakeResponse {
+	return fakeResponse{status: http.StatusOK, body: body}
 }
 
 func verifyCommand(t *testing.T, client HTTPClient, material func(string) (root.TrustedMaterial, error)) Command {
@@ -51,12 +56,12 @@ func TestUpdateVerifyRejectsUnsignedOrForgedChannelsBeforeFetchingReleases(t *te
 	material := publicGoodRoot(t)
 	channel := "https://github.com/Kinosail/kinosail/releases/download/player-channel/channel.json"
 	releaseSignature := readFixture(t, "player-v0.1.0/kinosail-release.json.sigstore.json")
-	cases := map[string]map[string]*http.Response{
+	cases := map[string]map[string]fakeResponse{
 		"missing channel":            {},
 		"unsigned channel":           {channel: okResponse(channelStatement("latest", `"v0.1.0"`))},
 		"release signature replayed": {channel: okResponse(channelStatement("latest", `"v0.1.0"`)), channel + ".sigstore.json": okResponse(releaseSignature)},
 		"oversized channel":          {channel: okResponse(bytes.Repeat([]byte("a"), signedInputLimit+1)), channel + ".sigstore.json": okResponse(releaseSignature)},
-		"server error":               {channel: {StatusCode: http.StatusInternalServerError, Body: io.NopCloser(strings.NewReader("{}"))}},
+		"server error":               {channel: {status: http.StatusInternalServerError, body: []byte("{}")}},
 	}
 	for name, responses := range cases {
 		client := &recordedClient{responses: responses}
