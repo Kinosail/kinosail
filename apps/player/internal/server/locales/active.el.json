@@ -4786,5 +4786,9 @@
   {
     "id": "). This is the address your paired device uses to find your Server.",
     "other": "). Αυτή είναι η διεύθυνση που χρησιμοποιεί η συζευγμένη συσκευή σας για να βρει τον διακομιστή σας."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "Αυτή η διεύθυνση δεν επιτρέπεται. Ανοίξτε το Kinosail στη ρυθμισμένη διεύθυνσή του ή προσθέστε αυτή τη διεύθυνση στο KINOSAIL_TLS_HOSTS."
   }
 ]

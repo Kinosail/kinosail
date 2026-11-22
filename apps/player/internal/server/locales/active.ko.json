@@ -4786,5 +4786,9 @@
   {
     "id": "). This is the address your paired device uses to find your Server.",
     "other": "). 페어링된 기기가 서버를 찾는 데 사용하는 주소입니다."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "이 주소는 허용되지 않습니다. 구성된 주소로 Kinosail을 열거나 이 주소를 KINOSAIL_TLS_HOSTS에 추가하세요."
   }
 ]

@@ -4786,5 +4786,9 @@
   {
     "id": "). This is the address your paired device uses to find your Server.",
     "other": "). Це адреса, за якою пов’язаний пристрій знаходить ваш сервер."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "Ця адреса не дозволена. Відкрийте Kinosail за налаштованою адресою або додайте цю адресу до KINOSAIL_TLS_HOSTS."
   }
 ]

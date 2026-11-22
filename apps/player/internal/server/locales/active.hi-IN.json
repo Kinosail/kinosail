@@ -4786,5 +4786,9 @@
   {
     "id": "). This is the address your paired device uses to find your Server.",
     "other": ")। यही वह पता है जिससे आपका पेयर किया गया डिवाइस आपका सर्वर ढूँढता है।"
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "इस पते की अनुमति नहीं है। Kinosail को उसके कॉन्फ़िगर किए गए पते पर खोलें, या इस पते को KINOSAIL_TLS_HOSTS में जोड़ें।"
   }
 ]
