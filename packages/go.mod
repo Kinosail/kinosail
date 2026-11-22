@@ -13,6 +13,7 @@ require (
 	github.com/go-webauthn/webauthn v0.18.2
 	github.com/libp2p/zeroconf/v2 v2.2.0
 	github.com/modelcontextprotocol/go-sdk v1.8.0
+	github.com/mozillazg/go-pinyin v0.21.0
 	github.com/ncruces/go-sqlite3 v0.37.0
 	github.com/nicksnyder/go-i18n/v2 v2.7.0
 	github.com/russellhaering/goxmldsig v1.6.1
@@ -37,7 +38,6 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/miekg/dns v1.1.73 // indirect
-	github.com/mozillazg/go-pinyin v0.21.0 // indirect
 	github.com/ncruces/go-sqlite3-wasm/v6 v6.5.35401 // indirect
 	github.com/ncruces/julianday v1.0.0 // indirect
 	github.com/philhofer/fwd v1.2.1 // indirect
