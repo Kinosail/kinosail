@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 minit"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 minit"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 minit"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 minit"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Akses"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Akaun · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Tindakan"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Tambah passkey"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Tambah folder"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Tambah media atau cuba carian lain."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Tambah Profil"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,11 +53,11 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Tambah ke"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Urus pelayan"
   },
   {
     "id": "Album",
@@ -65,23 +65,23 @@
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Album"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "semua"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Semua penilaian"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Benarkan muat turun"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Benarkan transkod"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Analisis segmen main balik sekarang"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Nama kunci API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Skop kunci API tidak membenarkan permintaan ini"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "Kunci API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "Kunci API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Penampilan"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,7 +125,7 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Guna"
   },
   {
     "id": "Audio",
@@ -133,67 +133,67 @@
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Buku audio"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Kod pengesahan"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Kod pengesahan atau pemulihan"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "pengesahan diperlukan"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Benarkan peranti"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Automatik"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "automatik"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Automatik (terbaik dikesan)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Automatik (pelayar)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Sandaran automatik"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Penyelenggaraan automatik"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Peranti yang tersedia menggunakan sambungan terus ke Pelayan ini."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Kembali ke perpustakaan"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Kembali ke tetapan"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Buat sandaran sekarang"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Sandaran dan pemulihan"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Sandaran perlu disediakan."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Sandaran berjalan secara automatik tanpa penyulitan."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Sandaran · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Buku"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Buku"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Buku dan komik"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Semak imbas perpustakaan"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Batal"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "Hantar"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Bab"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Pilih bahasa untuk pelayar ini."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Kosongkan cache transkod"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Kod"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Koleksi"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Koleksi"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Iklan"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Keserasian"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Sambungan Keserasian"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "serasi"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Strim serentak"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Ralat konfigurasi"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Konfigurasi · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Telah ditetapkan; nilai disembunyikan"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Sahkan padam"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Sahkan alih keluar"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Sambung"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Sambungkan peranti"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Disambungkan"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Menyambung"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Menyambung…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Ralat sambungan"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Kandungan"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Teruskan Menonton"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Teruskan menonton"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "daripada Teruskan Menonton"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Cipta"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Cipta passkey"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Cipta kunci API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Cipta passkey"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Cipta senarai main pintar"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Cipta Profil Pemilik anda"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Bukti kelayakan telah ditetapkan"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Kredit"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Kurasi"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Gelap"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "lalai"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Main balik lalai"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Padam"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Konfigurasi penggunaan"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Destinasi"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "dikesan, tidak tersedia"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Peranti atau apl"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Diagnostik"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Terus"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "terus"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Sambungan terus tidak tersedia"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Terus daripada"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Diarahkan oleh"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Nyahdayakan dan batalkan"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Nyahdayakan pengesahan dua faktor"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Pemulihan bencana"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Muat turun"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Muat turun media"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Muat turun asal"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Muat turun diagnostik selamat"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Muat turun"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Sunting metadata"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Sunting penanda langkau"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Dayakan DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Dayakan pengesahan dua faktor"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Didayakan"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Sandaran yang disulitkan berjalan secara automatik."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Penyulitan dimatikan secara lalai."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Penyulitan dihidupkan."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Tamat dalam saat"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Lalai persekitaran"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook acara"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "Setiap 15 minit"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "Setiap 5 minit"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Semua"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Eksport jurnal aktiviti penuh"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Diurus secara luaran"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Cari"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Cari sesuatu"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Selesaikan persediaan"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Folder dalam lekapan media"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Mengikuti ketua bilik"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Daripada"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "daripada"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Umum"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Genre"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Faham"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Kumpulan"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Perkakasan"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Sejarah"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Utama"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Setiap jam"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "jika didayakan"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Pasang"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Pasang Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Integrasi"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Pembukaan"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Pautan jemputan"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Simpan"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Simpan sandaran pada storan di luar hos ini. Sandaran tidak disulitkan melainkan kunci sandaran ditetapkan. Pulihkan semasa Pelayan dihentikan."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Dekatkan Kinosail Player"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,19 +741,19 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player tidak dapat mencapai Pelayan ini. Semak rangkaian atau Sambungan Terus anda, kemudian cuba lagi."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail menyelenggara dirinya secara automatik."
   },
   {
     "id": "Kinosail Player Reader",
-    "other": "Kinosail Player Reader"
+    "other": "Pembaca Kinosail Player"
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Bahasa"
   },
   {
     "id": "language is invalid",
@@ -761,99 +761,99 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Ralat terakhir"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Ralat imbasan terakhir"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Sandaran berjaya terakhir"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Imbasan berjaya terakhir"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Disahkan terakhir"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Terkini"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Perpustakaan"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Perpustakaan"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Penemuan perpustakaan"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Folder perpustakaan"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Item perpustakaan"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Organisasi perpustakaan"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Paparan perpustakaan"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Bukti kelayakan berlesen telah ditetapkan"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Cerah"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Pautkan OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Akaun tempatan"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "Senarai main M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Urus status perpustakaan peribadi"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Diurus secara luaran dan hanya baca."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Akses jauh terurus"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Tanda"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "penanda"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Padankan teks"
   },
   {
     "id": "Media",
@@ -861,11 +861,11 @@
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Maklumat media"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Lekapan media"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Penyedia metadata"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Metrik"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Filem"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Muzik"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Muzik dan buku audio"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Senarai Saya"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Nama"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Tidak pernah"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Koleksi Baharu"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Nama koleksi baharu"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Kata laluan baharu"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Senarai main baharu"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Nama senarai main baharu"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Nama profil baharu"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Kata laluan profil baharu"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Rahsia baharu"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Senarai main pintar baharu"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Penonton baharu bermula dengan penilaian keluarga dan tanpa perpustakaan. Tambah nama folder atau"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Terbaharu"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Belum ada aktiviti direkodkan."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Tiada saluran ditetapkan."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Tiada peranti dipilih"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Belum ada muat turun luar talian."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Belum ada main balik direkodkan."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Tiada"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Tiada; guna semua atau nama folder"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Tidak ditetapkan"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "tidak dikesan"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Bukan sekarang"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Tiada yang ditemui."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Sedang ditonton"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Mati"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "luar talian"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Muat turun luar talian"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Muat turun luar talian · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Hidup"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "Pada iPhone atau iPad, ketik Kongsi, pilih Tambah ke Skrin Utama, hidupkan Buka sebagai Apl Web, kemudian ketik Tambah."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Dedahkan sekali"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Penutup"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Pemilik"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Akses Pemilik diperlukan"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Kawalan pemilik"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Passkey ditambah."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Kata laluan"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Foto"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Main"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Main pada peranti"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Main balik"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Sejarah main balik"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Analisis segmen main balik"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Kelajuan main balik"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Sedang dimainkan di sini"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Sedang dimainkan pada peranti"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Senarai main"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Senarai main"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Sinopsis"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Menyemak perubahan"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Utamakan kualiti"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Utamakan kelajuan"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Bahasa pilihan"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Sediakan"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Privat mengikut reka bentuk"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Profil"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,31 +1177,31 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Profil untuk ditetapkan semula"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Jenis profil"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Profil"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Dilindungi secara automatik"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - Perlukan perlindungan log masuk tambahan untuk setiap Profil Penonton"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Kualiti"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "kualiti"
   },
   {
     "id": "Quick Connect",
@@ -1213,23 +1213,23 @@
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Penilaian"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Baca sekarang"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "pembaca"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Susunan bacaan"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "sedia"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Ringkasan"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Aktiviti terkini"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Main balik terkini"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Baru ditambah"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Baru dimainkan"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Pemulihan"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Kod pemulihan"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Muat semula daripada TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Muat semula metadata yang hilang"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Disyorkan"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Akses jauh"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Alih keluar"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Alih keluar daripada"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "permintaan"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Permintaan tidak dapat diselesaikan."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Tetapkan semula kata laluan"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Kembali ke tetapan"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Batalkan"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Bilik disambungkan · mengikuti ketua"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Bilik disambungkan · anda mengetuai"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Bilik diputuskan · muat semula untuk menyambung semula"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Jalankan imbasan perpustakaan sekarang"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Jalankan penyelenggaraan sekarang"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Imbasan keselamatan"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Simpan"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Simpan fail"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Simpan untuk dimulakan semula"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Simpan penanda"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Simpan metadata"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Simpan jadual"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Jadual"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Cari perpustakaan"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Hasil carian"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Rahsia disembunyikan dan hanya disertakan dalam sandaran pemulihan yang disulitkan."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Lindungi akaun anda"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Lindungi akaun anda · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Hantar URL sambungan peribadi ini kepada Penonton. URL ini hanya dipaparkan sekali."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Nama pelayan"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Tetapan pelayan"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Pelayan tidak tersedia"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Pelayan tidak tersedia · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Sediakan Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Sediakan atau gantikan pengesah"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Sediakan pengesahan dua faktor"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Sediakan pengesahan dua faktor · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Tetapan"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Bahagian tetapan"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Tetapan · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Rancangan"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Rancangan"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Log masuk"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Log masuk dengan passkey"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Log masuk dengan SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Log masuk · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Log keluar"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Log keluar daripada peranti lain"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Kaedah log masuk"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Perlindungan log masuk, perlindungan pelayar same-origin, respons peribadi, permintaan terhad dan akses yang boleh dibatalkan sentiasa dihidupkan. Tiada suis keselamatan untuk diurus."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Log masuk tunggal"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Langkau"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Langkau iklan secara automatik"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Langkau kredit secara automatik"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Langkau pembukaan secara automatik"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Langkau penutup secara automatik"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Langkau ringkasan secara automatik"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Langkau ke kandungan"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Pemasa tidur"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Pemasa tidur tamat"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Senarai main pintar"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Nama senarai main pintar"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Perisian"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Isih"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Sumber"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "kelajuan"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,11 +1577,11 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Mula dalam saat"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Mula Tonton Bersama"
   },
   {
     "id": "Status",
@@ -1589,27 +1589,27 @@
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Berhenti dalam {minutes} minit"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Simpan kod ini di tempat yang selamat. Setiap kod hanya boleh digunakan sekali."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Disimpan di sini. Dialirkan terus."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Strim media"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Langganan diperlukan"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Penyedia sari kata"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Sari kata"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "sari kata"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Segerak"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Sistem"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Slogan"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Sandaran mengandungi keadaan akaun dan sesi. Pastikan storan sandaran yang tidak disulitkan kekal peribadi, atau tetapkan kunci sandaran."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Tema"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Tetapan ini hanya boleh dibaca sehingga dialih keluar daripada YAML atau persekitaran"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Koleksi ini kosong."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Ini memadamkan Koleksi secara kekal."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Ini memadamkan senarai main secara kekal."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Senarai main ini kosong."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Produk ini menggunakan API TMDB tetapi tidak diluluskan atau diperakukan oleh TMDB."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Sehingga PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Sehingga PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Tajuk"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Tajuk, artis, genre"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Tajuk, artis, genre…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Pemetaan nada HDR ke SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "terlalu banyak percubaan log masuk"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "terlalu banyak bilik Tonton Bersama"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Trek"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "cache transkod"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Transkod"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "transkod tidak dibenarkan"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Cuba lagi"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Pengesahan dua faktor"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Pengesahan dua faktor · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Jenis"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Nyahpautkan OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Sehingga"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Belum ditonton"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "belum ditonton"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Guna lalai"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Guna Face ID, Touch ID, Windows Hello atau PIN peranti anda untuk log masuk. Kata laluan anda masih boleh digunakan."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,7 +1773,7 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Sahkan sandaran terkini"
   },
   {
     "id": "Video",
@@ -1781,127 +1781,127 @@
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Penonton"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Akses Penonton tidak tersedia"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Nama penonton"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Menunggu passkey anda…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Keadaan Tonton Bersama tidak sah"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "sudah ditonton"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Sudah ditonton"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Sudah ditonton ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Memantau perubahan"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Selamat datang"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "apabila sedia."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "Panduan XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Tahun"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Anda mengetuai bilik ini"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Perpustakaan anda"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Perpustakaan dan aktiviti tontonan anda kekal pada Pelayan ini."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Buku"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Perpustakaan"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Tetapan"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Kunci API dijana"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Salin kunci API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Disalin."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Pilih Salin dalam pelayar anda."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Sediakan HTTPS dipercayai"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Semak persediaan HTTPS dipercayai"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Salinan luar talian"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Fail yang disahkan disimpan pada peranti ini."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Sedia luar talian pada peranti ini"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Kaedah main balik"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Buka tetapan main balik."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Salinan luar talian tidak tersedia."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "disimpan pada peranti ini"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Peranti ini tidak mempunyai storan yang mencukupi untuk muat turun ini"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Pelayar ini tidak boleh menyimpan media luar talian dengan selamat"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Muat turun tidak dapat disahkan"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Muat turun ini tidak lagi tersedia"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Buka Kinosail secara dalam talian dan pilih Profil Penonton dahulu."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Semua perpustakaan"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Trek audio"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Kembali ke muat turun"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Kemajuan tidak dapat disimpan. Kembali ke Muat turun dan cuba lagi."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Urus muat turun luar talian"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Filem"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Buka muat turun Pelayan"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Buka halaman sebelumnya"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Gelagat main balik"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Sediakan salinan luar talian"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Kemajuan disimpan pada peranti ini. Buka muat turun Pelayan untuk menyegerakkan."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Kembali ke borang"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Cari semua perpustakaan"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Cari semua"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Fail ini tidak dapat dimainkan. Kembali ke Muat turun, sambung semula ke Pelayan, dan muat turun semula."
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Audio ditetapkan dalam salinan muat turun ini."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Perlindungan log masuk"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Kembali ke Filem"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Kembali ke Rancangan"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Kembali ke hasil carian"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Kembali ke Perpustakaan"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Bab %lld daripada %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Halaman %lld daripada %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Dokumen"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Mengimbas Perpustakaan anda"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail sedang membaca folder media anda. Perpustakaan anda akan dipaparkan di sini apabila imbasan selesai."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "Luar talian"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Anda luar talian"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Sambung semula ke Pelayan anda untuk terus menonton."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Salin kunci persediaan atau pautan persediaan ke dalam apl pengesah anda."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Simpan setiap kod pemulihan sebelum meneruskan. Setiap kod hanya boleh digunakan sekali."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Masukkan kod 6 digit semasa untuk mengesahkan apl."
   }
 ]

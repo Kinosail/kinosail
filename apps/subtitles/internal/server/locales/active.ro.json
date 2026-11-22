@@ -1,1 +1,1262 @@
-[{"id":"15 minutes","other":"15 minutes"},{"id":"30 minutes","other":"30 minutes"},{"id":"Access","other":"Access"},{"id":"Account · Kinosail Subtitles","other":"Account · Kinosail Subtitles"},{"id":"Actions","other":"Actions"},{"id":"active session(s)","other":"active session(s)"},{"id":"Add a passkey","other":"Add a passkey"},{"id":"Add folder","other":"Add folder"},{"id":"Add media or try another search.","other":"Add media or try another search."},{"id":"Add to","other":"Add to"},{"id":"Album","other":"Album"},{"id":"Albums","other":"Albums"},{"id":"all","other":"all"},{"id":"All ratings","other":"All ratings"},{"id":"AMD AMF","other":"AMD AMF"},{"id":"API key name","other":"API key name"},{"id":"API key scope does not allow this request","other":"API key scope does not allow this request"},{"id":"API key view failed","other":"API key view failed"},{"id":"API key · Kinosail Subtitles","other":"API key · Kinosail Subtitles"},{"id":"API keys","other":"API keys"},{"id":"Appearance","other":"Appearance"},{"id":"Apple VideoToolbox","other":"Apple VideoToolbox"},{"id":"Apply","other":"Apply"},{"id":"Audio","other":"Audio"},{"id":"Audiobooks","other":"Audiobooks"},{"id":"Authentication code","other":"Authentication code"},{"id":"Authentication or recovery code","other":"Authentication or recovery code"},{"id":"authentication required","other":"authentication required"},{"id":"Authorize device","other":"Authorize device"},{"id":"Automatic","other":"Automatic"},{"id":"automatic","other":"automatic"},{"id":"Automatic (browser)","other":"Automatic (browser)"},{"id":"Automatic backups","other":"Automatic backups"},{"id":"Automatic maintenance","other":"Automatic maintenance"},{"id":"Back to library","other":"Back to library"},{"id":"Back up now","other":"Back up now"},{"id":"backup is unavailable","other":"backup is unavailable"},{"id":"Backups need setup.","other":"Backups need setup."},{"id":"Backups · Kinosail Subtitles","other":"Backups · Kinosail Subtitles"},{"id":"Book","other":"Book"},{"id":"Books","other":"Books"},{"id":"Books and comics","other":"Books and comics"},{"id":"Browse library","other":"Browse library"},{"id":"Cancel","other":"Cancel"},{"id":"Cast","other":"Cast"},{"id":"Chapters","other":"Chapters"},{"id":"Choose the language for this browser.","other":"Choose the language for this browser."},{"id":"Code","other":"Code"},{"id":"Collection","other":"Collection"},{"id":"Collections","other":"Collections"},{"id":"Commercial","other":"Commercial"},{"id":"Compatibility","other":"Compatibility"},{"id":"Compatibility stream","other":"Compatibility stream"},{"id":"compatible","other":"compatible"},{"id":"Configuration error","other":"Configuration error"},{"id":"Configuration · Kinosail Subtitles","other":"Configuration · Kinosail Subtitles"},{"id":"Connect","other":"Connect"},{"id":"Connect a device","other":"Connect a device"},{"id":"Connected","other":"Connected"},{"id":"Connecting","other":"Connecting"},{"id":"Connecting…","other":"Connecting…"},{"id":"Content","other":"Content"},{"id":"Continue watching","other":"Continue watching"},{"id":"Copy this key now. Kinosail stores only its hash.","other":"Copy this key now. Kinosail stores only its hash."},{"id":"could not create MFA enrollment","other":"could not create MFA enrollment"},{"id":"could not create Owner Profile","other":"could not create Owner Profile"},{"id":"could not create session","other":"could not create session"},{"id":"could not end session","other":"could not end session"},{"id":"could not read subtitles","other":"could not read subtitles"},{"id":"Create","other":"Create"},{"id":"Create a passkey","other":"Create a passkey"},{"id":"Create passkey","other":"Create passkey"},{"id":"Created once","other":"Created once"},{"id":"Credentials configured","other":"Credentials configured"},{"id":"Credits","other":"Credits"},{"id":"cross-origin request denied","other":"cross-origin request denied"},{"id":"Curate","other":"Curate"},{"id":"Dark","other":"Dark"},{"id":"default","other":"default"},{"id":"Delete","other":"Delete"},{"id":"Deployment configuration","other":"Deployment configuration"},{"id":"Destination","other":"Destination"},{"id":"detected, unavailable","other":"detected, unavailable"},{"id":"Diagnostics","other":"Diagnostics"},{"id":"Direct","other":"Direct"},{"id":"direct","other":"direct"},{"id":"Direct connection unavailable","other":"Direct connection unavailable"},{"id":"Direct stream","other":"Direct stream"},{"id":"Directed by","other":"Directed by"},{"id":"Disaster recovery","other":"Disaster recovery"},{"id":"DLNA","other":"DLNA"},{"id":"Download","other":"Download"},{"id":"Download original","other":"Download original"},{"id":"Download portable state archive","other":"Download portable state archive"},{"id":"Download safe diagnostics","other":"Download safe diagnostics"},{"id":"Downloads","other":"Downloads"},{"id":"downloads are not enabled for this Viewer Profile","other":"downloads are not enabled for this Viewer Profile"},{"id":"embedded subtitles are unavailable","other":"embedded subtitles are unavailable"},{"id":"Enabled","other":"Enabled"},{"id":"Encryption is on.","other":"Encryption is on."},{"id":"Every 15 minutes","other":"Every 15 minutes"},{"id":"Every 5 minutes","other":"Every 5 minutes"},{"id":"Export full activity journal","other":"Export full activity journal"},{"id":"Find","other":"Find"},{"id":"Find something","other":"Find something"},{"id":"Finish sign in","other":"Finish sign in"},{"id":"Folder inside media mount","other":"Folder inside media mount"},{"id":"Follow this device or choose a fixed theme.","other":"Follow this device or choose a fixed theme."},{"id":"From","other":"From"},{"id":"from","other":"from"},{"id":"General","other":"General"},{"id":"Genres","other":"Genres"},{"id":"Group","other":"Group"},{"id":"Hardware","other":"Hardware"},{"id":"History","other":"History"},{"id":"Home","other":"Home"},{"id":"if enabled","other":"if enabled"},{"id":"Install","other":"Install"},{"id":"Intel Quick Sync","other":"Intel Quick Sync"},{"id":"Intro","other":"Intro"},{"id":"invalid authentication code","other":"invalid authentication code"},{"id":"invalid Collection state","other":"invalid Collection state"},{"id":"invalid credentials","other":"invalid credentials"},{"id":"invalid list state","other":"invalid list state"},{"id":"invalid playlist state","other":"invalid playlist state"},{"id":"invalid progress","other":"invalid progress"},{"id":"invalid watched state","other":"invalid watched state"},{"id":"Keep","other":"Keep"},{"id":"Kinosail","other":"Kinosail"},{"id":"Language","other":"Language"},{"id":"language is invalid","other":"language is invalid"},{"id":"Last error","other":"Last error"},{"id":"Last successful backup","other":"Last successful backup"},{"id":"Last verified","other":"Last verified"},{"id":"Latest","other":"Latest"},{"id":"Libraries","other":"Libraries"},{"id":"Library","other":"Library"},{"id":"Library folders","other":"Library folders"},{"id":"Library items","other":"Library items"},{"id":"Library organization","other":"Library organization"},{"id":"Licensed credential configured","other":"Licensed credential configured"},{"id":"Light","other":"Light"},{"id":"Local account","other":"Local account"},{"id":"Mark","other":"Mark"},{"id":"marker","other":"marker"},{"id":"Media","other":"Media"},{"id":"Media mount","other":"Media mount"},{"id":"metadata could not be saved","other":"metadata could not be saved"},{"id":"metadata is invalid","other":"metadata is invalid"},{"id":"metadata provider unavailable","other":"metadata provider unavailable"},{"id":"Metrics","other":"Metrics"},{"id":"Movies","other":"Movies"},{"id":"Music","other":"Music"},{"id":"My List","other":"My List"},{"id":"Name","other":"Name"},{"id":"Never","other":"Never"},{"id":"New password","other":"New password"},{"id":"New profile name","other":"New profile name"},{"id":"New profile password","other":"New profile password"},{"id":"New secret","other":"New secret"},{"id":"No activity recorded yet.","other":"No activity recorded yet."},{"id":"No device selected","other":"No device selected"},{"id":"No playback recorded yet.","other":"No playback recorded yet."},{"id":"None","other":"None"},{"id":"Not configured","other":"Not configured"},{"id":"not detected","other":"not detected"},{"id":"not found","other":"not found"},{"id":"Not now","other":"Not now"},{"id":"Nothing found.","other":"Nothing found."},{"id":"NVIDIA NVENC/NVDEC","other":"NVIDIA NVENC/NVDEC"},{"id":"Off","other":"Off"},{"id":"offline","other":"offline"},{"id":"Offline downloads","other":"Offline downloads"},{"id":"On","other":"On"},{"id":"OpenID Connect","other":"OpenID Connect"},{"id":"OpenSubtitles","other":"OpenSubtitles"},{"id":"Outro","other":"Outro"},{"id":"Owner","other":"Owner"},{"id":"Owner access required","other":"Owner access required"},{"id":"Owner controls","other":"Owner controls"},{"id":"Passkey added.","other":"Passkey added."},{"id":"Passkey failed.","other":"Passkey failed."},{"id":"Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.","other":"Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."},{"id":"Password","other":"Password"},{"id":"Photos","other":"Photos"},{"id":"Play","other":"Play"},{"id":"Play on device","other":"Play on device"},{"id":"Playback","other":"Playback"},{"id":"Playback history","other":"Playback history"},{"id":"Playback speed","other":"Playback speed"},{"id":"Playing here","other":"Playing here"},{"id":"Playing on device","other":"Playing on device"},{"id":"Playlist","other":"Playlist"},{"id":"Playlists","other":"Playlists"},{"id":"Plot","other":"Plot"},{"id":"Preferred language","other":"Preferred language"},{"id":"Prepare","other":"Prepare"},{"id":"preview unavailable","other":"preview unavailable"},{"id":"Profile","other":"Profile"},{"id":"profile storage is unavailable","other":"profile storage is unavailable"},{"id":"Profile type","other":"Profile type"},{"id":"Profiles","other":"Profiles"},{"id":"Protected automatically","other":"Protected automatically"},{"id":"Quality","other":"Quality"},{"id":"quality","other":"quality"},{"id":"Quick Connect","other":"Quick Connect"},{"id":"Rating","other":"Rating"},{"id":"Read now","other":"Read now"},{"id":"reader","other":"reader"},{"id":"ready","other":"ready"},{"id":"Ready offline","other":"Ready offline"},{"id":"Recap","other":"Recap"},{"id":"Recent activity","other":"Recent activity"},{"id":"Recent playback","other":"Recent playback"},{"id":"Recently added","other":"Recently added"},{"id":"Recently played","other":"Recently played"},{"id":"Recovery","other":"Recovery"},{"id":"Recovery codes","other":"Recovery codes"},{"id":"Recommended","other":"Recommended"},{"id":"Remote access","other":"Remote access"},{"id":"Remove","other":"Remove"},{"id":"Remove from","other":"Remove from"},{"id":"request","other":"request"},{"id":"Request could not be completed.","other":"Request could not be completed."},{"id":"request is too large","other":"request is too large"},{"id":"Return to settings","other":"Return to settings"},{"id":"Revoke","other":"Revoke"},{"id":"Rockchip RKMPP","other":"Rockchip RKMPP"},{"id":"Room disconnected · reload to reconnect","other":"Room disconnected · reload to reconnect"},{"id":"Safety scan","other":"Safety scan"},{"id":"Save","other":"Save"},{"id":"Save schedule","other":"Save schedule"},{"id":"Schedule","other":"Schedule"},{"id":"Search library","other":"Search library"},{"id":"Search results","other":"Search results"},{"id":"Secrets are hidden and included only in encrypted recovery backups.","other":"Secrets are hidden and included only in encrypted recovery backups."},{"id":"Secure your account","other":"Secure your account"},{"id":"Secure your account · Kinosail Subtitles","other":"Secure your account · Kinosail Subtitles"},{"id":"Server settings","other":"Server settings"},{"id":"Set up Kinosail Subtitles","other":"Set up Kinosail Subtitles"},{"id":"Settings","other":"Settings"},{"id":"Settings sections","other":"Settings sections"},{"id":"Settings · Kinosail Subtitles","other":"Settings · Kinosail Subtitles"},{"id":"Show","other":"Show"},{"id":"Shows","other":"Shows"},{"id":"Sign in","other":"Sign in"},{"id":"Sign in to your private media universe.","other":"Sign in to your private media universe."},{"id":"Sign in with passkey","other":"Sign in with passkey"},{"id":"Sign in with SSO","other":"Sign in with SSO"},{"id":"Sign in · Kinosail Subtitles","other":"Sign in · Kinosail Subtitles"},{"id":"Sign out","other":"Sign out"},{"id":"Single sign-on","other":"Single sign-on"},{"id":"Skip","other":"Skip"},{"id":"Skip to content","other":"Skip to content"},{"id":"Software","other":"Software"},{"id":"Sort","other":"Sort"},{"id":"Source","other":"Source"},{"id":"speed","other":"speed"},{"id":"SSO challenge is invalid or expired","other":"SSO challenge is invalid or expired"},{"id":"SSO code exchange failed","other":"SSO code exchange failed"},{"id":"SSO identity is not linked to a Viewer Profile","other":"SSO identity is not linked to a Viewer Profile"},{"id":"SSO is unavailable","other":"SSO is unavailable"},{"id":"SSO session could not be created","other":"SSO session could not be created"},{"id":"SSO state is invalid or expired","other":"SSO state is invalid or expired"},{"id":"SSO token validation failed","other":"SSO token validation failed"},{"id":"Status","other":"Status"},{"id":"Store these codes somewhere safe. Each works once.","other":"Store these codes somewhere safe. Each works once."},{"id":"Subtitle provider","other":"Subtitle provider"},{"id":"subtitle provider unavailable","other":"subtitle provider unavailable"},{"id":"Subtitles","other":"Subtitles"},{"id":"subtitles","other":"subtitles"},{"id":"Sync","other":"Sync"},{"id":"System","other":"System"},{"id":"Tagline","other":"Tagline"},{"id":"Theme","other":"Theme"},{"id":"This Collection is empty.","other":"This Collection is empty."},{"id":"This permanently deletes the Collection.","other":"This permanently deletes the Collection."},{"id":"This permanently deletes the playlist.","other":"This permanently deletes the playlist."},{"id":"This playlist is empty.","other":"This playlist is empty."},{"id":"This product uses the TMDB API but is not endorsed or certified by TMDB.","other":"This product uses the TMDB API but is not endorsed or certified by TMDB."},{"id":"Through PG / TV-PG","other":"Through PG / TV-PG"},{"id":"Through PG-13 / TV-14","other":"Through PG-13 / TV-14"},{"id":"Title","other":"Title"},{"id":"Title, artist, genre","other":"Title, artist, genre"},{"id":"Title, artist, genre…","other":"Title, artist, genre…"},{"id":"TMDB","other":"TMDB"},{"id":"Tone-map HDR to SDR","other":"Tone-map HDR to SDR"},{"id":"too many login attempts","other":"too many login attempts"},{"id":"too many Watch Together rooms","other":"too many Watch Together rooms"},{"id":"Track","other":"Track"},{"id":"Transcoder","other":"Transcoder"},{"id":"transcoding is not allowed","other":"transcoding is not allowed"},{"id":"Try again","other":"Try again"},{"id":"Two-factor authentication","other":"Two-factor authentication"},{"id":"Two-factor authentication · Kinosail Subtitles","other":"Two-factor authentication · Kinosail Subtitles"},{"id":"Type","other":"Type"},{"id":"Until","other":"Until"},{"id":"Unwatched","other":"Unwatched"},{"id":"unwatched","other":"unwatched"},{"id":"Use default","other":"Use default"},{"id":"VA-API (AMD/Intel)","other":"VA-API (AMD/Intel)"},{"id":"Verify latest backup","other":"Verify latest backup"},{"id":"Video","other":"Video"},{"id":"Viewer","other":"Viewer"},{"id":"Viewer access is not available","other":"Viewer access is not available"},{"id":"Waiting for your passkey…","other":"Waiting for your passkey…"},{"id":"Watch Together state is invalid","other":"Watch Together state is invalid"},{"id":"watched","other":"watched"},{"id":"Watched","other":"Watched"},{"id":"Welcome aboard","other":"Welcome aboard"},{"id":"when ready.","other":"when ready."},{"id":"Year","other":"Year"},{"id":"Your library","other":"Your library"},{"id":"Scanning your Library","other":"Scanning your Library"},{"id":"Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.","other":"Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete."}]
+[
+  {
+    "id": "15 minutes",
+    "other": "15 minute"
+  },
+  {
+    "id": "30 minutes",
+    "other": "30 de minute"
+  },
+  {
+    "id": "Access",
+    "other": "Acces"
+  },
+  {
+    "id": "Account · Kinosail Subtitles",
+    "other": "Cont · Kinosail Subtitles"
+  },
+  {
+    "id": "Actions",
+    "other": "Acțiuni"
+  },
+  {
+    "id": "active session(s)",
+    "other": "active session(s)"
+  },
+  {
+    "id": "Add a passkey",
+    "other": "Adăugați o cheie de acces"
+  },
+  {
+    "id": "Add folder",
+    "other": "Adăugați dosar"
+  },
+  {
+    "id": "Add media or try another search.",
+    "other": "Adăugați conținut media sau încercați o altă căutare."
+  },
+  {
+    "id": "Add to",
+    "other": "Adăugați la"
+  },
+  {
+    "id": "Album",
+    "other": "Album"
+  },
+  {
+    "id": "Albums",
+    "other": "Albume"
+  },
+  {
+    "id": "all",
+    "other": "toate"
+  },
+  {
+    "id": "All ratings",
+    "other": "Toate evaluările"
+  },
+  {
+    "id": "AMD AMF",
+    "other": "AMD AMF"
+  },
+  {
+    "id": "API key name",
+    "other": "Numele cheii API"
+  },
+  {
+    "id": "API key scope does not allow this request",
+    "other": "Domeniul cheii API nu permite această solicitare"
+  },
+  {
+    "id": "API key view failed",
+    "other": "API key view failed"
+  },
+  {
+    "id": "API key · Kinosail Subtitles",
+    "other": "Cheie API · Kinosail Subtitles"
+  },
+  {
+    "id": "API keys",
+    "other": "Chei API"
+  },
+  {
+    "id": "Appearance",
+    "other": "Aspect"
+  },
+  {
+    "id": "Apple VideoToolbox",
+    "other": "Apple VideoToolbox"
+  },
+  {
+    "id": "Apply",
+    "other": "Aplicați"
+  },
+  {
+    "id": "Audio",
+    "other": "Audio"
+  },
+  {
+    "id": "Audiobooks",
+    "other": "Cărți audio"
+  },
+  {
+    "id": "Authentication code",
+    "other": "Cod de autentificare"
+  },
+  {
+    "id": "Authentication or recovery code",
+    "other": "Cod de autentificare sau de recuperare"
+  },
+  {
+    "id": "authentication required",
+    "other": "este necesară autentificarea"
+  },
+  {
+    "id": "Authorize device",
+    "other": "Autorizați dispozitivul"
+  },
+  {
+    "id": "Automatic",
+    "other": "Automat"
+  },
+  {
+    "id": "automatic",
+    "other": "automat"
+  },
+  {
+    "id": "Automatic (browser)",
+    "other": "Automat (browser)"
+  },
+  {
+    "id": "Automatic backups",
+    "other": "Copii de rezervă automate"
+  },
+  {
+    "id": "Automatic maintenance",
+    "other": "Întreținere automată"
+  },
+  {
+    "id": "Back to library",
+    "other": "Înapoi la bibliotecă"
+  },
+  {
+    "id": "Back up now",
+    "other": "Faceți o copie de rezervă acum"
+  },
+  {
+    "id": "backup is unavailable",
+    "other": "backup is unavailable"
+  },
+  {
+    "id": "Backups need setup.",
+    "other": "Copiile de rezervă necesită configurare."
+  },
+  {
+    "id": "Backups · Kinosail Subtitles",
+    "other": "Copii de rezervă · Kinosail Subtitles"
+  },
+  {
+    "id": "Book",
+    "other": "Carte"
+  },
+  {
+    "id": "Books",
+    "other": "Cărți"
+  },
+  {
+    "id": "Books and comics",
+    "other": "Cărți și benzi desenate"
+  },
+  {
+    "id": "Browse library",
+    "other": "Răsfoiți biblioteca"
+  },
+  {
+    "id": "Cancel",
+    "other": "Anulare"
+  },
+  {
+    "id": "Cast",
+    "other": "Difuzare"
+  },
+  {
+    "id": "Chapters",
+    "other": "Capitole"
+  },
+  {
+    "id": "Choose the language for this browser.",
+    "other": "Alegeți limba pentru acest browser."
+  },
+  {
+    "id": "Code",
+    "other": "Cod"
+  },
+  {
+    "id": "Collection",
+    "other": "Colecție"
+  },
+  {
+    "id": "Collections",
+    "other": "Colecții"
+  },
+  {
+    "id": "Commercial",
+    "other": "Reclamă"
+  },
+  {
+    "id": "Compatibility",
+    "other": "Compatibilitate"
+  },
+  {
+    "id": "Compatibility stream",
+    "other": "Compatibility stream"
+  },
+  {
+    "id": "compatible",
+    "other": "compatibil"
+  },
+  {
+    "id": "Configuration error",
+    "other": "Eroare de configurare"
+  },
+  {
+    "id": "Configuration · Kinosail Subtitles",
+    "other": "Configurare · Kinosail Subtitles"
+  },
+  {
+    "id": "Connect",
+    "other": "Conectare"
+  },
+  {
+    "id": "Connect a device",
+    "other": "Conectați un dispozitiv"
+  },
+  {
+    "id": "Connected",
+    "other": "Conectat"
+  },
+  {
+    "id": "Connecting",
+    "other": "Se conectează"
+  },
+  {
+    "id": "Connecting…",
+    "other": "Se conectează…"
+  },
+  {
+    "id": "Content",
+    "other": "Conținut"
+  },
+  {
+    "id": "Continue watching",
+    "other": "Continuați vizionarea"
+  },
+  {
+    "id": "Copy this key now. Kinosail stores only its hash.",
+    "other": "Copy this key now. Kinosail stores only its hash."
+  },
+  {
+    "id": "could not create MFA enrollment",
+    "other": "could not create MFA enrollment"
+  },
+  {
+    "id": "could not create Owner Profile",
+    "other": "could not create Owner Profile"
+  },
+  {
+    "id": "could not create session",
+    "other": "could not create session"
+  },
+  {
+    "id": "could not end session",
+    "other": "could not end session"
+  },
+  {
+    "id": "could not read subtitles",
+    "other": "could not read subtitles"
+  },
+  {
+    "id": "Create",
+    "other": "Creați"
+  },
+  {
+    "id": "Create a passkey",
+    "other": "Creați o cheie de acces"
+  },
+  {
+    "id": "Create passkey",
+    "other": "Creați cheie de acces"
+  },
+  {
+    "id": "Created once",
+    "other": "Created once"
+  },
+  {
+    "id": "Credentials configured",
+    "other": "Date de autentificare configurate"
+  },
+  {
+    "id": "Credits",
+    "other": "Generic"
+  },
+  {
+    "id": "cross-origin request denied",
+    "other": "cross-origin request denied"
+  },
+  {
+    "id": "Curate",
+    "other": "Selectați"
+  },
+  {
+    "id": "Dark",
+    "other": "Întunecat"
+  },
+  {
+    "id": "default",
+    "other": "implicit"
+  },
+  {
+    "id": "Delete",
+    "other": "Ștergere"
+  },
+  {
+    "id": "Deployment configuration",
+    "other": "Configurarea implementării"
+  },
+  {
+    "id": "Destination",
+    "other": "Destinație"
+  },
+  {
+    "id": "detected, unavailable",
+    "other": "detectat, indisponibil"
+  },
+  {
+    "id": "Diagnostics",
+    "other": "Diagnosticare"
+  },
+  {
+    "id": "Direct",
+    "other": "Direct"
+  },
+  {
+    "id": "direct",
+    "other": "direct"
+  },
+  {
+    "id": "Direct connection unavailable",
+    "other": "Conexiunea directă nu este disponibilă"
+  },
+  {
+    "id": "Direct stream",
+    "other": "Direct stream"
+  },
+  {
+    "id": "Directed by",
+    "other": "Regia"
+  },
+  {
+    "id": "Disaster recovery",
+    "other": "Recuperare în caz de dezastru"
+  },
+  {
+    "id": "DLNA",
+    "other": "DLNA"
+  },
+  {
+    "id": "Download",
+    "other": "Descărcare"
+  },
+  {
+    "id": "Download original",
+    "other": "Descărcați originalul"
+  },
+  {
+    "id": "Download portable state archive",
+    "other": "Download portable state archive"
+  },
+  {
+    "id": "Download safe diagnostics",
+    "other": "Descărcați diagnosticarea sigură"
+  },
+  {
+    "id": "Downloads",
+    "other": "Descărcări"
+  },
+  {
+    "id": "downloads are not enabled for this Viewer Profile",
+    "other": "downloads are not enabled for this Viewer Profile"
+  },
+  {
+    "id": "embedded subtitles are unavailable",
+    "other": "embedded subtitles are unavailable"
+  },
+  {
+    "id": "Enabled",
+    "other": "Activat"
+  },
+  {
+    "id": "Encryption is on.",
+    "other": "Criptarea este activată."
+  },
+  {
+    "id": "Every 15 minutes",
+    "other": "La fiecare 15 minute"
+  },
+  {
+    "id": "Every 5 minutes",
+    "other": "La fiecare 5 minute"
+  },
+  {
+    "id": "Export full activity journal",
+    "other": "Exportați jurnalul complet de activitate"
+  },
+  {
+    "id": "Find",
+    "other": "Căutați"
+  },
+  {
+    "id": "Find something",
+    "other": "Găsiți ceva"
+  },
+  {
+    "id": "Finish sign in",
+    "other": "Finish sign in"
+  },
+  {
+    "id": "Folder inside media mount",
+    "other": "Dosar în punctul de montare media"
+  },
+  {
+    "id": "Follow this device or choose a fixed theme.",
+    "other": "Follow this device or choose a fixed theme."
+  },
+  {
+    "id": "From",
+    "other": "De la"
+  },
+  {
+    "id": "from",
+    "other": "de la"
+  },
+  {
+    "id": "General",
+    "other": "General"
+  },
+  {
+    "id": "Genres",
+    "other": "Genuri"
+  },
+  {
+    "id": "Group",
+    "other": "Grup"
+  },
+  {
+    "id": "Hardware",
+    "other": "Hardware"
+  },
+  {
+    "id": "History",
+    "other": "Istoric"
+  },
+  {
+    "id": "Home",
+    "other": "Acasă"
+  },
+  {
+    "id": "if enabled",
+    "other": "dacă este activat"
+  },
+  {
+    "id": "Install",
+    "other": "Instalare"
+  },
+  {
+    "id": "Intel Quick Sync",
+    "other": "Intel Quick Sync"
+  },
+  {
+    "id": "Intro",
+    "other": "Introducere"
+  },
+  {
+    "id": "invalid authentication code",
+    "other": "invalid authentication code"
+  },
+  {
+    "id": "invalid Collection state",
+    "other": "invalid Collection state"
+  },
+  {
+    "id": "invalid credentials",
+    "other": "invalid credentials"
+  },
+  {
+    "id": "invalid list state",
+    "other": "invalid list state"
+  },
+  {
+    "id": "invalid playlist state",
+    "other": "invalid playlist state"
+  },
+  {
+    "id": "invalid progress",
+    "other": "invalid progress"
+  },
+  {
+    "id": "invalid watched state",
+    "other": "invalid watched state"
+  },
+  {
+    "id": "Keep",
+    "other": "Păstrați"
+  },
+  {
+    "id": "Kinosail",
+    "other": "Kinosail"
+  },
+  {
+    "id": "Language",
+    "other": "Limbă"
+  },
+  {
+    "id": "language is invalid",
+    "other": "language is invalid"
+  },
+  {
+    "id": "Last error",
+    "other": "Ultima eroare"
+  },
+  {
+    "id": "Last successful backup",
+    "other": "Ultima copie de rezervă reușită"
+  },
+  {
+    "id": "Last verified",
+    "other": "Ultima verificare"
+  },
+  {
+    "id": "Latest",
+    "other": "Cele mai noi"
+  },
+  {
+    "id": "Libraries",
+    "other": "Biblioteci"
+  },
+  {
+    "id": "Library",
+    "other": "Bibliotecă"
+  },
+  {
+    "id": "Library folders",
+    "other": "Dosare de bibliotecă"
+  },
+  {
+    "id": "Library items",
+    "other": "Elemente din bibliotecă"
+  },
+  {
+    "id": "Library organization",
+    "other": "Organizarea bibliotecii"
+  },
+  {
+    "id": "Licensed credential configured",
+    "other": "Credențial licențiat configurat"
+  },
+  {
+    "id": "Light",
+    "other": "Luminos"
+  },
+  {
+    "id": "Local account",
+    "other": "Cont local"
+  },
+  {
+    "id": "Mark",
+    "other": "Marcați"
+  },
+  {
+    "id": "marker",
+    "other": "marcaj"
+  },
+  {
+    "id": "Media",
+    "other": "Media"
+  },
+  {
+    "id": "Media mount",
+    "other": "Punct de montare media"
+  },
+  {
+    "id": "metadata could not be saved",
+    "other": "metadata could not be saved"
+  },
+  {
+    "id": "metadata is invalid",
+    "other": "metadata is invalid"
+  },
+  {
+    "id": "metadata provider unavailable",
+    "other": "metadata provider unavailable"
+  },
+  {
+    "id": "Metrics",
+    "other": "Indicatori"
+  },
+  {
+    "id": "Movies",
+    "other": "Filme"
+  },
+  {
+    "id": "Music",
+    "other": "Muzică"
+  },
+  {
+    "id": "My List",
+    "other": "Lista mea"
+  },
+  {
+    "id": "Name",
+    "other": "Nume"
+  },
+  {
+    "id": "Never",
+    "other": "Niciodată"
+  },
+  {
+    "id": "New password",
+    "other": "Parolă nouă"
+  },
+  {
+    "id": "New profile name",
+    "other": "Numele noului profil"
+  },
+  {
+    "id": "New profile password",
+    "other": "Parola noului profil"
+  },
+  {
+    "id": "New secret",
+    "other": "Secret nou"
+  },
+  {
+    "id": "No activity recorded yet.",
+    "other": "Nicio activitate înregistrată încă."
+  },
+  {
+    "id": "No device selected",
+    "other": "Niciun dispozitiv selectat"
+  },
+  {
+    "id": "No playback recorded yet.",
+    "other": "Încă nu există redări înregistrate."
+  },
+  {
+    "id": "None",
+    "other": "Niciunul"
+  },
+  {
+    "id": "Not configured",
+    "other": "Neconfigurat"
+  },
+  {
+    "id": "not detected",
+    "other": "nedetectat"
+  },
+  {
+    "id": "not found",
+    "other": "not found"
+  },
+  {
+    "id": "Not now",
+    "other": "Nu acum"
+  },
+  {
+    "id": "Nothing found.",
+    "other": "Nu s-a găsit nimic."
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC",
+    "other": "NVIDIA NVENC/NVDEC"
+  },
+  {
+    "id": "Off",
+    "other": "Dezactivat"
+  },
+  {
+    "id": "offline",
+    "other": "offline"
+  },
+  {
+    "id": "Offline downloads",
+    "other": "Descărcări offline"
+  },
+  {
+    "id": "On",
+    "other": "Activat"
+  },
+  {
+    "id": "OpenID Connect",
+    "other": "OpenID Connect"
+  },
+  {
+    "id": "OpenSubtitles",
+    "other": "OpenSubtitles"
+  },
+  {
+    "id": "Outro",
+    "other": "Încheiere"
+  },
+  {
+    "id": "Owner",
+    "other": "Proprietar"
+  },
+  {
+    "id": "Owner access required",
+    "other": "Este necesar acces de proprietar"
+  },
+  {
+    "id": "Owner controls",
+    "other": "Comenzi pentru proprietar"
+  },
+  {
+    "id": "Passkey added.",
+    "other": "Cheie de acces adăugată."
+  },
+  {
+    "id": "Passkey failed.",
+    "other": "Passkey failed."
+  },
+  {
+    "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
+    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+  },
+  {
+    "id": "Password",
+    "other": "Parolă"
+  },
+  {
+    "id": "Photos",
+    "other": "Fotografii"
+  },
+  {
+    "id": "Play",
+    "other": "Redare"
+  },
+  {
+    "id": "Play on device",
+    "other": "Redați pe dispozitiv"
+  },
+  {
+    "id": "Playback",
+    "other": "Redare"
+  },
+  {
+    "id": "Playback history",
+    "other": "Istoricul redărilor"
+  },
+  {
+    "id": "Playback speed",
+    "other": "Viteza de redare"
+  },
+  {
+    "id": "Playing here",
+    "other": "Se redă aici"
+  },
+  {
+    "id": "Playing on device",
+    "other": "Se redă pe dispozitiv"
+  },
+  {
+    "id": "Playlist",
+    "other": "Listă de redare"
+  },
+  {
+    "id": "Playlists",
+    "other": "Liste de redare"
+  },
+  {
+    "id": "Plot",
+    "other": "Subiect"
+  },
+  {
+    "id": "Preferred language",
+    "other": "Limba preferată"
+  },
+  {
+    "id": "Prepare",
+    "other": "Pregătiți"
+  },
+  {
+    "id": "preview unavailable",
+    "other": "preview unavailable"
+  },
+  {
+    "id": "Profile",
+    "other": "Profil"
+  },
+  {
+    "id": "profile storage is unavailable",
+    "other": "profile storage is unavailable"
+  },
+  {
+    "id": "Profile type",
+    "other": "Tipul profilului"
+  },
+  {
+    "id": "Profiles",
+    "other": "Profiluri"
+  },
+  {
+    "id": "Protected automatically",
+    "other": "Protejat automat"
+  },
+  {
+    "id": "Quality",
+    "other": "Calitate"
+  },
+  {
+    "id": "quality",
+    "other": "calitate"
+  },
+  {
+    "id": "Quick Connect",
+    "other": "Conectare rapidă"
+  },
+  {
+    "id": "Rating",
+    "other": "Evaluare"
+  },
+  {
+    "id": "Read now",
+    "other": "Citiți acum"
+  },
+  {
+    "id": "reader",
+    "other": "cititor"
+  },
+  {
+    "id": "ready",
+    "other": "gata"
+  },
+  {
+    "id": "Ready offline",
+    "other": "Ready offline"
+  },
+  {
+    "id": "Recap",
+    "other": "Rezumat"
+  },
+  {
+    "id": "Recent activity",
+    "other": "Activitate recentă"
+  },
+  {
+    "id": "Recent playback",
+    "other": "Redări recente"
+  },
+  {
+    "id": "Recently added",
+    "other": "Adăugate recent"
+  },
+  {
+    "id": "Recently played",
+    "other": "Redate recent"
+  },
+  {
+    "id": "Recovery",
+    "other": "Recuperare"
+  },
+  {
+    "id": "Recovery codes",
+    "other": "Coduri de recuperare"
+  },
+  {
+    "id": "Recommended",
+    "other": "Recomandat"
+  },
+  {
+    "id": "Remote access",
+    "other": "Acces la distanță"
+  },
+  {
+    "id": "Remove",
+    "other": "Eliminare"
+  },
+  {
+    "id": "Remove from",
+    "other": "Eliminați din"
+  },
+  {
+    "id": "request",
+    "other": "solicitare"
+  },
+  {
+    "id": "Request could not be completed.",
+    "other": "Solicitarea nu a putut fi finalizată."
+  },
+  {
+    "id": "request is too large",
+    "other": "request is too large"
+  },
+  {
+    "id": "Return to settings",
+    "other": "Reveniți la setări"
+  },
+  {
+    "id": "Revoke",
+    "other": "Revocare"
+  },
+  {
+    "id": "Rockchip RKMPP",
+    "other": "Rockchip RKMPP"
+  },
+  {
+    "id": "Room disconnected · reload to reconnect",
+    "other": "Cameră deconectată · reîncărcați pagina pentru a vă reconecta"
+  },
+  {
+    "id": "Safety scan",
+    "other": "Scanare de siguranță"
+  },
+  {
+    "id": "Save",
+    "other": "Salvare"
+  },
+  {
+    "id": "Save schedule",
+    "other": "Salvați programarea"
+  },
+  {
+    "id": "Schedule",
+    "other": "Programare"
+  },
+  {
+    "id": "Search library",
+    "other": "Căutați în bibliotecă"
+  },
+  {
+    "id": "Search results",
+    "other": "Rezultatele căutării"
+  },
+  {
+    "id": "Secrets are hidden and included only in encrypted recovery backups.",
+    "other": "Secretele sunt ascunse și sunt incluse doar în copiile de rezervă criptate pentru recuperare."
+  },
+  {
+    "id": "Secure your account",
+    "other": "Securizați-vă contul"
+  },
+  {
+    "id": "Secure your account · Kinosail Subtitles",
+    "other": "Securizați-vă contul · Kinosail Subtitles"
+  },
+  {
+    "id": "Server settings",
+    "other": "Setările serverului"
+  },
+  {
+    "id": "Set up Kinosail Subtitles",
+    "other": "Configurați Kinosail Subtitles"
+  },
+  {
+    "id": "Settings",
+    "other": "Setări"
+  },
+  {
+    "id": "Settings sections",
+    "other": "Secțiunile de setări"
+  },
+  {
+    "id": "Settings · Kinosail Subtitles",
+    "other": "Setări · Kinosail Subtitles"
+  },
+  {
+    "id": "Show",
+    "other": "Serial"
+  },
+  {
+    "id": "Shows",
+    "other": "Seriale"
+  },
+  {
+    "id": "Sign in",
+    "other": "Conectare"
+  },
+  {
+    "id": "Sign in to your private media universe.",
+    "other": "Sign in to your private media universe."
+  },
+  {
+    "id": "Sign in with passkey",
+    "other": "Conectați-vă cu cheie de acces"
+  },
+  {
+    "id": "Sign in with SSO",
+    "other": "Conectați-vă cu SSO"
+  },
+  {
+    "id": "Sign in · Kinosail Subtitles",
+    "other": "Conectare · Kinosail Subtitles"
+  },
+  {
+    "id": "Sign out",
+    "other": "Deconectare"
+  },
+  {
+    "id": "Single sign-on",
+    "other": "Autentificare unică"
+  },
+  {
+    "id": "Skip",
+    "other": "Omiteți"
+  },
+  {
+    "id": "Skip to content",
+    "other": "Mergeți la conținut"
+  },
+  {
+    "id": "Software",
+    "other": "Software"
+  },
+  {
+    "id": "Sort",
+    "other": "Sortare"
+  },
+  {
+    "id": "Source",
+    "other": "Sursă"
+  },
+  {
+    "id": "speed",
+    "other": "viteză"
+  },
+  {
+    "id": "SSO challenge is invalid or expired",
+    "other": "SSO challenge is invalid or expired"
+  },
+  {
+    "id": "SSO code exchange failed",
+    "other": "SSO code exchange failed"
+  },
+  {
+    "id": "SSO identity is not linked to a Viewer Profile",
+    "other": "SSO identity is not linked to a Viewer Profile"
+  },
+  {
+    "id": "SSO is unavailable",
+    "other": "SSO is unavailable"
+  },
+  {
+    "id": "SSO session could not be created",
+    "other": "SSO session could not be created"
+  },
+  {
+    "id": "SSO state is invalid or expired",
+    "other": "SSO state is invalid or expired"
+  },
+  {
+    "id": "SSO token validation failed",
+    "other": "SSO token validation failed"
+  },
+  {
+    "id": "Status",
+    "other": "Stare"
+  },
+  {
+    "id": "Store these codes somewhere safe. Each works once.",
+    "other": "Păstrați aceste coduri într-un loc sigur. Fiecare poate fi folosit o singură dată."
+  },
+  {
+    "id": "Subtitle provider",
+    "other": "Furnizor de subtitrări"
+  },
+  {
+    "id": "subtitle provider unavailable",
+    "other": "subtitle provider unavailable"
+  },
+  {
+    "id": "Subtitles",
+    "other": "Subtitrări"
+  },
+  {
+    "id": "subtitles",
+    "other": "subtitrări"
+  },
+  {
+    "id": "Sync",
+    "other": "Sincronizare"
+  },
+  {
+    "id": "System",
+    "other": "Sistem"
+  },
+  {
+    "id": "Tagline",
+    "other": "Slogan"
+  },
+  {
+    "id": "Theme",
+    "other": "Temă"
+  },
+  {
+    "id": "This Collection is empty.",
+    "other": "Această colecție este goală."
+  },
+  {
+    "id": "This permanently deletes the Collection.",
+    "other": "Aceasta șterge definitiv colecția."
+  },
+  {
+    "id": "This permanently deletes the playlist.",
+    "other": "Aceasta șterge definitiv lista de redare."
+  },
+  {
+    "id": "This playlist is empty.",
+    "other": "Această listă de redare este goală."
+  },
+  {
+    "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "other": "Acest produs folosește API-ul TMDB, dar nu este aprobat sau certificat de TMDB."
+  },
+  {
+    "id": "Through PG / TV-PG",
+    "other": "Până la PG / TV-PG"
+  },
+  {
+    "id": "Through PG-13 / TV-14",
+    "other": "Până la PG-13 / TV-14"
+  },
+  {
+    "id": "Title",
+    "other": "Titlu"
+  },
+  {
+    "id": "Title, artist, genre",
+    "other": "Titlu, artist, gen"
+  },
+  {
+    "id": "Title, artist, genre…",
+    "other": "Titlu, artist, gen…"
+  },
+  {
+    "id": "TMDB",
+    "other": "TMDB"
+  },
+  {
+    "id": "Tone-map HDR to SDR",
+    "other": "Maparea tonurilor HDR în SDR"
+  },
+  {
+    "id": "too many login attempts",
+    "other": "prea multe încercări de conectare"
+  },
+  {
+    "id": "too many Watch Together rooms",
+    "other": "prea multe camere Vizionare împreună"
+  },
+  {
+    "id": "Track",
+    "other": "Pistă"
+  },
+  {
+    "id": "Transcoder",
+    "other": "Transcodor"
+  },
+  {
+    "id": "transcoding is not allowed",
+    "other": "transcodarea nu este permisă"
+  },
+  {
+    "id": "Try again",
+    "other": "Încercați din nou"
+  },
+  {
+    "id": "Two-factor authentication",
+    "other": "Autentificare în doi pași"
+  },
+  {
+    "id": "Two-factor authentication · Kinosail Subtitles",
+    "other": "Autentificare în doi pași · Kinosail Subtitles"
+  },
+  {
+    "id": "Type",
+    "other": "Tip"
+  },
+  {
+    "id": "Until",
+    "other": "Până la"
+  },
+  {
+    "id": "Unwatched",
+    "other": "Nevizionate"
+  },
+  {
+    "id": "unwatched",
+    "other": "nevizionat"
+  },
+  {
+    "id": "Use default",
+    "other": "Folosiți implicitul"
+  },
+  {
+    "id": "VA-API (AMD/Intel)",
+    "other": "VA-API (AMD/Intel)"
+  },
+  {
+    "id": "Verify latest backup",
+    "other": "Verificați ultima copie de rezervă"
+  },
+  {
+    "id": "Video",
+    "other": "Video"
+  },
+  {
+    "id": "Viewer",
+    "other": "Vizualizator"
+  },
+  {
+    "id": "Viewer access is not available",
+    "other": "Accesul vizualizatorului nu este disponibil"
+  },
+  {
+    "id": "Waiting for your passkey…",
+    "other": "Se așteaptă cheia de acces…"
+  },
+  {
+    "id": "Watch Together state is invalid",
+    "other": "Starea Vizionare împreună nu este validă"
+  },
+  {
+    "id": "watched",
+    "other": "vizionat"
+  },
+  {
+    "id": "Watched",
+    "other": "Vizionat"
+  },
+  {
+    "id": "Welcome aboard",
+    "other": "Bun venit"
+  },
+  {
+    "id": "when ready.",
+    "other": "când este gata."
+  },
+  {
+    "id": "Year",
+    "other": "An"
+  },
+  {
+    "id": "Your library",
+    "other": "Biblioteca dvs."
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "Se scanează biblioteca dvs."
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "Kinosail Subtitles citește dosarele dvs. media. Acoperirea cu subtitrări apare aici când scanarea este gata."
+  }
+]

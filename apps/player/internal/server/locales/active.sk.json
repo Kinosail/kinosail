@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 minút"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 minút"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 minút"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 minút"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Prístup"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Účet · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Akcie"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Pridať prístupový kľúč"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Pridať priečinok"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Pridajte médiá alebo skúste iné hľadanie."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Pridať profil"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,11 +53,11 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Pridať do"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Spravovať server"
   },
   {
     "id": "Album",
@@ -65,23 +65,23 @@
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Albumy"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "všetko"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Všetky hodnotenia"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Povoliť sťahovanie"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Povoliť prekódovanie"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Analyzovať segmenty prehrávania teraz"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Názov kľúča API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Rozsah kľúča API túto požiadavku nepovoľuje"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "Kľúč API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "Kľúče API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Vzhľad"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Použiť"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Zvuk"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Audioknihy"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Overovací kód"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Overovací alebo záložný kód"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "vyžaduje sa overenie"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Autorizovať zariadenie"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Automaticky"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "automaticky"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Automaticky (najlepšie zistené)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Automaticky (prehliadač)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Automatické zálohy"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Automatická údržba"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Dostupné zariadenia sa pripájajú priamo k tomuto serveru."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Späť do knižnice"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Späť do nastavení"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Zálohovať teraz"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Zálohovanie a obnova"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Zálohy vyžadujú nastavenie."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Zálohy bežia automaticky bez šifrovania."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Zálohy · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Kniha"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Knihy"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Knihy a komiksy"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Prehliadať knižnicu"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Zrušiť"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "Obsadenie"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Kapitoly"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Vyberte jazyk pre tento prehliadač."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Vymazať vyrovnávaciu pamäť prekódovania"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Kód"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Zbierka"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Zbierky"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Reklama"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Kompatibilita"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Kompatibilné pripojenie"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "kompatibilné"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Súbežné streamy"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Chyba konfigurácie"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Konfigurácia · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Nastavené; hodnota je skrytá"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Potvrdiť vymazanie"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Potvrdiť odstránenie"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Pripojiť"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Pripojiť zariadenie"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Pripojené"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Pripája sa"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Pripája sa…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Chyba pripojenia"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Obsah"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Pokračovať v sledovaní"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Pokračovať v sledovaní"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "z Pokračovať v sledovaní"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Vytvoriť"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Vytvoriť prístupový kľúč"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Vytvoriť kľúč API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Vytvoriť prístupový kľúč"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Vytvoriť inteligentný playlist"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Vytvorte si profil vlastníka"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Prihlasovacie údaje sú nastavené"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Záverečná časť"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Spravovať výber"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Tmavý"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "predvolené"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Predvolené prehrávanie"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Vymazať"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Konfigurácia nasadenia"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Cieľ"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "zistené, nedostupné"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Zariadenie alebo aplikácia"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Diagnostika"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Priame"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "priame"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Priame pripojenie nie je dostupné"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Priamo z"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Réžia"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Vypnúť a odvolať"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Vypnúť dvojfaktorové overenie"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Obnova po havárii"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Stiahnuť"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Stiahnuť médiá"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Stiahnuť originál"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Stiahnuť bezpečnú diagnostiku"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Stiahnuté"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Upraviť metadáta"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Upraviť značky preskakovania"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Zapnúť DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Zapnúť dvojfaktorové overenie"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Zapnuté"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Šifrované zálohy bežia automaticky."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Šifrovanie je predvolene vypnuté."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Šifrovanie je zapnuté."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Koniec v sekundách"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Predvolené nastavenie prostredia"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook udalostí"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "Každých 15 minút"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "Každých 5 minút"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Všetko"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Exportovať úplný záznam aktivity"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Spravované externe"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Nájsť"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Nájdite niečo"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Dokončiť nastavenie"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Priečinok v pripojení médií"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Sleduje vedúceho miestnosti"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Od"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "z"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Všeobecné"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Žánre"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Rozumiem"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Skupina"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Hardvér"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "História"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Domov"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Každú hodinu"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "ak je zapnuté"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Nainštalovať"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Nainštalovať Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Integrácie"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Úvod"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Odkaz na pozvánku"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Ponechať"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Zálohy uchovávajte na úložisku mimo tohto hostiteľa. Zálohy nie sú šifrované, pokiaľ nie je nastavený kľúč zálohy. Obnovujte, keď je server zastavený."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Majte Kinosail Player pri ruke"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,19 +741,19 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player sa nemôže pripojiť k tomuto serveru. Skontrolujte sieť alebo priame pripojenie a skúste to znova."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail sa udržiava sám automaticky."
   },
   {
     "id": "Kinosail Player Reader",
-    "other": "Kinosail Player Reader"
+    "other": "Čítačka Kinosail Player"
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Jazyk"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Posledná chyba"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Chyba posledného skenovania"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Posledná úspešná záloha"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Posledné úspešné skenovanie"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Naposledy overené"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Najnovšie"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Knižnice"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Knižnica"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Objavovanie knižnice"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Priečinky knižnice"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Položky knižnice"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Usporiadanie knižnice"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Zobrazenia knižnice"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Licencovaný prihlasovací údaj je nastavený"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Svetlý"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Prepojiť OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Miestny účet"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "Playlist M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Spravovať osobný stav knižnice"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Spravované externe, len na čítanie."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Spravovaný vzdialený prístup"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Označiť"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "značka"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Zhodný text"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "Médiá"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Informácie o médiu"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Pripojenie médií"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Poskytovateľ metadát"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Metriky"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Filmy"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Hudba"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Hudba a audioknihy"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Môj zoznam"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Názov"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Nikdy"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Nová zbierka"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Názov novej zbierky"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Nové heslo"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Nový playlist"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Názov nového playlistu"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Nový názov profilu"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Nové heslo profilu"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Nový tajný kľúč"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Nový inteligentný playlist"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Noví diváci začínajú s rodinnými hodnoteniami a bez knižníc. Pridajte názvy priečinkov alebo"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Najnovšie"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Zatiaľ nie je zaznamenaná žiadna aktivita."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Nie sú nastavené žiadne kanály."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Nie je vybraté žiadne zariadenie"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Zatiaľ žiadne stiahnutia na offline použitie."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Zatiaľ nie je zaznamenané žiadne prehrávanie."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Žiadne"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Žiadne; použite všetko alebo názvy priečinkov"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Nenastavené"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "nezistené"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Teraz nie"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Nič sa nenašlo."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Práve sa sleduje"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,7 +1021,7 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Vypnuté"
   },
   {
     "id": "offline",
@@ -1029,23 +1029,23 @@
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Stiahnutia na offline použitie"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Stiahnutia na offline použitie · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Zapnuté"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "Na iPhone alebo iPade klepnite na Zdieľať, vyberte Pridať na plochu, zapnite Otvoriť ako webovú aplikáciu a klepnite na Pridať."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Jednorazové zobrazenie"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Záver"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Vlastník"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Vyžaduje sa prístup vlastníka"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Ovládanie vlastníka"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Prístupový kľúč bol pridaný."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Heslo"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Fotky"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Prehrať"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Prehrať na zariadení"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,27 +1105,27 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Prehrávanie"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "História prehrávania"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Analýza segmentov prehrávania"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Rýchlosť prehrávania"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Prehráva sa tu"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Prehráva sa na zariadení"
   },
   {
     "id": "Playlist",
@@ -1133,31 +1133,31 @@
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Playlisty"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Dej"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Kontrola zmien"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Uprednostniť kvalitu"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Uprednostniť rýchlosť"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Preferovaný jazyk"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Pripraviť"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Súkromné už od návrhu"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Profil"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,31 +1177,31 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Profil na obnovenie"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Typ profilu"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Profily"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Automaticky chránené"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA – vyžadovať ďalšiu ochranu prihlásenia pre každý profil diváka"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Kvalita"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "kvalita"
   },
   {
     "id": "Quick Connect",
@@ -1213,23 +1213,23 @@
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Hodnotenie"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Čítať teraz"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "čítačka"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Poradie čítania"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "pripravené"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Rekapitulácia"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Nedávna aktivita"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Nedávne prehrávanie"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Nedávno pridané"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Naposledy prehrané"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Obnova"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Záložné kódy"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Obnoviť z TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Obnoviť chýbajúce metadáta"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Odporúčané"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Vzdialený prístup"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Odstrániť"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Odstrániť z"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "požiadavka"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Požiadavku sa nepodarilo dokončiť."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Obnoviť heslo"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Späť do nastavení"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Odvolať"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Miestnosť pripojená · sleduje vedúceho"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Miestnosť pripojená · vediete vy"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Miestnosť odpojená · na opätovné pripojenie načítajte stránku"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Spustiť skenovanie knižnice"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Spustiť údržbu"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Bezpečnostná kontrola"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Uložiť"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Uložiť súbor"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Uložiť pre reštart"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Uložiť značku"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Uložiť metadáta"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Uložiť plán"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Plán"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Hľadať v knižnici"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Výsledky hľadania"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Tajné údaje sú skryté a sú zahrnuté len v šifrovaných záložných kópiách na obnovu."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Zabezpečte svoj účet"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Zabezpečte svoj účet · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Odošlite túto súkromnú adresu pripojenia divákovi. Zobrazí sa iba raz."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Názov servera"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Nastavenia servera"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Server nie je dostupný"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Server nie je dostupný · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Nastaviť Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Nastaviť alebo nahradiť overovaciu aplikáciu"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Nastaviť dvojfaktorové overenie"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Nastaviť dvojfaktorové overenie · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Nastavenia"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Sekcie nastavení"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Nastavenia · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Seriál"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Seriály"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Prihlásiť sa"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Prihlásiť sa prístupovým kľúčom"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Prihlásiť sa cez SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Prihlásenie · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Odhlásiť sa"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Odhlásiť ostatné zariadenia"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Spôsoby prihlásenia"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Prihlásenie, ochrany prehliadača pre rovnaký pôvod, súkromné odpovede, obmedzené požiadavky a odvolateľný prístup sú vždy zapnuté. Nie sú tu žiadne bezpečnostné prepínače na správu."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Jednotné prihlásenie (SSO)"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Preskočiť"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Automaticky preskakovať reklamy"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Automaticky preskakovať záverečnú časť"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Automaticky preskakovať úvod"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Automaticky preskakovať záver"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Automaticky preskakovať rekapitulácie"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Prejsť na obsah"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Časovač vypnutia"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Časovač vypnutia skončil"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Inteligentný playlist"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Názov inteligentného playlistu"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Softvér"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Zoradiť"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Zdroj"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "rýchlosť"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Začiatok v sekundách"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Spustiť Sledovať spoločne"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Stav"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Zastaví sa o {minutes} minút"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Uložte tieto kódy na bezpečné miesto. Každý sa dá použiť raz."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Uložené tu. Streamované priamo."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Streamovať médiá"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Vyžaduje sa predplatné"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Poskytovateľ titulkov"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Titulky"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "titulky"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Synchronizovať"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Systémový"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Slogan"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Záloha obsahuje stav účtov a relácií. Nešifrované úložisko záloh uchovávajte v súkromí alebo nastavte kľúč zálohy."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Motív"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Tieto nastavenia sú len na čítanie, kým sa neodstránia z YAML alebo z prostredia"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Táto zbierka je prázdna."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Týmto sa zbierka natrvalo vymaže."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Týmto sa playlist natrvalo vymaže."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Tento playlist je prázdny."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Tento produkt používa TMDB API, ale TMDB ho neschvaľuje ani necertifikuje."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Až po PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Až po PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Názov"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Názov, interpret, žáner"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Názov, interpret, žáner…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Previesť HDR na SDR (tone mapping)"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "príliš veľa pokusov o prihlásenie"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "príliš veľa miestností Sledovať spoločne"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Stopa"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "vyrovnávacia pamäť prekódovania"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Prekodér"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "prekódovanie nie je povolené"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Skúsiť znova"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Dvojfaktorové overenie"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Dvojfaktorové overenie · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Typ"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Odpojiť OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Do"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Nepozreté"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "nepozreté"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Použiť predvolené"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Na prihlásenie použite Face ID, Touch ID, Windows Hello alebo PIN zariadenia. Heslo bude stále fungovať."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,7 +1773,7 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Overiť najnovšiu zálohu"
   },
   {
     "id": "Video",
@@ -1781,127 +1781,127 @@
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Divák"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Prístup diváka nie je dostupný"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Meno diváka"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Čaká sa na váš prístupový kľúč…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Stav Sledovať spoločne je neplatný"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "pozreté"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Pozreté"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Pozreté ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Sledovanie zmien"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Vitajte"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "keď budete pripravení."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "Sprievodca XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Rok"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Túto miestnosť vediete vy"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Vaša knižnica"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Vaša knižnica a záznam sledovania zostávajú na tomto serveri."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Knihy"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Knižnica"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Nastavenia"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Vygenerovaný kľúč API"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Kopírovať kľúč API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Skopírované."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Vyberte Kopírovať vo svojom prehliadači."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Nastaviť dôveryhodné HTTPS"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Skontrolovať nastavenie dôveryhodného HTTPS"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Kópia na offline použitie"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Overený súbor uložený v tomto zariadení."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Pripravené na offline použitie v tomto zariadení"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Spôsob prehrávania"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Otvoriť nastavenia prehrávania."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Kópia na offline použitie nie je dostupná."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "uložené v tomto zariadení"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Toto zariadenie nemá dostatok úložiska na toto stiahnutie"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Tento prehliadač nemôže bezpečne ukladať médiá na offline použitie"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Stiahnutie sa nepodarilo overiť"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Stiahnutie už nie je dostupné"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Najprv otvorte Kinosail online a vyberte profil diváka."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Všetky knižnice"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Zvukové stopy"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Späť na stiahnuté"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Priebeh sa nepodarilo uložiť. Vráťte sa na Stiahnuté a skúste to znova."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Spravovať stiahnutia na offline použitie"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Film"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Otvoriť stiahnutia zo servera"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Otvoriť predchádzajúcu stránku"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Správanie pri prehrávaní"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Pripraviť kópiu na offline použitie"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Priebeh je uložený v tomto zariadení. Na synchronizáciu otvorte stiahnutia zo servera."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Späť na formulár"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Hľadať vo všetkých knižniciach"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Hľadať všetko"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Tento súbor sa nepodarilo prehrať. Vráťte sa na Stiahnuté, znova sa pripojte k serveru a stiahnite súbor znova."
   },
   {
     "id": "invalid title request",
@@ -2009,47 +2009,47 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Zvuk je v tejto stiahnutej kópii pevne nastavený."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Ochrana prihlásenia"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Späť na filmy"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Späť na seriály"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Späť na výsledky hľadania"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Späť do knižnice"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Kapitola %lld z %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Strana %lld z %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Dokument"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Skenovanie vašej knižnice"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail číta vaše priečinky s médiami. Keď skenovanie skončí, knižnica sa tu zobrazí."
   },
   {
     "id": "Offline",
@@ -2057,22 +2057,22 @@
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Ste offline"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Ak chcete pokračovať v sledovaní, znova sa pripojte k serveru."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Skopírujte nastavovací kľúč alebo odkaz do overovacej aplikácie."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Pred pokračovaním uložte všetky záložné kódy. Každý kód sa dá použiť raz."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Na potvrdenie aplikácie zadajte aktuálny 6-miestny kód."
   }
 ]

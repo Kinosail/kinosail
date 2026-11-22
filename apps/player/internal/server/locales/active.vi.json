@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 phút"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 phút"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 phút"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 phút"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Quyền truy cập"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Tài khoản · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Thao tác"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Thêm khóa truy cập"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Thêm thư mục"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Thêm nội dung hoặc thử tìm kiếm khác."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Thêm hồ sơ"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,11 +53,11 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Thêm vào"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Quản trị máy chủ"
   },
   {
     "id": "Album",
@@ -65,23 +65,23 @@
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Album"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "tất cả"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Mọi xếp hạng"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Cho phép tải xuống"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Cho phép chuyển mã"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Phân tích các đoạn phát ngay"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Tên khóa API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Phạm vi khóa API không cho phép yêu cầu này"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "Khóa API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "Khóa API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Giao diện"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Áp dụng"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Âm thanh"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Sách nói"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Mã xác thực"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Mã xác thực hoặc mã khôi phục"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "cần xác thực"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Cấp quyền cho thiết bị"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Tự động"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "tự động"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Tự động (tốt nhất được phát hiện)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Tự động (trình duyệt)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Sao lưu tự động"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Bảo trì tự động"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Thiết bị khả dụng kết nối trực tiếp tới máy chủ này."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Quay lại thư viện"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Quay lại cài đặt"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Sao lưu ngay"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Sao lưu và khôi phục"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Cần thiết lập sao lưu."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Sao lưu chạy tự động và không được mã hóa."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Sao lưu · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Sách"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Sách"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Sách và truyện tranh"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Duyệt thư viện"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Hủy"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "Truyền"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Chương"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Chọn ngôn ngữ cho trình duyệt này."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Xóa bộ nhớ đệm chuyển mã"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Mã"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Bộ sưu tập"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Bộ sưu tập"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Quảng cáo"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Tương thích"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Kết nối tương thích"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "tương thích"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Luồng phát đồng thời"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Lỗi cấu hình"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Cấu hình · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Đã cấu hình; giá trị được ẩn"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Xác nhận xóa"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Xác nhận gỡ"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Kết nối"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Kết nối thiết bị"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Đã kết nối"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Đang kết nối"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Đang kết nối…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Lỗi kết nối"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Nội dung"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Tiếp tục xem"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Tiếp tục xem"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "từ mục Tiếp tục xem"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Tạo"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Tạo khóa truy cập"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Tạo khóa API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Tạo khóa truy cập"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Tạo danh sách phát thông minh"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Tạo hồ sơ quản trị viên của bạn"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Đã cấu hình thông tin đăng nhập"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Phần credit"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Tuyển chọn"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Tối"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "mặc định"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Phát mặc định"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Xóa"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Cấu hình triển khai"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Đích"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "đã phát hiện, không khả dụng"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Thiết bị hoặc ứng dụng"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Chẩn đoán"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Trực tiếp"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "trực tiếp"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Kết nối trực tiếp không khả dụng"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Trực tiếp từ"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Đạo diễn"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Tắt và thu hồi"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Tắt xác thực hai bước"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Khôi phục sau thảm họa"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Tải xuống"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Tải nội dung"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Tải bản gốc"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Tải chẩn đoán an toàn"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Tải xuống"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Sửa siêu dữ liệu"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Sửa dấu bỏ qua"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Bật DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Bật xác thực hai bước"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Đã bật"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Sao lưu được mã hóa chạy tự động."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Mã hóa tắt theo mặc định."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Mã hóa đang bật."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Kết thúc sau (giây)"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Mặc định của môi trường"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook sự kiện"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "Mỗi 15 phút"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "Mỗi 5 phút"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Tất cả"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Xuất toàn bộ nhật ký hoạt động"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Quản lý bên ngoài"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Tìm"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Tìm nội dung"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Hoàn tất thiết lập"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Thư mục trong điểm gắn nội dung"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Đang theo người dẫn phòng"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Từ"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "từ"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Chung"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Thể loại"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Đã hiểu"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Nhóm"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Phần cứng"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Lịch sử"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Trang chủ"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Hằng giờ"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "nếu được bật"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Cài đặt"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Cài đặt Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Tích hợp"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Đoạn mở đầu"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Liên kết mời"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Giữ"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Lưu bản sao lưu trên bộ nhớ ngoài máy chủ này. Sao lưu không được mã hóa trừ khi đã cấu hình khóa sao lưu. Khôi phục khi máy chủ đã dừng."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Giữ Kinosail Player ở gần"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,19 +741,19 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player không kết nối được tới máy chủ này. Kiểm tra mạng hoặc Kết nối trực tiếp, rồi thử lại."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail tự bảo trì."
   },
   {
     "id": "Kinosail Player Reader",
-    "other": "Kinosail Player Reader"
+    "other": "Trình đọc Kinosail Player"
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Ngôn ngữ"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Lỗi gần nhất"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Lỗi quét gần nhất"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Sao lưu thành công gần nhất"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Quét thành công gần nhất"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Xác minh gần nhất"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Mới nhất"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Thư viện"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Thư viện"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Khám phá thư viện"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Thư mục thư viện"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Mục thư viện"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Tổ chức thư viện"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Chế độ xem thư viện"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Đã cấu hình thông tin đăng nhập có bản quyền"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Sáng"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Liên kết OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Tài khoản cục bộ"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "Danh sách phát M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Quản lý trạng thái thư viện cá nhân"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Quản lý bên ngoài và chỉ đọc."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Truy cập từ xa được quản lý"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Đánh dấu"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "dấu"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Khớp văn bản"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "Nội dung"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Thông tin nội dung"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Điểm gắn nội dung"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Nhà cung cấp siêu dữ liệu"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Số liệu"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Phim lẻ"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Nhạc"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Nhạc và sách nói"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Danh sách của tôi"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Tên"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Không bao giờ"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Bộ sưu tập mới"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Tên bộ sưu tập mới"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Mật khẩu mới"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Danh sách phát mới"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Tên danh sách phát mới"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Tên hồ sơ mới"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Mật khẩu hồ sơ mới"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Bí mật mới"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Danh sách phát thông minh mới"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Người xem mới bắt đầu với xếp hạng gia đình và không có thư viện. Thêm tên thư mục hoặc"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Mới nhất"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Chưa có hoạt động nào được ghi lại."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Chưa cấu hình kênh nào."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Chưa chọn thiết bị"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Chưa có nội dung tải xuống để xem ngoại tuyến."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Chưa có lượt phát nào được ghi lại."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Không có"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Không có; dùng tất cả hoặc tên thư mục"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Chưa cấu hình"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "chưa phát hiện"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Để sau"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Không tìm thấy gì."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Đang xem"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Tắt"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "ngoại tuyến"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Tải xuống để xem ngoại tuyến"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Tải xuống ngoại tuyến · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Bật"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "Trên iPhone hoặc iPad, chạm Chia sẻ, chọn Thêm vào Màn hình chính, bật Mở như ứng dụng web, rồi chạm Thêm."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Hiển thị một lần"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Đoạn kết"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Quản trị viên"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Cần quyền quản trị viên"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Điều khiển của quản trị viên"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Đã thêm khóa truy cập."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Mật khẩu"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Ảnh"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Phát"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Phát trên thiết bị"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Phát lại"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Lịch sử phát"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Phân tích đoạn phát"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Tốc độ phát"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Đang phát tại đây"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Đang phát trên thiết bị"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Danh sách phát"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Danh sách phát"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Cốt truyện"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Đang kiểm tra thay đổi"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Ưu tiên chất lượng"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Ưu tiên tốc độ"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Ngôn ngữ ưu tiên"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Chuẩn bị"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Riêng tư theo thiết kế"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Hồ sơ"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,31 +1177,31 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Hồ sơ cần đặt lại"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Loại hồ sơ"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Hồ sơ"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Được bảo vệ tự động"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - Yêu cầu bảo vệ đăng nhập bổ sung cho mọi hồ sơ người xem"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Chất lượng"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "chất lượng"
   },
   {
     "id": "Quick Connect",
@@ -1213,23 +1213,23 @@
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Xếp hạng"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Đọc ngay"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "trình đọc"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Thứ tự đọc"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "sẵn sàng"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Tóm tắt trước"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Hoạt động gần đây"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Phát gần đây"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Mới thêm gần đây"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Phát gần đây"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Khôi phục"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Mã khôi phục"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Làm mới từ TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Làm mới siêu dữ liệu còn thiếu"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Được đề xuất"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Truy cập từ xa"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Gỡ"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Gỡ khỏi"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "yêu cầu"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Không thể hoàn tất yêu cầu."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Đặt lại mật khẩu"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Quay lại cài đặt"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Thu hồi"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Đã kết nối phòng · đang theo người dẫn"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Đã kết nối phòng · bạn dẫn"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Đã ngắt kết nối phòng · tải lại để kết nối lại"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Quét thư viện ngay"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Bảo trì ngay"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Quét an toàn"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Lưu"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Lưu tệp"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Lưu để khởi động lại"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Lưu dấu"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Lưu siêu dữ liệu"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Lưu lịch"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Lịch"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Tìm trong thư viện"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Kết quả tìm kiếm"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Thông tin bí mật được ẩn và chỉ có trong bản sao lưu khôi phục đã mã hóa."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Bảo mật tài khoản của bạn"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Bảo mật tài khoản · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Gửi URL kết nối riêng này cho người xem. URL chỉ hiển thị một lần."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Tên máy chủ"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Cài đặt máy chủ"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Máy chủ không khả dụng"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Máy chủ không khả dụng · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Thiết lập Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Thiết lập hoặc thay ứng dụng xác thực"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Thiết lập xác thực hai bước"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Thiết lập xác thực hai bước · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Cài đặt"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Các mục cài đặt"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Cài đặt · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Phim bộ"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Phim bộ"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Đăng nhập"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Đăng nhập bằng khóa truy cập"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Đăng nhập bằng SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Đăng nhập · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Đăng xuất"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Đăng xuất khỏi thiết bị khác"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Phương thức đăng nhập"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Đăng nhập, bảo vệ trình duyệt cùng nguồn, phản hồi riêng tư, yêu cầu có giới hạn và quyền truy cập có thể thu hồi luôn được bật. Không có công tắc bảo mật nào để quản lý."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Đăng nhập một lần (SSO)"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Bỏ qua"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Tự động bỏ qua quảng cáo"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Tự động bỏ qua phần credit"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Tự động bỏ qua đoạn mở đầu"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Tự động bỏ qua đoạn kết"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Tự động bỏ qua phần tóm tắt trước"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Chuyển đến nội dung"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Hẹn giờ tắt"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Hẹn giờ tắt đã kết thúc"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Danh sách phát thông minh"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Tên danh sách phát thông minh"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Phần mềm"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Sắp xếp"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Nguồn"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "tốc độ"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Bắt đầu sau (giây)"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Bắt đầu Xem cùng nhau"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Trạng thái"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Dừng sau {minutes} phút"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Lưu các mã này ở nơi an toàn. Mỗi mã chỉ dùng được một lần."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Lưu tại đây. Phát trực tiếp."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Phát nội dung"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Cần đăng ký"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Nhà cung cấp phụ đề"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Phụ đề"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "phụ đề"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Đồng bộ"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Hệ thống"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Slogan"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Bản sao lưu chứa trạng thái tài khoản và phiên đăng nhập. Giữ bộ nhớ sao lưu không mã hóa ở chế độ riêng tư, hoặc cấu hình khóa sao lưu."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Chủ đề"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Các cài đặt này chỉ đọc cho đến khi được gỡ khỏi YAML hoặc biến môi trường"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Bộ sưu tập này trống."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Thao tác này xóa vĩnh viễn bộ sưu tập."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Thao tác này xóa vĩnh viễn danh sách phát."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Danh sách phát này trống."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Sản phẩm này sử dụng API của TMDB nhưng không được TMDB chứng thực hay phê duyệt."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Đến PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Đến PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Tiêu đề"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Tiêu đề, nghệ sĩ, thể loại"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Tiêu đề, nghệ sĩ, thể loại…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Chuyển HDR sang SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "quá nhiều lần thử đăng nhập"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "quá nhiều phòng Xem cùng nhau"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Bản nhạc"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "bộ nhớ đệm chuyển mã"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Bộ chuyển mã"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "không được phép chuyển mã"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Thử lại"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Xác thực hai bước"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Xác thực hai bước · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Loại"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Hủy liên kết OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Đến"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Chưa xem"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "chưa xem"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Dùng mặc định"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Dùng Face ID, Touch ID, Windows Hello hoặc mã PIN của thiết bị để đăng nhập. Mật khẩu vẫn dùng được."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,7 +1773,7 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Xác minh bản sao lưu mới nhất"
   },
   {
     "id": "Video",
@@ -1781,127 +1781,127 @@
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Người xem"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Quyền truy cập của người xem không khả dụng"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Tên người xem"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Đang chờ khóa truy cập của bạn…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Trạng thái Xem cùng nhau không hợp lệ"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "đã xem"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Đã xem"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Đã xem ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Đang theo dõi thay đổi"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Chào mừng bạn"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "khi sẵn sàng."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "Hướng dẫn XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Năm"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Bạn dẫn phòng này"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Thư viện của bạn"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Thư viện và hoạt động xem của bạn chỉ lưu trên máy chủ này."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Sách"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Thư viện"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Cài đặt"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Khóa API đã tạo"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Sao chép khóa API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Đã sao chép."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Chọn Sao chép trong trình duyệt của bạn."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Thiết lập HTTPS đáng tin cậy"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Xem lại thiết lập HTTPS đáng tin cậy"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Bản sao ngoại tuyến"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Tệp đã xác minh được lưu trên thiết bị này."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Sẵn sàng xem ngoại tuyến trên thiết bị này"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Cách phát"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Mở cài đặt phát."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Bản sao ngoại tuyến không khả dụng."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "được lưu trên thiết bị này"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Thiết bị này không đủ bộ nhớ để tải xuống"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Trình duyệt này không thể lưu nội dung ngoại tuyến một cách an toàn"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Không thể xác minh bản tải xuống"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Bản tải xuống không còn khả dụng"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Mở Kinosail khi có mạng và chọn hồ sơ người xem trước."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Tất cả thư viện"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Bản âm thanh"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Quay lại tải xuống"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Không thể lưu tiến trình. Quay lại Tải xuống và thử lại."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Quản lý tải xuống ngoại tuyến"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Phim"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Mở tải xuống từ máy chủ"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Mở trang trước"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Hành vi phát"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Chuẩn bị bản sao ngoại tuyến"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Tiến trình đã lưu trên thiết bị này. Mở tải xuống từ máy chủ để đồng bộ."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Quay lại biểu mẫu"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Tìm trong tất cả thư viện"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Tìm tất cả"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Không thể phát tệp này. Quay lại Tải xuống, kết nối lại tới máy chủ và tải lại."
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Âm thanh được cố định trong bản tải xuống này."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Bảo vệ đăng nhập"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Quay lại Phim lẻ"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Quay lại Phim bộ"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Quay lại kết quả tìm kiếm"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Quay lại Thư viện"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Chương %lld trên %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Trang %lld trên %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Tài liệu"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Đang quét thư viện của bạn"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail đang đọc các thư mục nội dung của bạn. Thư viện sẽ hiện ở đây khi quét xong."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "Ngoại tuyến"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Bạn đang ngoại tuyến"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Kết nối lại tới máy chủ để tiếp tục xem."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Sao chép khóa thiết lập hoặc liên kết thiết lập vào ứng dụng xác thực của bạn."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Lưu mọi mã khôi phục trước khi tiếp tục. Mỗi mã chỉ dùng được một lần."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Nhập mã 6 chữ số hiện tại để xác nhận ứng dụng."
   }
 ]

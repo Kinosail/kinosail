@@ -12,7 +12,9 @@ import kotlinx.serialization.json.JsonPrimitive
 internal object InterfaceCopy {
     private val catalogs = ConcurrentHashMap<String, Map<String, String>>()
     private val translated = setOf("es", "de", "fr", "pt-BR", "zh-Hans", "it", "nl", "pl", "ru", "ja",
-        "ko", "ar", "tr", "uk", "pt-PT", "zh-Hant", "sv")
+        "ko", "ar", "tr", "uk", "pt-PT", "zh-Hant", "sv", "hi", "bn", "id", "vi", "th", "fa", "he", "cs", "el",
+        "hu", "ro", "da", "fi", "nb", "sk", "bg", "hr", "ca", "ms", "fil")
+    private val legacy = mapOf("iw" to "he", "in" to "id", "no" to "nb", "tl" to "fil")
 
     fun translate(context: Context, english: String): String {
         val configuration = context.resources.configuration
@@ -30,7 +32,7 @@ internal object InterfaceCopy {
             return if (locale.script == "Hant" || locale.country in setOf("TW", "HK", "MO")) "zh-Hant" else "zh-Hans"
         }
         if (locale.language == "pt") return if (locale.country == "PT") "pt-PT" else "pt-BR"
-        return locale.language.takeIf(translated::contains)
+        return (legacy[locale.language] ?: locale.language).takeIf(translated::contains)
     }
 
     private fun load(context: Context, tag: String): Map<String, String> = try {

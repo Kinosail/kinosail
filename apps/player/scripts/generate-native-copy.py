@@ -19,7 +19,10 @@ WEAR_LOCALES = ROOT / "apps/android/wear/src/main/res/xml/locale_config.xml"
 TRANSLATED = (
     "es", "de", "fr", "pt-BR", "zh-Hans", "it", "nl", "pl", "ru", "ja", "ko",
     "ar", "tr", "uk", "pt-PT", "zh-Hant", "sv",
+    "hi-IN", "bn", "id", "vi", "th", "fa", "he", "cs", "el", "hu", "ro",
+    "da", "fi", "nb", "sk", "bg-BG", "hr", "ca", "ms", "fil",
 )
+NATIVE_TAGS = {"hi-IN": "hi", "bg-BG": "bg"}
 QUOTED = re.compile(r'"([^"\\\n]+)"')
 
 
@@ -67,14 +70,15 @@ def main() -> int:
         if values.keys() != source.keys():
             raise SystemExit(f"{tag}: message IDs differ from English")
         translated = {key: values[key] for key in english if values[key] != english[key]}
-        ok &= emit(ANDROID / f"{tag}.json", translated, check)
-        ok &= emit(WEAR / f"{tag}.json", translated, check)
+        native = NATIVE_TAGS.get(tag, tag)
+        ok &= emit(ANDROID / f"{native}.json", translated, check)
+        ok &= emit(WEAR / f"{native}.json", translated, check)
         for key, value in translated.items():
-            strings[key]["localizations"][tag] = {"stringUnit": {"state": "translated", "value": value}}
+            strings[key]["localizations"][native] = {"stringUnit": {"state": "translated", "value": value}}
     ok &= emit(APPLE, {"sourceLanguage": "en", "strings": strings, "version": "1.0"}, check)
     config = '<locale-config xmlns:android="http://schemas.android.com/apk/res/android">\n'
     config += '    <locale android:name="en" />\n'
-    config += ''.join(f'    <locale android:name="{tag}" />\n' for tag in TRANSLATED)
+    config += ''.join(f'    <locale android:name="{NATIVE_TAGS.get(tag, tag)}" />\n' for tag in TRANSLATED)
     config += '</locale-config>\n'
     ok &= emit_text(ANDROID_LOCALES, config, check)
     ok &= emit_text(WEAR_LOCALES, config, check)

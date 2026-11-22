@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 minuta"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 minuta"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 minuta"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 minuta"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Pristup"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Račun · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Radnje"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Dodaj pristupni ključ"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Dodaj mapu"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Dodajte medijski sadržaj ili pokušajte s drugim pretraživanjem."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Dodaj profil"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,11 +53,11 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Dodaj u"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Upravljaj poslužiteljem"
   },
   {
     "id": "Album",
@@ -65,23 +65,23 @@
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Albumi"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "sve"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Sve ocjene"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Dopusti preuzimanja"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Dopusti transkodiranje"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Analiziraj segmente reprodukcije sada"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Naziv API ključa"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Opseg API ključa ne dopušta ovaj zahtjev"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "API ključ · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "API ključevi"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Izgled"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Primijeni"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Zvuk"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Audioknjige"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Kod za autentifikaciju"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Kod za autentifikaciju ili oporavak"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "potrebna je autentifikacija"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Odobri uređaj"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Automatski"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "automatski"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Automatski (najbolje otkriveno)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Automatski (preglednik)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Automatske sigurnosne kopije"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Automatsko održavanje"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Dostupni uređaji koriste izravnu vezu s ovim poslužiteljem."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Natrag na biblioteku"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Natrag na postavke"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Napravi sigurnosnu kopiju sada"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Sigurnosna kopija i oporavak"
   },
   {
     "id": "backup is unavailable",
@@ -201,35 +201,35 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Sigurnosne kopije treba postaviti."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Sigurnosne kopije izrađuju se automatski bez šifriranja."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Sigurnosne kopije · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Knjiga"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Knjige"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Knjige i stripovi"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Pregledaj biblioteku"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Odustani"
   },
   {
     "id": "Cast",
@@ -237,39 +237,39 @@
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Poglavlja"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Odaberite jezik za ovaj preglednik."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Obriši predmemoriju transkodiranja"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Kod"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Zbirka"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Zbirke"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Reklama"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Kompatibilnost"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Kompatibilna veza"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "kompatibilno"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Istovremeni tokovi"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Greška konfiguracije"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Konfiguracija · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Konfigurirano; vrijednost je skrivena"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Potvrdi brisanje"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Potvrdi uklanjanje"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Poveži"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Poveži uređaj"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Povezano"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Povezivanje"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Povezivanje…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Greška veze"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Sadržaj"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Nastavi gledanje"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Nastavi gledanje"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "iz odjeljka Nastavi gledanje"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Stvori"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Stvori pristupni ključ"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Stvori API ključ"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Stvori pristupni ključ"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Stvori pametni popis za reprodukciju"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Stvorite svoj profil vlasnika"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Vjerodajnice su postavljene"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Završne zasluge"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Uredi"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Tamni"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "zadano"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Zadana reprodukcija"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Izbriši"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Konfiguracija implementacije"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Odredište"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "otkriveno, nije dostupno"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Uređaj ili aplikacija"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Dijagnostika"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Izravno"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "izravno"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Izravna veza nije dostupna"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Izravno iz"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Redatelj"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Onemogući i opozovi"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Onemogući dvofaktorsku autentifikaciju"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Oporavak od katastrofe"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Preuzmi"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Preuzmi medijski sadržaj"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Preuzmi izvornik"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Preuzmi sigurnu dijagnostiku"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Preuzimanja"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Uredi metapodatke"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Uredi oznake za preskakanje"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Omogući DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Omogući dvofaktorsku autentifikaciju"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Omogućeno"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Šifrirane sigurnosne kopije izrađuju se automatski."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Šifriranje je zadano isključeno."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Šifriranje je uključeno."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Kraj u sekundama"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Zadano za okruženje"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook za događaje"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "Svakih 15 minuta"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "Svakih 5 minuta"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Sve"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Izvezi cjeloviti dnevnik aktivnosti"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Upravlja se izvana"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Pronađi"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Pronađite nešto"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Dovrši postavljanje"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Mapa unutar priključka za medije"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Prati voditelja sobe"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Od"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "od"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Općenito"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Žanrovi"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Razumijem"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Grupa"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Hardver"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Povijest"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Početna"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Svaki sat"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "ako je omogućeno"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Instaliraj"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Instaliraj Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Integracije"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Uvod"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Poveznica za poziv"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Zadrži"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Čuvajte sigurnosne kopije na pohrani izvan ovog hosta. Sigurnosne kopije nisu šifrirane, osim ako nije postavljen ključ za sigurnosnu kopiju. Vraćajte ih dok je poslužitelj zaustavljen."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Držite Kinosail Player blizu"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,11 +741,11 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player ne može doći do ovog poslužitelja. Provjerite mrežu ili izravnu vezu, pa pokušajte ponovo."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail se automatski održava."
   },
   {
     "id": "Kinosail Player Reader",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Jezik"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Posljednja greška"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Greška posljednjeg skeniranja"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Posljednja uspješna sigurnosna kopija"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Posljednje uspješno skeniranje"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Posljednja provjera"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Najnovije"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Biblioteke"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Biblioteka"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Otkrivanje biblioteke"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Mape biblioteke"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Stavke biblioteke"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Organizacija biblioteke"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Prikazi biblioteke"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Licencirana vjerodajnica je postavljena"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Svijetli"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Poveži OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Lokalni račun"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "M3U popis za reprodukciju"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Upravljaj osobnim stanjem biblioteke"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Upravlja se izvana i samo za čitanje."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Upravljani daljinski pristup"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Označi"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "oznaka"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Tekst podudaranja"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "Mediji"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Informacije o mediju"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Priključak za medije"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Pružatelj metapodataka"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Mjerni podaci"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Filmovi"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Glazba"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Glazba i audioknjige"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Moj popis"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Naziv"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Nikad"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Nova zbirka"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Naziv nove zbirke"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Nova lozinka"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Novi popis za reprodukciju"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Naziv novog popisa za reprodukciju"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Naziv novog profila"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Nova lozinka profila"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Nova tajna vrijednost"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Novi pametni popis za reprodukciju"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Novi gledatelji počinju s obiteljskim ocjenama i bez biblioteka. Dodajte nazive mapa ili"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Najnovije"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Još nema zabilježene aktivnosti."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Nema postavljenih kanala."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Nije odabran uređaj"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Još nema preuzimanja za izvanmrežni rad."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Još nema zabilježene reprodukcije."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Nijedno"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Nijedno; koristite sve ili nazive mapa"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Nije postavljeno"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "nije otkriveno"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Ne sada"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Ništa nije pronađeno."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Trenutno se gleda"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Isključeno"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "izvanmrežno"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Preuzimanja za izvanmrežni rad"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Preuzimanja za izvanmrežni rad · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Uključeno"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "Na iPhoneu ili iPadu dodirnite Dijeli, odaberite Dodaj na početni zaslon, uključite Otvori kao web aplikaciju, zatim dodirnite Dodaj."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Jednokratni prikaz"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Završetak"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Vlasnik"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Potreban je pristup vlasnika"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Upravljanje za vlasnika"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Pristupni ključ je dodan."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Lozinka"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Fotografije"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Reproduciraj"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Reproduciraj na uređaju"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Reprodukcija"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Povijest reprodukcije"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Analiza segmenata reprodukcije"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Brzina reprodukcije"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Reproducira se ovdje"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Reproducira se na uređaju"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Popis za reprodukciju"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Popisi za reprodukciju"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Radnja"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Provjera promjena"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Preferiraj kvalitetu"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Preferiraj brzinu"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Željeni jezik"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Pripremi"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Privatno po dizajnu"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Profil"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Profil za resetiranje"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Vrsta profila"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Profili"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Automatski zaštićeno"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - Zahtijevaj dodatnu zaštitu prijave za svaki profil gledatelja"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Kvaliteta"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "kvaliteta"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "Brzo povezivanje"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "Brzo povezivanje · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Ocjena"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Čitaj sada"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "čitač"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Redoslijed čitanja"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "spremno"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Sažetak"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Nedavna aktivnost"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Nedavna reprodukcija"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Nedavno dodano"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Nedavno reproducirano"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Oporavak"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Kodovi za oporavak"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Osvježi iz TMDB-a"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Osvježi nedostajuće metapodatke"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Preporučeno"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Daljinski pristup"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Ukloni"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Ukloni iz"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "zahtjev"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Zahtjev se nije mogao dovršiti."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Resetiraj lozinku"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Vrati se na postavke"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Opozovi"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Soba je povezana · prati voditelja"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Soba je povezana · vodite vi"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Soba je odspojena · ponovno učitajte stranicu za povezivanje"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Pokreni skeniranje biblioteke sada"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Pokreni održavanje sada"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Sigurnosno skeniranje"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Spremi"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Spremi datoteku"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Spremi za ponovno pokretanje"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Spremi oznaku"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Spremi metapodatke"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Spremi raspored"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Raspored"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Pretraži biblioteku"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Rezultati pretraživanja"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Tajne vrijednosti su skrivene i uključene su samo u šifrirane sigurnosne kopije za oporavak."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Osigurajte svoj račun"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Osigurajte svoj račun · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Pošaljite ovu privatnu poveznicu za vezu gledatelju. Prikazuje se samo jednom."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Naziv poslužitelja"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Postavke poslužitelja"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Poslužitelj nije dostupan"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Poslužitelj nije dostupan · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Postavi Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Postavi ili zamijeni aplikaciju za autentifikaciju"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Postavi dvofaktorsku autentifikaciju"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Postavi dvofaktorsku autentifikaciju · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Postavke"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Odjeljci postavki"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Postavke · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Serija"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Serije"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Prijava"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Prijava pristupnim ključem"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Prijava putem SSO-a"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Prijava · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Odjava"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Odjavi ostale uređaje"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Načini prijave"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Prijava, zaštite preglednika za isto podrijetlo, privatni odgovori, ograničeni zahtjevi i opozivi pristupi uvijek su uključeni. Nema sigurnosnih prekidača za upravljanje."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Jedinstvena prijava"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Preskoči"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Automatski preskoči reklame"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Automatski preskoči završne zasluge"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Automatski preskoči uvode"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Automatski preskoči završetke"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Automatski preskoči sažetke"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Preskoči na sadržaj"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Tajmer za spavanje"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Tajmer za spavanje je završio"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Pametni popis za reprodukciju"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Naziv pametnog popisa za reprodukciju"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Softver"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Razvrstaj"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Izvor"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "brzina"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Početak u sekundama"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Pokreni zajedničko gledanje"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Stanje"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Zaustavlja se za {minutes} minuta"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Spremite ove kodove na sigurno mjesto. Svaki radi samo jednom."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Pohranjeno ovdje. Emitira se izravno."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Emitiraj medijski sadržaj"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Potrebna je pretplata"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Pružatelj titlova"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Titlovi"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "titlovi"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Sinkroniziraj"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Sustav"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Slogan"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Sigurnosna kopija sadrži stanje računa i sesija. Čuvajte nešifriranu pohranu sigurnosnih kopija privatnom ili postavite ključ za sigurnosnu kopiju."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Tema"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Ove postavke su samo za čitanje dok se ne uklone iz YAML-a ili okruženja"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Ova zbirka je prazna."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Ovo trajno briše zbirku."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Ovo trajno briše popis za reprodukciju."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Ovaj popis za reprodukciju je prazan."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Ovaj proizvod koristi TMDB API, ali ga TMDB nije odobrio niti certificirao."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Do PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Do PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Naslov"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Naslov, izvođač, žanr"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Naslov, izvođač, žanr…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Mapiranje tonova iz HDR u SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "previše pokušaja prijave"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "previše soba za zajedničko gledanje"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Zapis"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "predmemorija transkodiranja"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Transkoder"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "transkodiranje nije dopušteno"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Pokušaj ponovo"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Dvofaktorska autentifikacija"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Dvofaktorska autentifikacija · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Vrsta"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Odspoji OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Do"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Nepogledano"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "nepogledano"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Koristi zadano"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Za prijavu koristite Face ID, Touch ID, Windows Hello ili PIN uređaja. Vaša lozinka i dalje će raditi."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,7 +1773,7 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Provjeri posljednju sigurnosnu kopiju"
   },
   {
     "id": "Video",
@@ -1781,127 +1781,127 @@
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Gledatelj"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Pristup za gledatelje nije dostupan"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Naziv gledatelja"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Čeka se vaš pristupni ključ…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Stanje zajedničkog gledanja nije valjano"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "pogledano"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Pogledano"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Pogledano ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Praćenje promjena"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Dobrodošli"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "kada bude spremno."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "XMLTV vodič"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Godina"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Vi vodite ovu sobu"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Vaša biblioteka"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Vaša biblioteka i aktivnost gledanja ostaju na ovom poslužitelju."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Knjige"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Biblioteka"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Postavke"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Generirani API ključ"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Kopiraj API ključ"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Kopirano."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Odaberite Kopiraj u svom pregledniku."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Postavi pouzdani HTTPS"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Pregledaj postavku pouzdanog HTTPS-a"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Kopija za izvanmrežni rad"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Provjerena datoteka je pohranjena na ovom uređaju."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Spremno za izvanmrežni rad na ovom uređaju"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Način reprodukcije"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Otvori postavke reprodukcije."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Kopija za izvanmrežni rad nije dostupna."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "pohranjeno na ovom uređaju"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Ovaj uređaj nema dovoljno prostora za ovo preuzimanje"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Ovaj preglednik ne može sigurno pohraniti medije za izvanmrežni rad"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Preuzimanje nije moguće provjeriti"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Preuzimanje više nije dostupno"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Najprije otvorite Kinosail na mreži i odaberite profil gledatelja."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Sve biblioteke"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Zvučni zapisi"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Natrag na preuzimanja"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Napredak nije moguće spremiti. Vratite se na Preuzimanja i pokušajte ponovo."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Upravljaj preuzimanjima za izvanmrežni rad"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Film"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Otvori preuzimanja s poslužitelja"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Otvori prethodnu stranicu"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Ponašanje reprodukcije"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Pripremi kopiju za izvanmrežni rad"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Napredak je spremljen na ovom uređaju. Otvorite preuzimanja s poslužitelja za sinkronizaciju."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Vrati se na obrazac"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Pretraži sve biblioteke"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Pretraži sve"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Ova datoteka se nije mogla reproducirati. Vratite se na Preuzimanja, ponovo se povežite s poslužiteljem i preuzmite je ponovno."
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Zvuk je fiksiran u ovoj preuzetoj kopiji."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Zaštita prijave"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Natrag na filmove"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Natrag na serije"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Natrag na rezultate pretraživanja"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Natrag na biblioteku"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Poglavlje %lld od %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Stranica %lld od %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Dokument"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Skeniranje vaše biblioteke"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail čita vaše mape s medijima. Vaša biblioteka prikazat će se ovdje kada skeniranje završi."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "Izvanmrežno"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Niste na mreži"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Ponovno se povežite s poslužiteljem za nastavak gledanja."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Kopirajte ključ za postavljanje ili poveznicu u aplikaciju za autentifikaciju."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Spremite svaki kod za oporavak prije nastavka. Svaki kod radi samo jednom."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Unesite trenutačni 6-znamenkasti kod za potvrdu aplikacije."
   }
 ]

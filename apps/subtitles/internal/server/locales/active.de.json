@@ -285,7 +285,7 @@
   },
   {
     "id": "Create passkey",
-    "other": "Passschlüssel erstellen"
+    "other": "Passkey erstellen"
   },
   {
     "id": "Created once",
@@ -729,7 +729,7 @@
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "Passkeys benötigen die konfigurierte Serveradresse und vertrauenswürdiges HTTPS. Öffnen Sie diese Adresse, vertrauen Sie dem Serverzertifikat oder verwenden Sie einen Authenticator."
   },
   {
     "id": "Password",
@@ -989,7 +989,7 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Mit Passwort anmelden"
+    "other": "Mit Passkey anmelden"
   },
   {
     "id": "Sign in with SSO",

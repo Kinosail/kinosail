@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 minuuttia"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 minuuttia"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 minuuttia"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 minuuttia"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Käyttöoikeus"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Tili · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Toiminnot"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Lisää pääsyavain"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Lisää kansio"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Lisää mediaa tai kokeile toista hakua."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Lisää profiili"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,35 +53,35 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Lisää kohteeseen"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Hallinnoi palvelinta"
   },
   {
     "id": "Album",
-    "other": "Album"
+    "other": "Albumi"
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Albumit"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "kaikki"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Kaikki arvostelut"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Salli lataukset"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Salli transkoodaus"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Analysoi toistojaksot nyt"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "API-avaimen nimi"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "API-avaimen käyttöoikeus ei salli tätä pyyntöä"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "API-avain · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "API-avaimet"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Ulkoasu"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Käytä"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Ääni"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Äänikirjat"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Todennuskoodi"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Todennus- tai palautuskoodi"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "todennus vaaditaan"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Valtuuta laite"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Automaattinen"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "automaattinen"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Automaattinen (paras tunnistettu)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Automaattinen (selain)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Automaattiset varmuuskopiot"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Automaattinen ylläpito"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Käytettävissä olevat laitteet käyttävät suoraa yhteyttä tähän palvelimeen."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Takaisin kirjastoon"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Takaisin asetuksiin"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Varmuuskopioi nyt"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Varmuuskopiointi ja palautus"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Varmuuskopiot vaativat määritystä."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Varmuuskopiot tehdään automaattisesti ilman salausta."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Varmuuskopiot · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Kirja"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Kirjat"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Kirjat ja sarjakuvat"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Selaa kirjastoa"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Peruuta"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "Lähetä"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Luvut"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Valitse tämän selaimen kieli."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Tyhjennä transkoodauksen välimuisti"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Koodi"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Kokoelma"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Kokoelmat"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Mainos"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Yhteensopivuus"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Yhteensopiva yhteys"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "yhteensopiva"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Samanaikaiset suoratoistot"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Asetusvirhe"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Asetukset · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Määritetty; arvo piilotettu"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Vahvista poisto"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Vahvista poistaminen"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Yhdistä"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Yhdistä laite"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Yhdistetty"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Yhdistetään"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Yhdistetään…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Yhteysvirhe"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Sisältö"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Jatka katselua"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Jatka katselua"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "kohdasta Jatka katselua"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Luo"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Luo pääsyavain"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Luo API-avain"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Luo pääsyavain"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Luo älykäs soittolista"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Luo omistajan profiili"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Tunnistetiedot on määritetty"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Tekijät"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Kokoa"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Tumma"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "oletus"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Oletustoisto"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Poista"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Käyttöönoton asetukset"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Kohde"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "tunnistettu, ei käytettävissä"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Laite tai sovellus"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Diagnostiikka"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Suora"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "suora"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Suora yhteys ei ole käytettävissä"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Suoraan lähteestä"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Ohjaaja"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Poista käytöstä ja peru"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Poista kaksivaiheinen todennus käytöstä"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Vikatilanteen palautus"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Lataa"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Lataa media"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Lataa alkuperäinen"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Lataa turvalliset diagnostiikkatiedot"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Lataukset"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Muokkaa metatietoja"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Muokkaa ohitusmerkintöjä"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Ota DLNA käyttöön"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Ota kaksivaiheinen todennus käyttöön"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Käytössä"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Salatut varmuuskopiot tehdään automaattisesti."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Salaus on oletuksena pois päältä."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Salaus on päällä."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Loppu sekunneissa"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Ympäristön oletus"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Tapahtumien webhook"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "15 minuutin välein"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "5 minuutin välein"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Kaikki"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Vie koko toimintaloki"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Hallinnoidaan ulkoisesti"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Etsi"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Etsi jotain"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Viimeistele asennus"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Kansio median liitospisteessä"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Seuraa huoneen johtajaa"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Alkaen"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "alkaen"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Yleiset"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Tyylilajit"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Selvä"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Ryhmä"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Laitteisto"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Historia"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Etusivu"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Tunnin välein"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "jos käytössä"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Asenna"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Asenna Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Integraatiot"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Alkutunnus"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Kutsulinkki"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Säilytä"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Säilytä varmuuskopiot tallennustilassa tämän koneen ulkopuolella. Varmuuskopiot ovat salaamattomia, ellei varmuuskopioavainta ole määritetty. Palauta, kun palvelin on pysäytettynä."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Pidä Kinosail Player lähellä"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,11 +741,11 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player ei saa yhteyttä tähän palvelimeen. Tarkista verkkoyhteys tai suora yhteys ja yritä uudelleen."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail ylläpitää itseään automaattisesti."
   },
   {
     "id": "Kinosail Player Reader",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Kieli"
   },
   {
     "id": "language is invalid",
@@ -761,99 +761,99 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Viimeisin virhe"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Viimeisin tarkistusvirhe"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Viimeisin onnistunut varmuuskopio"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Viimeisin onnistunut tarkistus"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Viimeksi vahvistettu"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Uusin"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Kirjastot"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Kirjasto"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Kirjastojen löytäminen"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Kirjastokansiot"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Kirjastokohteet"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Kirjaston järjestäminen"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Kirjastonäkymät"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Lisensoitu tunnistetieto on määritetty"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Vaalea"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Yhdistä OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Paikallinen tili"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "M3U-soittolista"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Hallinnoi henkilökohtaisen kirjaston tilaa"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Hallinnoidaan ulkoisesti, vain luku."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Hallinnoitu etäkäyttö"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Merkitse"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "merkintä"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Vastaava teksti"
   },
   {
     "id": "Media",
@@ -861,11 +861,11 @@
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Median tiedot"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Median liitospiste"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Metatietojen lähde"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Mittarit"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Elokuvat"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Musiikki"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Musiikki ja äänikirjat"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Oma lista"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Nimi"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Ei koskaan"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Uusi kokoelma"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Uuden kokoelman nimi"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Uusi salasana"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Uusi soittolista"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Uuden soittolistan nimi"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Uuden profiilin nimi"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Uuden profiilin salasana"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Uusi salaisuus"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Uusi älykäs soittolista"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Uudet katselijat aloittavat perheen ikärajoilla ilman kirjastoja. Lisää kansioiden nimiä tai"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Uusimmat"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Toimintaa ei ole vielä tallennettu."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Kanavia ei ole määritetty."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Laitetta ei ole valittu"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Offline-latauksia ei ole vielä."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Toistoa ei ole vielä tallennettu."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Ei mitään"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Ei mitään; käytä kaikkia tai kansioiden nimiä"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Ei määritetty"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "ei tunnistettu"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Ei nyt"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Ei tuloksia."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Katsotaan nyt"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,7 +1021,7 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Pois"
   },
   {
     "id": "offline",
@@ -1029,23 +1029,23 @@
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Offline-lataukset"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Offline-lataukset · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Päällä"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "Napauta iPhonessa tai iPadissa Jaa, valitse Lisää Koti-valikkoon, ota käyttöön Avaa verkkosovelluksena ja napauta sitten Lisää."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Näytetään kerran"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Lopputunnari"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Omistaja"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Omistajan käyttöoikeus vaaditaan"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Omistajan hallinta"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Pääsyavain lisätty."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Salasana"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Kuvat"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Toista"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Toista laitteella"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Toisto"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Toiston historia"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Toistojaksojen analyysi"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Toistonopeus"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Toistetaan täällä"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Toistetaan laitteella"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Soittolista"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Soittolistat"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Juoni"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Tarkistetaan muutoksia"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Suosi laatua"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Suosi nopeutta"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Haluttu kieli"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Valmistele"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Yksityinen rakenteeltaan"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Profiili"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Profiili, jonka salasana nollataan"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Profiilin tyyppi"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Profiilit"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Suojataan automaattisesti"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - Vaadi lisäsuojaus kirjautumiseen jokaisessa katselijan profiilissa"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Laatu"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "laatu"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "Pikayhdistys"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "Pikayhdistys · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Arvostelu"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Lue nyt"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "lukija"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Lukujärjestys"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "valmis"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Yhteenveto"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Viimeisin toiminta"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Viimeisin toisto"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Viimeksi lisätyt"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Viimeksi toistetut"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Palautus"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Palautuskoodit"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Päivitä TMDB:stä"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Päivitä puuttuvat metatiedot"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Suositeltu"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Etäkäyttö"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Poista"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Poista kohteesta"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "pyyntö"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Pyyntöä ei voitu suorittaa."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Nollaa salasana"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Palaa asetuksiin"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Peru"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Huone yhdistetty · seuraa johtajaa"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Huone yhdistetty · sinä johdat"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Huone ei ole yhteydessä · lataa sivu uudelleen"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Tarkista kirjasto nyt"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Suorita ylläpito nyt"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Turvatarkistus"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Tallenna"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Tallenna tiedosto"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Tallenna uudelleenkäynnistystä varten"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Tallenna merkintä"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Tallenna metatiedot"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Tallenna aikataulu"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Aikataulu"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Hae kirjastosta"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Hakutulokset"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Salaisuudet on piilotettu, ja ne sisältyvät vain salattuihin palautusvarmuuskopioihin."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Suojaa tilisi"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Suojaa tilisi · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Lähetä tämä yksityinen yhteys-URL katselijalle. Se näytetään vain kerran."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Palvelimen nimi"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Palvelimen asetukset"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Palvelin ei ole käytettävissä"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Palvelin ei ole käytettävissä · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Määritä Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Määritä tai vaihda todennussovellus"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Määritä kaksivaiheinen todennus"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Määritä kaksivaiheinen todennus · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Asetukset"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Asetusosiot"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Asetukset · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Sarja"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Sarjat"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Kirjaudu sisään"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Kirjaudu pääsyavaimella"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Kirjaudu SSO:lla"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Kirjaudu sisään · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Kirjaudu ulos"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Kirjaudu ulos muilta laitteilta"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Kirjautumistavat"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Kirjautuminen, selaimen samaa alkuperää koskevat suojaukset, yksityiset vastaukset, rajatut pyynnöt ja peruttava käyttöoikeus ovat aina käytössä. Niitä ei tarvitse hallita asetuksista."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Kertakirjautuminen"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Ohita"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Ohita mainokset automaattisesti"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Ohita lopputekstit automaattisesti"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Ohita alkutunnukset automaattisesti"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Ohita lopputunnarit automaattisesti"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Ohita yhteenvedot automaattisesti"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Siirry sisältöön"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Uniajastin"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Uniajastin päättyi"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Älykäs soittolista"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Älykkään soittolistan nimi"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Ohjelmisto"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Järjestä"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Lähde"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "nopeus"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Alku sekunneissa"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Aloita Katso yhdessä"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Tila"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Pysähtyy {minutes} minuutin kuluttua"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Säilytä nämä koodit turvallisessa paikassa. Jokainen koodi toimii kerran."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Tallennettu täällä. Suoratoistetaan suoraan."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Suoratoista media"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Tilaus vaaditaan"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Tekstityspalvelu"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Tekstitykset"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "tekstitykset"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Synkronoi"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Järjestelmä"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Iskulause"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Varmuuskopio sisältää tilin ja istunnon tilan. Pidä salaamattoman varmuuskopion tallennustila yksityisenä tai määritä varmuuskopioavain."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Teema"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Nämä asetukset ovat vain luku -tilassa, kunnes ne poistetaan YAML-tiedostosta tai ympäristöstä"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Tämä kokoelma on tyhjä."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Tämä poistaa kokoelman pysyvästi."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Tämä poistaa soittolistan pysyvästi."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Tämä soittolista on tyhjä."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Tämä tuote käyttää TMDB API -rajapintaa, mutta TMDB ei ole hyväksynyt tai sertifioinut sitä."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "PG / TV-PG asti"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "PG-13 / TV-14 asti"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Otsikko"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Otsikko, esittäjä, tyylilaji"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Otsikko, esittäjä, tyylilaji…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Sävykarttaus HDR:stä SDR:ksi"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "liian monta kirjautumisyritystä"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "liian monta Katso yhdessä -huonetta"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Raita"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "transkoodauksen välimuisti"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Transkooderi"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "transkoodaus ei ole sallittu"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Yritä uudelleen"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Kaksivaiheinen todennus"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Kaksivaiheinen todennus · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Tyyppi"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Irrota OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Asti"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Katsomatta"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "katsomatta"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Käytä oletusta"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Kirjaudu sisään Face ID:llä, Touch ID:llä, Windows Hellolla tai laitteen PIN-koodilla. Salasanasi toimii edelleen."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,7 +1773,7 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Tarkista uusin varmuuskopio"
   },
   {
     "id": "Video",
@@ -1781,127 +1781,127 @@
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Katselija"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Katselijan käyttöoikeus ei ole käytettävissä"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Katselijan nimi"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Odotetaan pääsyavainta…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Katso yhdessä -tila on virheellinen"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "katsottu"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Katsottu"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Katsottu ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Seurataan muutoksia"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Tervetuloa mukaan"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "kun valmis."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "XMLTV-opas"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Vuosi"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Sinä johdat tätä huonetta"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Kirjastosi"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Kirjastosi ja katseluhistoriasi pysyvät tällä palvelimella."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Kirjat"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Kirjasto"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Asetukset"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Luotu API-avain"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Kopioi API-avain"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Kopioitu."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Valitse selaimessa Kopioi."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Määritä luotettu HTTPS"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Tarkista luotetun HTTPS:n asetukset"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Offline-kopio"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Vahvistettu tiedosto on tallennettu tälle laitteelle."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Käytettävissä offline-tilassa tällä laitteella"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Toistotapa"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Avaa toistoasetukset."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Offline-kopio ei ole käytettävissä."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "tallennettu tälle laitteelle"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Tällä laitteella ei ole tarpeeksi tallennustilaa tähän lataukseen"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Tämä selain ei voi tallentaa offline-mediaa turvallisesti"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Latausta ei voitu vahvistaa"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Lataus ei ole enää käytettävissä"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Avaa Kinosail verkossa ja valitse ensin katselijan profiili."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Kaikki kirjastot"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Ääniraidat"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Takaisin latauksiin"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Edistymistä ei voitu tallentaa. Palaa latauksiin ja yritä uudelleen."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Hallinnoi offline-latauksia"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Elokuva"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Avaa palvelimen lataukset"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Avaa edellinen sivu"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Toistokäyttäytyminen"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Valmistele offline-kopio"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Edistyminen tallennettu tälle laitteelle. Avaa palvelimen lataukset synkronoidaksesi."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Palaa lomakkeeseen"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Hae kaikista kirjastoista"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Hae kaikkialta"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Tätä tiedostoa ei voitu toistaa. Palaa latauksiin, yhdistä palvelimeen uudelleen ja lataa tiedosto uudelleen."
   },
   {
     "id": "invalid title request",
@@ -2009,47 +2009,47 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Ääni on lukittu tähän ladattuun kopioon."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Kirjautumisen suojaus"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Takaisin elokuviin"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Takaisin sarjoihin"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Takaisin hakutuloksiin"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Takaisin kirjastoon"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Luku %lld / %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Sivu %lld / %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Asiakirja"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Kirjastoa tarkistetaan"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail lukee median kansioitasi. Kirjastosi näkyy tässä, kun tarkistus on valmis."
   },
   {
     "id": "Offline",
@@ -2057,22 +2057,22 @@
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Olet offline-tilassa"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Yhdistä palvelimeen uudelleen, jotta voit jatkaa katselua."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Kopioi määritysavain tai määritystilinkki todennussovellukseesi."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Tallenna jokainen palautuskoodi ennen jatkamista. Jokainen koodi toimii kerran."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Syötä nykyinen 6-numeroinen koodi vahvistaaksesi sovelluksen."
   }
 ]

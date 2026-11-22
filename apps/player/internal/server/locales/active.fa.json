@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "۱۵ دقیقه"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "۳۰ دقیقه"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "۴۵ دقیقه"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "۶۰ دقیقه"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "دسترسی"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "حساب · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "عملیات"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "افزودن کلید عبور"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "افزودن پوشه"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "رسانه اضافه کنید یا جستجوی دیگری امتحان کنید."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "افزودن نمایه"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,35 +53,35 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "افزودن به"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "مدیریت سرور"
   },
   {
     "id": "Album",
-    "other": "Album"
+    "other": "آلبوم"
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "آلبوم‌ها"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "همه"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "همه رده‌های سنی"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "اجازه دانلود"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "اجازه تبدیل رمزگذاری"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "تحلیل بخش‌های پخش هم‌اکنون"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "نام کلید API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "محدوده کلید API این درخواست را مجاز نمی‌کند"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "کلید API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "کلیدهای API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "ظاهر"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "اعمال"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "صدا"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "کتاب‌های صوتی"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "کد احراز هویت"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "کد احراز هویت یا بازیابی"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "احراز هویت لازم است"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "تأیید دستگاه"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "خودکار"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "خودکار"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "خودکار (بهترین گزینه شناسایی‌شده)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "خودکار (مرورگر)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "پشتیبان‌گیری خودکار"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "نگهداری خودکار"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "دستگاه‌های در دسترس از اتصال مستقیم به این سرور استفاده می‌کنند."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "بازگشت به کتابخانه"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "بازگشت به تنظیمات"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "هم‌اکنون پشتیبان‌گیری کنید"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "پشتیبان‌گیری و بازیابی"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "پشتیبان‌ها به راه‌اندازی نیاز دارند."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "پشتیبان‌ها بدون رمزگذاری و به‌طور خودکار اجرا می‌شوند."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "پشتیبان‌ها · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "کتاب"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "کتاب‌ها"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "کتاب‌ها و کمیک‌ها"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "مرور کتابخانه"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "لغو"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "پخش روی دستگاه"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "بخش‌ها"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "زبان این مرورگر را انتخاب کنید."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "پاک‌کردن حافظه نهان تبدیل رمزگذاری"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "کد"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "مجموعه"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "مجموعه‌ها"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "تبلیغات"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "سازگاری"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "اتصال سازگار"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "سازگار"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "جریان‌های هم‌زمان"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "خطای پیکربندی"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "پیکربندی · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "پیکربندی‌شده؛ مقدار پنهان است"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "تأیید حذف"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "تأیید برداشتن"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "اتصال"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "اتصال یک دستگاه"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "متصل"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "در حال اتصال"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "در حال اتصال…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "خطای اتصال"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "محتوا"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "ادامه تماشا"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "ادامه تماشا"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "از ادامه تماشا"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "ایجاد"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "ایجاد کلید عبور"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "ایجاد کلید API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "ایجاد کلید عبور"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "ایجاد فهرست هوشمند"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "نمایه مالک خود را ایجاد کنید"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "اعتبارنامه‌ها پیکربندی شده‌اند"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "تیتراژ"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "گزینش"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "تیره"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "پیش‌فرض"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "پخش پیش‌فرض"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "حذف"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "پیکربندی استقرار"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "مقصد"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "شناسایی شد، در دسترس نیست"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "دستگاه یا برنامه"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "تشخیص‌ها"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "مستقیم"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "مستقیم"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "اتصال مستقیم در دسترس نیست"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "مستقیم از"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "کارگردان"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "غیرفعال‌سازی و لغو"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "غیرفعال‌سازی احراز هویت دومرحله‌ای"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "بازیابی پس از فاجعه"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "دانلود"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "دانلود رسانه"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "دانلود نسخه اصلی"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "دانلود تشخیص‌های ایمن"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "دانلودها"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "ویرایش فراداده"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "ویرایش نشانگرهای رد شدن"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "فعال‌سازی DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "فعال‌سازی احراز هویت دومرحله‌ای"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "فعال"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "پشتیبان‌های رمزگذاری‌شده به‌طور خودکار اجرا می‌شوند."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "رمزگذاری به‌طور پیش‌فرض خاموش است."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "رمزگذاری روشن است."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "پایان در ثانیه"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "پیش‌فرض محیط"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "وب‌هوک رویداد"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "هر ۱۵ دقیقه"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "هر ۵ دقیقه"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "همه چیز"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "خروجی گرفتن از کل گزارش فعالیت"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "مدیریت‌شده بیرونی"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "جستجو"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "چیزی پیدا کنید"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "پایان راه‌اندازی"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "پوشه درون نقطه اتصال رسانه"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "دنبال‌کردن رهبر اتاق"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "از"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "از"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "عمومی"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "ژانرها"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "متوجه شدم"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "گروه"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "سخت‌افزار"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "تاریخچه"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "خانه"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "هر ساعت"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "در صورت فعال بودن"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "نصب"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "نصب Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "یکپارچه‌سازی‌ها"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "مقدمه"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "پیوند دعوت"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "نگه‌داری"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "پشتیبان‌ها را روی فضای ذخیره‌سازی خارج از این میزبان نگه دارید. پشتیبان‌ها رمزگذاری نمی‌شوند، مگر اینکه کلید پشتیبان پیکربندی شده باشد. بازیابی را وقتی سرور متوقف است انجام دهید."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Kinosail Player را نزدیک نگه دارید"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,11 +741,11 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player به این سرور دسترسی ندارد. شبکه یا اتصال مستقیم را بررسی کنید و دوباره تلاش کنید."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail خودش را به‌طور خودکار نگهداری می‌کند."
   },
   {
     "id": "Kinosail Player Reader",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "زبان"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "آخرین خطا"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "خطای آخرین اسکن"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "آخرین پشتیبان موفق"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "آخرین اسکن موفق"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "آخرین تأیید"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "جدیدترین"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "کتابخانه‌ها"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "کتابخانه"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "کشف کتابخانه"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "پوشه‌های کتابخانه"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "موارد کتابخانه"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "سازماندهی کتابخانه"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "نماهای کتابخانه"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "اعتبارنامه دارای مجوز پیکربندی شده"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "روشن"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "پیوند OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "حساب محلی"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "فهرست M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "مدیریت وضعیت کتابخانه شخصی"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "مدیریت‌شده بیرونی و فقط‌خواندنی."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "دسترسی راه‌دور مدیریت‌شده"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "علامت‌گذاری"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "نشانگر"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "متن تطبیق"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "رسانه"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "اطلاعات رسانه"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "نقطه اتصال رسانه"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "ارائه‌دهنده فراداده"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "معیارها"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "فیلم‌ها"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "موسیقی"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "موسیقی و کتاب‌های صوتی"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "فهرست من"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "نام"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "هرگز"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "مجموعه جدید"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "نام مجموعه جدید"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "گذرواژه جدید"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "فهرست جدید"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "نام فهرست جدید"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "نام نمایه جدید"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "گذرواژه نمایه جدید"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "رمز جدید"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "فهرست هوشمند جدید"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "بینندگان جدید با رده‌های سنی خانوادگی و بدون کتابخانه شروع می‌کنند. نام پوشه اضافه کنید یا"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "جدیدترین"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "هنوز فعالیتی ثبت نشده است."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "هیچ کانالی پیکربندی نشده است."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "دستگاهی انتخاب نشده است"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "هنوز دانلود آفلاینی وجود ندارد."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "هنوز پخشی ثبت نشده است."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "هیچ‌کدام"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "هیچ‌کدام؛ همه یا نام پوشه‌ها را استفاده کنید"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "پیکربندی نشده"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "شناسایی نشد"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "فعلاً نه"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "چیزی پیدا نشد."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "در حال تماشا"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "خاموش"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "آفلاین"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "دانلودهای آفلاین"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "دانلودهای آفلاین · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "روشن"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "در آیفون یا آیپد، روی Share بزنید، Add to Home Screen را انتخاب کنید، گزینه Open as Web App را روشن کنید و سپس روی Add بزنید."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "نمایش یک‌باره"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "پایان‌بندی"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "مالک"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "دسترسی مالک لازم است"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "کنترل‌های مالک"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "کلید عبور افزوده شد."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "گذرواژه"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "عکس‌ها"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "پخش"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "پخش روی دستگاه"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "پخش"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "تاریخچه پخش"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "تحلیل بخش‌های پخش"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "سرعت پخش"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "در حال پخش اینجا"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "در حال پخش روی دستگاه"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "فهرست"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "فهرست‌ها"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "خلاصه داستان"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "در حال بررسی تغییرات"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "کیفیت بهتر"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "سرعت بیشتر"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "زبان ترجیحی"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "آماده‌سازی"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "طراحی‌شده برای حریم خصوصی"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "نمایه"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "نمایه برای بازنشانی"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "نوع نمایه"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "نمایه‌ها"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "به‌طور خودکار محافظت می‌شود"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - الزام محافظت اضافه ورود برای هر نمایه بیننده"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "کیفیت"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "کیفیت"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "اتصال سریع"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "اتصال سریع · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "رده سنی"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "هم‌اکنون بخوانید"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "خواننده"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "ترتیب خواندن"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "آماده"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "مرور قسمت قبل"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "فعالیت اخیر"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "پخش اخیر"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "تازه افزوده‌شده"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "پخش‌شده اخیر"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "بازیابی"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "کدهای بازیابی"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "به‌روزرسانی از TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "به‌روزرسانی فراداده‌های ناقص"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "پیشنهادی"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "دسترسی راه‌دور"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "برداشتن"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "برداشتن از"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "درخواست"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "درخواست کامل نشد."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "بازنشانی گذرواژه"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "بازگشت به تنظیمات"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "لغو دسترسی"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "اتاق متصل است · در حال دنبال‌کردن رهبر"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "اتاق متصل است · شما رهبری می‌کنید"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "اتاق قطع شده است · برای اتصال دوباره صفحه را بارگذاری کنید"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "اجرای اسکن کتابخانه هم‌اکنون"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "اجرای نگهداری هم‌اکنون"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "اسکن ایمنی"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "ذخیره"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "ذخیره فایل"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "ذخیره برای راه‌اندازی مجدد"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "ذخیره نشانگر"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "ذخیره فراداده"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "ذخیره زمان‌بندی"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "زمان‌بندی"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "جستجو در کتابخانه"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "نتایج جستجو"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "رمزها پنهان هستند و فقط در پشتیبان‌های بازیابی رمزگذاری‌شده قرار می‌گیرند."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "حساب خود را ایمن کنید"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "حساب خود را ایمن کنید · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "این نشانی اتصال خصوصی را برای بیننده بفرستید. فقط یک بار نمایش داده می‌شود."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "نام سرور"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "تنظیمات سرور"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "سرور در دسترس نیست"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "سرور در دسترس نیست · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "راه‌اندازی Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "راه‌اندازی یا جایگزینی برنامه احراز هویت"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "راه‌اندازی احراز هویت دومرحله‌ای"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "راه‌اندازی احراز هویت دومرحله‌ای · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "تنظیمات"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "بخش‌های تنظیمات"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "تنظیمات · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "سریال"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "سریال‌ها"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "ورود"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "ورود با کلید عبور"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "ورود با SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "ورود · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "خروج"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "خروج از دستگاه‌های دیگر"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "روش‌های ورود"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "ورود، محافظت مرورگر برای همان مبدا، پاسخ‌های خصوصی، درخواست‌های محدود و دسترسی قابل لغو همیشه فعال هستند. کلید امنیتی برای مدیریت وجود ندارد."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "ورود یکپارچه"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "رد کردن"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "رد کردن خودکار تبلیغات"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "رد کردن خودکار تیتراژ"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "رد کردن خودکار مقدمه"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "رد کردن خودکار پایان‌بندی"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "رد کردن خودکار مرور قسمت قبل"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "پرش به محتوا"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "تایمر خواب"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "تایمر خواب به پایان رسید"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "فهرست هوشمند"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "نام فهرست هوشمند"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "نرم‌افزار"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "مرتب‌سازی"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "منبع"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "سرعت"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "شروع در ثانیه"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "شروع تماشای مشترک"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "وضعیت"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "{minutes} دقیقه دیگر متوقف می‌شود"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "این کدها را در جای امنی نگه دارید. هر کد فقط یک بار کار می‌کند."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "اینجا ذخیره می‌شود. مستقیماً پخش می‌شود."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "پخش رسانه"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "اشتراک لازم است"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "ارائه‌دهنده زیرنویس"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "زیرنویس‌ها"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "زیرنویس‌ها"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "همگام‌سازی"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "سیستم"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "شعار"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "پشتیبان شامل وضعیت حساب و نشست است. فضای ذخیره‌سازی پشتیبان بدون رمزگذاری را خصوصی نگه دارید یا کلید پشتیبان پیکربندی کنید."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "پوسته"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "این تنظیمات تا زمانی که از YAML یا محیط حذف نشوند فقط‌خواندنی هستند"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "این مجموعه خالی است."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "با این کار مجموعه برای همیشه حذف می‌شود."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "با این کار فهرست برای همیشه حذف می‌شود."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "این فهرست خالی است."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "این محصول از API مربوط به TMDB استفاده می‌کند، اما TMDB آن را تأیید یا گواهی نکرده است."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "تا PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "تا PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "عنوان"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "عنوان، هنرمند، ژانر"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "عنوان، هنرمند، ژانر…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "تبدیل HDR به SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "تعداد تلاش‌های ورود زیاد است"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "تعداد اتاق‌های تماشای مشترک زیاد است"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "آهنگ"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "حافظه نهان تبدیل رمزگذاری"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "تبدیل رمزگذاری"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "تبدیل رمزگذاری مجاز نیست"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "دوباره تلاش کنید"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "احراز هویت دومرحله‌ای"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "احراز هویت دومرحله‌ای · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "نوع"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "حذف پیوند OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "تا"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "تماشانشده"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "تماشانشده"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "استفاده از پیش‌فرض"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "برای ورود از Face ID، Touch ID، Windows Hello یا کد PIN دستگاه استفاده کنید. گذرواژه شما همچنان کار می‌کند."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,135 +1773,135 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "تأیید جدیدترین پشتیبان"
   },
   {
     "id": "Video",
-    "other": "Video"
+    "other": "ویدیو"
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "بیننده"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "دسترسی بیننده در دسترس نیست"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "نام بیننده"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "در انتظار کلید عبور شما…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "وضعیت تماشای مشترک نامعتبر است"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "تماشاشده"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "تماشاشده"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "تماشاشده ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "در حال پایش تغییرات"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "به جمع خوش آمدید"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "وقتی آماده شد."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "راهنمای XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "سال"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "شما رهبری این اتاق را دارید"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "کتابخانه شما"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "کتابخانه و فعالیت تماشای شما روی این سرور می‌ماند."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← کتاب‌ها"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← کتابخانه"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← تنظیمات"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "کلید API ساخته‌شده"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "کپی کلید API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "کپی شد."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "در مرورگر خود گزینه Copy را انتخاب کنید."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "راه‌اندازی HTTPS مورد اعتماد"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "بررسی راه‌اندازی HTTPS مورد اعتماد"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "نسخه آفلاین"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "فایل تأییدشده روی این دستگاه ذخیره شده است."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "آماده برای استفاده آفلاین روی این دستگاه"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "روش پخش"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "باز کردن تنظیمات پخش."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "نسخه آفلاین در دسترس نیست."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "ذخیره‌شده روی این دستگاه"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "فضای ذخیره‌سازی این دستگاه برای این دانلود کافی نیست"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "این مرورگر نمی‌تواند رسانه آفلاین را به‌طور ایمن ذخیره کند"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "دانلود تأیید نشد"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "دانلود دیگر در دسترس نیست"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "ابتدا Kinosail را به‌صورت آنلاین باز کنید و یک نمایه بیننده انتخاب کنید."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "همه کتابخانه‌ها"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "آهنگ‌های صوتی"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "بازگشت به دانلودها"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "پیشرفت ذخیره نشد. به دانلودها برگردید و دوباره تلاش کنید."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "مدیریت دانلودهای آفلاین"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "فیلم"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "باز کردن دانلودهای سرور"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "باز کردن صفحه قبلی"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "رفتار پخش"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "آماده‌سازی نسخه آفلاین"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "پیشرفت روی این دستگاه ذخیره شد. برای همگام‌سازی، دانلودهای سرور را باز کنید."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "بازگشت به فرم"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "جستجو در همه کتابخانه‌ها"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "جستجو در همه موارد"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "این فایل پخش نشد. به دانلودها برگردید، دوباره به سرور متصل شوید و فایل را دوباره دانلود کنید."
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "صدا در این نسخه دانلودشده ثابت است."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "محافظت ورود"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "بازگشت به فیلم‌ها"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "بازگشت به سریال‌ها"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "بازگشت به نتایج جستجو"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "بازگشت به کتابخانه"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "بخش %lld از %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "صفحه %lld از %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "سند"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "در حال اسکن کتابخانه شما"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail در حال خواندن پوشه‌های رسانه شماست. وقتی اسکن کامل شود، کتابخانه شما اینجا نمایش داده می‌شود."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "آفلاین"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "شما آفلاین هستید"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "برای ادامه تماشا دوباره به سرور متصل شوید."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "کلید راه‌اندازی یا پیوند راه‌اندازی را در برنامه احراز هویت خود کپی کنید."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "پیش از ادامه، همه کدهای بازیابی را ذخیره کنید. هر کد فقط یک بار کار می‌کند."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "برای تأیید برنامه، کد ۶ رقمی فعلی را وارد کنید."
   }
 ]

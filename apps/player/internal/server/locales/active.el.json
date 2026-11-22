@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 λεπτά"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 λεπτά"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 λεπτά"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 λεπτά"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Πρόσβαση"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Λογαριασμός · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Ενέργειες"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Προσθήκη κλειδιού πρόσβασης"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Προσθήκη φακέλου"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Προσθέστε πολυμέσα ή δοκιμάστε άλλη αναζήτηση."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Προσθήκη προφίλ"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,35 +53,35 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Προσθήκη σε"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Διαχείριση διακομιστή"
   },
   {
     "id": "Album",
-    "other": "Album"
+    "other": "Άλμπουμ"
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Άλμπουμ"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "όλα"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Όλες οι βαθμολογίες"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Να επιτρέπονται οι λήψεις"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Να επιτρέπεται η μετακωδικοποίηση"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Ανάλυση τμημάτων αναπαραγωγής τώρα"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Όνομα κλειδιού API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Το εύρος του κλειδιού API δεν επιτρέπει αυτό το αίτημα"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "Κλειδί API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "Κλειδιά API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Εμφάνιση"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Εφαρμογή"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Ήχος"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Ηχητικά βιβλία"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Κωδικός ταυτοποίησης"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Κωδικός ταυτοποίησης ή ανάκτησης"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "απαιτείται ταυτοποίηση"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Εξουσιοδότηση συσκευής"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Αυτόματο"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "αυτόματο"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Αυτόματο (καλύτερο εντοπισμένο)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Αυτόματο (πρόγραμμα περιήγησης)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Αυτόματα αντίγραφα ασφαλείας"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Αυτόματη συντήρηση"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Οι διαθέσιμες συσκευές χρησιμοποιούν άμεση σύνδεση με αυτόν τον Διακομιστή."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Επιστροφή στη βιβλιοθήκη"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Επιστροφή στις ρυθμίσεις"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Δημιουργία αντιγράφου τώρα"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Αντίγραφα ασφαλείας και ανάκτηση"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Τα αντίγραφα ασφαλείας χρειάζονται ρύθμιση."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Τα αντίγραφα ασφαλείας εκτελούνται αυτόματα χωρίς κρυπτογράφηση."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Αντίγραφα ασφαλείας · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Βιβλίο"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Βιβλία"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Βιβλία και κόμικς"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Περιήγηση στη βιβλιοθήκη"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Ακύρωση"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "Μετάδοση"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Κεφάλαια"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Επιλέξτε τη γλώσσα για αυτό το πρόγραμμα περιήγησης."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Εκκαθάριση μνήμης μετακωδικοποίησης"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Κωδικός"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Συλλογή"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Συλλογές"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Διαφήμιση"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Συμβατότητα"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Σύνδεση συμβατότητας"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "συμβατό"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Ταυτόχρονες ροές"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Σφάλμα ρύθμισης"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Ρυθμίσεις · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Ρυθμισμένο· η τιμή είναι κρυφή"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Επιβεβαίωση διαγραφής"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Επιβεβαίωση αφαίρεσης"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Σύνδεση"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Σύνδεση συσκευής"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Συνδεδεμένο"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Σύνδεση"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Σύνδεση…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Σφάλμα σύνδεσης"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Περιεχόμενο"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Συνέχεια παρακολούθησης"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Συνέχεια παρακολούθησης"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "από τη Συνέχεια παρακολούθησης"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Δημιουργία"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Δημιουργία κλειδιού πρόσβασης"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Δημιουργία κλειδιού API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Δημιουργία κλειδιού πρόσβασης"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Δημιουργία έξυπνης λίστας αναπαραγωγής"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Δημιουργήστε το προφίλ Ιδιοκτήτη σας"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Τα διαπιστευτήρια ρυθμίστηκαν"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Τίτλοι τέλους"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Επιμέλεια"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Σκούρο"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "προεπιλογή"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Προεπιλεγμένη αναπαραγωγή"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Διαγραφή"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Ρύθμιση ανάπτυξης"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Προορισμός"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "εντοπίστηκε, μη διαθέσιμο"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Συσκευή ή εφαρμογή"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Διαγνωστικά"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Άμεση"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "άμεση"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Η άμεση σύνδεση δεν είναι διαθέσιμη"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Άμεση από"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Σκηνοθεσία"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Απενεργοποίηση και ανάκληση"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Απενεργοποίηση ταυτοποίησης δύο παραγόντων"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Ανάκτηση έπειτα από καταστροφή"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Λήψη"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Λήψη πολυμέσων"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Λήψη πρωτότυπου"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Λήψη ασφαλών διαγνωστικών"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Λήψεις"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Επεξεργασία μεταδεδομένων"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Επεξεργασία δεικτών παράλειψης"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Ενεργοποίηση DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Ενεργοποίηση ταυτοποίησης δύο παραγόντων"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Ενεργοποιημένο"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Τα κρυπτογραφημένα αντίγραφα ασφαλείας εκτελούνται αυτόματα."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Η κρυπτογράφηση είναι απενεργοποιημένη από προεπιλογή."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Η κρυπτογράφηση είναι ενεργή."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Τέλος σε δευτερόλεπτα"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Προεπιλογή περιβάλλοντος"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook συμβάντων"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "Κάθε 15 λεπτά"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "Κάθε 5 λεπτά"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Όλα"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Εξαγωγή πλήρους αρχείου δραστηριότητας"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Διαχείριση εξωτερικά"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Αναζήτηση"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Βρείτε κάτι"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Ολοκλήρωση ρύθμισης"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Φάκελος μέσα στην τοποθέτηση πολυμέσων"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Ακολουθεί τον αρχηγό της αίθουσας"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Από"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "από"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Γενικά"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Είδη"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Κατάλαβα"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Ομάδα"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Υλικό"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Ιστορικό"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Αρχική"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Ωριαία"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "αν είναι ενεργό"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Εγκατάσταση"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Εγκατάσταση Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Ενσωματώσεις"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Εισαγωγή"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Σύνδεσμος πρόσκλησης"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Διατήρηση"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Φυλάσσετε τα αντίγραφα ασφαλείας σε αποθήκευση εκτός αυτού του υπολογιστή. Τα αντίγραφα δεν είναι κρυπτογραφημένα, εκτός αν έχει ρυθμιστεί κλειδί αντιγράφων. Κάντε επαναφορά όταν ο Διακομιστής είναι σταματημένος."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Κρατήστε το Kinosail Player κοντά"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,11 +741,11 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Το Kinosail Player δεν μπορεί να συνδεθεί με αυτόν τον Διακομιστή. Ελέγξτε το δίκτυό σας ή την άμεση σύνδεση και δοκιμάστε ξανά."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Το Kinosail συντηρείται αυτόματα."
   },
   {
     "id": "Kinosail Player Reader",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Γλώσσα"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Τελευταίο σφάλμα"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Σφάλμα τελευταίας σάρωσης"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Τελευταίο επιτυχημένο αντίγραφο ασφαλείας"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Τελευταία επιτυχημένη σάρωση"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Τελευταία επαλήθευση"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Τελευταία"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Βιβλιοθήκες"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Βιβλιοθήκη"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Εντοπισμός βιβλιοθήκης"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Φάκελοι βιβλιοθήκης"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Στοιχεία βιβλιοθήκης"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Οργάνωση βιβλιοθήκης"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Προβολές βιβλιοθήκης"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Ρυθμίστηκαν διαπιστευτήρια άδειας"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Φωτεινό"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Σύνδεση OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Τοπικός λογαριασμός"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "Λίστα M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Διαχείριση προσωπικής κατάστασης βιβλιοθήκης"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Διαχειρίζεται εξωτερικά και μόνο για ανάγνωση."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Διαχειριζόμενη απομακρυσμένη πρόσβαση"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Σήμανση"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "δείκτης"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Αντιστοίχιση κειμένου"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "Πολυμέσα"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Πληροφορίες πολυμέσων"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Τοποθέτηση πολυμέσων"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Πάροχος μεταδεδομένων"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Μετρήσεις"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Ταινίες"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Μουσική"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Μουσική και ηχητικά βιβλία"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Η λίστα μου"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Όνομα"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Ποτέ"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Νέα συλλογή"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Όνομα νέας συλλογής"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Νέος κωδικός πρόσβασης"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Νέα λίστα αναπαραγωγής"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Όνομα νέας λίστας αναπαραγωγής"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Νέο όνομα προφίλ"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Νέος κωδικός προφίλ"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Νέο μυστικό"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Νέα έξυπνη λίστα αναπαραγωγής"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Οι νέοι Θεατές ξεκινούν με βαθμολογίες για οικογένειες και χωρίς βιβλιοθήκες. Προσθέστε ονόματα φακέλων ή"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Νεότερα"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Δεν έχει καταγραφεί δραστηριότητα ακόμη."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Δεν έχουν ρυθμιστεί κανάλια."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Δεν έχει επιλεγεί συσκευή"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Δεν υπάρχουν λήψεις εκτός σύνδεσης ακόμη."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Δεν έχει καταγραφεί αναπαραγωγή ακόμη."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Κανένα"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Κανένα· χρησιμοποιήστε όλα ή ονόματα φακέλων"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Δεν έχει ρυθμιστεί"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "δεν εντοπίστηκε"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Όχι τώρα"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Δεν βρέθηκε τίποτα."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Παρακολουθείτε τώρα"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Ανενεργό"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "εκτός σύνδεσης"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Λήψεις εκτός σύνδεσης"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Λήψεις εκτός σύνδεσης · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Ενεργό"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "Στο iPhone ή στο iPad, πατήστε Κοινοποίηση, επιλέξτε Προσθήκη στην αρχική οθόνη, ενεργοποιήστε το Άνοιγμα ως εφαρμογή ιστού και πατήστε Προσθήκη."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Εμφάνιση μίας φοράς"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Επίλογος"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Ιδιοκτήτης"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Απαιτείται πρόσβαση Ιδιοκτήτη"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Στοιχεία ελέγχου Ιδιοκτήτη"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Το κλειδί πρόσβασης προστέθηκε."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Κωδικός πρόσβασης"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Φωτογραφίες"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Αναπαραγωγή"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Αναπαραγωγή σε συσκευή"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Αναπαραγωγή"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Ιστορικό αναπαραγωγής"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Ανάλυση τμημάτων αναπαραγωγής"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Ταχύτητα αναπαραγωγής"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Αναπαράγεται εδώ"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Αναπαράγεται σε συσκευή"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Λίστα αναπαραγωγής"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Λίστες αναπαραγωγής"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Υπόθεση"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Έλεγχος για αλλαγές"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Προτίμηση ποιότητας"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Προτίμηση ταχύτητας"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Προτιμώμενη γλώσσα"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Προετοιμασία"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Ιδιωτικό από τον σχεδιασμό"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Προφίλ"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Προφίλ για επαναφορά"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Τύπος προφίλ"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Προφίλ"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Προστατεύεται αυτόματα"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - Απαίτηση επιπλέον προστασίας σύνδεσης για κάθε προφίλ Θεατή"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Ποιότητα"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "ποιότητα"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "Γρήγορη σύνδεση"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "Γρήγορη σύνδεση · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Βαθμολογία"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Ανάγνωση τώρα"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "αναγνώστης"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Σειρά ανάγνωσης"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "έτοιμο"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Σύνοψη"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Πρόσφατη δραστηριότητα"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Πρόσφατη αναπαραγωγή"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Προστέθηκαν πρόσφατα"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Αναπαρήχθηκαν πρόσφατα"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Ανάκτηση"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Κωδικοί ανάκτησης"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Ανανέωση από το TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Ανανέωση μεταδεδομένων που λείπουν"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Προτεινόμενο"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Απομακρυσμένη πρόσβαση"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Αφαίρεση"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Αφαίρεση από"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "αίτημα"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Το αίτημα δεν μπόρεσε να ολοκληρωθεί."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Επαναφορά κωδικού πρόσβασης"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Επιστροφή στις ρυθμίσεις"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Ανάκληση"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Η αίθουσα συνδέθηκε · ακολουθεί τον αρχηγό"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Η αίθουσα συνδέθηκε · έχετε την ηγεσία"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Η αίθουσα αποσυνδέθηκε · φορτώστε ξανά για σύνδεση"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Εκτέλεση σάρωσης βιβλιοθήκης τώρα"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Εκτέλεση συντήρησης τώρα"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Σάρωση ασφαλείας"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Αποθήκευση"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Αποθήκευση αρχείου"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Αποθήκευση για επανεκκίνηση"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Αποθήκευση δείκτη"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Αποθήκευση μεταδεδομένων"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Αποθήκευση προγράμματος"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Πρόγραμμα"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Αναζήτηση βιβλιοθήκης"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Αποτελέσματα αναζήτησης"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Τα μυστικά είναι κρυφά και περιλαμβάνονται μόνο σε κρυπτογραφημένα αντίγραφα ανάκτησης."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Ασφαλίστε τον λογαριασμό σας"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Ασφαλίστε τον λογαριασμό σας · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Στείλτε αυτή την ιδιωτική διεύθυνση σύνδεσης στον Θεατή. Εμφανίζεται μόνο μία φορά."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Όνομα διακομιστή"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Ρυθμίσεις διακομιστή"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Ο διακομιστής δεν είναι διαθέσιμος"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Ο διακομιστής δεν είναι διαθέσιμος · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Ρύθμιση του Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Ρύθμιση ή αντικατάσταση εφαρμογής ταυτοποίησης"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Ρύθμιση ταυτοποίησης δύο παραγόντων"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Ρύθμιση ταυτοποίησης δύο παραγόντων · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Ρυθμίσεις"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Ενότητες ρυθμίσεων"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Ρυθμίσεις · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Σειρά"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Σειρές"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Σύνδεση"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Σύνδεση με κλειδί πρόσβασης"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Σύνδεση με SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Σύνδεση · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Αποσύνδεση"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Αποσύνδεση άλλων συσκευών"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Μέθοδοι σύνδεσης"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Η σύνδεση, οι προστασίες προγράμματος περιήγησης για την ίδια προέλευση, οι ιδιωτικές απαντήσεις, τα περιορισμένα αιτήματα και η ανακλήσιμη πρόσβαση είναι πάντα ενεργά. Δεν υπάρχουν διακόπτες ασφαλείας για διαχείριση."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Ενιαία σύνδεση"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Παράλειψη"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Αυτόματη παράλειψη διαφημίσεων"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Αυτόματη παράλειψη τίτλων τέλους"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Αυτόματη παράλειψη εισαγωγών"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Αυτόματη παράλειψη επιλόγων"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Αυτόματη παράλειψη συνόψεων"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Μετάβαση στο περιεχόμενο"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Χρονοδιακόπτης ύπνου"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Ο χρονοδιακόπτης ύπνου έληξε"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Έξυπνη λίστα αναπαραγωγής"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Όνομα έξυπνης λίστας αναπαραγωγής"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Λογισμικό"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Ταξινόμηση"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Πηγή"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "ταχύτητα"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Έναρξη σε δευτερόλεπτα"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Έναρξη Κοινής παρακολούθησης"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Κατάσταση"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Σταματά σε {minutes} λεπτά"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Φυλάξτε αυτούς τους κωδικούς σε ασφαλές μέρος. Κάθε κωδικός λειτουργεί μία φορά."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Αποθηκεύεται εδώ. Μεταδίδεται απευθείας."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Ροή πολυμέσων"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Απαιτείται συνδρομή"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Πάροχος υποτίτλων"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Υπότιτλοι"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "υπότιτλοι"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Συγχρονισμός"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Σύστημα"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Σύνθημα"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Το αντίγραφο ασφαλείας περιέχει κατάσταση λογαριασμού και συνεδρίας. Κρατήστε ιδιωτική την αποθήκευση μη κρυπτογραφημένων αντιγράφων ή ρυθμίστε κλειδί αντιγράφων."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Θέμα"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Αυτές οι ρυθμίσεις είναι μόνο για ανάγνωση έως ότου αφαιρεθούν από το YAML ή το περιβάλλον"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Αυτή η συλλογή είναι κενή."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Αυτή η ενέργεια διαγράφει μόνιμα τη συλλογή."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Αυτή η ενέργεια διαγράφει μόνιμα τη λίστα αναπαραγωγής."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Αυτή η λίστα αναπαραγωγής είναι κενή."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Αυτό το προϊόν χρησιμοποιεί το API του TMDB, αλλά δεν εγκρίνεται ούτε πιστοποιείται από το TMDB."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Έως PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Έως PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Τίτλος"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Τίτλος, καλλιτέχνης, είδος"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Τίτλος, καλλιτέχνης, είδος…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Χαρτογράφηση τόνων HDR σε SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "πάρα πολλές προσπάθειες σύνδεσης"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "πάρα πολλές αίθουσες Κοινής παρακολούθησης"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Κομμάτι"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "μνήμη μετακωδικοποίησης"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Μετακωδικοποιητής"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "η μετακωδικοποίηση δεν επιτρέπεται"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Δοκιμάστε ξανά"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Ταυτοποίηση δύο παραγόντων"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Ταυτοποίηση δύο παραγόντων · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Τύπος"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Αποσύνδεση OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Έως"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Μη προβληθέν"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "μη προβληθέν"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Χρήση προεπιλογής"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Χρησιμοποιήστε Face ID, Touch ID, Windows Hello ή τον κωδικό PIN της συσκευής σας για σύνδεση. Ο κωδικός πρόσβασής σας θα εξακολουθεί να λειτουργεί."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,135 +1773,135 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Επαλήθευση τελευταίου αντιγράφου ασφαλείας"
   },
   {
     "id": "Video",
-    "other": "Video"
+    "other": "Βίντεο"
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Θεατής"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Η πρόσβαση Θεατή δεν είναι διαθέσιμη"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Όνομα Θεατή"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Αναμονή για το κλειδί πρόσβασης…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Η κατάσταση Κοινής παρακολούθησης δεν είναι έγκυρη"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "προβλήθηκε"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Προβλήθηκε"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Προβλήθηκε ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Παρακολούθηση αλλαγών"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Καλώς ήρθατε"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "όταν είναι έτοιμο."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "Οδηγός XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Έτος"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Έχετε την ηγεσία αυτής της αίθουσας"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Η βιβλιοθήκη σας"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Η βιβλιοθήκη σας και η δραστηριότητα προβολής παραμένουν σε αυτόν τον Διακομιστή."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Βιβλία"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Βιβλιοθήκη"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Ρυθμίσεις"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Δημιουργημένο κλειδί API"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Αντιγραφή κλειδιού API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Αντιγράφηκε."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Επιλέξτε Αντιγραφή στο πρόγραμμα περιήγησης."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Ρύθμιση έμπιστου HTTPS"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Έλεγχος ρύθμισης έμπιστου HTTPS"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Αντίγραφο εκτός σύνδεσης"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Επαληθευμένο αρχείο αποθηκευμένο σε αυτή τη συσκευή."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Έτοιμο εκτός σύνδεσης σε αυτή τη συσκευή"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Μέθοδος αναπαραγωγής"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Ανοίξτε τις ρυθμίσεις αναπαραγωγής."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Το αντίγραφο εκτός σύνδεσης δεν είναι διαθέσιμο."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "αποθηκευμένο σε αυτή τη συσκευή"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Αυτή η συσκευή δεν έχει αρκετό χώρο για αυτή τη λήψη"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Αυτό το πρόγραμμα περιήγησης δεν μπορεί να αποθηκεύσει πολυμέσα εκτός σύνδεσης με ασφάλεια"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Η λήψη δεν μπόρεσε να επαληθευτεί"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Η λήψη δεν είναι πλέον διαθέσιμη"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Ανοίξτε πρώτα το Kinosail online και επιλέξτε ένα προφίλ Θεατή."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Όλες οι βιβλιοθήκες"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Κομμάτια ήχου"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Επιστροφή στις λήψεις"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Η πρόοδος δεν αποθηκεύτηκε. Επιστρέψτε στις Λήψεις και δοκιμάστε ξανά."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Διαχείριση λήψεων εκτός σύνδεσης"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Ταινία"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Άνοιγμα λήψεων διακομιστή"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Άνοιγμα προηγούμενης σελίδας"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Συμπεριφορά αναπαραγωγής"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Προετοιμασία αντιγράφου εκτός σύνδεσης"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Η πρόοδος αποθηκεύτηκε σε αυτή τη συσκευή. Ανοίξτε τις λήψεις διακομιστή για συγχρονισμό."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Επιστροφή στη φόρμα"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Αναζήτηση σε όλες τις βιβλιοθήκες"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Αναζήτηση σε όλα"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Αυτό το αρχείο δεν μπόρεσε να αναπαραχθεί. Επιστρέψτε στις Λήψεις, συνδεθείτε ξανά με τον Διακομιστή και κατεβάστε το ξανά."
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Ο ήχος είναι σταθερός σε αυτό το ληφθέν αντίγραφο."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Προστασία σύνδεσης"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Επιστροφή στις ταινίες"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Επιστροφή στις σειρές"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Επιστροφή στα αποτελέσματα αναζήτησης"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Επιστροφή στη βιβλιοθήκη"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Κεφάλαιο %lld από %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Σελίδα %lld από %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Έγγραφο"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Σάρωση της βιβλιοθήκης σας"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Το Kinosail διαβάζει τους φακέλους πολυμέσων σας. Η βιβλιοθήκη σας εμφανίζεται εδώ όταν ολοκληρωθεί η σάρωση."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "Εκτός σύνδεσης"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Είστε εκτός σύνδεσης"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Συνδεθείτε ξανά με τον Διακομιστή σας για να συνεχίσετε την παρακολούθηση."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Αντιγράψτε το κλειδί ρύθμισης ή τον σύνδεσμο ρύθμισης στην εφαρμογή ταυτοποίησής σας."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Αποθηκεύστε κάθε κωδικό ανάκτησης πριν συνεχίσετε. Κάθε κωδικός λειτουργεί μία φορά."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Εισαγάγετε τον τρέχοντα 6ψήφιο κωδικό για επιβεβαίωση της εφαρμογής."
   }
 ]

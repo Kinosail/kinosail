@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 perc"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 perc"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 perc"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 perc"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Hozzáférés"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Fiók · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Műveletek"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Jelszókulcs hozzáadása"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Mappa hozzáadása"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Adjon hozzá médiát, vagy próbáljon másik keresést."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Profil hozzáadása"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,11 +53,11 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Hozzáadás ide:"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Kiszolgáló kezelése"
   },
   {
     "id": "Album",
@@ -65,23 +65,23 @@
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Albumok"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "összes"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Minden értékelés"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Letöltések engedélyezése"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Átkódolás engedélyezése"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Lejátszási szakaszok elemzése most"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "API-kulcs neve"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Az API-kulcs hatóköre nem engedélyezi ezt a kérést"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "API-kulcs · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "API-kulcsok"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Megjelenés"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Alkalmaz"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Hang"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Hangoskönyvek"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Hitelesítési kód"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Hitelesítési vagy helyreállítási kód"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "hitelesítés szükséges"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Eszköz engedélyezése"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Automatikus"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "automatikus"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Automatikus (a legjobb észlelt)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Automatikus (böngésző)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Automatikus biztonsági mentések"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Automatikus karbantartás"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Az elérhető eszközök közvetlen kapcsolatot használnak ezzel a kiszolgálóval."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Vissza a könyvtárba"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Vissza a beállításokhoz"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Biztonsági mentés most"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Biztonsági mentés és helyreállítás"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "A biztonsági mentésekhez beállítás szükséges."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "A biztonsági mentések automatikusan, titkosítás nélkül futnak."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Biztonsági mentések · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Könyv"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Könyvek"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Könyvek és képregények"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Könyvtár böngészése"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Mégse"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "Közvetítés"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Fejezetek"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Válassza ki a nyelvet ehhez a böngészőhöz."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Átkódolási gyorsítótár törlése"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Kód"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Gyűjtemény"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Gyűjtemények"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Reklám"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Kompatibilitás"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Kompatibilis kapcsolat"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "kompatibilis"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Egyidejű adatfolyamok"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Konfigurációs hiba"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Konfiguráció · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Beállítva; az érték rejtve"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Törlés megerősítése"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Eltávolítás megerősítése"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Csatlakozás"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Eszköz csatlakoztatása"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Csatlakoztatva"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Csatlakozás"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Csatlakozás…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Kapcsolati hiba"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Tartalom"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Megnézés folytatása"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Megnézés folytatása"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "a Megnézés folytatása szakaszból"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Létrehozás"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Jelszókulcs létrehozása"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "API-kulcs létrehozása"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Jelszókulcs létrehozása"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Okos lejátszási lista létrehozása"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Hozza létre a tulajdonosi profilt"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Hitelesítő adatok beállítva"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Stáblista"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Válogatás"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Sötét"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "alapértelmezett"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Alapértelmezett lejátszás"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Törlés"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Telepítési konfiguráció"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Cél"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "észlelve, nem elérhető"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Eszköz vagy alkalmazás"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Diagnosztika"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Közvetlen"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "közvetlen"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "A közvetlen kapcsolat nem érhető el"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Közvetlenül innen:"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Rendező"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Letiltás és visszavonás"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Kétfaktoros hitelesítés letiltása"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Katasztrófa utáni helyreállítás"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Letöltés"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Média letöltése"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Eredeti letöltése"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Biztonságos diagnosztika letöltése"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Letöltések"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Metaadatok szerkesztése"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Átugrási jelölők szerkesztése"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "DLNA engedélyezése"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Kétfaktoros hitelesítés engedélyezése"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Engedélyezve"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "A titkosított biztonsági mentések automatikusan futnak."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "A titkosítás alapértelmezés szerint ki van kapcsolva."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "A titkosítás be van kapcsolva."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Vége másodpercben"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Környezeti alapérték"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Eseménywebhook"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "15 percenként"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "5 percenként"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Minden"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Teljes tevékenységnapló exportálása"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Külső kezelésű"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Keresés"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Keressen valamit"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Beállítás befejezése"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Mappa a médiacsatolóponton belül"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "A szobavezetőt követi"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Ettől:"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "innen:"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Általános"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Műfajok"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Értem"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Csoport"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Hardver"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Előzmények"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Főoldal"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Óránként"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "ha engedélyezve van"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Telepítés"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Kinosail Player telepítése"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Integrációk"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Bevezető"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Meghívó hivatkozás"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Megtartás"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Tárolja a biztonsági mentéseket a gazdagépen kívüli tárolón. A biztonsági mentések titkosítatlanok, kivéve ha biztonsági mentési kulcs van beállítva. Visszaállítás a kiszolgáló leállítása után."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Tartsa közel a Kinosail Playert"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,19 +741,19 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "A Kinosail Player nem éri el ezt a kiszolgálót. Ellenőrizze a hálózatot vagy a közvetlen kapcsolatot, majd próbálja újra."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "A Kinosail automatikusan karbantartja magát."
   },
   {
     "id": "Kinosail Player Reader",
-    "other": "Kinosail Player Reader"
+    "other": "Kinosail Player olvasó"
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Nyelv"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Utolsó hiba"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Utolsó vizsgálati hiba"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Utolsó sikeres biztonsági mentés"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Utolsó sikeres vizsgálat"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Utoljára ellenőrizve"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Legújabb"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Könyvtárak"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Könyvtár"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Könyvtárfelfedezés"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Könyvtármappák"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Könyvtártételek"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Könyvtár rendszerezése"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Könyvtárnézetek"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Licencelt hitelesítő adat beállítva"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Világos"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "OpenID Connect összekapcsolása"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Helyi fiók"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "M3U lejátszási lista"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Személyes könyvtár-állapot kezelése"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Külsőleg kezelt, csak olvasható."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Kezelt távoli hozzáférés"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Megjelölés"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "jelölő"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Szöveg egyeztetése"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "Média"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Médiainformációk"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Médiacsatolópont"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Metaadat-szolgáltató"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Mérőszámok"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Filmek"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Zene"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Zene és hangoskönyvek"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Listám"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Név"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Soha"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Új gyűjtemény"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Új gyűjtemény neve"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Új jelszó"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Új lejátszási lista"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Új lejátszási lista neve"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Új profil neve"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Új profiljelszó"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Új titok"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Új okos lejátszási lista"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Az új nézők családi értékelésekkel és könyvtárak nélkül indulnak. Adjon hozzá mappaneveket vagy"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Legújabb elöl"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Még nincs rögzített tevékenység."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Nincsenek beállított csatornák."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Nincs kiválasztott eszköz"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Még nincsenek offline letöltések."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Még nincs rögzített lejátszás."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Nincs"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Nincs; használja az összest vagy a mappaneveket"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Nincs beállítva"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "nem észlelhető"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Most nem"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Nincs találat."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Most nézi"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Ki"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "kapcsolat nélkül"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Offline letöltések"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Offline letöltések · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Be"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "iPhone vagy iPad készüléken koppintson a Megosztás gombra, válassza a Hozzáadás a főképernyőhöz lehetőséget, kapcsolja be a Megnyitás webalkalmazásként lehetőséget, majd koppintson a Hozzáadás gombra."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Egyszeri megjelenítés"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Befejező rész"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Tulajdonos"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Tulajdonosi hozzáférés szükséges"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Tulajdonosi vezérlők"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Jelszókulcs hozzáadva."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Jelszó"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Fotók"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Lejátszás"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Lejátszás eszközön"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Lejátszás"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Lejátszási előzmények"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Lejátszási szakaszok elemzése"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Lejátszási sebesség"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Itt játszva"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Lejátszás eszközön"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Lejátszási lista"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Lejátszási listák"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Cselekmény"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Változások lekérdezése"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Minőség előnyben részesítése"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Sebesség előnyben részesítése"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Előnyben részesített nyelv"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Előkészítés"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Alapból privát"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Profil"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Visszaállítandó profil"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Profil típusa"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Profilok"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Automatikusan védett"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA – További bejelentkezési védelem kötelezővé tétele minden nézői profilhoz"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Minőség"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "minőség"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "Gyors csatlakozás"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "Gyors csatlakozás · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Értékelés"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Olvasás most"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "olvasó"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Olvasási sorrend"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "kész"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Összefoglaló"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Legutóbbi tevékenység"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Legutóbbi lejátszások"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Nemrég hozzáadva"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Nemrég lejátszva"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Helyreállítás"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Helyreállítási kódok"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Frissítés a TMDB-ről"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Hiányzó metaadatok frissítése"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Ajánlott"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Távoli hozzáférés"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Eltávolítás"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Eltávolítás innen:"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "kérés"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "A kérést nem sikerült befejezni."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Jelszó visszaállítása"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Vissza a beállításokhoz"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Visszavonás"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Szoba csatlakoztatva · a vezetőt követi"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Szoba csatlakoztatva · Ön vezet"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Szoba leválasztva · az újracsatlakozáshoz töltse újra az oldalt"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Könyvtár vizsgálatának indítása most"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Karbantartás indítása most"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Biztonsági vizsgálat"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Mentés"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Fájl mentése"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Mentés újraindításhoz"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Jelölő mentése"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Metaadatok mentése"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Ütemezés mentése"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Ütemezés"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Könyvtár keresése"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Keresési találatok"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "A titkok rejtve vannak, és csak a titkosított helyreállítási biztonsági mentésekben szerepelnek."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Fiók biztonságának beállítása"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Fiók biztonságának beállítása · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Küldje el ezt a privát kapcsolati URL-t a nézőnek. Csak egyszer jelenik meg."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Kiszolgáló neve"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Kiszolgáló beállításai"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "A kiszolgáló nem érhető el"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "A kiszolgáló nem érhető el · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Kinosail Player beállítása"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Hitelesítő alkalmazás beállítása vagy cseréje"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Kétfaktoros hitelesítés beállítása"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Kétfaktoros hitelesítés beállítása · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Beállítások"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Beállítási szakaszok"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Beállítások · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Sorozat"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Sorozatok"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Bejelentkezés"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,95 +1457,95 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Bejelentkezés jelszókulccsal"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Bejelentkezés SSO-val"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Bejelentkezés · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Kijelentkezés"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Kijelentkezés más eszközökről"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Bejelentkezési módok"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "A bejelentkezés, az azonos eredetű böngészővédelmek, a privát válaszok, a korlátozott kérések és a visszavonható hozzáférés mindig be vannak kapcsolva. Nincs kezelendő biztonsági kapcsoló."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Egységes bejelentkezés"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Kihagyás"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Reklámok automatikus kihagyása"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Stáblisták automatikus kihagyása"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Bevezetők automatikus kihagyása"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Befejezések automatikus kihagyása"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Összefoglalók automatikus kihagyása"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Ugrás a tartalomra"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Alvásidőzítő"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Az alvásidőzítő lejárt"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Okos lejátszási lista"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Okos lejátszási lista neve"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Szoftver"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Rendezés"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Forrás"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "sebesség"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Kezdés másodpercben"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Együtt nézés indítása"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Állapot"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "{minutes} perc múlva leáll"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Tárolja ezeket a kódokat biztonságos helyen. Mindegyik egyszer használható."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Itt tárolva. Közvetlenül továbbítva."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Média streamelése"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Előfizetés szükséges"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Feliratszolgáltató"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Feliratok"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "feliratok"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Időzítés"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Rendszer"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Szlogen"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "A biztonsági mentés fiók- és munkamenet-állapotot tartalmaz. Tartsa privátban a titkosítatlan tárolást, vagy állítson be biztonsági mentési kulcsot."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Téma"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Ezek a beállítások csak olvashatók, amíg el nem távolítja őket a YAML-fájlból vagy a környezetből"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Ez a gyűjtemény üres."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Ez véglegesen törli a gyűjteményt."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Ez véglegesen törli a lejátszási listát."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Ez a lejátszási lista üres."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Ez a termék a TMDB API-t használja, de a TMDB nem támogatja és nem hagyta jóvá."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "PG / TV-PG besorolásig"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "PG-13 / TV-14 besorolásig"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Cím"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Cím, előadó, műfaj"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Cím, előadó, műfaj…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "HDR → SDR tónusleképezés"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "túl sok bejelentkezési próbálkozás"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "túl sok Együtt nézés szoba"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Szám"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "átkódolási gyorsítótár"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Átkódoló"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "az átkódolás nincs engedélyezve"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Próbálja újra"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Kétfaktoros hitelesítés"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Kétfaktoros hitelesítés · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Típus"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "OpenID Connect leválasztása"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Eddig"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Nem megnézett"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "nem megnézett"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Alapértelmezett használata"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Használja a Face ID-t, a Touch ID-t, a Windows Hello-t vagy az eszköze PIN-kódját a bejelentkezéshez. A jelszava továbbra is működik."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,135 +1773,135 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Legutóbbi biztonsági mentés ellenőrzése"
   },
   {
     "id": "Video",
-    "other": "Video"
+    "other": "Videó"
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Néző"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "A nézői hozzáférés nem érhető el"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Néző neve"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Várakozás a jelszókulcsra…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Az Együtt nézés állapota érvénytelen"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "megnézett"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Megnézett"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Megnézett ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Változások figyelése"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Üdvözöljük"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "ha kész."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "XMLTV-műsorújság"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "Év"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Ön vezeti ezt a szobát"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Az Ön könyvtára"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Az Ön könyvtára és megtekintési tevékenysége ezen a kiszolgálón marad."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Könyvek"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Könyvtár"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Beállítások"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Létrehozott API-kulcs"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "API-kulcs másolása"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Másolva."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Használja a böngésző Másolás parancsát."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Megbízható HTTPS beállítása"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Megbízható HTTPS beállítás áttekintése"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Offline példány"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Az ellenőrzött fájl ezen az eszközön van tárolva."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Offline elérhető ezen az eszközön"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Lejátszási mód"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Lejátszási beállítások megnyitása."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Az offline példány nem érhető el."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "ezen az eszközön tárolva"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Ezen az eszközön nincs elég tárhely a letöltéshez."
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Ez a böngésző nem tud biztonságosan offline médiát tárolni."
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "A letöltést nem sikerült ellenőrizni."
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "A letöltés már nem érhető el."
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Először nyissa meg online a Kinosailt, és válasszon nézői profilt."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Minden könyvtár"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Hangsávok"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Vissza a letöltésekhez"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "A haladást nem sikerült menteni. Térjen vissza a Letöltésekhez, és próbálja újra."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Offline letöltések kezelése"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Film"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Kiszolgáló letöltéseinek megnyitása"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Előző oldal megnyitása"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Lejátszási viselkedés"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Offline példány előkészítése"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "A haladás ezen az eszközön van mentve. A szinkronizáláshoz nyissa meg a kiszolgáló letöltéseit."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Vissza az űrlapra"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Keresés minden könyvtárban"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Keresés mindenben"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Ez a fájl nem játszható le. Térjen vissza a Letöltésekhez, csatlakozzon újra a kiszolgálóhoz, és töltse le újra."
   },
   {
     "id": "invalid title request",
@@ -2009,47 +2009,47 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "A hang ebben a letöltött példányban rögzített."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Bejelentkezési védelem"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Vissza a filmekhez"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Vissza a sorozatokhoz"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Vissza a keresési találatokhoz"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Vissza a könyvtárba"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "%lld. fejezet, összesen: %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "%lld. oldal, összesen: %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Dokumentum"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "A könyvtár vizsgálata"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "A Kinosail beolvassa a médiamappáit. A vizsgálat befejezése után a könyvtár itt jelenik meg."
   },
   {
     "id": "Offline",
@@ -2057,22 +2057,22 @@
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Nincs kapcsolat"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Csatlakozzon újra a kiszolgálóhoz a megnézés folytatásához."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Másolja a beállítókulcsot vagy a beállítási hivatkozást a hitelesítő alkalmazásába."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Mentse el az összes helyreállítási kódot, mielőtt folytatja. Mindegyik kód egyszer használható."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Az alkalmazás megerősítéséhez adja meg az aktuális, 6 számjegyű kódot."
   }
 ]

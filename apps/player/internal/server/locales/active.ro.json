@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 minute"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 de minute"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 de minute"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 de minute"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Acces"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Cont · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Acțiuni"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Adăugați o cheie de acces"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Adăugați dosar"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Adăugați conținut media sau încercați o altă căutare."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Adăugați profil"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,11 +53,11 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Adăugați la"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Administrați serverul"
   },
   {
     "id": "Album",
@@ -65,23 +65,23 @@
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Albume"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "toate"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Toate evaluările"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Permiteți descărcările"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Permiteți transcodarea"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Analizați acum segmentele de redare"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Numele cheii API"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "Domeniul cheii API nu permite această solicitare"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "Cheie API · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "Chei API"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Aspect"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,7 +125,7 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Aplicați"
   },
   {
     "id": "Audio",
@@ -133,67 +133,67 @@
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Cărți audio"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Cod de autentificare"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Cod de autentificare sau de recuperare"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "este necesară autentificarea"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Autorizați dispozitivul"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Automat"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "automat"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Automat (cel mai bun detectat)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Automat (browser)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Copii de rezervă automate"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Întreținere automată"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Dispozitivele disponibile folosesc o conexiune directă la acest server."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Înapoi la bibliotecă"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Înapoi la setări"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Faceți o copie de rezervă acum"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Copie de rezervă și recuperare"
   },
   {
     "id": "backup is unavailable",
@@ -201,75 +201,75 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Copiile de rezervă necesită configurare."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Copiile de rezervă rulează automat, fără criptare."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Copii de rezervă · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Carte"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Cărți"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Cărți și benzi desenate"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Răsfoiți biblioteca"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Anulare"
   },
   {
     "id": "Cast",
-    "other": "Cast"
+    "other": "Difuzare"
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Capitole"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Alegeți limba pentru acest browser."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Ștergeți memoria cache de transcodare"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Cod"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Colecție"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Colecții"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Reclamă"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Compatibilitate"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Conexiune de compatibilitate"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "compatibil"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Fluxuri simultane"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Eroare de configurare"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Configurare · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Configurat; valoarea este ascunsă"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Confirmați ștergerea"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Confirmați eliminarea"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Conectare"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Conectați un dispozitiv"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Conectat"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Se conectează"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Se conectează…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Eroare de conexiune"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Conținut"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Continuați vizionarea"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Continuați vizionarea"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "din Continuați vizionarea"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Creați"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Creați o cheie de acces"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Creați cheie API"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Creați cheie de acces"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Creați listă de redare inteligentă"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Creați profilul proprietarului"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Date de autentificare configurate"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Generic"
   },
   {
     "id": "cross-origin request denied",
@@ -409,43 +409,43 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Selectați"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Întunecat"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "implicit"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Redare implicită"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Ștergere"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Configurarea implementării"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Destinație"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "detectat, indisponibil"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Dispozitiv sau aplicație"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Diagnosticare"
   },
   {
     "id": "Direct",
@@ -457,11 +457,11 @@
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Conexiunea directă nu este disponibilă"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Direct din"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Regia"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Dezactivați și revocați"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Dezactivați autentificarea în doi pași"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Recuperare în caz de dezastru"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Descărcare"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Descărcați conținutul media"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Descărcați originalul"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Descărcați diagnosticarea sigură"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Descărcări"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Editați metadatele"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Editați marcajele de sărit"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Activați DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Activați autentificarea în doi pași"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Activat"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Copiile de rezervă criptate rulează automat."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Criptarea este dezactivată implicit."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Criptarea este activată."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Sfârșit în secunde"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Implicit al mediului"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook de evenimente"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "La fiecare 15 minute"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "La fiecare 5 minute"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Tot"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Exportați jurnalul complet de activitate"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Gestionat extern"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Căutați"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Găsiți ceva"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Finalizați configurarea"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Dosar în punctul de montare media"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,15 +621,15 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Urmărește liderul camerei"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "De la"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "de la"
   },
   {
     "id": "General",
@@ -637,15 +637,15 @@
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Genuri"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Am înțeles"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Grup"
   },
   {
     "id": "Hardware",
@@ -653,31 +653,31 @@
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Istoric"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Acasă"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Orar"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "dacă este activat"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Instalare"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Instalați Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Integrări"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Introducere"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Link de invitație"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Păstrați"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Păstrați copiile de rezervă pe un spațiu de stocare din afara acestei gazde. Copiile de rezervă nu sunt criptate, decât dacă este configurată o cheie de rezervă. Restaurați cât timp serverul este oprit."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Păstrați Kinosail Player aproape"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,19 +741,19 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player nu poate ajunge la acest server. Verificați rețeaua sau conexiunea directă, apoi încercați din nou."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail se întreține automat."
   },
   {
     "id": "Kinosail Player Reader",
-    "other": "Kinosail Player Reader"
+    "other": "Cititor Kinosail Player"
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Limbă"
   },
   {
     "id": "language is invalid",
@@ -761,99 +761,99 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Ultima eroare"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Eroare la ultima scanare"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Ultima copie de rezervă reușită"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Ultima scanare reușită"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Ultima verificare"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Cele mai noi"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Biblioteci"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Bibliotecă"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Descoperirea bibliotecii"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Dosare de bibliotecă"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Elemente din bibliotecă"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Organizarea bibliotecii"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Vizualizări ale bibliotecii"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Credențial licențiat configurat"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Luminos"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Conectați OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Cont local"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "Listă de redare M3U"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Gestionați starea personală a bibliotecii"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Gestionat extern și doar pentru citire."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Acces la distanță gestionat"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Marcați"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "marcaj"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Potrivire text"
   },
   {
     "id": "Media",
@@ -861,11 +861,11 @@
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Informații media"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Punct de montare media"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Furnizor de metadate"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Indicatori"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Filme"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Muzică"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Muzică și cărți audio"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Lista mea"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Nume"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Niciodată"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Colecție nouă"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Numele colecției noi"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Parolă nouă"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Listă de redare nouă"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Numele listei de redare noi"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Numele noului profil"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Parola noului profil"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Secret nou"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Listă de redare inteligentă nouă"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Vizualizatorii noi încep cu evaluări pentru familie și fără biblioteci. Adăugați nume de dosare sau"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Cele mai noi"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Nicio activitate înregistrată încă."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Niciun canal configurat."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Niciun dispozitiv selectat"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Încă nu există descărcări offline."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Încă nu există redări înregistrate."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Niciunul"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Niciunul; folosiți toate sau numele dosarelor"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Neconfigurat"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "nedetectat"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Nu acum"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Nu s-a găsit nimic."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Vizualizați acum"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,7 +1021,7 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Dezactivat"
   },
   {
     "id": "offline",
@@ -1029,23 +1029,23 @@
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Descărcări offline"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Descărcări offline · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "Activat"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "Pe iPhone sau iPad, atingeți Partajare, alegeți Adaugă pe ecranul de pornire, activați Deschide ca aplicație web, apoi atingeți Adaugă."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Afișare o singură dată"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Încheiere"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Proprietar"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Este necesar acces de proprietar"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Comenzi pentru proprietar"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Cheie de acces adăugată."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Parolă"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Fotografii"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Redare"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Redați pe dispozitiv"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Redare"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Istoricul redărilor"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Analiza segmentelor de redare"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Viteza de redare"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Se redă aici"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Se redă pe dispozitiv"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Listă de redare"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Liste de redare"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Subiect"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Se verifică modificările"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Preferați calitatea"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Preferați viteza"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Limba preferată"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Pregătiți"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Privat prin design"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Profil"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,59 +1177,59 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Profilul de resetat"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Tipul profilului"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Profiluri"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Protejat automat"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA – Solicitați protecție suplimentară la conectare pentru fiecare profil de vizualizator"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Calitate"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "calitate"
   },
   {
     "id": "Quick Connect",
-    "other": "Quick Connect"
+    "other": "Conectare rapidă"
   },
   {
     "id": "Quick Connect · Kinosail Player",
-    "other": "Quick Connect · Kinosail Player"
+    "other": "Conectare rapidă · Kinosail Player"
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Evaluare"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Citiți acum"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "cititor"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Ordinea de citire"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "gata"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Rezumat"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Activitate recentă"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Redări recente"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Adăugate recent"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Redate recent"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Recuperare"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Coduri de recuperare"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Reîmprospătați din TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Reîmprospătați metadatele lipsă"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Recomandat"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Acces la distanță"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Eliminare"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Eliminați din"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "solicitare"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Solicitarea nu a putut fi finalizată."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Resetați parola"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Reveniți la setări"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Revocare"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Cameră conectată · urmărește liderul"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Cameră conectată · conduceți dvs."
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Cameră deconectată · reîncărcați pagina pentru a vă reconecta"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Porniți acum scanarea bibliotecii"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Porniți acum întreținerea"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Scanare de siguranță"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Salvare"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Salvați fișierul"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Salvați pentru repornire"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Salvați marcajul"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Salvați metadatele"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Salvați programarea"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Programare"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Căutați în bibliotecă"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Rezultatele căutării"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Secretele sunt ascunse și sunt incluse doar în copiile de rezervă criptate pentru recuperare."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Securizați-vă contul"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Securizați-vă contul · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Trimiteți acest URL privat de conectare vizualizatorului. Este afișat o singură dată."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Numele serverului"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Setările serverului"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Serverul nu este disponibil"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Serverul nu este disponibil · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Configurați Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Configurați sau înlocuiți aplicația de autentificare"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Configurați autentificarea în doi pași"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Configurați autentificarea în doi pași · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Setări"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Secțiunile de setări"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Setări · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Serial"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Seriale"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Conectare"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,79 +1457,79 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Conectați-vă cu cheie de acces"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Conectați-vă cu SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Conectare · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Deconectare"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Deconectați celelalte dispozitive"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Metode de conectare"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Conectarea, protecțiile browserului pentru aceeași origine, răspunsurile private, cererile limitate și accesul revocabil sunt mereu active. Nu există comutatoare de securitate de gestionat."
   },
   {
     "id": "Single sign-on",
-    "other": "Single sign-on"
+    "other": "Autentificare unică"
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Omiteți"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Omiteți automat reclamele"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Omiteți automat generic-ul"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Omiteți automat introducerile"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Omiteți automat încheierile"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Omiteți automat rezumatele"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Mergeți la conținut"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Temporizator de oprire"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Temporizatorul de oprire s-a încheiat"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Listă de redare inteligentă"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Numele listei de redare inteligente"
   },
   {
     "id": "Software",
@@ -1537,15 +1537,15 @@
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Sortare"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Sursă"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "viteză"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,39 +1577,39 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Început în secunde"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Porniți Vizionare împreună"
   },
   {
     "id": "Status",
-    "other": "Status"
+    "other": "Stare"
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Se oprește în {minutes} minute"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Păstrați aceste coduri într-un loc sigur. Fiecare poate fi folosit o singură dată."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Stocat aici. Transmis direct."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Transmiteți conținutul media"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Este necesar un abonament"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Furnizor de subtitrări"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,55 +1621,55 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Subtitrări"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "subtitrări"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Sincronizare"
   },
   {
     "id": "System",
-    "other": "System"
+    "other": "Sistem"
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Slogan"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Copia de rezervă conține starea contului și a sesiunii. Păstrați privat spațiul de stocare pentru copiile necriptate sau configurați o cheie de rezervă."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Temă"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Aceste setări sunt doar pentru citire până când sunt eliminate din YAML sau din mediu"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Această colecție este goală."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Aceasta șterge definitiv colecția."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Aceasta șterge definitiv lista de redare."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Această listă de redare este goală."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Acest produs folosește API-ul TMDB, dar nu este aprobat sau certificat de TMDB."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Până la PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Până la PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Titlu"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Titlu, artist, gen"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Titlu, artist, gen…"
   },
   {
     "id": "TMDB",
@@ -1701,71 +1701,71 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Maparea tonurilor HDR în SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "prea multe încercări de conectare"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "prea multe camere Vizionare împreună"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Pistă"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "memoria cache de transcodare"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Transcodor"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "transcodarea nu este permisă"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Încercați din nou"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Autentificare în doi pași"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Autentificare în doi pași · Kinosail Player"
   },
   {
     "id": "Type",
-    "other": "Type"
+    "other": "Tip"
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Deconectați OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Până la"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Nevizionate"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "nevizionat"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Folosiți implicitul"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Folosiți Face ID, Touch ID, Windows Hello sau codul PIN al dispozitivului pentru a vă conecta. Parola va funcționa în continuare."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,7 +1773,7 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Verificați ultima copie de rezervă"
   },
   {
     "id": "Video",
@@ -1781,127 +1781,127 @@
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Vizualizator"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Accesul vizualizatorului nu este disponibil"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Numele vizualizatorului"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Se așteaptă cheia de acces…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Starea Vizionare împreună nu este validă"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "vizionat"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Vizionat"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Vizionat ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Se urmăresc modificările"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Bun venit"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "când este gata."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "Ghid XMLTV"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "An"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Conduceți această cameră"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Biblioteca dvs."
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Biblioteca dvs. și activitatea de vizionare rămân pe acest server."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Cărți"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Bibliotecă"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Setări"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Cheie API generată"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Copiați cheia API"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Copiat."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Folosiți opțiunea Copiere din browser."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Configurați HTTPS de încredere"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Verificați configurarea HTTPS de încredere"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Copie offline"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Fișier verificat, stocat pe acest dispozitiv."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Disponibil offline pe acest dispozitiv"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Metoda de redare"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Deschideți setările de redare."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Copia offline nu este disponibilă."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "stocat pe acest dispozitiv"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Acest dispozitiv nu are suficient spațiu pentru această descărcare"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Acest browser nu poate stoca în siguranță conținut media offline"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Descărcarea nu a putut fi verificată"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Descărcarea nu mai este disponibilă"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Deschideți Kinosail online și alegeți mai întâi un profil de vizualizator."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Toate bibliotecile"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Piste audio"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Înapoi la descărcări"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Progresul nu a putut fi salvat. Reveniți la Descărcări și încercați din nou."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Gestionați descărcările offline"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Film"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Deschideți descărcările de pe server"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Deschideți pagina anterioară"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Comportamentul redării"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Pregătiți copia offline"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Progres salvat pe acest dispozitiv. Deschideți descărcările de pe server pentru sincronizare."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Reveniți la formular"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Căutați în toate bibliotecile"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Căutați peste tot"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Fișierul nu a putut fi redat. Reveniți la Descărcări, reconectați-vă la server și descărcați-l din nou."
   },
   {
     "id": "invalid title request",
@@ -2009,35 +2009,35 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Sunetul este fix în această copie descărcată."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Protecția la conectare"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Înapoi la filme"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Înapoi la seriale"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Înapoi la rezultatele căutării"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Înapoi la bibliotecă"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Capitolul %lld din %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Pagina %lld din %lld"
   },
   {
     "id": "Document",
@@ -2045,11 +2045,11 @@
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Se scanează biblioteca dvs."
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail citește dosarele dvs. media. Biblioteca dvs. apare aici când scanarea este gata."
   },
   {
     "id": "Offline",
@@ -2057,22 +2057,22 @@
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Sunteți offline"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Reconectați-vă la server pentru a continua vizionarea."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Copiați cheia de configurare sau linkul de configurare în aplicația de autentificare."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Salvați toate codurile de recuperare înainte de a continua. Fiecare cod poate fi folosit o singură dată."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Introduceți codul curent de 6 cifre pentru a confirma aplicația."
   }
 ]

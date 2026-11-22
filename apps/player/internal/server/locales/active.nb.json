@@ -1,31 +1,31 @@
 [
   {
     "id": "15 minutes",
-    "other": "15 minutes"
+    "other": "15 minutter"
   },
   {
     "id": "30 minutes",
-    "other": "30 minutes"
+    "other": "30 minutter"
   },
   {
     "id": "45 minutes",
-    "other": "45 minutes"
+    "other": "45 minutter"
   },
   {
     "id": "60 minutes",
-    "other": "60 minutes"
+    "other": "60 minutter"
   },
   {
     "id": "Access",
-    "other": "Access"
+    "other": "Tilgang"
   },
   {
     "id": "Account · Kinosail Player",
-    "other": "Account · Kinosail Player"
+    "other": "Konto · Kinosail Player"
   },
   {
     "id": "Actions",
-    "other": "Actions"
+    "other": "Handlinger"
   },
   {
     "id": "active session(s)",
@@ -33,19 +33,19 @@
   },
   {
     "id": "Add a passkey",
-    "other": "Add a passkey"
+    "other": "Legg til en passnøkkel"
   },
   {
     "id": "Add folder",
-    "other": "Add folder"
+    "other": "Legg til mappe"
   },
   {
     "id": "Add media or try another search.",
-    "other": "Add media or try another search."
+    "other": "Legg til medier, eller prøv et annet søk."
   },
   {
     "id": "Add Profile",
-    "other": "Add Profile"
+    "other": "Legg til profil"
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
@@ -53,11 +53,11 @@
   },
   {
     "id": "Add to",
-    "other": "Add to"
+    "other": "Legg til i"
   },
   {
     "id": "Administer server",
-    "other": "Administer server"
+    "other": "Administrer server"
   },
   {
     "id": "Album",
@@ -65,23 +65,23 @@
   },
   {
     "id": "Albums",
-    "other": "Albums"
+    "other": "Album"
   },
   {
     "id": "all",
-    "other": "all"
+    "other": "alle"
   },
   {
     "id": "All ratings",
-    "other": "All ratings"
+    "other": "Alle vurderinger"
   },
   {
     "id": "Allow downloads",
-    "other": "Allow downloads"
+    "other": "Tillat nedlastinger"
   },
   {
     "id": "Allow transcoding",
-    "other": "Allow transcoding"
+    "other": "Tillat transkoding"
   },
   {
     "id": "AMD AMF",
@@ -89,7 +89,7 @@
   },
   {
     "id": "Analyze playback segments now",
-    "other": "Analyze playback segments now"
+    "other": "Analysér avspillingssegmenter nå"
   },
   {
     "id": "analyzed item(s)",
@@ -97,11 +97,11 @@
   },
   {
     "id": "API key name",
-    "other": "API key name"
+    "other": "Navn på API-nøkkel"
   },
   {
     "id": "API key scope does not allow this request",
-    "other": "API key scope does not allow this request"
+    "other": "API-nøkkelens omfang tillater ikke denne forespørselen"
   },
   {
     "id": "API key view failed",
@@ -109,15 +109,15 @@
   },
   {
     "id": "API key · Kinosail Player",
-    "other": "API key · Kinosail Player"
+    "other": "API-nøkkel · Kinosail Player"
   },
   {
     "id": "API keys",
-    "other": "API keys"
+    "other": "API-nøkler"
   },
   {
     "id": "Appearance",
-    "other": "Appearance"
+    "other": "Utseende"
   },
   {
     "id": "Apple VideoToolbox",
@@ -125,75 +125,75 @@
   },
   {
     "id": "Apply",
-    "other": "Apply"
+    "other": "Bruk"
   },
   {
     "id": "Audio",
-    "other": "Audio"
+    "other": "Lyd"
   },
   {
     "id": "Audiobooks",
-    "other": "Audiobooks"
+    "other": "Lydbøker"
   },
   {
     "id": "Authentication code",
-    "other": "Authentication code"
+    "other": "Bekreftelseskode"
   },
   {
     "id": "Authentication or recovery code",
-    "other": "Authentication or recovery code"
+    "other": "Bekreftelseskode eller gjenopprettingskode"
   },
   {
     "id": "authentication required",
-    "other": "authentication required"
+    "other": "autentisering kreves"
   },
   {
     "id": "Authorize device",
-    "other": "Authorize device"
+    "other": "Autoriser enhet"
   },
   {
     "id": "Automatic",
-    "other": "Automatic"
+    "other": "Automatisk"
   },
   {
     "id": "automatic",
-    "other": "automatic"
+    "other": "automatisk"
   },
   {
     "id": "Automatic (best detected)",
-    "other": "Automatic (best detected)"
+    "other": "Automatisk (best funnet)"
   },
   {
     "id": "Automatic (browser)",
-    "other": "Automatic (browser)"
+    "other": "Automatisk (nettleser)"
   },
   {
     "id": "Automatic backups",
-    "other": "Automatic backups"
+    "other": "Automatiske sikkerhetskopier"
   },
   {
     "id": "Automatic maintenance",
-    "other": "Automatic maintenance"
+    "other": "Automatisk vedlikehold"
   },
   {
     "id": "Available devices use a direct connection to this Server.",
-    "other": "Available devices use a direct connection to this Server."
+    "other": "Tilgjengelige enheter bruker en direkte tilkobling til denne serveren."
   },
   {
     "id": "Back to library",
-    "other": "Back to library"
+    "other": "Tilbake til biblioteket"
   },
   {
     "id": "Back to settings",
-    "other": "Back to settings"
+    "other": "Tilbake til innstillinger"
   },
   {
     "id": "Back up now",
-    "other": "Back up now"
+    "other": "Ta sikkerhetskopi nå"
   },
   {
     "id": "Backup and recovery",
-    "other": "Backup and recovery"
+    "other": "Sikkerhetskopi og gjenoppretting"
   },
   {
     "id": "backup is unavailable",
@@ -201,35 +201,35 @@
   },
   {
     "id": "Backups need setup.",
-    "other": "Backups need setup."
+    "other": "Sikkerhetskopier må settes opp."
   },
   {
     "id": "Backups run automatically without encryption.",
-    "other": "Backups run automatically without encryption."
+    "other": "Sikkerhetskopier kjører automatisk uten kryptering."
   },
   {
     "id": "Backups · Kinosail Player",
-    "other": "Backups · Kinosail Player"
+    "other": "Sikkerhetskopier · Kinosail Player"
   },
   {
     "id": "Book",
-    "other": "Book"
+    "other": "Bok"
   },
   {
     "id": "Books",
-    "other": "Books"
+    "other": "Bøker"
   },
   {
     "id": "Books and comics",
-    "other": "Books and comics"
+    "other": "Bøker og tegneserier"
   },
   {
     "id": "Browse library",
-    "other": "Browse library"
+    "other": "Bla i biblioteket"
   },
   {
     "id": "Cancel",
-    "other": "Cancel"
+    "other": "Avbryt"
   },
   {
     "id": "Cast",
@@ -237,39 +237,39 @@
   },
   {
     "id": "Chapters",
-    "other": "Chapters"
+    "other": "Kapitler"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "Choose the language for this browser."
+    "other": "Velg språket for denne nettleseren."
   },
   {
     "id": "Clear transcode cache",
-    "other": "Clear transcode cache"
+    "other": "Tøm transkodingsbufferen"
   },
   {
     "id": "Code",
-    "other": "Code"
+    "other": "Kode"
   },
   {
     "id": "Collection",
-    "other": "Collection"
+    "other": "Samling"
   },
   {
     "id": "Collections",
-    "other": "Collections"
+    "other": "Samlinger"
   },
   {
     "id": "Commercial",
-    "other": "Commercial"
+    "other": "Reklame"
   },
   {
     "id": "Compatibility",
-    "other": "Compatibility"
+    "other": "Kompatibilitet"
   },
   {
     "id": "Compatibility Connection",
-    "other": "Compatibility Connection"
+    "other": "Kompatibel tilkobling"
   },
   {
     "id": "Compatibility stream",
@@ -277,71 +277,71 @@
   },
   {
     "id": "compatible",
-    "other": "compatible"
+    "other": "kompatibel"
   },
   {
     "id": "Concurrent streams",
-    "other": "Concurrent streams"
+    "other": "Samtidige strømmer"
   },
   {
     "id": "Configuration error",
-    "other": "Configuration error"
+    "other": "Konfigurasjonsfeil"
   },
   {
     "id": "Configuration · Kinosail Player",
-    "other": "Configuration · Kinosail Player"
+    "other": "Konfigurasjon · Kinosail Player"
   },
   {
     "id": "Configured; value hidden",
-    "other": "Configured; value hidden"
+    "other": "Konfigurert; verdi skjult"
   },
   {
     "id": "Confirm delete",
-    "other": "Confirm delete"
+    "other": "Bekreft sletting"
   },
   {
     "id": "Confirm remove",
-    "other": "Confirm remove"
+    "other": "Bekreft fjerning"
   },
   {
     "id": "Connect",
-    "other": "Connect"
+    "other": "Koble til"
   },
   {
     "id": "Connect a device",
-    "other": "Connect a device"
+    "other": "Koble til en enhet"
   },
   {
     "id": "Connected",
-    "other": "Connected"
+    "other": "Tilkoblet"
   },
   {
     "id": "Connecting",
-    "other": "Connecting"
+    "other": "Kobler til"
   },
   {
     "id": "Connecting…",
-    "other": "Connecting…"
+    "other": "Kobler til…"
   },
   {
     "id": "Connection error",
-    "other": "Connection error"
+    "other": "Tilkoblingsfeil"
   },
   {
     "id": "Content",
-    "other": "Content"
+    "other": "Innhold"
   },
   {
     "id": "Continue Watching",
-    "other": "Continue Watching"
+    "other": "Fortsett å se"
   },
   {
     "id": "Continue watching",
-    "other": "Continue watching"
+    "other": "Fortsett å se"
   },
   {
     "id": "from Continue Watching",
-    "other": "from Continue Watching"
+    "other": "fra Fortsett å se"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -369,27 +369,27 @@
   },
   {
     "id": "Create",
-    "other": "Create"
+    "other": "Opprett"
   },
   {
     "id": "Create a passkey",
-    "other": "Create a passkey"
+    "other": "Opprett en passnøkkel"
   },
   {
     "id": "Create API key",
-    "other": "Create API key"
+    "other": "Opprett API-nøkkel"
   },
   {
     "id": "Create passkey",
-    "other": "Create passkey"
+    "other": "Opprett passnøkkel"
   },
   {
     "id": "Create smart playlist",
-    "other": "Create smart playlist"
+    "other": "Opprett smart spilleliste"
   },
   {
     "id": "Create your Owner Profile",
-    "other": "Create your Owner Profile"
+    "other": "Opprett eierprofilen din"
   },
   {
     "id": "Created once",
@@ -397,11 +397,11 @@
   },
   {
     "id": "Credentials configured",
-    "other": "Credentials configured"
+    "other": "Legitimasjon er konfigurert"
   },
   {
     "id": "Credits",
-    "other": "Credits"
+    "other": "Kreditering"
   },
   {
     "id": "cross-origin request denied",
@@ -409,59 +409,59 @@
   },
   {
     "id": "Curate",
-    "other": "Curate"
+    "other": "Kuratér"
   },
   {
     "id": "Dark",
-    "other": "Dark"
+    "other": "Mørk"
   },
   {
     "id": "default",
-    "other": "default"
+    "other": "standard"
   },
   {
     "id": "Default playback",
-    "other": "Default playback"
+    "other": "Standard avspilling"
   },
   {
     "id": "Delete",
-    "other": "Delete"
+    "other": "Slett"
   },
   {
     "id": "Deployment configuration",
-    "other": "Deployment configuration"
+    "other": "Distribusjonskonfigurasjon"
   },
   {
     "id": "Destination",
-    "other": "Destination"
+    "other": "Mål"
   },
   {
     "id": "detected, unavailable",
-    "other": "detected, unavailable"
+    "other": "funnet, utilgjengelig"
   },
   {
     "id": "Device or app",
-    "other": "Device or app"
+    "other": "Enhet eller app"
   },
   {
     "id": "Diagnostics",
-    "other": "Diagnostics"
+    "other": "Diagnostikk"
   },
   {
     "id": "Direct",
-    "other": "Direct"
+    "other": "Direkte"
   },
   {
     "id": "direct",
-    "other": "direct"
+    "other": "direkte"
   },
   {
     "id": "Direct connection unavailable",
-    "other": "Direct connection unavailable"
+    "other": "Direkte tilkobling er utilgjengelig"
   },
   {
     "id": "Direct from",
-    "other": "Direct from"
+    "other": "Direkte fra"
   },
   {
     "id": "Direct stream",
@@ -469,19 +469,19 @@
   },
   {
     "id": "Directed by",
-    "other": "Directed by"
+    "other": "Regissert av"
   },
   {
     "id": "Disable and revoke",
-    "other": "Disable and revoke"
+    "other": "Deaktiver og tilbakekall"
   },
   {
     "id": "Disable two-factor authentication",
-    "other": "Disable two-factor authentication"
+    "other": "Deaktiver tofaktorautentisering"
   },
   {
     "id": "Disaster recovery",
-    "other": "Disaster recovery"
+    "other": "Katastrofegjenoppretting"
   },
   {
     "id": "DLNA",
@@ -489,15 +489,15 @@
   },
   {
     "id": "Download",
-    "other": "Download"
+    "other": "Last ned"
   },
   {
     "id": "Download media",
-    "other": "Download media"
+    "other": "Last ned medier"
   },
   {
     "id": "Download original",
-    "other": "Download original"
+    "other": "Last ned original"
   },
   {
     "id": "Download portable state archive",
@@ -505,11 +505,11 @@
   },
   {
     "id": "Download safe diagnostics",
-    "other": "Download safe diagnostics"
+    "other": "Last ned sikre diagnostikkdata"
   },
   {
     "id": "Downloads",
-    "other": "Downloads"
+    "other": "Nedlastinger"
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
@@ -517,11 +517,11 @@
   },
   {
     "id": "Edit metadata",
-    "other": "Edit metadata"
+    "other": "Rediger metadata"
   },
   {
     "id": "Edit skip markers",
-    "other": "Edit skip markers"
+    "other": "Rediger hoppmarkører"
   },
   {
     "id": "embedded subtitles are unavailable",
@@ -529,31 +529,31 @@
   },
   {
     "id": "Enable DLNA",
-    "other": "Enable DLNA"
+    "other": "Aktiver DLNA"
   },
   {
     "id": "Enable two-factor authentication",
-    "other": "Enable two-factor authentication"
+    "other": "Aktiver tofaktorautentisering"
   },
   {
     "id": "Enabled",
-    "other": "Enabled"
+    "other": "Aktivert"
   },
   {
     "id": "Encrypted backups run automatically.",
-    "other": "Encrypted backups run automatically."
+    "other": "Krypterte sikkerhetskopier kjører automatisk."
   },
   {
     "id": "Encryption is off by default.",
-    "other": "Encryption is off by default."
+    "other": "Kryptering er av som standard."
   },
   {
     "id": "Encryption is on.",
-    "other": "Encryption is on."
+    "other": "Kryptering er på."
   },
   {
     "id": "End in seconds",
-    "other": "End in seconds"
+    "other": "Slutt etter sekunder"
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
@@ -565,27 +565,27 @@
   },
   {
     "id": "Environment default",
-    "other": "Environment default"
+    "other": "Miljøets standard"
   },
   {
     "id": "Event webhook",
-    "other": "Event webhook"
+    "other": "Webhook for hendelser"
   },
   {
     "id": "Every 15 minutes",
-    "other": "Every 15 minutes"
+    "other": "Hvert 15. minutt"
   },
   {
     "id": "Every 5 minutes",
-    "other": "Every 5 minutes"
+    "other": "Hvert 5. minutt"
   },
   {
     "id": "Everything",
-    "other": "Everything"
+    "other": "Alt"
   },
   {
     "id": "Export full activity journal",
-    "other": "Export full activity journal"
+    "other": "Eksporter full aktivitetslogg"
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
@@ -593,19 +593,19 @@
   },
   {
     "id": "Externally managed",
-    "other": "Externally managed"
+    "other": "Administreres eksternt"
   },
   {
     "id": "Find",
-    "other": "Find"
+    "other": "Finn"
   },
   {
     "id": "Find something",
-    "other": "Find something"
+    "other": "Finn noe"
   },
   {
     "id": "Finish setup",
-    "other": "Finish setup"
+    "other": "Fullfør oppsettet"
   },
   {
     "id": "Finish sign in",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "Folder inside media mount"
+    "other": "Mappe i medieplassering"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
@@ -621,63 +621,63 @@
   },
   {
     "id": "Following the room leader",
-    "other": "Following the room leader"
+    "other": "Følger romlederen"
   },
   {
     "id": "From",
-    "other": "From"
+    "other": "Fra"
   },
   {
     "id": "from",
-    "other": "from"
+    "other": "fra"
   },
   {
     "id": "General",
-    "other": "General"
+    "other": "Generelt"
   },
   {
     "id": "Genres",
-    "other": "Genres"
+    "other": "Sjangre"
   },
   {
     "id": "Got it",
-    "other": "Got it"
+    "other": "Forstått"
   },
   {
     "id": "Group",
-    "other": "Group"
+    "other": "Gruppe"
   },
   {
     "id": "Hardware",
-    "other": "Hardware"
+    "other": "Maskinvare"
   },
   {
     "id": "History",
-    "other": "History"
+    "other": "Historikk"
   },
   {
     "id": "Home",
-    "other": "Home"
+    "other": "Hjem"
   },
   {
     "id": "Hourly",
-    "other": "Hourly"
+    "other": "Hver time"
   },
   {
     "id": "if enabled",
-    "other": "if enabled"
+    "other": "hvis aktivert"
   },
   {
     "id": "Install",
-    "other": "Install"
+    "other": "Installer"
   },
   {
     "id": "Install Kinosail Player",
-    "other": "Install Kinosail Player"
+    "other": "Installer Kinosail Player"
   },
   {
     "id": "Integrations",
-    "other": "Integrations"
+    "other": "Integrasjoner"
   },
   {
     "id": "Intel Quick Sync",
@@ -685,7 +685,7 @@
   },
   {
     "id": "Intro",
-    "other": "Intro"
+    "other": "Åpning"
   },
   {
     "id": "invalid authentication code",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Invite link",
-    "other": "Invite link"
+    "other": "Invitasjonslenke"
   },
   {
     "id": "Keep",
-    "other": "Keep"
+    "other": "Behold"
   },
   {
     "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped."
+    "other": "Oppbevar sikkerhetskopier på lagring utenfor denne verten. Sikkerhetskopier er ukrypterte med mindre en sikkerhetsnøkkel er konfigurert. Gjenopprett mens serveren er stoppet."
   },
   {
     "id": "Keep Kinosail Player close",
-    "other": "Keep Kinosail Player close"
+    "other": "Hold Kinosail Player i nærheten"
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
@@ -741,19 +741,19 @@
   },
   {
     "id": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail Player cannot reach this Server. Check your network or Direct Connection, then try again."
+    "other": "Kinosail Player får ikke kontakt med denne serveren. Sjekk nettverket eller den direkte tilkoblingen, og prøv igjen."
   },
   {
     "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail maintains itself automatically."
+    "other": "Kinosail vedlikeholder seg selv automatisk."
   },
   {
     "id": "Kinosail Player Reader",
-    "other": "Kinosail Player Reader"
+    "other": "Kinosail Player-leser"
   },
   {
     "id": "Language",
-    "other": "Language"
+    "other": "Språk"
   },
   {
     "id": "language is invalid",
@@ -761,111 +761,111 @@
   },
   {
     "id": "Last error",
-    "other": "Last error"
+    "other": "Siste feil"
   },
   {
     "id": "Last scan error",
-    "other": "Last scan error"
+    "other": "Siste skannefeil"
   },
   {
     "id": "Last successful backup",
-    "other": "Last successful backup"
+    "other": "Siste vellykkede sikkerhetskopi"
   },
   {
     "id": "Last successful scan",
-    "other": "Last successful scan"
+    "other": "Siste vellykkede skanning"
   },
   {
     "id": "Last verified",
-    "other": "Last verified"
+    "other": "Sist bekreftet"
   },
   {
     "id": "Latest",
-    "other": "Latest"
+    "other": "Nyeste"
   },
   {
     "id": "Libraries",
-    "other": "Libraries"
+    "other": "Biblioteker"
   },
   {
     "id": "Library",
-    "other": "Library"
+    "other": "Bibliotek"
   },
   {
     "id": "Library discovery",
-    "other": "Library discovery"
+    "other": "Bibliotekssøk"
   },
   {
     "id": "Library folders",
-    "other": "Library folders"
+    "other": "Bibliotekmapper"
   },
   {
     "id": "Library items",
-    "other": "Library items"
+    "other": "Bibliotekelementer"
   },
   {
     "id": "Library organization",
-    "other": "Library organization"
+    "other": "Bibliotekorganisering"
   },
   {
     "id": "Library views",
-    "other": "Library views"
+    "other": "Biblioteksvisninger"
   },
   {
     "id": "Licensed credential configured",
-    "other": "Licensed credential configured"
+    "other": "Lisensiert legitimasjon er konfigurert"
   },
   {
     "id": "Light",
-    "other": "Light"
+    "other": "Lys"
   },
   {
     "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
+    "other": "Koble til OpenID Connect"
   },
   {
     "id": "Local account",
-    "other": "Local account"
+    "other": "Lokal konto"
   },
   {
     "id": "M3U playlist",
-    "other": "M3U playlist"
+    "other": "M3U-spilleliste"
   },
   {
     "id": "Manage personal library state",
-    "other": "Manage personal library state"
+    "other": "Administrer personlig bibliotekstatus"
   },
   {
     "id": "Managed externally and read-only.",
-    "other": "Managed externally and read-only."
+    "other": "Administreres eksternt og er skrivebeskyttet."
   },
   {
     "id": "Managed remote access",
-    "other": "Managed remote access"
+    "other": "Administrert ekstern tilgang"
   },
   {
     "id": "Mark",
-    "other": "Mark"
+    "other": "Merk"
   },
   {
     "id": "marker",
-    "other": "marker"
+    "other": "markør"
   },
   {
     "id": "Match text",
-    "other": "Match text"
+    "other": "Samsvarstekst"
   },
   {
     "id": "Media",
-    "other": "Media"
+    "other": "Medier"
   },
   {
     "id": "Media information",
-    "other": "Media information"
+    "other": "Medieinformasjon"
   },
   {
     "id": "Media mount",
-    "other": "Media mount"
+    "other": "Medieplassering"
   },
   {
     "id": "metadata could not be saved",
@@ -877,7 +877,7 @@
   },
   {
     "id": "Metadata provider",
-    "other": "Metadata provider"
+    "other": "Metadataleverandør"
   },
   {
     "id": "metadata provider unavailable",
@@ -885,27 +885,27 @@
   },
   {
     "id": "Metrics",
-    "other": "Metrics"
+    "other": "Måledata"
   },
   {
     "id": "Movies",
-    "other": "Movies"
+    "other": "Filmer"
   },
   {
     "id": "Music",
-    "other": "Music"
+    "other": "Musikk"
   },
   {
     "id": "Music and audiobooks",
-    "other": "Music and audiobooks"
+    "other": "Musikk og lydbøker"
   },
   {
     "id": "My List",
-    "other": "My List"
+    "other": "Min liste"
   },
   {
     "id": "Name",
-    "other": "Name"
+    "other": "Navn"
   },
   {
     "id": "name and a 12-character password are required",
@@ -913,15 +913,15 @@
   },
   {
     "id": "Never",
-    "other": "Never"
+    "other": "Aldri"
   },
   {
     "id": "New Collection",
-    "other": "New Collection"
+    "other": "Ny samling"
   },
   {
     "id": "New Collection name",
-    "other": "New Collection name"
+    "other": "Navn på ny samling"
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
@@ -929,75 +929,75 @@
   },
   {
     "id": "New password",
-    "other": "New password"
+    "other": "Nytt passord"
   },
   {
     "id": "New playlist",
-    "other": "New playlist"
+    "other": "Ny spilleliste"
   },
   {
     "id": "New playlist name",
-    "other": "New playlist name"
+    "other": "Navn på ny spilleliste"
   },
   {
     "id": "New profile name",
-    "other": "New profile name"
+    "other": "Nytt profilnavn"
   },
   {
     "id": "New profile password",
-    "other": "New profile password"
+    "other": "Nytt passord for profil"
   },
   {
     "id": "New secret",
-    "other": "New secret"
+    "other": "Ny hemmelighet"
   },
   {
     "id": "New smart playlist",
-    "other": "New smart playlist"
+    "other": "Ny smart spilleliste"
   },
   {
     "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "New Viewers start with family ratings and no libraries. Add folder names or"
+    "other": "Nye seere starter med familievurderinger og uten biblioteker. Legg til mappenavn eller"
   },
   {
     "id": "Newest",
-    "other": "Newest"
+    "other": "Nyeste"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "No activity recorded yet."
+    "other": "Ingen aktivitet registrert ennå."
   },
   {
     "id": "No channels configured.",
-    "other": "No channels configured."
+    "other": "Ingen kanaler konfigurert."
   },
   {
     "id": "No device selected",
-    "other": "No device selected"
+    "other": "Ingen enhet valgt"
   },
   {
     "id": "No offline downloads yet.",
-    "other": "No offline downloads yet."
+    "other": "Ingen frakoblede nedlastinger ennå."
   },
   {
     "id": "No playback recorded yet.",
-    "other": "No playback recorded yet."
+    "other": "Ingen avspilling registrert ennå."
   },
   {
     "id": "None",
-    "other": "None"
+    "other": "Ingen"
   },
   {
     "id": "None; use all or folder names",
-    "other": "None; use all or folder names"
+    "other": "Ingen; bruk alle eller mappenavn"
   },
   {
     "id": "Not configured",
-    "other": "Not configured"
+    "other": "Ikke konfigurert"
   },
   {
     "id": "not detected",
-    "other": "not detected"
+    "other": "ikke funnet"
   },
   {
     "id": "not found",
@@ -1005,15 +1005,15 @@
   },
   {
     "id": "Not now",
-    "other": "Not now"
+    "other": "Ikke nå"
   },
   {
     "id": "Nothing found.",
-    "other": "Nothing found."
+    "other": "Ingenting funnet."
   },
   {
     "id": "Now viewing",
-    "other": "Now viewing"
+    "other": "Ser nå"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
@@ -1021,31 +1021,31 @@
   },
   {
     "id": "Off",
-    "other": "Off"
+    "other": "Av"
   },
   {
     "id": "offline",
-    "other": "offline"
+    "other": "frakoblet"
   },
   {
     "id": "Offline downloads",
-    "other": "Offline downloads"
+    "other": "Frakoblede nedlastinger"
   },
   {
     "id": "Offline downloads · Kinosail Player",
-    "other": "Offline downloads · Kinosail Player"
+    "other": "Frakoblede nedlastinger · Kinosail Player"
   },
   {
     "id": "On",
-    "other": "On"
+    "other": "På"
   },
   {
     "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add."
+    "other": "På iPhone eller iPad: Trykk på Del, velg Legg til på Hjem-skjerm, slå på Åpne som nettapp, og trykk deretter på Legg til."
   },
   {
     "id": "One-time reveal",
-    "other": "One-time reveal"
+    "other": "Vis bare én gang"
   },
   {
     "id": "OpenID Connect",
@@ -1057,23 +1057,23 @@
   },
   {
     "id": "Outro",
-    "other": "Outro"
+    "other": "Avslutning"
   },
   {
     "id": "Owner",
-    "other": "Owner"
+    "other": "Eier"
   },
   {
     "id": "Owner access required",
-    "other": "Owner access required"
+    "other": "Eiertilgang kreves"
   },
   {
     "id": "Owner controls",
-    "other": "Owner controls"
+    "other": "Eierkontroller"
   },
   {
     "id": "Passkey added.",
-    "other": "Passkey added."
+    "other": "Passnøkkel lagt til."
   },
   {
     "id": "Passkey failed.",
@@ -1085,19 +1085,19 @@
   },
   {
     "id": "Password",
-    "other": "Password"
+    "other": "Passord"
   },
   {
     "id": "Photos",
-    "other": "Photos"
+    "other": "Bilder"
   },
   {
     "id": "Play",
-    "other": "Play"
+    "other": "Spill av"
   },
   {
     "id": "Play on device",
-    "other": "Play on device"
+    "other": "Spill av på enhet"
   },
   {
     "id": "Play the next Episode automatically",
@@ -1105,59 +1105,59 @@
   },
   {
     "id": "Playback",
-    "other": "Playback"
+    "other": "Avspilling"
   },
   {
     "id": "Playback history",
-    "other": "Playback history"
+    "other": "Avspillingshistorikk"
   },
   {
     "id": "Playback segment analysis",
-    "other": "Playback segment analysis"
+    "other": "Analyse av avspillingssegmenter"
   },
   {
     "id": "Playback speed",
-    "other": "Playback speed"
+    "other": "Avspillingshastighet"
   },
   {
     "id": "Playing here",
-    "other": "Playing here"
+    "other": "Spilles her"
   },
   {
     "id": "Playing on device",
-    "other": "Playing on device"
+    "other": "Spilles på enhet"
   },
   {
     "id": "Playlist",
-    "other": "Playlist"
+    "other": "Spilleliste"
   },
   {
     "id": "Playlists",
-    "other": "Playlists"
+    "other": "Spillelister"
   },
   {
     "id": "Plot",
-    "other": "Plot"
+    "other": "Handling"
   },
   {
     "id": "Polling for changes",
-    "other": "Polling for changes"
+    "other": "Søker etter endringer"
   },
   {
     "id": "Prefer quality",
-    "other": "Prefer quality"
+    "other": "Foretrekk kvalitet"
   },
   {
     "id": "Prefer speed",
-    "other": "Prefer speed"
+    "other": "Foretrekk hastighet"
   },
   {
     "id": "Preferred language",
-    "other": "Preferred language"
+    "other": "Foretrukket språk"
   },
   {
     "id": "Prepare",
-    "other": "Prepare"
+    "other": "Forbered"
   },
   {
     "id": "preview unavailable",
@@ -1165,11 +1165,11 @@
   },
   {
     "id": "Private by design",
-    "other": "Private by design"
+    "other": "Privat fra starten"
   },
   {
     "id": "Profile",
-    "other": "Profile"
+    "other": "Profil"
   },
   {
     "id": "profile storage is unavailable",
@@ -1177,31 +1177,31 @@
   },
   {
     "id": "Profile to reset",
-    "other": "Profile to reset"
+    "other": "Profil som skal tilbakestilles"
   },
   {
     "id": "Profile type",
-    "other": "Profile type"
+    "other": "Profiltype"
   },
   {
     "id": "Profiles",
-    "other": "Profiles"
+    "other": "Profiler"
   },
   {
     "id": "Protected automatically",
-    "other": "Protected automatically"
+    "other": "Beskyttet automatisk"
   },
   {
     "id": "MFA - Require extra sign-in protection for every Viewer Profile",
-    "other": "MFA - Require extra sign-in protection for every Viewer Profile"
+    "other": "MFA - Krev ekstra innloggingsbeskyttelse for hver seerprofil"
   },
   {
     "id": "Quality",
-    "other": "Quality"
+    "other": "Kvalitet"
   },
   {
     "id": "quality",
-    "other": "quality"
+    "other": "kvalitet"
   },
   {
     "id": "Quick Connect",
@@ -1213,23 +1213,23 @@
   },
   {
     "id": "Rating",
-    "other": "Rating"
+    "other": "Vurdering"
   },
   {
     "id": "Read now",
-    "other": "Read now"
+    "other": "Les nå"
   },
   {
     "id": "reader",
-    "other": "reader"
+    "other": "leser"
   },
   {
     "id": "Reading order",
-    "other": "Reading order"
+    "other": "Leserekkefølge"
   },
   {
     "id": "ready",
-    "other": "ready"
+    "other": "klar"
   },
   {
     "id": "Ready offline",
@@ -1237,63 +1237,63 @@
   },
   {
     "id": "Recap",
-    "other": "Recap"
+    "other": "Oppsummering"
   },
   {
     "id": "Recent activity",
-    "other": "Recent activity"
+    "other": "Nylig aktivitet"
   },
   {
     "id": "Recent playback",
-    "other": "Recent playback"
+    "other": "Nylig avspilling"
   },
   {
     "id": "Recently added",
-    "other": "Recently added"
+    "other": "Nylig lagt til"
   },
   {
     "id": "Recently played",
-    "other": "Recently played"
+    "other": "Nylig spilt av"
   },
   {
     "id": "Recovery",
-    "other": "Recovery"
+    "other": "Gjenoppretting"
   },
   {
     "id": "Recovery codes",
-    "other": "Recovery codes"
+    "other": "Gjenopprettingskoder"
   },
   {
     "id": "Refresh from TMDB",
-    "other": "Refresh from TMDB"
+    "other": "Oppdater fra TMDB"
   },
   {
     "id": "Refresh missing metadata",
-    "other": "Refresh missing metadata"
+    "other": "Oppdater manglende metadata"
   },
   {
     "id": "Recommended",
-    "other": "Recommended"
+    "other": "Anbefalt"
   },
   {
     "id": "Remote access",
-    "other": "Remote access"
+    "other": "Ekstern tilgang"
   },
   {
     "id": "Remove",
-    "other": "Remove"
+    "other": "Fjern"
   },
   {
     "id": "Remove from",
-    "other": "Remove from"
+    "other": "Fjern fra"
   },
   {
     "id": "request",
-    "other": "request"
+    "other": "forespørsel"
   },
   {
     "id": "Request could not be completed.",
-    "other": "Request could not be completed."
+    "other": "Forespørselen kunne ikke fullføres."
   },
   {
     "id": "request is too large",
@@ -1301,15 +1301,15 @@
   },
   {
     "id": "Reset password",
-    "other": "Reset password"
+    "other": "Tilbakestill passord"
   },
   {
     "id": "Return to settings",
-    "other": "Return to settings"
+    "other": "Gå tilbake til innstillinger"
   },
   {
     "id": "Revoke",
-    "other": "Revoke"
+    "other": "Tilbakekall"
   },
   {
     "id": "Rockchip RKMPP",
@@ -1317,123 +1317,123 @@
   },
   {
     "id": "Room connected · following leader",
-    "other": "Room connected · following leader"
+    "other": "Rom tilkoblet · følger lederen"
   },
   {
     "id": "Room connected · you lead",
-    "other": "Room connected · you lead"
+    "other": "Rom tilkoblet · du leder"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "Room disconnected · reload to reconnect"
+    "other": "Rom frakoblet · last inn på nytt for å koble til igjen"
   },
   {
     "id": "Run library scan now",
-    "other": "Run library scan now"
+    "other": "Kjør bibliotekskanning nå"
   },
   {
     "id": "Run maintenance now",
-    "other": "Run maintenance now"
+    "other": "Kjør vedlikehold nå"
   },
   {
     "id": "Safety scan",
-    "other": "Safety scan"
+    "other": "Sikkerhetsskanning"
   },
   {
     "id": "Save",
-    "other": "Save"
+    "other": "Lagre"
   },
   {
     "id": "Save file",
-    "other": "Save file"
+    "other": "Lagre fil"
   },
   {
     "id": "Save for restart",
-    "other": "Save for restart"
+    "other": "Lagre til neste omstart"
   },
   {
     "id": "Save marker",
-    "other": "Save marker"
+    "other": "Lagre markør"
   },
   {
     "id": "Save metadata",
-    "other": "Save metadata"
+    "other": "Lagre metadata"
   },
   {
     "id": "Save schedule",
-    "other": "Save schedule"
+    "other": "Lagre plan"
   },
   {
     "id": "Schedule",
-    "other": "Schedule"
+    "other": "Plan"
   },
   {
     "id": "Search library",
-    "other": "Search library"
+    "other": "Søk i biblioteket"
   },
   {
     "id": "Search results",
-    "other": "Search results"
+    "other": "Søkeresultater"
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "Secrets are hidden and included only in encrypted recovery backups."
+    "other": "Hemmeligheter er skjult og er bare med i krypterte gjenopprettingssikkerhetskopier."
   },
   {
     "id": "Secure your account",
-    "other": "Secure your account"
+    "other": "Sikre kontoen din"
   },
   {
     "id": "Secure your account · Kinosail Player",
-    "other": "Secure your account · Kinosail Player"
+    "other": "Sikre kontoen din · Kinosail Player"
   },
   {
     "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Send this private connection URL to the Viewer. It is shown only once."
+    "other": "Send denne private tilkoblingsadressen til seeren. Den vises bare én gang."
   },
   {
     "id": "Server name",
-    "other": "Server name"
+    "other": "Servernavn"
   },
   {
     "id": "Server settings",
-    "other": "Server settings"
+    "other": "Serverinnstillinger"
   },
   {
     "id": "Server unavailable",
-    "other": "Server unavailable"
+    "other": "Server utilgjengelig"
   },
   {
     "id": "Server unavailable · Kinosail Player",
-    "other": "Server unavailable · Kinosail Player"
+    "other": "Server utilgjengelig · Kinosail Player"
   },
   {
     "id": "Set up Kinosail Player",
-    "other": "Set up Kinosail Player"
+    "other": "Sett opp Kinosail Player"
   },
   {
     "id": "Set up or replace authenticator",
-    "other": "Set up or replace authenticator"
+    "other": "Sett opp eller bytt autentiseringsapp"
   },
   {
     "id": "Set up two-factor authentication",
-    "other": "Set up two-factor authentication"
+    "other": "Sett opp tofaktorautentisering"
   },
   {
     "id": "Set up two-factor authentication · Kinosail Player",
-    "other": "Set up two-factor authentication · Kinosail Player"
+    "other": "Sett opp tofaktorautentisering · Kinosail Player"
   },
   {
     "id": "Settings",
-    "other": "Settings"
+    "other": "Innstillinger"
   },
   {
     "id": "Settings sections",
-    "other": "Settings sections"
+    "other": "Innstillingsseksjoner"
   },
   {
     "id": "Settings · Kinosail Player",
-    "other": "Settings · Kinosail Player"
+    "other": "Innstillinger · Kinosail Player"
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
@@ -1441,15 +1441,15 @@
   },
   {
     "id": "Show",
-    "other": "Show"
+    "other": "Serie"
   },
   {
     "id": "Shows",
-    "other": "Shows"
+    "other": "Serier"
   },
   {
     "id": "Sign in",
-    "other": "Sign in"
+    "other": "Logg inn"
   },
   {
     "id": "Sign in to your private media universe.",
@@ -1457,31 +1457,31 @@
   },
   {
     "id": "Sign in with passkey",
-    "other": "Sign in with passkey"
+    "other": "Logg inn med passnøkkel"
   },
   {
     "id": "Sign in with SSO",
-    "other": "Sign in with SSO"
+    "other": "Logg inn med SSO"
   },
   {
     "id": "Sign in · Kinosail Player",
-    "other": "Sign in · Kinosail Player"
+    "other": "Logg inn · Kinosail Player"
   },
   {
     "id": "Sign out",
-    "other": "Sign out"
+    "other": "Logg ut"
   },
   {
     "id": "Sign out other devices",
-    "other": "Sign out other devices"
+    "other": "Logg ut andre enheter"
   },
   {
     "id": "Sign-in methods",
-    "other": "Sign-in methods"
+    "other": "Innloggingsmetoder"
   },
   {
     "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage."
+    "other": "Innlogging, beskyttelse i nettleseren mot forespørsler fra andre nettsteder, private svar, begrensede forespørsler og tilbakekallbar tilgang er alltid på. Det finnes ingen sikkerhetsbrytere å administrere."
   },
   {
     "id": "Single sign-on",
@@ -1489,63 +1489,63 @@
   },
   {
     "id": "Skip",
-    "other": "Skip"
+    "other": "Hopp over"
   },
   {
     "id": "Skip commercials automatically",
-    "other": "Skip commercials automatically"
+    "other": "Hopp over reklame automatisk"
   },
   {
     "id": "Skip credits automatically",
-    "other": "Skip credits automatically"
+    "other": "Hopp over kreditering automatisk"
   },
   {
     "id": "Skip intros automatically",
-    "other": "Skip intros automatically"
+    "other": "Hopp over åpning automatisk"
   },
   {
     "id": "Skip outros automatically",
-    "other": "Skip outros automatically"
+    "other": "Hopp over avslutning automatisk"
   },
   {
     "id": "Skip recaps automatically",
-    "other": "Skip recaps automatically"
+    "other": "Hopp over oppsummeringer automatisk"
   },
   {
     "id": "Skip to content",
-    "other": "Skip to content"
+    "other": "Hopp til innhold"
   },
   {
     "id": "Sleep timer",
-    "other": "Sleep timer"
+    "other": "Tidsur"
   },
   {
     "id": "Sleep timer ended",
-    "other": "Sleep timer ended"
+    "other": "Tidsuret er utløpt"
   },
   {
     "id": "Smart playlist",
-    "other": "Smart playlist"
+    "other": "Smart spilleliste"
   },
   {
     "id": "Smart playlist name",
-    "other": "Smart playlist name"
+    "other": "Navn på smart spilleliste"
   },
   {
     "id": "Software",
-    "other": "Software"
+    "other": "Programvare"
   },
   {
     "id": "Sort",
-    "other": "Sort"
+    "other": "Sorter"
   },
   {
     "id": "Source",
-    "other": "Source"
+    "other": "Kilde"
   },
   {
     "id": "speed",
-    "other": "speed"
+    "other": "hastighet"
   },
   {
     "id": "SSO challenge is invalid or expired",
@@ -1577,11 +1577,11 @@
   },
   {
     "id": "Start in seconds",
-    "other": "Start in seconds"
+    "other": "Start etter sekunder"
   },
   {
     "id": "Start Watch Together",
-    "other": "Start Watch Together"
+    "other": "Start felles visning"
   },
   {
     "id": "Status",
@@ -1589,27 +1589,27 @@
   },
   {
     "id": "Stops in {minutes} minutes",
-    "other": "Stops in {minutes} minutes"
+    "other": "Stopper om {minutes} minutter"
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "Store these codes somewhere safe. Each works once."
+    "other": "Oppbevar disse kodene trygt. Hver kode fungerer bare én gang."
   },
   {
     "id": "Stored here. Streamed directly.",
-    "other": "Stored here. Streamed directly."
+    "other": "Lagret her. Strømmet direkte."
   },
   {
     "id": "Stream media",
-    "other": "Stream media"
+    "other": "Strøm medier"
   },
   {
     "id": "Subscription required",
-    "other": "Subscription required"
+    "other": "Abonnement kreves"
   },
   {
     "id": "Subtitle provider",
-    "other": "Subtitle provider"
+    "other": "Undertekstleverandør"
   },
   {
     "id": "subtitle provider unavailable",
@@ -1621,15 +1621,15 @@
   },
   {
     "id": "Subtitles",
-    "other": "Subtitles"
+    "other": "Undertekster"
   },
   {
     "id": "subtitles",
-    "other": "subtitles"
+    "other": "undertekster"
   },
   {
     "id": "Sync",
-    "other": "Sync"
+    "other": "Synkroniser"
   },
   {
     "id": "System",
@@ -1637,39 +1637,39 @@
   },
   {
     "id": "Tagline",
-    "other": "Tagline"
+    "other": "Slagord"
   },
   {
     "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key."
+    "other": "Sikkerhetskopien inneholder konto- og øktdata. Oppbevar ukryptert sikkerhetskopilagring privat, eller sett opp en sikkerhetsnøkkel."
   },
   {
     "id": "Theme",
-    "other": "Theme"
+    "other": "Tema"
   },
   {
     "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "These settings are read-only until removed from YAML or the environment"
+    "other": "Disse innstillingene er skrivebeskyttet til de fjernes fra YAML eller miljøet"
   },
   {
     "id": "This Collection is empty.",
-    "other": "This Collection is empty."
+    "other": "Denne samlingen er tom."
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "This permanently deletes the Collection."
+    "other": "Dette sletter samlingen permanent."
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "This permanently deletes the playlist."
+    "other": "Dette sletter spillelisten permanent."
   },
   {
     "id": "This playlist is empty.",
-    "other": "This playlist is empty."
+    "other": "Denne spillelisten er tom."
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "This product uses the TMDB API but is not endorsed or certified by TMDB."
+    "other": "Dette produktet bruker TMDB-API-et, men er ikke godkjent eller sertifisert av TMDB."
   },
   {
     "id": "This signs out the profile and deletes it.",
@@ -1677,23 +1677,23 @@
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "Through PG / TV-PG"
+    "other": "Til og med PG / TV-PG"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "Through PG-13 / TV-14"
+    "other": "Til og med PG-13 / TV-14"
   },
   {
     "id": "Title",
-    "other": "Title"
+    "other": "Tittel"
   },
   {
     "id": "Title, artist, genre",
-    "other": "Title, artist, genre"
+    "other": "Tittel, artist, sjanger"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "Title, artist, genre…"
+    "other": "Tittel, artist, sjanger…"
   },
   {
     "id": "TMDB",
@@ -1701,43 +1701,43 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "Tone-map HDR to SDR"
+    "other": "Tonekartlegg HDR til SDR"
   },
   {
     "id": "too many login attempts",
-    "other": "too many login attempts"
+    "other": "for mange innloggingsforsøk"
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "too many Watch Together rooms"
+    "other": "for mange rom for felles visning"
   },
   {
     "id": "Track",
-    "other": "Track"
+    "other": "Spor"
   },
   {
     "id": "transcode cache",
-    "other": "transcode cache"
+    "other": "transkodingsbuffer"
   },
   {
     "id": "Transcoder",
-    "other": "Transcoder"
+    "other": "Transkoder"
   },
   {
     "id": "transcoding is not allowed",
-    "other": "transcoding is not allowed"
+    "other": "transkoding er ikke tillatt"
   },
   {
     "id": "Try again",
-    "other": "Try again"
+    "other": "Prøv igjen"
   },
   {
     "id": "Two-factor authentication",
-    "other": "Two-factor authentication"
+    "other": "Tofaktorautentisering"
   },
   {
     "id": "Two-factor authentication · Kinosail Player",
-    "other": "Two-factor authentication · Kinosail Player"
+    "other": "Tofaktorautentisering · Kinosail Player"
   },
   {
     "id": "Type",
@@ -1745,27 +1745,27 @@
   },
   {
     "id": "Unlink OpenID Connect",
-    "other": "Unlink OpenID Connect"
+    "other": "Fjern koblingen til OpenID Connect"
   },
   {
     "id": "Until",
-    "other": "Until"
+    "other": "Til"
   },
   {
     "id": "Unwatched",
-    "other": "Unwatched"
+    "other": "Ikke sett"
   },
   {
     "id": "unwatched",
-    "other": "unwatched"
+    "other": "ikke sett"
   },
   {
     "id": "Use default",
-    "other": "Use default"
+    "other": "Bruk standard"
   },
   {
     "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work."
+    "other": "Bruk Face ID, Touch ID, Windows Hello eller enhetens PIN-kode for å logge inn. Passordet ditt fungerer fortsatt."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1773,7 +1773,7 @@
   },
   {
     "id": "Verify latest backup",
-    "other": "Verify latest backup"
+    "other": "Bekreft siste sikkerhetskopi"
   },
   {
     "id": "Video",
@@ -1781,127 +1781,127 @@
   },
   {
     "id": "Viewer",
-    "other": "Viewer"
+    "other": "Seer"
   },
   {
     "id": "Viewer access is not available",
-    "other": "Viewer access is not available"
+    "other": "Seertilgang er ikke tilgjengelig"
   },
   {
     "id": "Viewer name",
-    "other": "Viewer name"
+    "other": "Seernavn"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "Waiting for your passkey…"
+    "other": "Venter på passnøkkelen din…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together state is invalid"
+    "other": "Status for felles visning er ugyldig"
   },
   {
     "id": "watched",
-    "other": "watched"
+    "other": "sett"
   },
   {
     "id": "Watched",
-    "other": "Watched"
+    "other": "Sett"
   },
   {
     "id": "Watched ✓",
-    "other": "Watched ✓"
+    "other": "Sett ✓"
   },
   {
     "id": "Watching for changes",
-    "other": "Watching for changes"
+    "other": "Følger med på endringer"
   },
   {
     "id": "Welcome aboard",
-    "other": "Welcome aboard"
+    "other": "Velkommen"
   },
   {
     "id": "when ready.",
-    "other": "when ready."
+    "other": "når den er klar."
   },
   {
     "id": "XMLTV guide",
-    "other": "XMLTV guide"
+    "other": "XMLTV-guide"
   },
   {
     "id": "Year",
-    "other": "Year"
+    "other": "År"
   },
   {
     "id": "You lead this room",
-    "other": "You lead this room"
+    "other": "Du leder dette rommet"
   },
   {
     "id": "Your library",
-    "other": "Your library"
+    "other": "Biblioteket ditt"
   },
   {
     "id": "Your library and viewing activity stay on this Server.",
-    "other": "Your library and viewing activity stay on this Server."
+    "other": "Biblioteket ditt og seeraktiviteten din blir på denne serveren."
   },
   {
     "id": "← Books",
-    "other": "← Books"
+    "other": "← Bøker"
   },
   {
     "id": "← Library",
-    "other": "← Library"
+    "other": "← Bibliotek"
   },
   {
     "id": "← Settings",
-    "other": "← Settings"
+    "other": "← Innstillinger"
   },
   {
     "id": "Generated API key",
-    "other": "Generated API key"
+    "other": "Generert API-nøkkel"
   },
   {
     "id": "Copy API key",
-    "other": "Copy API key"
+    "other": "Kopier API-nøkkel"
   },
   {
     "id": "Copied.",
-    "other": "Copied."
+    "other": "Kopiert."
   },
   {
     "id": "Select Copy in your browser.",
-    "other": "Select Copy in your browser."
+    "other": "Velg Kopier i nettleseren din."
   },
   {
     "id": "Set up trusted HTTPS",
-    "other": "Set up trusted HTTPS"
+    "other": "Sett opp klarert HTTPS"
   },
   {
     "id": "Review trusted HTTPS setup",
-    "other": "Review trusted HTTPS setup"
+    "other": "Gå gjennom oppsettet for klarert HTTPS"
   },
   {
     "id": "Offline copy",
-    "other": "Offline copy"
+    "other": "Frakoblet kopi"
   },
   {
     "id": "Verified file stored on this device.",
-    "other": "Verified file stored on this device."
+    "other": "Verifisert fil lagret på denne enheten."
   },
   {
     "id": "Ready offline on this device",
-    "other": "Ready offline on this device"
+    "other": "Klar for frakoblet bruk på denne enheten"
   },
   {
     "id": "Playback method",
-    "other": "Playback method"
+    "other": "Avspillingsmetode"
   },
   {
     "id": "Open playback settings.",
-    "other": "Open playback settings."
+    "other": "Åpne avspillingsinnstillinger."
   },
   {
     "id": "Offline copy is unavailable.",
-    "other": "Offline copy is unavailable."
+    "other": "Frakoblet kopi er utilgjengelig."
   },
   {
     "id": "Offline playback needs an active service worker",
@@ -1913,23 +1913,23 @@
   },
   {
     "id": "stored on this device",
-    "other": "stored on this device"
+    "other": "lagret på denne enheten"
   },
   {
     "id": "This device does not have enough storage for this download",
-    "other": "This device does not have enough storage for this download"
+    "other": "Denne enheten har ikke nok lagringsplass til denne nedlastingen"
   },
   {
     "id": "This browser cannot store offline media safely",
-    "other": "This browser cannot store offline media safely"
+    "other": "Denne nettleseren kan ikke lagre frakoblede medier trygt"
   },
   {
     "id": "The download could not be verified",
-    "other": "The download could not be verified"
+    "other": "Nedlastingen kunne ikke verifiseres"
   },
   {
     "id": "The download is no longer available",
-    "other": "The download is no longer available"
+    "other": "Nedlastingen er ikke lenger tilgjengelig"
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
@@ -1937,51 +1937,51 @@
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
-    "other": "Open Kinosail online and choose a Viewer Profile first."
+    "other": "Åpne Kinosail på nett, og velg en seerprofil først."
   },
   {
     "id": "All libraries",
-    "other": "All libraries"
+    "other": "Alle biblioteker"
   },
   {
     "id": "Audio tracks",
-    "other": "Audio tracks"
+    "other": "Lydspor"
   },
   {
     "id": "Back to downloads",
-    "other": "Back to downloads"
+    "other": "Tilbake til nedlastinger"
   },
   {
     "id": "Could not save progress. Return to Downloads and try again.",
-    "other": "Could not save progress. Return to Downloads and try again."
+    "other": "Kunne ikke lagre fremdrift. Gå tilbake til Nedlastinger og prøv igjen."
   },
   {
     "id": "Manage offline downloads",
-    "other": "Manage offline downloads"
+    "other": "Administrer frakoblede nedlastinger"
   },
   {
     "id": "Movie",
-    "other": "Movie"
+    "other": "Film"
   },
   {
     "id": "Open Server downloads",
-    "other": "Open Server downloads"
+    "other": "Åpne serverens nedlastinger"
   },
   {
     "id": "Open previous page",
-    "other": "Open previous page"
+    "other": "Åpne forrige side"
   },
   {
     "id": "Playback behavior",
-    "other": "Playback behavior"
+    "other": "Avspillingsadferd"
   },
   {
     "id": "Prepare offline copy",
-    "other": "Prepare offline copy"
+    "other": "Forbered frakoblet kopi"
   },
   {
     "id": "Progress saved on this device. Open Server downloads to sync.",
-    "other": "Progress saved on this device. Open Server downloads to sync."
+    "other": "Fremdrift lagret på denne enheten. Åpne serverens nedlastinger for å synkronisere."
   },
   {
     "id": "Request needs another try",
@@ -1989,19 +1989,19 @@
   },
   {
     "id": "Return to form",
-    "other": "Return to form"
+    "other": "Gå tilbake til skjemaet"
   },
   {
     "id": "Search all libraries",
-    "other": "Search all libraries"
+    "other": "Søk i alle biblioteker"
   },
   {
     "id": "Search everything",
-    "other": "Search everything"
+    "other": "Søk i alt"
   },
   {
     "id": "This file could not play. Return to Downloads, reconnect to the Server, and download it again.",
-    "other": "This file could not play. Return to Downloads, reconnect to the Server, and download it again."
+    "other": "Filen kunne ikke spilles av. Gå tilbake til Nedlastinger, koble til serveren på nytt og last den ned igjen."
   },
   {
     "id": "invalid title request",
@@ -2009,70 +2009,70 @@
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
-    "other": "Audio is fixed in this downloaded copy."
+    "other": "Lyden er fast i denne nedlastede kopien."
   },
   {
     "id": "Sign-in protection",
-    "other": "Sign-in protection"
+    "other": "Innloggingsbeskyttelse"
   },
   {
     "id": "Back to Movies",
-    "other": "Back to Movies"
+    "other": "Tilbake til filmer"
   },
   {
     "id": "Back to Shows",
-    "other": "Back to Shows"
+    "other": "Tilbake til serier"
   },
   {
     "id": "Back to search results",
-    "other": "Back to search results"
+    "other": "Tilbake til søkeresultater"
   },
   {
     "id": "Back to Library",
-    "other": "Back to Library"
+    "other": "Tilbake til bibliotek"
   },
   {
     "id": "Chapter %lld of %lld",
-    "other": "Chapter %lld of %lld"
+    "other": "Kapittel %lld av %lld"
   },
   {
     "id": "Page %lld of %lld",
-    "other": "Page %lld of %lld"
+    "other": "Side %lld av %lld"
   },
   {
     "id": "Document",
-    "other": "Document"
+    "other": "Dokument"
   },
   {
     "id": "Scanning your Library",
-    "other": "Scanning your Library"
+    "other": "Skanner biblioteket ditt"
   },
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
-    "other": "Kinosail is reading your media folders. Your Library appears here when the scan is complete."
+    "other": "Kinosail leser mappene med medier. Biblioteket ditt vises her når skanningen er ferdig."
   },
   {
     "id": "Offline",
-    "other": "Offline"
+    "other": "Frakoblet"
   },
   {
     "id": "You’re offline",
-    "other": "You’re offline"
+    "other": "Du er frakoblet"
   },
   {
     "id": "Reconnect to your Server to keep watching.",
-    "other": "Reconnect to your Server to keep watching."
+    "other": "Koble til serveren din på nytt for å fortsette å se."
   },
   {
     "id": "Copy the setup key or setup link into your authenticator app.",
-    "other": "Copy the setup key or setup link into your authenticator app."
+    "other": "Kopier oppsettsnøkkelen eller oppsettslenken til autentiseringsappen din."
   },
   {
     "id": "Save every recovery code before you continue. Each code works once.",
-    "other": "Save every recovery code before you continue. Each code works once."
+    "other": "Lagre alle gjenopprettingskodene før du fortsetter. Hver kode fungerer bare én gang."
   },
   {
     "id": "Enter the current 6-digit code to confirm the app.",
-    "other": "Enter the current 6-digit code to confirm the app."
+    "other": "Skriv inn den nåværende 6-sifrede koden for å bekrefte appen."
   }
 ]
