@@ -1,4 +1,4 @@
-.PHONY: bootstrap package-installer deploy-nox hooks install-nox-autodeploy browser-test check check-fast client-check container-test coverage deadcode installer-test linux-package-test native-build native-copy-check format lint local-pipeline local-pipeline-test performance-test media-server-benchmark-test playback-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck
+.PHONY: bootstrap package-installer deploy-nox hooks install-nox-autodeploy browser-test check check-fast client-check container-test coverage deadcode installer-test native-build native-copy-check format lint local-pipeline local-pipeline-test performance-test media-server-benchmark-test playback-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck
 
 bootstrap:
 	brew bundle
@@ -51,9 +51,6 @@ installer-test:
 
 native-build:
 	@./scripts/test-native-builds.sh
-
-linux-package-test:
-	@./scripts/test-linux-packages.sh
 
 native-copy-check:
 	@python3 scripts/generate-native-copy.py --check

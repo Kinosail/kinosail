@@ -377,7 +377,7 @@ jobs:
       - if: matrix.app == 'player'
         uses: ./.github/actions/setup-nfpm
       - if: matrix.app == 'player'
-        run: make linux-package-test
+        run: ./scripts/test-linux-packages.sh
       - if: always() && matrix.app == 'player'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
