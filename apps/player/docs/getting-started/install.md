@@ -6,6 +6,8 @@ section: Start here
 
 # Docker installation details
 
+Not using Docker? [Download Kinosail]({{ '/download/' | relative_url }}) instead.
+
 Start with [Install with Docker]({{ '/quickstart/' | relative_url }}) to get the current deployment files and install the prebuilt Player container. Successful changes on `main` publish signed images; numbered releases are optional.
 
 Run the installer from `apps/player` in that checkout. It verifies the image, creates protected recovery material, starts one Server container, and binds it to localhost until you create the first Owner.

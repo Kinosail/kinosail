@@ -28,7 +28,7 @@ Availability depends on your installed version, media type, browser, Profile per
 
 | Task or feature | Guide |
 | --- | --- |
-| Docker installation and first start | [Install with Docker]({{ '/quickstart/' | relative_url }}) |
+| Installation and first start | [Download Kinosail]({{ '/download/' | relative_url }}) or [Install with Docker]({{ '/quickstart/' | relative_url }}) |
 | Owner setup and first library | [Complete first setup]({{ '/getting-started/first-setup/' | relative_url }}) |
 | Connect browsers and Jellyfin apps | [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | relative_url }}) |
 | Libraries, scan schedules, local metadata, and automatic analysis | [Manage libraries]({{ '/owner-guide/libraries/' | relative_url }}) |

@@ -9,7 +9,9 @@ Kinosail Server is free to run on your own hardware. The web Player is included.
 
 Bring movies, shows, music, books, and photos together in one library. Watch them in a browser or a compatible Jellyfin mobile app.
 
-<a class="start-link" href="{{ '/quickstart/' | relative_url }}">Install with Docker</a>
+<a class="start-link" href="{{ '/download/' | relative_url }}">Download Kinosail</a>
+
+Already run a home server? [Install with Docker]({{ '/quickstart/' | relative_url }}) instead.
 
 On a NAS or Proxmox VE, [get the importable Player and Subtitles files]({{ '/getting-started/platforms/' | relative_url }}) for Synology, TrueNAS, QNAP, CasaOS, Portainer, and Unraid.
 

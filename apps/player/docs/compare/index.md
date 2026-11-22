@@ -51,7 +51,7 @@ Checked on October 26, 2026, against each vendor's own pages. Prices are in US d
 - **Choose Jellyfin** if you want an open source server with live TV, plugins, and many apps.
 - **Choose Emby** if you want polished store apps and are willing to pay for Premiere.
 
-Not sure? Run Kinosail beside your current server. It reads your media read-only, so nothing changes until you decide. [Install with Docker]({{ '/quickstart/' | relative_url }}).
+Not sure? Run Kinosail beside your current server. It reads your media read-only, so nothing changes until you decide. [Download Kinosail]({{ '/download/' | relative_url }}).
 
 ## Questions
 
