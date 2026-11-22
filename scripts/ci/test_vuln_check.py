@@ -70,9 +70,9 @@ class VulnerabilityGateTests(unittest.TestCase):
         self.assertLessEqual(datetime.date.fromisoformat(recorded[0]["expires"]), datetime.date(2026, 12, 9))
 
     def test_the_command_pins_the_tool_and_scans_one_validated_module(self):
-        self.assertEqual(vuln_check.command("apps/player", "golang.org/x/vuln/cmd/govulncheck@v1.9.0"),
-                         ["go", "-C", str(vuln_check.ROOT / "apps/player"), "run", "golang.org/x/vuln/cmd/govulncheck@v1.9.0", "-format", "json", "./..."])
-        for directory, tool in (("../outside", "golang.org/x/vuln/cmd/govulncheck@v1.9.0"), ("apps/missing", "golang.org/x/vuln/cmd/govulncheck@v1.9.0"),
+        self.assertEqual(vuln_check.command("apps/player", "golang.org/x/vuln/cmd/govulncheck@v1.10.0"),
+                         ["go", "-C", str(vuln_check.ROOT / "apps/player"), "run", "golang.org/x/vuln/cmd/govulncheck@v1.10.0", "-format", "json", "./..."])
+        for directory, tool in (("../outside", "golang.org/x/vuln/cmd/govulncheck@v1.10.0"), ("apps/missing", "golang.org/x/vuln/cmd/govulncheck@v1.10.0"),
                                 ("apps/player", "example.test/tool@latest"), ("apps/player", "golang.org/x/vuln/cmd/govulncheck@latest")):
             with self.subTest(directory=directory, tool=tool), self.assertRaises(ValueError):
                 vuln_check.command(directory, tool)

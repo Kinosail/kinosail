@@ -78,7 +78,7 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         step = go.split('      - name: Install media fixture codecs\n', 1)[1].split('      - name: Check the module contract', 1)[0]
         self.assertIn('[[ "$MEDIA" == true ]] || exit 0', step)
         self.assertIn('MEDIA: ${{ matrix.media }}', step)
-        for text in (deb, 'sha256sum --check', '188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4',
+        for text in (deb, 'sha256sum --check', '22e3bbb6ca67f4d7badb16ae4a3c677940b97cb76eb273af7d70f6cb2b9b62bf',
                      'echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"'):
             self.assertIn(text, step)
         self.assertLess(go.index('Install media fixture codecs'), go.index('scripts/ci/test-go.sh'))

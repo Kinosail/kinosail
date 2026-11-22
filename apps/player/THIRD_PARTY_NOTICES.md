@@ -11,7 +11,7 @@ listed license files control. Kinosail's license does not replace them.
 | Manrope | Bundled web font | SIL Open Font License 1.1 | [`../../packages/webassets/static/fonts/OFL-Manrope.txt`](../../packages/webassets/static/fonts/OFL-Manrope.txt) |
 | TMDB logo | Approved logo by Travis Bell, converted to PNG for Android clients | CC BY-SA 4.0 and TMDB brand rules | [Logo source and credit](https://commons.wikimedia.org/wiki/File:Tmdb.new.logo.svg), [license](https://creativecommons.org/licenses/by-sa/4.0/), [TMDB rules](https://developer.themoviedb.org/docs/faq) |
 | SecLists test fixture | Pinned repository revision | MIT | [`third_party/seclists.LICENSE`](third_party/seclists.LICENSE) |
-| Jellyfin FFmpeg runtime | 8.1.3-1 | GNU GPL v3 or later for the packaged build | [Exact release, source, and build files](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.3-1) |
+| Jellyfin FFmpeg runtime | 8.1.3-2 | GNU GPL v3 or later for the packaged build | [Exact release, source, and build files](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.3-2) |
 | FDK AAC stripped library in Jellyfin FFmpeg | stripped5 | Fraunhofer FDK AAC terms | [NOTICE](third_party/fdk-aac-stripped.NOTICE), [source](https://gitlab.freedesktop.org/wtaymans/fdk-aac-stripped/-/tree/stripped5) |
 | libarchive tools | Debian runtime package | BSD-2-Clause and Debian package terms | [libarchive](https://github.com/libarchive/libarchive) |
 | Tesseract OCR and language data | Debian runtime packages | Apache License 2.0 and Debian package terms | [Tesseract](https://github.com/tesseract-ocr/tesseract), [tessdata](https://github.com/tesseract-ocr/tessdata) |
