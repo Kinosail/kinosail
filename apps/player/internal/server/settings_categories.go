@@ -58,7 +58,7 @@ func categorizeSettingsPage(page string) string {
 	var nav strings.Builder
 	nav.WriteString(`<nav class="settings-levels" data-settings-levels aria-label="Settings level"><a href="#playback" data-settings-level="general">Basic</a><a href="#access" data-settings-level="advanced">Advanced</a></nav><nav class="settings-nav" data-settings-nav data-settings-organized aria-label="Settings categories">`)
 	for _, entry := range settingsCategories {
-		nav.WriteString(`<a data-settings-group="` + entry.id + `" data-settings-level="` + entry.level + `" data-settings-description="` + settingsCategoryDescriptions[entry.id] + `" href="#` + entry.anchor + `">` + html.EscapeString(entry.label) + `</a>`)
+		nav.WriteString(`<a data-settings-group="` + entry.id + `" data-settings-level="` + entry.level + `" data-settings-description="{{t "` + settingsCategoryDescriptions[entry.id] + `"}}" href="#` + entry.anchor + `">` + html.EscapeString(entry.label) + `</a>`)
 	}
 	nav.WriteString(`</nav>`)
 	start := strings.Index(page, `<nav class="settings-nav"`)
@@ -74,7 +74,7 @@ func categorizeSettingsPage(page string) string {
 	var descriptions strings.Builder
 	descriptions.WriteString(`<p class="settings-category-description" data-settings-description>`)
 	for _, entry := range settingsCategories {
-		descriptions.WriteString(`<span data-settings-description-category="` + entry.id + `">` + html.EscapeString(settingsCategoryDescriptions[entry.id]) + `</span>`)
+		descriptions.WriteString(`<span data-settings-description-category="` + entry.id + `">{{t "` + settingsCategoryDescriptions[entry.id] + `"}}</span>`)
 	}
 	descriptions.WriteString(`</p>`)
 	return strings.Replace(page, `<div class="settings-flow" data-settings-flow>`, `<div class="settings-flow" data-settings-flow>`+descriptions.String(), 1)

@@ -2,6 +2,7 @@ package playerweb
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"strings"
 	"testing"
@@ -12,7 +13,7 @@ func TestCurationPagesRenderNamedSearchAndEscapedInput(t *testing.T) {
 	for name, source := range map[string]string{"collection": CollectionHTML, "playlist": PlaylistHTML} {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			view, err := template.New(name).Funcs(template.FuncMap{"icon": func(string) string { return "icon" }}).Parse(source)
+			view, err := template.New(name).Funcs(template.FuncMap{"icon": func(string) string { return "icon" }, "tf": fmt.Sprintf}).Parse(source)
 			if err != nil {
 				t.Fatal(err)
 			}

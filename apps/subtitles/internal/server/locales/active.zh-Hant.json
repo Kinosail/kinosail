@@ -1262,5 +1262,4061 @@
   {
     "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
     "other": "不允許使用此位址。請透過已設定的位址開啟 Kinosail，或將此位址加入 KINOSAIL_TLS_HOSTS。"
+  },
+  {
+    "id": "Allow connection",
+    "other": "允許連線"
+  },
+  {
+    "id": "Agent connections",
+    "other": "代理連線"
+  },
+  {
+    "id": "Private connection",
+    "other": "私人連線"
+  },
+  {
+    "id": "Allow",
+    "other": "允許"
+  },
+  {
+    "id": "to connect?",
+    "other": "連線嗎？"
+  },
+  {
+    "id": "Kinosail will share only the capabilities you approve for",
+    "other": "Kinosail 只會分享你核准的功能，適用於"
+  },
+  {
+    "id": ". Media bytes stay on this Server.",
+    "other": "。媒體檔案仍保留在此伺服器上。"
+  },
+  {
+    "id": "Browse library and viewing context",
+    "other": "瀏覽媒體庫和觀看情境"
+  },
+  {
+    "id": "Update personal library state",
+    "other": "更新個人媒體庫狀態"
+  },
+  {
+    "id": "Administer this Server (requires recent sign-in)",
+    "other": "管理此伺服器（需要近期登入）"
+  },
+  {
+    "id": "This Server has multiple Owners. Append one Owner Profile ID to",
+    "other": "此伺服器有多位擁有者。請將一個擁有者設定檔 ID 附加到"
+  },
+  {
+    "id": "A locally generated HTTPS certificate may prompt each client to trust the",
+    "other": "本機產生的 HTTPS 憑證可能會讓每個用戶端提示信任"
+  },
+  {
+    "id": ". A publicly trusted certificate avoids that prompt.",
+    "other": "。公開信任的憑證可以避免該提示。"
+  },
+  {
+    "id": "This Server uses an external OAuth provider. Register the agent there, then connect it to",
+    "other": "此伺服器使用外部 OAuth 提供者。請先在該處註冊代理程式，然後將其連線到"
+  },
+  {
+    "id": "· expires",
+    "other": "· 到期時間"
+  },
+  {
+    "id": "· last used",
+    "other": "· 上次使用"
+  },
+  {
+    "id": "Add another passkey",
+    "other": "新增另一個通行密鑰"
+  },
+  {
+    "id": ", sign in, then choose Add",
+    "other": "，登入，然後選擇新增"
+  },
+  {
+    "id": "passkey.",
+    "other": "通行密鑰。"
+  },
+  {
+    "id": "Passkey",
+    "other": "通行密鑰"
+  },
+  {
+    "id": "Most recently used",
+    "other": "最近使用"
+  },
+  {
+    "id": "Last used",
+    "other": "上次使用"
+  },
+  {
+    "id": "Never used",
+    "other": "從未使用"
+  },
+  {
+    "id": "Last use is unknown",
+    "other": "上次使用時間未知"
+  },
+  {
+    "id": "Available on your synced devices",
+    "other": "可在你的同步裝置上使用"
+  },
+  {
+    "id": "Can sync across your devices",
+    "other": "可在你的裝置間同步"
+  },
+  {
+    "id": "Saved only on this device",
+    "other": "僅儲存在此裝置上"
+  },
+  {
+    "id": "This passkey may have been copied. Remove it if you do not recognize it.",
+    "other": "此通行密鑰可能已被複製。如果你不認得它，請將其刪除。"
+  },
+  {
+    "id": "Remove passkey",
+    "other": "刪除通行密鑰"
+  },
+  {
+    "id": "Turn off extra sign-in protection",
+    "other": "關閉額外登入保護"
+  },
+  {
+    "id": "Organization sign-in",
+    "other": "組織登入"
+  },
+  {
+    "id": "Use a work or school account to sign in to Kinosail.",
+    "other": "使用工作或學校帳戶登入 Kinosail。"
+  },
+  {
+    "id": "Disconnect OpenID Connect",
+    "other": "中斷 OpenID Connect 連線"
+  },
+  {
+    "id": "Disconnect SAML",
+    "other": "中斷 SAML 連線"
+  },
+  {
+    "id": "Faster sign-in",
+    "other": "快速登入"
+  },
+  {
+    "id": "A passkey is already set up",
+    "other": "已設定通行密鑰"
+  },
+  {
+    "id": "You signed in another way. Use your existing passkey next time, or add another for this device.",
+    "other": "你使用了其他方式登入。下次請使用現有的通行密鑰，或為此裝置新增另一個。"
+  },
+  {
+    "id": "Make the next sign-in easier",
+    "other": "讓下次登入更方便"
+  },
+  {
+    "id": "No passkey is saved for this account yet. Add one without replacing your password.",
+    "other": "此帳戶尚未儲存通行密鑰。新增通行密鑰時無需取代密碼。"
+  },
+  {
+    "id": "Protect the Owner account",
+    "other": "保護擁有者帳戶"
+  },
+  {
+    "id": "Every Owner must add a passkey or authenticator app before using Kinosail.",
+    "other": "每位擁有者在使用 Kinosail 前都必須新增通行密鑰或驗證器應用程式。"
+  },
+  {
+    "id": "Use an authenticator app instead",
+    "other": "改用驗證器應用程式"
+  },
+  {
+    "id": "Extra sign-in protection is required",
+    "other": "需要額外登入保護"
+  },
+  {
+    "id": "Add a passkey or authenticator app to continue.",
+    "other": "請新增通行密鑰或驗證器應用程式以繼續。"
+  },
+  {
+    "id": "playlist ·",
+    "other": "播放清單 ·"
+  },
+  {
+    "id": "Add to playlist or Collection",
+    "other": "新增到播放清單或系列"
+  },
+  {
+    "id": "Added",
+    "other": "已新增"
+  },
+  {
+    "id": "Add",
+    "other": "新增"
+  },
+  {
+    "id": "Your name",
+    "other": "你的名稱"
+  },
+  {
+    "id": "At least 12 characters",
+    "other": "至少 12 個字元"
+  },
+  {
+    "id": "Your Owner account",
+    "other": "你的擁有者帳戶"
+  },
+  {
+    "id": "Local by default",
+    "other": "預設僅在本機"
+  },
+  {
+    "id": "Set up your Server.",
+    "other": "設定您的 Kinosail 伺服器。"
+  },
+  {
+    "id": "Use a password you can save in your password manager.",
+    "other": "請使用可儲存在密碼管理員中的密碼。"
+  },
+  {
+    "id": "Recommended for the account that controls your Server. You can also use a passkey after setup.",
+    "other": "建議為管理此伺服器的帳戶開啟。設定完成後，您也可以使用通行密鑰。"
+  },
+  {
+    "id": "Stored on your Server.",
+    "other": "儲存在您的伺服器上。"
+  },
+  {
+    "id": "Create Owner & continue",
+    "other": "建立擁有者並繼續"
+  },
+  {
+    "id": "Update checks",
+    "other": "更新檢查"
+  },
+  {
+    "id": "Automatic by default",
+    "other": "預設自動"
+  },
+  {
+    "id": "Choose when to check",
+    "other": "選擇檢查時間"
+  },
+  {
+    "id": "Review signed updates yourself from Settings.",
+    "other": "請在設定中自行檢視已簽署的更新。"
+  },
+  {
+    "id": "Check automatically",
+    "other": "自動檢查"
+  },
+  {
+    "id": "Kinosail checks about once a day and leaves installation under your control.",
+    "other": "Kinosail 約每天檢查一次，安裝仍由您自行控制。"
+  },
+  {
+    "id": "Setup progress",
+    "other": "設定進度"
+  },
+  {
+    "id": "Setup steps",
+    "other": "設定步驟"
+  },
+  {
+    "id": "Sign in with SAML",
+    "other": "使用 SAML 登入"
+  },
+  {
+    "id": "Sign in with OpenID Connect",
+    "other": "使用 OpenID Connect 登入"
+  },
+  {
+    "id": "Try another title, person, or genre.",
+    "other": "請嘗試其他標題、人物或類型。"
+  },
+  {
+    "id": "Previous",
+    "other": "上一頁"
+  },
+  {
+    "id": "Content access",
+    "other": "內容存取"
+  },
+  {
+    "id": "Manual only",
+    "other": "僅手動"
+  },
+  {
+    "id": "Check about once a day",
+    "other": "約每天檢查一次"
+  },
+  {
+    "id": "Set by your deployment environment.",
+    "other": "由部署環境設定。"
+  },
+  {
+    "id": "Set in your YAML configuration file.",
+    "other": "在 YAML 設定檔中設定。"
+  },
+  {
+    "id": "Using a value saved here.",
+    "other": "正在使用此處儲存的值。"
+  },
+  {
+    "id": "A secret is configured. Its value is hidden.",
+    "other": "已設定密鑰，其值已隱藏。"
+  },
+  {
+    "id": "To change this setting, update the external value and restart Kinosail Server.",
+    "other": "如需變更此設定，請更新外部值並重新啟動 Kinosail 伺服器。"
+  },
+  {
+    "id": "Configured via Docker:",
+    "other": "透過 Docker 設定："
+  },
+  {
+    "id": "These settings are saved but not active yet:",
+    "other": "這些設定已儲存，但尚未生效："
+  },
+  {
+    "id": "How to restart",
+    "other": "如何重新啟動"
+  },
+  {
+    "id": "Use the tool that runs this Server. For a release Docker Compose install, run",
+    "other": "請使用執行此伺服器的工具。若是正式版 Docker Compose 安裝，請執行"
+  },
+  {
+    "id": "in its installation directory. Include your usual override files. For another install method, restart its Server service.",
+    "other": "在其安裝目錄中執行。請包含您常用的覆寫檔。若使用其他安裝方式，請重新啟動其伺服器服務。"
+  },
+  {
+    "id": "Reopen Settings after the Server starts. This notice clears when the saved settings are active.",
+    "other": "伺服器啟動後，請重新開啟設定。已儲存的設定生效後，此提示會消失。"
+  },
+  {
+    "id": "Leave blank to keep the current token",
+    "other": "留空則保留目前的權杖"
+  },
+  {
+    "id": "Paste your DuckDNS token",
+    "other": "貼上您的 DuckDNS 權杖"
+  },
+  {
+    "id": "Restart required. Your sign-in and passkey address becomes the DuckDNS name on this Kinosail port. Sign in there with your password and MFA, then add your passkeys again for the new address.",
+    "other": "需要重新啟動。您的登入與通行密鑰地址將變成此 Kinosail 連接埠上的 DuckDNS 名稱。請在該地址使用密碼與 MFA 登入，然後為新地址重新新增通行密鑰。"
+  },
+  {
+    "id": "Move",
+    "other": "移動"
+  },
+  {
+    "id": "Restore the original public limits before using an older Server version. This also shortens existing public sessions.",
+    "other": "使用舊版伺服器前，請還原原始的公開限制。此操作也會縮短現有的公開工作階段。"
+  },
+  {
+    "id": "Use original public limits",
+    "other": "使用原始公開限制"
+  },
+  {
+    "id": "Automatic uses H.264 for broad device support. Choose a newer codec only when every playback device supports it.",
+    "other": "自動模式使用 H.264，以相容更多裝置。只有在所有播放裝置都支援時，才選擇較新的編解碼器。"
+  },
+  {
+    "id": "Video codec",
+    "other": "影片編解碼器"
+  },
+  {
+    "id": "not supported on this Server",
+    "other": "此伺服器不支援"
+  },
+  {
+    "id": "Create a tiny synthetic clip on this Server to check FFmpeg, scaling,",
+    "other": "在此伺服器上建立一個很小的合成測試片段，以檢查 FFmpeg、縮放、"
+  },
+  {
+    "id": ", AAC, and",
+    "other": "，AAC 和"
+  },
+  {
+    "id": ". No Library Content is used.",
+    "other": "。未使用任何媒體庫內容。"
+  },
+  {
+    "id": "Trusted HTTPS with DuckDNS (Recommended)",
+    "other": "使用 DuckDNS 的受信任 HTTPS（建議）"
+  },
+  {
+    "id": "Use a free DuckDNS name and Let's Encrypt certificate when a device rejects the private certificate.",
+    "other": "當裝置拒絕私人憑證時，使用免費的 DuckDNS 網域名稱與 Let's Encrypt 憑證。"
+  },
+  {
+    "id": "Saved — restart required",
+    "other": "已儲存 — 需要重新啟動"
+  },
+  {
+    "id": "Certificate expires",
+    "other": "憑證到期時間"
+  },
+  {
+    "id": "Kinosail stays on your LAN. This option does not open a router port or relay media. First create a subdomain at",
+    "other": "Kinosail 僅保留在您的區域網路中。此選項不會開放路由器連接埠，也不會轉送媒體。請先在DuckDNS"
+  },
+  {
+    "id": ", then paste its details below.",
+    "other": "，然後貼上下方的詳細資料。"
+  },
+  {
+    "id": "Privacy note: the private LAN address is published in public DNS and the hostname appears in public certificate-transparency logs. The DuckDNS token can update every hostname in that account; Kinosail stores it in the protected secrets file and never shows it here.",
+    "other": "隱私說明：私人區域網路位址會發布到公開 DNS，主機名稱會出現在公開的憑證透明度紀錄中。DuckDNS 權杖可以更新該帳戶下的每個主機名稱。Kinosail 會將權杖存放在受保護的金鑰檔案中，且絕不在此顯示。"
+  },
+  {
+    "id": "Disable trusted HTTPS after restart",
+    "other": "重新啟動後停用受信任的 HTTPS"
+  },
+  {
+    "id": "Read-only.",
+    "other": "唯讀。"
+  },
+  {
+    "id": "Configured via YAML:",
+    "other": "透過 YAML 設定："
+  },
+  {
+    "id": "Connect address:",
+    "other": "連線位址："
+  },
+  {
+    "id": "Account",
+    "other": "帳戶"
+  },
+  {
+    "id": "Leave blank to keep the configured token",
+    "other": "留空則保留已設定的權杖"
+  },
+  {
+    "id": "DuckDNS (Easiest)",
+    "other": "DuckDNS（最簡單）"
+  },
+  {
+    "id": "deSEC (More privacy)",
+    "other": "deSEC（隱私性更高）"
+  },
+  {
+    "id": "hostname.",
+    "other": "主機名稱。"
+  },
+  {
+    "id": "Active through",
+    "other": "有效至"
+  },
+  {
+    "id": "· Founding",
+    "other": "· 創始"
+  },
+  {
+    "id": "Complete Fleet ·",
+    "other": "完整艦隊 ·"
+  },
+  {
+    "id": "Level",
+    "other": "等級"
+  },
+  {
+    "id": "Kinosail Server",
+    "other": "Kinosail Server"
+  },
+  {
+    "id": "Browse",
+    "other": "瀏覽"
+  },
+  {
+    "id": "Leave blank to keep the configured secret",
+    "other": "留空即可保留已設定的密鑰"
+  },
+  {
+    "id": "Single sign-on is configured outside Kinosail. Update all five values together and restart Kinosail Server.",
+    "other": "單一登入是在 Kinosail 外部設定。請一併更新全部五個值，然後重新啟動 Kinosail 伺服器。"
+  },
+  {
+    "id": "Single sign-on is configured.",
+    "other": "已設定單一登入。"
+  },
+  {
+    "id": "Disable single sign-on",
+    "other": "停用單一登入"
+  },
+  {
+    "id": "SAML single sign-on is configured.",
+    "other": "已設定 SAML 單一登入。"
+  },
+  {
+    "id": "SAML is configured outside Kinosail. Update the metadata source and identity attribute together, then restart Kinosail Server.",
+    "other": "SAML 是在 Kinosail 外部設定。請一併更新中繼資料來源與身分屬性，然後重新啟動 Kinosail 伺服器。"
+  },
+  {
+    "id": "Disable SAML",
+    "other": "停用 SAML"
+  },
+  {
+    "id": "Add extra sign-in protection ·",
+    "other": "新增額外登入保護 ·"
+  },
+  {
+    "id": "Add extra sign-in protection",
+    "other": "新增額外登入保護"
+  },
+  {
+    "id": "Open your authenticator app and add Kinosail. Enter the setup key below, or use the setup link if your app supports it.",
+    "other": "開啟您的驗證器應用程式並新增 Kinosail。輸入下方的設定金鑰；若您的應用程式支援，也可以使用設定連結。"
+  },
+  {
+    "id": "Setup key",
+    "other": "設定金鑰"
+  },
+  {
+    "id": "Setup link",
+    "other": "設定連結"
+  },
+  {
+    "id": "Turn on extra sign-in protection",
+    "other": "開啟額外登入保護"
+  },
+  {
+    "id": "Shared with you",
+    "other": "與您分享"
+  },
+  {
+    "id": "Copy this link now:",
+    "other": "請立即複製此連結："
+  },
+  {
+    "id": "Bulk metadata ·",
+    "other": "批次中繼資料 ·"
+  },
+  {
+    "id": "No Library Content is available.",
+    "other": "沒有可用的媒體庫內容。"
+  },
+  {
+    "id": "Library monitoring:",
+    "other": "媒體庫監控："
+  },
+  {
+    "id": "· Last scan:",
+    "other": "· 上次掃描："
+  },
+  {
+    "id": "HTTP requests:",
+    "other": "HTTP 請求："
+  },
+  {
+    "id": "· errors:",
+    "other": "· 錯誤："
+  },
+  {
+    "id": "· panics:",
+    "other": "· 恐慌："
+  },
+  {
+    "id": "Activity journal:",
+    "other": "活動日誌："
+  },
+  {
+    "id": "needs attention",
+    "other": "需要注意"
+  },
+  {
+    "id": "· Failed writes:",
+    "other": "· 寫入失敗："
+  },
+  {
+    "id": "My phone",
+    "other": "我的手機"
+  },
+  {
+    "id": "On · waiting for paired devices",
+    "other": "已開啟 · 等待配對裝置"
+  },
+  {
+    "id": "Unavailable · reconnect at home and finish HTTPS setup",
+    "other": "無法使用 · 請在家中重新連線並完成 HTTPS 設定"
+  },
+  {
+    "id": "Turning this off disconnects all devices and removes every pairing. You can still manage your Server at home.",
+    "other": "關閉此功能會中斷所有裝置並移除所有配對。您仍可在家中管理伺服器。"
+  },
+  {
+    "id": "Turn off management while away",
+    "other": "外出時關閉管理功能"
+  },
+  {
+    "id": "first.",
+    "other": "請先完成。"
+  },
+  {
+    "id": "Use your own public hostname, followed by the public UDP port (normally",
+    "other": "使用您自己的公開主機名稱，後接公開 UDP 連接埠（通常為"
+  },
+  {
+    "id": "Connect your Owner device",
+    "other": "連接您的擁有者裝置"
+  },
+  {
+    "id": "In your router, forward",
+    "other": "在路由器中轉送"
+  },
+  {
+    "id": "on this Server. Use",
+    "other": "到此伺服器。使用"
+  },
+  {
+    "id": "the router guides",
+    "other": "路由器說明"
+  },
+  {
+    "id": "if you need help. Do not forward the Server’s local HTTPS port or put it in a DMZ.",
+    "other": "如需協助。請勿轉送伺服器的本機 HTTPS 連接埠，也不要將其放入 DMZ。"
+  },
+  {
+    "id": "Install the",
+    "other": "安裝"
+  },
+  {
+    "id": "WireGuard app",
+    "other": "WireGuard 應用程式"
+  },
+  {
+    "id": "on your device.",
+    "other": "到您的裝置上。"
+  },
+  {
+    "id": "While at home, name the device below and download its private profile. Import that file into WireGuard on that device, then delete the downloaded copy.",
+    "other": "在家時，請為下方裝置命名並下載其私人設定檔。將該檔案匯入該裝置上的 WireGuard，然後刪除已下載的副本。"
+  },
+  {
+    "id": "Turn on the tunnel. Open",
+    "other": "開啟通道。開啟"
+  },
+  {
+    "id": "your private management page",
+    "other": "您的私人管理頁面"
+  },
+  {
+    "id": "and sign in as the same Owner.",
+    "other": "並以相同的擁有者身分登入。"
+  },
+  {
+    "id": "Before leaving home, turn off Wi-Fi and try again using mobile data. Server status cannot confirm that your router or internet provider allows the connection.",
+    "other": "離家前，請關閉 Wi-Fi，並改用行動數據再試一次。伺服器狀態無法確認您的路由器或網路服務供應商是否允許此連線。"
+  },
+  {
+    "id": "Device name",
+    "other": "裝置名稱"
+  },
+  {
+    "id": "This device is paired to your current Owner account. Each device needs its own profile.",
+    "other": "此裝置已與您目前的擁有者帳號配對。每台裝置都需要各自的設定檔。"
+  },
+  {
+    "id": "Download Owner device profile",
+    "other": "下載擁有者裝置設定檔"
+  },
+  {
+    "id": "Pair new devices when you are home. You can revoke existing devices here.",
+    "other": "在家時配對新裝置。您可以在此撤銷現有裝置。"
+  },
+  {
+    "id": "Keep the profile private. It opens a connection, but your Owner passkey or password plus authenticator is still required. The tunnel reaches only Kinosail. While it is on, your Server handles this device’s DNS lookups; other internet traffic keeps its normal route.",
+    "other": "請勿外流此設定檔。它會建立連線，但仍需要擁有者通行密鑰，或密碼加驗證器。通道只能連到 Kinosail。開啟期間，您的伺服器會處理此裝置的 DNS 查詢；其他網路流量維持正常路由。"
+  },
+  {
+    "id": "Search below to add something.",
+    "other": "在下方搜尋以新增項目。"
+  },
+  {
+    "id": "Updates automatically",
+    "other": "自動更新"
+  },
+  {
+    "id": "This playlist follows its rule whenever your Library changes.",
+    "other": "每當媒體庫有變動時，此播放清單都會依其規則更新。"
+  },
+  {
+    "id": "Nothing matches its rule yet.",
+    "other": "目前沒有符合其規則的項目。"
+  },
+  {
+    "id": "Delete playlist",
+    "other": "刪除播放清單"
+  },
+  {
+    "id": "Apple’s native controls",
+    "other": "Apple 原生控制項"
+  },
+  {
+    "id": "Sign in away from home ·",
+    "other": "離家時登入 ·"
+  },
+  {
+    "id": "Sign in away from home",
+    "other": "離家時登入"
+  },
+  {
+    "id": "gives you access to your Viewer's allowed Libraries.",
+    "other": "可存取您的觀看者獲准存取的媒體庫。"
+  },
+  {
+    "id": "Connect this browser",
+    "other": "連接此瀏覽器"
+  },
+  {
+    "id": "Ask someone signed in as your Viewer at home to approve a code. They must use an authenticator or passkey to confirm it's them.",
+    "other": "請家中以您的觀看者身分登入的人核准一組代碼。對方必須使用驗證器或通行密鑰確認是本人。"
+  },
+  {
+    "id": "Get a sign-in code",
+    "other": "取得登入代碼"
+  },
+  {
+    "id": "Your sign-in code:",
+    "other": "您的登入代碼："
+  },
+  {
+    "id": "On the home device, sign in as your remote-enabled Viewer.",
+    "other": "在家中的裝置上，以已啟用遠端存取的觀看者身分登入。"
+  },
+  {
+    "id": "Open Quick Connect and enter this code. Approve only if the code and requesting device match.",
+    "other": "開啟快速連線，輸入此代碼。僅在代碼與請求裝置相符時才核准。"
+  },
+  {
+    "id": "Keep this page open. Your library opens after approval.",
+    "other": "請保持此頁面開啟。核准後，媒體庫將會開啟。"
+  },
+  {
+    "id": "Codes expire after a few minutes. Never share a code you did not request.",
+    "other": "代碼會在幾分鐘後過期。切勿分享您未申請的代碼。"
+  },
+  {
+    "id": "Cancel sign-in",
+    "other": "取消登入"
+  },
+  {
+    "id": "Enable JavaScript to use Quick Connect, or connect through the Kinosail app.",
+    "other": "請啟用 JavaScript 以使用快速連線，或透過 Kinosail 應用程式連線。"
+  },
+  {
+    "id": "Already have another sign-in method?",
+    "other": "已有其他登入方式？"
+  },
+  {
+    "id": "Use a passkey already registered for this public Server address.",
+    "other": "使用已為此公開伺服器位址註冊的通行密鑰。"
+  },
+  {
+    "id": "Owner settings, passwords, and adding sign-in methods are available on your home network or WireGuard.",
+    "other": "擁有者設定、密碼及新增登入方式僅能在家用網路或 WireGuard 上使用。"
+  },
+  {
+    "id": "Approve",
+    "other": "核准"
+  },
+  {
+    "id": "using this profile’s access and content settings.",
+    "other": "使用此使用者設定檔的存取與內容設定。"
+  },
+  {
+    "id": "Only approve if this code matches your TV:",
+    "other": "僅在此代碼與您的電視相符時才核准："
+  },
+  {
+    "id": "Approve device",
+    "other": "核准裝置"
+  },
+  {
+    "id": "Server checks passed. Try a movie using cellular data next.",
+    "other": "伺服器檢查已通過。接下來，請嘗試使用行動數據播放電影。"
+  },
+  {
+    "id": "Your public address:",
+    "other": "您的公開位址："
+  },
+  {
+    "id": "The configured token expired. Provisioning is disabled until you rotate it.",
+    "other": "已設定的權杖已過期。在您更換權杖之前，已停用佈建。"
+  },
+  {
+    "id": "SCIM is configured.",
+    "other": "已設定 SCIM。"
+  },
+  {
+    "id": "SCIM is configured outside Kinosail. Update the token and expiration together, then restart Kinosail Server.",
+    "other": "SCIM 是在 Kinosail 外部設定的。請同時更新權杖與到期時間，然後重新啟動 Kinosail 伺服器。"
+  },
+  {
+    "id": "Disable SCIM",
+    "other": "停用 SCIM"
+  },
+  {
+    "id": "Hardware decoding:",
+    "other": "硬體解碼："
+  },
+  {
+    "id": ">Automatic per device (",
+    "other": ">依裝置自動（"
+  },
+  {
+    "id": "Open Subtitle settings",
+    "other": "開啟字幕設定"
+  },
+  {
+    "id": "Return to Subtitles",
+    "other": "返回字幕"
+  },
+  {
+    "id": "Agent connections · Kinosail Subtitles",
+    "other": "代理程式連線 · Kinosail Subtitles"
+  },
+  {
+    "id": "Connect Codex and other AI agents",
+    "other": "連接 Codex 與其他 AI 代理程式"
+  },
+  {
+    "id": "Choose the connection that fits where your agent runs. Connections stay direct to this Server, and Library Content stays on it.",
+    "other": "請選擇適合代理程式執行位置的連線方式。連線會直接連到此伺服器，媒體庫內容也會保留在此伺服器上。"
+  },
+  {
+    "id": "Recommended: host connection",
+    "other": "建議：主機連線"
+  },
+  {
+    "id": "No certificate or browser approval is required. This uses the SSH and Docker access already held by a Server administrator.",
+    "other": "無需憑證或瀏覽器核准。此方式使用伺服器管理員已擁有的 SSH 與 Docker 存取權限。"
+  },
+  {
+    "id": "On the Server host, run",
+    "other": "在伺服器主機上執行"
+  },
+  {
+    "id": "From another device with an SSH host alias, run",
+    "other": "在另一台具有 SSH 主機別名的裝置上執行"
+  },
+  {
+    "id": "and replace",
+    "other": "並將"
+  },
+  {
+    "id": "with that alias.",
+    "other": "替換為該別名。"
+  },
+  {
+    "id": "This host connection has full Owner access and is recorded in activity as",
+    "other": "此主機連線擁有完整的擁有者權限，並會在活動中記錄為"
+  },
+  {
+    "id": "Host MCP",
+    "other": "主機 MCP"
+  },
+  {
+    "id": ". Remove its Codex entry or revoke the underlying SSH/Docker access to stop it.",
+    "other": "。請刪除其 Codex 項目，或撤銷底層 SSH/Docker 存取權限以停止該連線。"
+  },
+  {
+    "id": "HTTPS / OAuth alternative",
+    "other": "HTTPS / OAuth 替代方式"
+  },
+  {
+    "id": "Use this when an agent cannot use the Server host. It supports revocable read, write, and management grants through browser approval.",
+    "other": "當代理程式無法使用伺服器主機時，請使用此方式。此方式支援透過瀏覽器核准，授予可撤銷的讀取、寫入與管理權限。"
+  },
+  {
+    "id": "Kinosail local CA certificate",
+    "other": "Kinosail 本機 CA 憑證"
+  },
+  {
+    "id": "This option requires an HTTPS certificate already trusted by the client.",
+    "other": "此選項需要用戶端已信任的 HTTPS 憑證。"
+  },
+  {
+    "id": "Run",
+    "other": "執行"
+  },
+  {
+    "id": ", then approve the browser prompt.",
+    "other": "，然後在瀏覽器提示中核准。"
+  },
+  {
+    "id": "Active HTTPS / OAuth connections",
+    "other": "使用中的 HTTPS / OAuth 連線"
+  },
+  {
+    "id": "No HTTPS / OAuth agents are connected.",
+    "other": "目前沒有已連線的 HTTPS / OAuth 代理程式。"
+  },
+  {
+    "id": "HTTPS connection address",
+    "other": "HTTPS 連線位址"
+  },
+  {
+    "id": "Read access is the default. Write access is optional. Server administration requires an Owner and a recent strong sign-in.",
+    "other": "預設授予讀取權限。寫入權限為選用。伺服器管理需要擁有者，並且需要近期完成強登入驗證。"
+  },
+  {
+    "id": "Ways to sign in",
+    "other": "登入方式"
+  },
+  {
+    "id": "Your password continues to work without internet access.",
+    "other": "即使沒有網際網路連線，您的密碼仍可使用。"
+  },
+  {
+    "id": "The browser can save it on this device, use a nearby phone or tablet, or use a security key.",
+    "other": "瀏覽器可將其儲存在此裝置上、使用附近的手機或平板電腦，或使用安全金鑰。"
+  },
+  {
+    "id": "Add one directly on another device",
+    "other": "直接在另一台裝置上新增一個"
+  },
+  {
+    "id": "On that device, open",
+    "other": "在該裝置上開啟"
+  },
+  {
+    "id": "Passkeys",
+    "other": "通行密鑰"
+  },
+  {
+    "id": "See when each passkey was last used. Remove any passkey you no longer recognize or use.",
+    "other": "查看每個通行密鑰最後一次使用的時間。移除您不再認得或使用的任何通行密鑰。"
+  },
+  {
+    "id": "No passkeys added yet.",
+    "other": "尚未新增通行密鑰。"
+  },
+  {
+    "id": "Extra sign-in protection",
+    "other": "額外登入保護"
+  },
+  {
+    "id": "Use an authenticator app as a second step when you sign in.",
+    "other": "登入時，使用驗證器應用程式作為第二步驟。"
+  },
+  {
+    "id": "Set up an authenticator app",
+    "other": "設定驗證器應用程式"
+  },
+  {
+    "id": "6-digit code",
+    "other": "6 位驗證碼"
+  },
+  {
+    "id": "Passkey sign-in · Kinosail Subtitles",
+    "other": "通行密鑰登入 · Kinosail Subtitles"
+  },
+  {
+    "id": "Choose a sign-in method",
+    "other": "選擇登入方式"
+  },
+  {
+    "id": "Create a passkey when this device supports biometrics, a device PIN, or a security key.",
+    "other": "當此裝置支援生物辨識、裝置 PIN 碼或安全金鑰時，請建立通行密鑰。"
+  },
+  {
+    "id": "Use an authenticator app when you prefer a rotating code.",
+    "other": "若您偏好動態驗證碼，請使用驗證器應用程式。"
+  },
+  {
+    "id": "Keep your password as a recovery path for local sign-in.",
+    "other": "保留密碼，作為本機登入的復原途徑。"
+  },
+  {
+    "id": "Extra sign-in protection required · Kinosail Subtitles",
+    "other": "需要額外登入保護 · Kinosail Subtitles"
+  },
+  {
+    "id": "Create your account, then choose your subtitle settings.",
+    "other": "建立帳戶，然後選擇字幕設定。"
+  },
+  {
+    "id": "Subtitle settings",
+    "other": "字幕設定"
+  },
+  {
+    "id": "Media, language, and automation together",
+    "other": "媒體、語言與自動化"
+  },
+  {
+    "id": "Your media paths, subtitle state, and credentials stay on this Server.",
+    "other": "您的媒體路徑、字幕狀態與憑證皆保留在此伺服器上。"
+  },
+  {
+    "id": "Account setup",
+    "other": "帳戶設定"
+  },
+  {
+    "id": "Create the Owner account to manage subtitle providers, media folders, and saved subtitle files.",
+    "other": "建立擁有者帳戶，以管理字幕提供者、媒體資料夾及已儲存的字幕檔案。"
+  },
+  {
+    "id": "MFA - Add extra sign-in protection now",
+    "other": "MFA - 立即新增額外登入保護"
+  },
+  {
+    "id": "Kinosail keeps the media index, subtitle state, and provider credentials on this Server. Remote access is always a separate choice.",
+    "other": "Kinosail 會將媒體索引、字幕狀態與提供者憑證保存在此伺服器上。遠端存取一律是另外的選擇。"
+  },
+  {
+    "id": "Next: review media, language, and automation in Settings.",
+    "other": "下一步：在設定中檢查媒體、語言與自動化。"
+  },
+  {
+    "id": "Backups contain your Server settings, accounts, and activity. Media files and cached data are not included.",
+    "other": "備份包含伺服器設定、帳戶與活動紀錄。不包括媒體檔案與快取資料。"
+  },
+  {
+    "id": "Preferred subtitle role",
+    "other": "偏好的字幕類型"
+  },
+  {
+    "id": "Standard dialogue",
+    "other": "標準對白"
+  },
+  {
+    "id": "SDH and captions",
+    "other": "SDH 與隱藏式字幕"
+  },
+  {
+    "id": "Update preference",
+    "other": "更新偏好"
+  },
+  {
+    "id": "Choose when to update",
+    "other": "選擇更新時機"
+  },
+  {
+    "id": "Approve each signed update from Settings.",
+    "other": "在設定中核准每個已簽署的更新。"
+  },
+  {
+    "id": "Install updates automatically",
+    "other": "自動安裝更新"
+  },
+  {
+    "id": "Back up first, wait for idle playback, verify the signed update, check health, and roll back on failure.",
+    "other": "先備份，等待沒有播放時再安裝，驗證已簽署的更新，檢查運作狀態，失敗時還原。"
+  },
+  {
+    "id": "Advanced configuration",
+    "other": "進階設定"
+  },
+  {
+    "id": "Change settings normally managed by Docker, environment variables, or YAML. Provider and log detail changes take effect immediately. Other changes apply after a restart.",
+    "other": "修改通常由 Docker、環境變數或 YAML 管理的設定。提供者和日誌詳細程度的變更會立即生效。其他變更需重新啟動後才會生效。"
+  },
+  {
+    "id": "Using the Kinosail default.",
+    "other": "使用 Kinosail 預設值。"
+  },
+  {
+    "id": "No secret is configured.",
+    "other": "未設定金鑰。"
+  },
+  {
+    "id": "Value",
+    "other": "值"
+  },
+  {
+    "id": "Save change",
+    "other": "儲存變更"
+  },
+  {
+    "id": "Changes take effect immediately.",
+    "other": "變更會立即生效。"
+  },
+  {
+    "id": "Applies after a restart.",
+    "other": "重新啟動後生效。"
+  },
+  {
+    "id": "Technical details",
+    "other": "技術細節"
+  },
+  {
+    "id": "Configuration key:",
+    "other": "設定鍵："
+  },
+  {
+    "id": "Environment variable:",
+    "other": "環境變數："
+  },
+  {
+    "id": "Restart Kinosail Subtitles Server to apply saved changes",
+    "other": "重新啟動 Kinosail Subtitles Server 以套用已儲存的變更"
+  },
+  {
+    "id": "OpenSubtitles API key",
+    "other": "OpenSubtitles API 金鑰"
+  },
+  {
+    "id": "Leave blank to keep the configured API key",
+    "other": "留空則保留已設定的 API 金鑰"
+  },
+  {
+    "id": "API key",
+    "other": "API 金鑰"
+  },
+  {
+    "id": "OpenSubtitles username",
+    "other": "OpenSubtitles 使用者名稱"
+  },
+  {
+    "id": "Leave blank to keep the configured username",
+    "other": "留空則保留已設定的使用者名稱"
+  },
+  {
+    "id": "Username",
+    "other": "使用者名稱"
+  },
+  {
+    "id": "OpenSubtitles password",
+    "other": "OpenSubtitles 密碼"
+  },
+  {
+    "id": "Leave blank to keep the configured password",
+    "other": "留空則保留已設定的密碼"
+  },
+  {
+    "id": "OpenSubtitles is configured outside Kinosail. Update the API key, username, and password together, then restart Kinosail Server.",
+    "other": "OpenSubtitles 是在 Kinosail 外部設定的。請一併更新 API 金鑰、使用者名稱和密碼，然後重新啟動 Kinosail Server。"
+  },
+  {
+    "id": "OpenSubtitles credentials are configured.",
+    "other": "已設定 OpenSubtitles 憑證。"
+  },
+  {
+    "id": "OpenSubtitles is not configured.",
+    "other": "未設定 OpenSubtitles。"
+  },
+  {
+    "id": "Save all three values together. They will be hidden after you leave this page.",
+    "other": "三個值請一併儲存。離開此頁面後，這些值會被隱藏。"
+  },
+  {
+    "id": "Disable OpenSubtitles",
+    "other": "停用 OpenSubtitles"
+  },
+  {
+    "id": "Configuration keys:",
+    "other": "設定鍵："
+  },
+  {
+    "id": "Automatic sign-out",
+    "other": "自動登出"
+  },
+  {
+    "id": "Each access type has its own inactivity and total sign-in limits. Every option signs out eventually.",
+    "other": "每種存取方式都有各自的閒置與總登入時間限制。所有選項最終都會登出。"
+  },
+  {
+    "id": "Longer limits apply to new sign-ins. Shorter limits also apply to existing sessions, which sign out when either limit is reached.",
+    "other": "較長的限制只適用於新登入。較短的限制也適用於現有工作階段，任一限制達到時都會登出。"
+  },
+  {
+    "id": "Private access",
+    "other": "私人存取"
+  },
+  {
+    "id": "Local network and WireGuard browser sessions.",
+    "other": "本機網路和 WireGuard 瀏覽器工作階段。"
+  },
+  {
+    "id": "After inactivity",
+    "other": "閒置後"
+  },
+  {
+    "id": "15 minutes (recommended)",
+    "other": "15 分鐘（建議）"
+  },
+  {
+    "id": "1 hour",
+    "other": "1 小時"
+  },
+  {
+    "id": "8 hours",
+    "other": "8 小時"
+  },
+  {
+    "id": "1 day",
+    "other": "1 天"
+  },
+  {
+    "id": "3 days",
+    "other": "3 天"
+  },
+  {
+    "id": "7 days",
+    "other": "7 天"
+  },
+  {
+    "id": "30 days",
+    "other": "30 天"
+  },
+  {
+    "id": "90 days",
+    "other": "90 天"
+  },
+  {
+    "id": "1 year",
+    "other": "1 年"
+  },
+  {
+    "id": "Always after",
+    "other": "永遠在"
+  },
+  {
+    "id": "4 hours",
+    "other": "4 小時"
+  },
+  {
+    "id": "8 hours (recommended)",
+    "other": "8 小時（建議）"
+  },
+  {
+    "id": "Save private timeouts",
+    "other": "儲存私人逾時設定"
+  },
+  {
+    "id": "Public access",
+    "other": "公開存取"
+  },
+  {
+    "id": "Public-internet Viewer browser sessions. Other public clients use the absolute limit. Owner access remains private. Longer limits keep signed-in devices authorized for longer.",
+    "other": "公用網際網路上的觀看者瀏覽器工作階段。其他公開用戶端使用絕對時限。擁有者存取維持私人。較長的時限可讓已登入裝置保持授權更久。"
+  },
+  {
+    "id": "Until you save public timeouts, public browsers use the private inactivity limit and an absolute limit of at most 8 hours.",
+    "other": "在您儲存公開逾時設定之前，公開瀏覽器會使用私人閒置時限，且絕對時限最多為 8 小時。"
+  },
+  {
+    "id": "Save public timeouts",
+    "other": "儲存公開逾時設定"
+  },
+  {
+    "id": "Paste your provider token",
+    "other": "貼上您的提供者權杖"
+  },
+  {
+    "id": "DNS provider",
+    "other": "DNS 提供者"
+  },
+  {
+    "id": "DuckDNS is the easiest default.",
+    "other": "DuckDNS 是最簡單的預設選項。"
+  },
+  {
+    "id": "It has the shortest setup.",
+    "other": "它的設定步驟最少。"
+  },
+  {
+    "id": "deSEC gives a little more privacy.",
+    "other": "deSEC 的隱私保護稍好。"
+  },
+  {
+    "id": "It is nonprofit and open source, and it supports narrow API tokens that can limit Kinosail to this hostname and its certificate records.",
+    "other": "它是非營利的開源服務，支援範圍較窄的 API 權杖，可將 Kinosail 限制在此主機名稱及其憑證記錄內。"
+  },
+  {
+    "id": "Create a hostname at",
+    "other": "在"
+  },
+  {
+    "id": ". Then paste its details below.",
+    "other": "上建立主機名稱，然後在下方貼上其詳細資料。"
+  },
+  {
+    "id": "Get the provider details",
+    "other": "取得提供者詳細資料"
+  },
+  {
+    "id": "Open a provider.",
+    "other": "開啟一個提供者。"
+  },
+  {
+    "id": "Use",
+    "other": "使用"
+  },
+  {
+    "id": "Create one hostname.",
+    "other": "建立一個主機名稱。"
+  },
+  {
+    "id": "Use a new hostname for this Kinosail Subtitles Server.",
+    "other": "為此 Kinosail Subtitles Server 使用新的主機名稱。"
+  },
+  {
+    "id": "Create a narrow token.",
+    "other": "建立範圍較窄的權杖。"
+  },
+  {
+    "id": "Limit it to this hostname when your provider supports token policies. Copy it once and keep it private.",
+    "other": "如果您的提供者支援權杖政策，請將其限制於此主機名稱。只複製一次，並妥善保管。"
+  },
+  {
+    "id": "Return here.",
+    "other": "返回此處。"
+  },
+  {
+    "id": "Choose the provider, enter the hostname, paste the token, and add the Server LAN address.",
+    "other": "選擇提供者，輸入主機名稱，貼上權杖，並新增伺服器區域網路位址。"
+  },
+  {
+    "id": "A provider token can change DNS records. Kinosail stores it in the protected secrets file and never shows it again.",
+    "other": "提供者權杖可以變更 DNS 記錄。Kinosail 會將其儲存在受保護的機密檔案中，且不會再次顯示。"
+  },
+  {
+    "id": "Trusted hostname",
+    "other": "受信任的主機名稱"
+  },
+  {
+    "id": "For DuckDNS, enter either a label or its full",
+    "other": "對於 DuckDNS，請輸入子網域名稱或完整的"
+  },
+  {
+    "id": "hostname. For deSEC, enter the full",
+    "other": "主機名稱。對於 deSEC，請輸入完整的"
+  },
+  {
+    "id": "Example pair:",
+    "other": "範例配對：請將"
+  },
+  {
+    "id": "for Kinosail Player and",
+    "other": "用於 Kinosail Player，並將"
+  },
+  {
+    "id": "for Kinosail Subtitles. Both can use the same DNS account and LAN address.",
+    "other": "用於 Kinosail Subtitles。兩者可以使用相同的 DNS 帳戶和區域網路位址。"
+  },
+  {
+    "id": "Network ports:",
+    "other": "網路連接埠："
+  },
+  {
+    "id": "no router port forwarding is needed. Allow the configured LAN port through the Server firewall for LAN devices only (default",
+    "other": "無需在路由器上設定連接埠轉送。僅允許區域網路裝置透過伺服器防火牆存取已設定的區域網路連接埠（預設為"
+  },
+  {
+    "id": "). Do not forward that port on your router. This does not make Kinosail Subtitles available away from home.",
+    "other": "）。不要在路由器上轉送該連接埠。這不會讓 Kinosail Subtitles 在外出時可用。"
+  },
+  {
+    "id": "You need:",
+    "other": "您需要："
+  },
+  {
+    "id": "a DuckDNS or deSEC account, a hostname for this app, a provider token, the Server's private LAN IPv4 address, outbound internet access, and agreement to the Let's Encrypt terms.",
+    "other": "一個 DuckDNS 或 deSEC 帳戶、此應用程式的主機名稱、提供者權杖、伺服器的私有區域網路 IPv4 位址、對外網際網路連線，以及同意 Let's Encrypt 服務條款。"
+  },
+  {
+    "id": "How trusted HTTPS works",
+    "other": "受信任 HTTPS 的運作方式"
+  },
+  {
+    "id": "Kinosail points the hostname at the private LAN address.",
+    "other": "Kinosail 會將主機名稱指向私有區域網路位址。"
+  },
+  {
+    "id": "It creates a temporary DNS TXT record so Let's Encrypt can verify the hostname without connecting through your router.",
+    "other": "它會建立一筆暫時性的 DNS TXT 記錄，讓 Let's Encrypt 無需透過您的路由器即可驗證主機名稱。"
+  },
+  {
+    "id": "It downloads the certificate, removes the TXT record, and renews the certificate automatically.",
+    "other": "它會下載憑證、刪除 TXT 記錄，並自動更新憑證。"
+  },
+  {
+    "id": "After restart, Kinosail serves the certificate on this app's LAN port.",
+    "other": "重新啟動後，Kinosail 會透過此應用程式的區域網路連接埠提供憑證。"
+  },
+  {
+    "id": "Provider token",
+    "other": "提供者權杖"
+  },
+  {
+    "id": "DuckDNS subdomain",
+    "other": "DuckDNS 子網域名稱"
+  },
+  {
+    "id": "DuckDNS token",
+    "other": "DuckDNS 權杖"
+  },
+  {
+    "id": "Kinosail stays on your LAN. This option does not open a router port or relay media.",
+    "other": "Kinosail 只會留在您的 LAN 內。此選項不會開啟路由器連接埠，也不會中繼媒體。"
+  },
+  {
+    "id": "DuckDNS · Easiest",
+    "other": "DuckDNS · 最簡單"
+  },
+  {
+    "id": "Shortest setup for a trusted LAN name.",
+    "other": "為受信任的 LAN 名稱提供最簡設定。"
+  },
+  {
+    "id": "deSEC · More privacy",
+    "other": "deSEC · 更重視隱私"
+  },
+  {
+    "id": "Supports narrow tokens limited to this hostname.",
+    "other": "支援僅限此主機名稱使用的範圍較窄權杖。"
+  },
+  {
+    "id": "Subtitle cleanup · Kinosail Subtitles",
+    "other": "字幕清理 · Kinosail 字幕"
+  },
+  {
+    "id": "Subtitle cleanup",
+    "other": "字幕清理"
+  },
+  {
+    "id": "Keep subtitles in",
+    "other": "保留以下語言的字幕"
+  },
+  {
+    "id": ". Kinosail will use this language order for playback. The picker will show one regular track per kept language.",
+    "other": "。Kinosail 會依此語言順序播放。選擇器會為每種保留語言顯示一條一般字幕軌道。"
+  },
+  {
+    "id": "Forced tracks in every language will stay. Only selected languages appear in the picker.",
+    "other": "所有語言的強制字幕軌道將保留。選擇器中只顯示所選語言。"
+  },
+  {
+    "id": "Forced subtitle files in every language will be hidden.",
+    "other": "所有語言的強制字幕檔案將被隱藏。"
+  },
+  {
+    "id": "to hide",
+    "other": "要隱藏"
+  },
+  {
+    "id": "Only tagged .srt and .vtt files beside videos are included. Hidden files keep their contents with a .hidden suffix; remove that suffix to restore them. Embedded tracks and files with uncertain language stay in place.",
+    "other": "僅包含影片旁已標記的 .srt 和 .vtt 檔案。隱藏的檔案會保留內容，並帶有 .hidden 後綴；移除該後綴即可還原。內嵌字幕軌道和語言不確定的檔案維持不變。"
+  },
+  {
+    "id": "file was",
+    "other": "個檔案已被"
+  },
+  {
+    "id": "files were",
+    "other": "個檔案已被"
+  },
+  {
+    "id": "skipped.",
+    "other": "略過。"
+  },
+  {
+    "id": "The first",
+    "other": "顯示前"
+  },
+  {
+    "id": "matches are shown.",
+    "other": "個符合結果。"
+  },
+  {
+    "id": "No files match this cleanup choice.",
+    "other": "沒有符合此清理選項的檔案。"
+  },
+  {
+    "id": "Hide",
+    "other": "隱藏"
+  },
+  {
+    "id": "Save selected languages",
+    "other": "儲存所選語言"
+  },
+  {
+    "id": "Subtitle cleanup complete",
+    "other": "字幕清理完成"
+  },
+  {
+    "id": "is now your preferred language",
+    "other": "已設為您的偏好語言"
+  },
+  {
+    "id": "are now your preferred languages",
+    "other": "已設為您的偏好語言"
+  },
+  {
+    "id": ". Hidden",
+    "other": "。已隱藏"
+  },
+  {
+    "id": "· Subtitle inspector",
+    "other": "· 字幕檢查器"
+  },
+  {
+    "id": "Video with subtitle preview",
+    "other": "含字幕預覽的影片"
+  },
+  {
+    "id": "Audio waveform and dialogue activity",
+    "other": "音訊波形與對白活動"
+  },
+  {
+    "id": "Load a preview to edit its text and timestamps",
+    "other": "載入預覽以編輯其文字與時間碼"
+  },
+  {
+    "id": "Subtitle inspector ·",
+    "other": "字幕檢查器 ·"
+  },
+  {
+    "id": "Current subtitle loaded. Preview a change before saving.",
+    "other": "已載入目前的字幕。儲存前請先預覽變更。"
+  },
+  {
+    "id": "Choose a subtitle file to begin.",
+    "other": "請選擇字幕檔案以開始。"
+  },
+  {
+    "id": "Interactive previews need JavaScript. You can export installed subtitles below or use the subtitle API.",
+    "other": "互動式預覽需要 JavaScript。您可以在下方匯出已安裝的字幕，或使用字幕 API。"
+  },
+  {
+    "id": "Video preview",
+    "other": "影片預覽"
+  },
+  {
+    "id": "Choose a cue below to hear it in context. If this format cannot play here, use the waveform and cue text.",
+    "other": "請在下方選擇一條字幕，即可在上下文中聽到它。若此格式無法在此播放，請使用波形和字幕文字。"
+  },
+  {
+    "id": "Preview track",
+    "other": "預覽軌道"
+  },
+  {
+    "id": "Current",
+    "other": "目前"
+  },
+  {
+    "id": "Proposed",
+    "other": "建議"
+  },
+  {
+    "id": "Quality findings",
+    "other": "品質檢查結果"
+  },
+  {
+    "id": "No subtitle installed. Import one to inspect its text and timing.",
+    "other": "尚未安裝字幕。請匯入一個字幕以檢查其文字與時間。"
+  },
+  {
+    "id": "Audio reference",
+    "other": "音訊參考"
+  },
+  {
+    "id": "Analyze the audio on this Server to see where dialogue occurs throughout the video.",
+    "other": "在此伺服器上分析音訊，查看影片中對白出現的位置。"
+  },
+  {
+    "id": "Analyze audio",
+    "other": "分析音訊"
+  },
+  {
+    "id": "Create a local subtitle draft",
+    "other": "建立本機字幕草稿"
+  },
+  {
+    "id": "Read text from image-based PGS/VobSub subtitles with OCR, or transcribe audio in the selected language. Both run on this Server. Review the generated text before saving.",
+    "other": "使用 OCR 從圖像式 PGS/VobSub 字幕讀取文字，或轉錄所選語言的音訊。兩者都在此伺服器上執行。儲存前請檢查產生的文字。"
+  },
+  {
+    "id": "Method",
+    "other": "方法"
+  },
+  {
+    "id": "Read image-based subtitles (OCR)",
+    "other": "讀取圖像字幕（OCR）"
+  },
+  {
+    "id": "Transcribe dialogue",
+    "other": "轉錄對白"
+  },
+  {
+    "id": "Generate draft",
+    "other": "產生草稿"
+  },
+  {
+    "id": "Stop generation",
+    "other": "停止產生"
+  },
+  {
+    "id": "Review generated draft",
+    "other": "檢查產生的草稿"
+  },
+  {
+    "id": "OCR needs the language's Tesseract data. Transcription needs a local Whisper model in",
+    "other": "OCR 需要該語言的 Tesseract 資料。轉錄需要本機 Whisper 模型，請在"
+  },
+  {
+    "id": "configuration",
+    "other": "設定中設定"
+  },
+  {
+    "id": ". One draft is kept at a time; starting another replaces it. Drafts are cleared when the server restarts.",
+    "other": "。同一時間只保留一份草稿，開始另一份會取代目前草稿。伺服器重新啟動後草稿會被清除。"
+  },
+  {
+    "id": "Recognition confidence and estimated word timing",
+    "other": "辨識信心度與估計的字詞時間"
+  },
+  {
+    "id": "Highlighted words may need correction. Word times are estimated for transcripts; words read from subtitle images share the timing of their subtitle line.",
+    "other": "反白的字詞可能需要更正。轉錄稿的字詞時間為估計值；從字幕圖像讀取的字詞與其所在字幕行的時間相同。"
+  },
+  {
+    "id": "Show more words",
+    "other": "顯示更多字詞"
+  },
+  {
+    "id": "Prepare a change",
+    "other": "準備變更"
+  },
+  {
+    "id": "Subtitle language",
+    "other": "字幕語言"
+  },
+  {
+    "id": "Import a subtitle file",
+    "other": "匯入字幕檔案"
+  },
+  {
+    "id": "SRT, WebVTT, ASS/SSA, or TTML · up to 4 MB. The original is retained when you save.",
+    "other": "支援 SRT、WebVTT、ASS/SSA 或 TTML · 上限 4 MB。儲存時會保留原始檔案。"
+  },
+  {
+    "id": "Subtitle role",
+    "other": "字幕類型"
+  },
+  {
+    "id": "Dialogue subtitles",
+    "other": "對白字幕"
+  },
+  {
+    "id": "Accessibility captions (SDH)",
+    "other": "無障礙字幕（SDH）"
+  },
+  {
+    "id": "Choose captions only after checking sound descriptions and speaker information. A generated transcript does not automatically include this information.",
+    "other": "僅在檢查過音效描述和說話者資訊後，再選擇無障礙字幕。產生的轉錄稿不會自動包含這些資訊。"
+  },
+  {
+    "id": "Text encoding",
+    "other": "文字編碼"
+  },
+  {
+    "id": "Automatic · use language when needed",
+    "other": "自動 · 需要時使用語言"
+  },
+  {
+    "id": "Synchronize against the video's main dialogue",
+    "other": "與影片的主要對白同步"
+  },
+  {
+    "id": "Automatic sync and text cleanup are on for previews. Review the result before saving. If audio cannot be matched, turn off sync or use manual timing.",
+    "other": "預覽時已開啟自動同步與文字清理。儲存前請檢查結果。若無法比對音訊，請關閉同步或使用手動時間設定。"
+  },
+  {
+    "id": "Timing anchors and cleanup",
+    "other": "時間錨點與清理"
+  },
+  {
+    "id": "Shift all cues (seconds)",
+    "other": "整體平移所有字幕（秒）"
+  },
+  {
+    "id": "Positive values show subtitles later. Use anchors to correct drift; choose either a shift or anchors.",
+    "other": "正值會使字幕延後顯示。使用錨點校正漂移；請選擇平移或錨點其中之一。"
+  },
+  {
+    "id": "Add timing anchor",
+    "other": "新增時間錨點"
+  },
+  {
+    "id": "Remove subtitle credits at the beginning and end",
+    "other": "移除片頭和片尾的字幕"
+  },
+  {
+    "id": "Merge adjacent repeated cues",
+    "other": "合併相鄰的重複字幕"
+  },
+  {
+    "id": "Remove hearing-impaired descriptions, such as [door slams] and speaker names",
+    "other": "移除聽障說明，例如 [關門聲] 和說話者名稱"
+  },
+  {
+    "id": "Correct subtitle text",
+    "other": "更正字幕文字"
+  },
+  {
+    "id": "Load the current preview, edit its numbered SRT cues, and preview again. Loading the preview resets timing controls because these timestamps already include your changes.",
+    "other": "載入目前的預覽，編輯其中編號的 SRT 字幕條目，然後再次預覽。載入預覽會重設時間控制項，因為這些時間碼已包含您的變更。"
+  },
+  {
+    "id": "Load preview into text editor",
+    "other": "將預覽載入文字編輯器"
+  },
+  {
+    "id": "Editable SRT",
+    "other": "可編輯的 SRT"
+  },
+  {
+    "id": "Discard text corrections",
+    "other": "捨棄文字更正"
+  },
+  {
+    "id": "Preview changes",
+    "other": "預覽變更"
+  },
+  {
+    "id": "Save reviewed subtitle",
+    "other": "儲存已檢查的字幕"
+  },
+  {
+    "id": "Saving keeps a recovery copy and protects your edit from automatic upgrades.",
+    "other": "儲存時會保留復原副本，並讓您的編輯不受自動升級影響。"
+  },
+  {
+    "id": "Export SRT",
+    "other": "匯出 SRT"
+  },
+  {
+    "id": "Export WebVTT",
+    "other": "匯出 WebVTT"
+  },
+  {
+    "id": "Undo last replacement",
+    "other": "復原上次取代"
+  },
+  {
+    "id": "Before and after",
+    "other": "前後對照"
+  },
+  {
+    "id": "Only cues with findings",
+    "other": "僅顯示有問題的字幕條目"
+  },
+  {
+    "id": "Reading-speed and overlap findings are suggestions; signs, songs, and simultaneous speakers may be intentional.",
+    "other": "閱讀速度和重疊檢查的結果僅供參考；標示牌、歌曲和同時說話的人可能是刻意設計的。"
+  },
+  {
+    "id": "Cue pages",
+    "other": "字幕條目分頁"
+  },
+  {
+    "id": "cues shown",
+    "other": "條字幕條目已顯示"
+  },
+  {
+    "id": "Next",
+    "other": "下一個"
+  },
+  {
+    "id": "Main navigation",
+    "other": "主導覽"
+  },
+  {
+    "id": "Support Kinosail",
+    "other": "支持 Kinosail"
+  },
+  {
+    "id": "Subtitle library",
+    "other": "字幕媒體庫"
+  },
+  {
+    "id": "Overview",
+    "other": "總覽"
+  },
+  {
+    "id": "Wanted",
+    "other": "缺少字幕"
+  },
+  {
+    "id": "Support",
+    "other": "支持"
+  },
+  {
+    "id": "Configured media folders",
+    "other": "已設定的媒體資料夾"
+  },
+  {
+    "id": "Choose your subtitle plan · Kinosail Subtitles",
+    "other": "選擇字幕方案 · Kinosail Subtitles"
+  },
+  {
+    "id": "Owner account",
+    "other": "擁有者帳戶"
+  },
+  {
+    "id": "Subtitle plan",
+    "other": "字幕方案"
+  },
+  {
+    "id": "Step 2 of 2 · Subtitle plan",
+    "other": "第 2 步（共 2 步）· 字幕方案"
+  },
+  {
+    "id": "Connect a provider. Let Kinosail handle the rest.",
+    "other": "連接一個服務提供者。其餘交由 Kinosail 處理。"
+  },
+  {
+    "id": "Your language, folders, and schedule are already set. The defaults handle everyday subtitle maintenance; adjust them only when your household needs something different.",
+    "other": "語言、資料夾和排程已設定完成。預設值可以應付日常字幕維護；只有在家中需要不同設定時，才需要調整。"
+  },
+  {
+    "id": "Connect a subtitle provider",
+    "other": "連接字幕提供者"
+  },
+  {
+    "id": "One provider is enough to start. Provider credentials take effect immediately. Kinosail then finds missing subtitles automatically.",
+    "other": "開始使用只需一個提供者。提供者憑證會立即生效。之後 Kinosail 會自動尋找缺少的字幕。"
+  },
+  {
+    "id": "Configured",
+    "other": "已設定"
+  },
+  {
+    "id": "Key instructions",
+    "other": "金鑰說明"
+  },
+  {
+    "id": "Enter key in Kinosail",
+    "other": "在 Kinosail 中輸入金鑰"
+  },
+  {
+    "id": "Provider searches receive media identity and language metadata, not media bytes. Embedded and existing sidecar subtitles stay local.",
+    "other": "提供者搜尋時只會收到媒體身分和語言中繼資料，不會收到媒體檔案內容。內嵌字幕和既有的外掛字幕仍保留在本機。"
+  },
+  {
+    "id": "Ready-to-use defaults",
+    "other": "開箱即用的預設值"
+  },
+  {
+    "id": "subtitles, prefer embedded text, and check for missing files every 15 minutes. Preserve original downloads, back up replacements, and leave uncertain timing unchanged.",
+    "other": "字幕，優先使用內嵌文字，並每 15 分鐘檢查一次缺少的檔案。保留原始下載的字幕，取代前先備份，不確定的時間軸保持不變。"
+  },
+  {
+    "id": "Optional OCR and transcription create local drafts for review. They never replace subtitles automatically.",
+    "other": "可選的 OCR 和轉錄功能會在本機產生草稿供審閱。它們絕不會自動取代字幕。"
+  },
+  {
+    "id": "Review language, media scope, and schedule",
+    "other": "檢查語言、媒體範圍和排程"
+  },
+  {
+    "id": "Choose the primary subtitle language",
+    "other": "選擇首選字幕語言"
+  },
+  {
+    "id": "Embedded text comes first. Select the primary language and preferred subtitle role.",
+    "other": "內嵌文字優先。請選擇首選語言和偏好的字幕類型。"
+  },
+  {
+    "id": "Primary language",
+    "other": "首選語言"
+  },
+  {
+    "id": "Common languages appear first. You can choose from the complete catalog.",
+    "other": "常用語言排在前面。你也可以從完整清單中選擇。"
+  },
+  {
+    "id": "Save plan",
+    "other": "儲存方案"
+  },
+  {
+    "id": "Managed by deployment configuration.",
+    "other": "由部署設定管理。"
+  },
+  {
+    "id": "Choose where to save subtitle files",
+    "other": "選擇字幕檔案的儲存位置"
+  },
+  {
+    "id": "Kinosail checks subtitle files before saving them beside your videos. The Server needs permission to write to these folders.",
+    "other": "Kinosail 會先檢查字幕檔案，再將其儲存在影片旁。伺服器需要寫入這些資料夾的權限。"
+  },
+  {
+    "id": "Entire media mount",
+    "other": "整個媒體掛載點"
+  },
+  {
+    "id": "Active",
+    "other": "已啟用"
+  },
+  {
+    "id": "Once you add a folder, Kinosail will use only the folders you select.",
+    "other": "新增資料夾後，Kinosail 只會使用你選取的資料夾。"
+  },
+  {
+    "id": "Choose a scan schedule",
+    "other": "選擇掃描排程"
+  },
+  {
+    "id": "Kinosail detects files when copying finishes. Scheduled scans catch changes it may have missed.",
+    "other": "Kinosail 會在複製完成後偵測檔案。排程掃描可補上它可能漏掉的變更。"
+  },
+  {
+    "id": "Server default",
+    "other": "伺服器預設值"
+  },
+  {
+    "id": "Every hour",
+    "other": "每小時"
+  },
+  {
+    "id": "Only filesystem events",
+    "other": "僅檔案系統事件"
+  },
+  {
+    "id": "Readiness check",
+    "other": "就緒檢查"
+  },
+  {
+    "id": "Your subtitle plan",
+    "other": "你的字幕方案"
+  },
+  {
+    "id": "Media scope",
+    "other": "媒體範圍"
+  },
+  {
+    "id": "Provider",
+    "other": "提供者"
+  },
+  {
+    "id": "Ready",
+    "other": "就緒"
+  },
+  {
+    "id": "Filesystem events only",
+    "other": "僅限檔案系統事件"
+  },
+  {
+    "id": "Provider credentials are configured. Kinosail still uses local sidecars and embedded text first.",
+    "other": "已設定提供者憑證。Kinosail 仍會優先使用本機外掛字幕和內嵌文字。"
+  },
+  {
+    "id": "Set up one provider to let Kinosail find missing files. Embedded and existing sidecar subtitles work without one.",
+    "other": "設定一個提供者，讓 Kinosail 尋找缺少的檔案。內嵌字幕和既有的外掛字幕不需要提供者也能使用。"
+  },
+  {
+    "id": "Configure a provider",
+    "other": "設定提供者"
+  },
+  {
+    "id": "Provider requests do not include your media files. You can review saved subtitle changes in each file’s installation history.",
+    "other": "提供者的請求不包含你的媒體檔案。你可以在每個檔案的安裝紀錄中查看已儲存的字幕變更。"
+  },
+  {
+    "id": "Review all settings",
+    "other": "檢查所有設定"
+  },
+  {
+    "id": "You can change these choices in Settings.",
+    "other": "你可以在設定中變更這些選項。"
+  },
+  {
+    "id": "Finish and open overview",
+    "other": "完成並開啟總覽"
+  },
+  {
+    "id": "Preferred subtitle languages",
+    "other": "偏好字幕語言"
+  },
+  {
+    "id": "Leave blank to keep the configured key",
+    "other": "留空則保留已設定的金鑰"
+  },
+  {
+    "id": "Paste your SubSource API key",
+    "other": "貼上你的 SubSource API 金鑰"
+  },
+  {
+    "id": "Subtitle overview",
+    "other": "字幕總覽"
+  },
+  {
+    "id": "Choose where Kinosail looks, which languages each title needs, and how often it checks for changes.",
+    "other": "選擇 Kinosail 尋找的位置、每個標題需要的語言，以及檢查變更的頻率。"
+  },
+  {
+    "id": "Languages",
+    "other": "語言"
+  },
+  {
+    "id": "Automation",
+    "other": "自動化"
+  },
+  {
+    "id": "Thanks",
+    "other": "致謝"
+  },
+  {
+    "id": "Preferred languages",
+    "other": "偏好語言"
+  },
+  {
+    "id": "A media file is ready when it has text subtitles in every selected language. The first language is your primary choice.",
+    "other": "當媒體檔案包含所有已選語言的文字字幕時，即為就緒。第一種語言是你的首選。"
+  },
+  {
+    "id": "· Primary",
+    "other": "· 首選"
+  },
+  {
+    "id": "Add a language",
+    "other": "新增一種語言"
+  },
+  {
+    "id": "Add language",
+    "other": "新增語言"
+  },
+  {
+    "id": "20-language limit reached",
+    "other": "已達到 20 種語言上限"
+  },
+  {
+    "id": "You have selected 20 languages. Remove one before adding another.",
+    "other": "你已選擇 20 種語言。新增其他語言前，請先移除一種。"
+  },
+  {
+    "id": "Save subtitle role",
+    "other": "儲存字幕類型"
+  },
+  {
+    "id": "Playback subtitle choices",
+    "other": "播放時的字幕選項"
+  },
+  {
+    "id": "Show every available track",
+    "other": "顯示所有可用字幕軌道"
+  },
+  {
+    "id": "Show preferred languages only",
+    "other": "僅顯示偏好語言"
+  },
+  {
+    "id": "Save subtitle choices",
+    "other": "儲存字幕選項"
+  },
+  {
+    "id": "Limiting choices hides extra tracks from subtitle selection menus; it does not rename or delete subtitle files. Off remains available. The picker shows one regular track per selected language. Kept forced tracks appear only in selected languages. Cleanup enables this choice after confirmation. It hides only the files you confirm in its preview.",
+    "other": "限制選項會從字幕選單中隱藏多餘的字幕軌道，但不會重新命名或刪除字幕檔案。「關閉」選項仍可使用。選擇器會為每個已選語言顯示一個一般字幕軌道。保留的強制字幕只會在已選語言中顯示。清理確認後會啟用此選項。它只會隱藏你在預覽中確認的檔案。"
+  },
+  {
+    "id": "Subtitle providers",
+    "other": "字幕提供者"
+  },
+  {
+    "id": "One provider is enough. Kinosail searches every configured provider automatically and selects one trusted match.",
+    "other": "一個提供者就足夠。Kinosail 會自動搜尋所有已設定的提供者，並選出一個可信的符合結果。"
+  },
+  {
+    "id": "remaining",
+    "other": "剩餘"
+  },
+  {
+    "id": "· retry",
+    "other": "· 重試"
+  },
+  {
+    "id": "Need an account?",
+    "other": "需要帳戶嗎？"
+  },
+  {
+    "id": "On SubSource, choose Create Account.",
+    "other": "在 SubSource 上選擇「建立帳戶」。"
+  },
+  {
+    "id": "Test provider credentials",
+    "other": "測試提供者憑證"
+  },
+  {
+    "id": "Embedded tracks stay local. Provider searches receive the filename, language, media identity, and a non-cryptographic file hash when supported.",
+    "other": "內嵌軌道會保留在本機。提供者搜尋時會收到檔案名稱、語言、媒體身分，以及在支援時的非加密檔案雜湊值。"
+  },
+  {
+    "id": "Configure SubDL",
+    "other": "設定 SubDL"
+  },
+  {
+    "id": "Configure OpenSubtitles",
+    "other": "設定 OpenSubtitles"
+  },
+  {
+    "id": "SubSource",
+    "other": "SubSource 字幕提供者"
+  },
+  {
+    "id": "A SubSource key and personal-use acceptance are saved.",
+    "other": "SubSource 金鑰與個人使用同意已儲存。"
+  },
+  {
+    "id": "SubSource adds broad free coverage. Its files remain unchanged and stay inside your household.",
+    "other": "SubSource 提供範圍廣泛的免費字幕。其檔案保持不變，並僅限於您的家庭內使用。"
+  },
+  {
+    "id": "SubSource API key",
+    "other": "SubSource API 金鑰"
+  },
+  {
+    "id": "Use SubSource only for personal household use and accept its terms",
+    "other": "僅將 SubSource 用於家庭個人使用，並接受其條款"
+  },
+  {
+    "id": "Save SubSource",
+    "other": "儲存 SubSource"
+  },
+  {
+    "id": "Disable SubSource",
+    "other": "停用 SubSource"
+  },
+  {
+    "id": "Give the Kinosail container permission to save subtitle files in these folders.",
+    "other": "允許 Kinosail 容器在這些資料夾中儲存字幕檔案。"
+  },
+  {
+    "id": "Add library",
+    "other": "新增媒體庫"
+  },
+  {
+    "id": "Library monitoring",
+    "other": "媒體庫監控"
+  },
+  {
+    "id": "Kinosail detects new files when copying finishes. Scheduled scans find missing subtitles and replace automatically managed subtitles when a better trusted match is available.",
+    "other": "Kinosail 會在複製完成後偵測新檔案。排程掃描會尋找缺少的字幕，並在有更可信的符合項目時取代自動管理的字幕。"
+  },
+  {
+    "id": "Recommended for phones and browsers. Optional.",
+    "other": "建議用於手機和瀏覽器。選用。"
+  },
+  {
+    "id": "Kinosail LAN address",
+    "other": "Kinosail 區域網路位址"
+  },
+  {
+    "id": "Allow DNS validation and accept the Let's Encrypt subscriber agreement",
+    "other": "允許 DNS 驗證並接受 Let's Encrypt 用戶協議"
+  },
+  {
+    "id": "Save trusted HTTPS",
+    "other": "儲存可信任的 HTTPS"
+  },
+  {
+    "id": "Owner and recovery",
+    "other": "擁有者與復原"
+  },
+  {
+    "id": "Manage passkeys, authenticators, sessions, encrypted backups, and advanced deployment values.",
+    "other": "管理通行密鑰、驗證器、工作階段、加密備份和進階部署值。"
+  },
+  {
+    "id": "Backups",
+    "other": "備份"
+  },
+  {
+    "id": "Open setup guide",
+    "other": "開啟設定指南"
+  },
+  {
+    "id": "Made possible by",
+    "other": "得益於以下專案"
+  },
+  {
+    "id": "We are grateful to the people who make local subtitles possible.",
+    "other": "感謝讓本地字幕得以實現的人們。"
+  },
+  {
+    "id": "and the",
+    "other": "和"
+  },
+  {
+    "id": "maintainers give this Server its media tools.",
+    "other": "維護者為本伺服器提供媒體工具。"
+  },
+  {
+    "id": "Silero VAD",
+    "other": "Silero VAD 專案"
+  },
+  {
+    "id": ", and",
+    "other": "，以及"
+  },
+  {
+    "id": "Tesseract",
+    "other": "Tesseract 專案"
+  },
+  {
+    "id": "help with optional local speech and text recognition. When you choose an online provider,",
+    "other": "協助實現可選的本機語音與文字辨識。選擇線上提供者時，"
+  },
+  {
+    "id": "SubDL",
+    "other": "SubDL 字幕站"
+  },
+  {
+    "id": "help find subtitles.",
+    "other": "協助尋找字幕。"
+  },
+  {
+    "id": "We also thank the people behind the browser, font, networking, and archive tools used here.",
+    "other": "我們也感謝為這裡所用瀏覽器、字型、網路與封存工具付出心力的人們。"
+  },
+  {
+    "id": "View third-party notices",
+    "other": "檢視第三方聲明"
+  },
+  {
+    "id": "for licenses, sources, and the terms that apply to each component. The Server image also includes them at",
+    "other": "以查看各元件的授權、來源和適用條款。伺服器映像檔中也包含這些內容，位置為"
+  },
+  {
+    "id": "Hide unwanted subtitle files",
+    "other": "隱藏不需要的字幕檔案"
+  },
+  {
+    "id": "Keep the languages you use so playback has fewer choices. When subtitles are on, Kinosail selects the first available preferred language.",
+    "other": "保留您使用的語言，讓播放時的選項更少。開啟字幕時，Kinosail 會選擇第一個可用的偏好語言。"
+  },
+  {
+    "id": "Cleanup is optional and off until you enable it. Preview tagged .srt and .vtt files before hiding them. Hidden files stay beside the video with a .hidden suffix; remove that suffix to restore them. Embedded tracks and files with uncertain language stay in place.",
+    "other": "清理為選用功能，啟用前預設關閉。隱藏前請先預覽已標記的 .srt 和 .vtt 檔案。隱藏的檔案會與影片放在一起，並帶有 .hidden 後綴；移除該後綴即可還原。內嵌音軌以及語言不確定的檔案會保持原位。"
+  },
+  {
+    "id": "Enable subtitle language cleanup",
+    "other": "啟用字幕語言清理"
+  },
+  {
+    "id": "Languages to keep",
+    "other": "要保留的語言"
+  },
+  {
+    "id": "Select at least one language. On a keyboard, hold Command or Ctrl to select several.",
+    "other": "至少選擇一種語言。使用鍵盤時，按住 Command 或 Ctrl 鍵可選取多種語言。"
+  },
+  {
+    "id": "Forced subtitles in every language",
+    "other": "所有語言的強制字幕"
+  },
+  {
+    "id": "Preview files to hide",
+    "other": "預覽要隱藏的檔案"
+  },
+  {
+    "id": "Cleanup",
+    "other": "清理"
+  },
+  {
+    "id": "certificate for Kinosail Subtitles",
+    "other": "Kinosail Subtitles 的證書"
+  },
+  {
+    "id": "A privacy-safe supporter certificate with a Kinosail Subtitles caption badge.",
+    "other": "一份注重隱私的支持者證書，帶有 Kinosail Subtitles 字幕徽章。"
+  },
+  {
+    "id": "No payment, activation, device, or private installation data is included.",
+    "other": "不包含付款、啟用、裝置或私人安裝資料。"
+  },
+  {
+    "id": "Kinosail Subtitles Perfect Sync masterwork, level",
+    "other": "Kinosail Subtitles 完美同步大師級，等級"
+  },
+  {
+    "id": "Subscriber service marks",
+    "other": "訂閱服務標記"
+  },
+  {
+    "id": "badge for Kinosail Subtitles",
+    "other": "Kinosail Subtitles 徽章"
+  },
+  {
+    "id": "Supporter badges · Kinosail Subtitles",
+    "other": "支持者徽章 · Kinosail Subtitles"
+  },
+  {
+    "id": "Kinosail Subtitles supporter registry",
+    "other": "Kinosail Subtitles 支持者名錄"
+  },
+  {
+    "id": "Two badge families. Every level has its own shape.",
+    "other": "兩類徽章系列。每個等級都有各自的造型。"
+  },
+  {
+    "id": "Support stays voluntary. Kinosail Subtitles keeps every core feature. Monthly and one-time support both earn complete, app-specific badges.",
+    "other": "支持完全自願。Kinosail Subtitles 保留所有核心功能。每月支持和一次性支持都能獲得完整、專屬於此應用程式的徽章。"
+  },
+  {
+    "id": "Your badge case",
+    "other": "您的徽章櫃"
+  },
+  {
+    "id": "Recognition stored on this Server",
+    "other": "本伺服器中儲存的認可紀錄"
+  },
+  {
+    "id": "Perfect Sync · Level",
+    "other": "完美同步 · 等級"
+  },
+  {
+    "id": "Both badge families meet here. Perfect Sync rises only when both families reach the next level.",
+    "other": "兩類徽章在此匯合。只有兩類徽章都達到下一等級，完美同步才會提升。"
+  },
+  {
+    "id": "Living cadence active",
+    "other": "持續更新已啟用"
+  },
+  {
+    "id": "Earned permanently · Living cadence dormant",
+    "other": "永久獲得 · 持續更新未啟用"
+  },
+  {
+    "id": "Complete Fleet",
+    "other": "完整應用組"
+  },
+  {
+    "id": "comes only from signed collection metadata. A Living Complete Fleet follows future configured apps while active. A dated Patron edition stays fixed.",
+    "other": "僅來自已簽署的系列中繼資料。持續更新的完整應用組在啟用期間會跟隨之後設定的應用程式。標註日期的贊助者版本維持不變。"
+  },
+  {
+    "id": "Optional local activation",
+    "other": "可選的本機啟用"
+  },
+  {
+    "id": "Add or refresh either badge",
+    "other": "新增或更新任一徽章"
+  },
+  {
+    "id": "The Server sends only the key, app ID, and a random installation mark. It stores no payment details or supporter key. Signed results verify offline.",
+    "other": "伺服器僅傳送金鑰、應用程式 ID 和隨機的安裝標記。它不會儲存付款資料或贊助者金鑰。已簽署的結果可離線驗證。"
+  },
+  {
+    "id": "Supporter key",
+    "other": "贊助者金鑰"
+  },
+  {
+    "id": "Public recognition name",
+    "other": "公開顯示名稱"
+  },
+  {
+    "id": "Optional. Levels 7–10 only. This name appears on shared certificates.",
+    "other": "選填。僅限 7–10 級。此名稱會顯示在分享的證書上。"
+  },
+  {
+    "id": "Activate or refresh badge",
+    "other": "啟用或更新徽章"
+  },
+  {
+    "id": "One key covers every included app.",
+    "other": "一把金鑰可涵蓋所有包含的應用程式。"
+  },
+  {
+    "id": "Each app keeps its own emblem and Share Certificate. Living follows current apps while active. Dated Patron editions stay fixed.",
+    "other": "每個應用程式都保留各自的徽記和分享證書。持續更新版在啟用期間會跟隨目前的應用程式。標註日期的贊助者版本維持不變。"
+  },
+  {
+    "id": "Private by default",
+    "other": "預設私密"
+  },
+  {
+    "id": "Share the honor, not the activation.",
+    "other": "分享榮譽，不分享啟用資訊。"
+  },
+  {
+    "id": "Downloaded certificates include the app, badge family, level, dates, and an explicitly supplied high-level recognition name. They exclude keys, supporter marks, signatures, payment data, devices, and installation data.",
+    "other": "下載的證書包含應用程式、徽章系列、等級、日期，以及明確提供的較高級別認可名稱。證書不包含金鑰、贊助者標記、簽章、付款資料、裝置和安裝資料。"
+  },
+  {
+    "id": "Public supporters",
+    "other": "公開的支持者"
+  },
+  {
+    "id": "Shared as",
+    "other": "分享為"
+  },
+  {
+    "id": "Supported since",
+    "other": "支持始於"
+  },
+  {
+    "id": "Current through",
+    "other": "有效期限至"
+  },
+  {
+    "id": "apps in this signed edition",
+    "other": "個應用程式，屬於此已簽署版本"
+  },
+  {
+    "id": "Download SVG certificate",
+    "other": "下載 SVG 證書"
+  },
+  {
+    "id": "Share PNG certificate",
+    "other": "分享 PNG 證書"
+  },
+  {
+    "id": "Not activated",
+    "other": "未啟用"
+  },
+  {
+    "id": "Your other badge family stays independent.",
+    "other": "您的另一類徽章系列保持獨立。"
+  },
+  {
+    "id": "Elite level ·",
+    "other": "菁英等級 ·"
+  },
+  {
+    "id": "Archived",
+    "other": "已封存"
+  },
+  {
+    "id": "Yours",
+    "other": "您的"
+  },
+  {
+    "id": "Collected",
+    "other": "已收集"
+  },
+  {
+    "id": "Available",
+    "other": "可用"
+  },
+  {
+    "id": "· Kinosail Player",
+    "other": "· Kinosail 播放器"
+  },
+  {
+    "id": "Play album",
+    "other": "播放專輯"
+  },
+  {
+    "id": "Tracks",
+    "other": "曲目"
+  },
+  {
+    "id": "Single sign-on return address",
+    "other": "單一登入返回位址"
+  },
+  {
+    "id": "Single sign-on issuer",
+    "other": "單一登入發行者"
+  },
+  {
+    "id": "Single sign-on client ID",
+    "other": "單一登入用戶端 ID"
+  },
+  {
+    "id": "Single sign-on client secret",
+    "other": "單一登入用戶端密鑰"
+  },
+  {
+    "id": "Client secret",
+    "other": "用戶端密鑰"
+  },
+  {
+    "id": "Single sign-on identity claim",
+    "other": "單一登入身分宣告"
+  },
+  {
+    "id": "Use a standards-based OpenID Connect provider. Create a confidential web application. Your return address is your Kinosail HTTPS address followed by",
+    "other": "請使用符合標準的 OpenID Connect 提供者。建立一個機密 Web 應用程式。回傳位址為你的 Kinosail HTTPS 位址，後面加上"
+  },
+  {
+    "id": ". Register it exactly with the provider.",
+    "other": "。請在提供者處完全照此登錄。"
+  },
+  {
+    "id": "Single sign-on is not configured.",
+    "other": "尚未設定單一登入。"
+  },
+  {
+    "id": "Return address",
+    "other": "回傳位址"
+  },
+  {
+    "id": "Issuer URL",
+    "other": "發行者 URL"
+  },
+  {
+    "id": "Client ID",
+    "other": "用戶端 ID"
+  },
+  {
+    "id": "Identity claim",
+    "other": "身分宣告"
+  },
+  {
+    "id": "Provision the same claim value as the SCIM",
+    "other": "請提供與 SCIM"
+  },
+  {
+    "id": "unless your provider uses another stable claim, such as Microsoft Entra",
+    "other": "除非你的提供者使用其他穩定宣告，例如 Microsoft Entra"
+  },
+  {
+    "id": "Save single sign-on",
+    "other": "儲存單一登入"
+  },
+  {
+    "id": "Copy URL for service provider metadata",
+    "other": "複製服務提供者中繼資料 URL"
+  },
+  {
+    "id": "Copy URL for Assertion Consumer Service",
+    "other": "複製 Assertion Consumer Service 的 URL"
+  },
+  {
+    "id": "SAML provider metadata URL",
+    "other": "SAML 提供者中繼資料 URL"
+  },
+  {
+    "id": "SAML provider metadata XML",
+    "other": "SAML 提供者中繼資料 XML"
+  },
+  {
+    "id": "SAML identity attribute",
+    "other": "SAML 身分屬性"
+  },
+  {
+    "id": "SAML single sign-on",
+    "other": "SAML 單一登入"
+  },
+  {
+    "id": "Connect a Security Assertion Markup Language (SAML) 2.0 identity provider. Use its metadata URL, or paste a downloaded metadata document.",
+    "other": "連接安全聲明標記語言（SAML）2.0 身分提供者。使用其中繼資料 URL，或貼上已下載的中繼資料文件。"
+  },
+  {
+    "id": "Service provider metadata",
+    "other": "服務提供者中繼資料"
+  },
+  {
+    "id": "Copy URL",
+    "other": "複製 URL"
+  },
+  {
+    "id": "Assertion Consumer Service URL",
+    "other": "Assertion Consumer Service 的 URL"
+  },
+  {
+    "id": "SAML single sign-on is not configured.",
+    "other": "尚未設定 SAML 單一登入。"
+  },
+  {
+    "id": "Provider metadata URL",
+    "other": "提供者中繼資料 URL"
+  },
+  {
+    "id": "Or use a downloaded metadata document.",
+    "other": "或使用已下載的中繼資料文件。"
+  },
+  {
+    "id": "Provider metadata XML",
+    "other": "提供者中繼資料 XML"
+  },
+  {
+    "id": "Identity attribute",
+    "other": "身分屬性"
+  },
+  {
+    "id": "Provision the same value as the SCIM",
+    "other": "請提供與 SCIM"
+  },
+  {
+    "id": ", or enter one signed assertion attribute name.",
+    "other": "，或輸入一個已簽署的宣告屬性名稱。"
+  },
+  {
+    "id": "Enter exactly one metadata source. Changes apply after a restart.",
+    "other": "只能輸入一個中繼資料來源。變更將在重新啟動後生效。"
+  },
+  {
+    "id": "Entity ID:",
+    "other": "實體 ID："
+  },
+  {
+    "id": "Metadata URL certificates refresh every hour. Configuration keys:",
+    "other": "中繼資料 URL 的憑證每小時更新一次。設定鍵："
+  },
+  {
+    "id": "Copy the setup key or setup link into your authenticator app.",
+    "other": "將設定金鑰或設定連結複製到你的驗證器應用程式中。"
+  },
+  {
+    "id": "Save every recovery code before you continue. Each code works once.",
+    "other": "繼續之前，請儲存所有復原碼。每組復原碼只能使用一次。"
+  },
+  {
+    "id": "Enter the current 6-digit code to confirm the app.",
+    "other": "輸入目前的 6 位數字驗證碼以確認應用程式。"
+  },
+  {
+    "id": "Private Media Share",
+    "other": "私人媒體分享"
+  },
+  {
+    "id": "Opening shared media",
+    "other": "正在開啟分享的媒體"
+  },
+  {
+    "id": "Checking this private link…",
+    "other": "正在檢查此私人連結…"
+  },
+  {
+    "id": "Media Shares",
+    "other": "媒體分享"
+  },
+  {
+    "id": "Create an expiring link for selected Library Content and a limited number of devices.",
+    "other": "為所選媒體庫內容及有限數量的裝置建立有期限的連結。"
+  },
+  {
+    "id": "Create a Media Share",
+    "other": "建立媒體分享"
+  },
+  {
+    "id": "Expires",
+    "other": "到期時間"
+  },
+  {
+    "id": "One hour",
+    "other": "1 小時"
+  },
+  {
+    "id": "24 hours",
+    "other": "24 小時"
+  },
+  {
+    "id": "Devices",
+    "other": "裝置"
+  },
+  {
+    "id": "One",
+    "other": "一"
+  },
+  {
+    "id": "Two",
+    "other": "二"
+  },
+  {
+    "id": "Four",
+    "other": "四"
+  },
+  {
+    "id": "I confirm I have the right to share these items with recipients.",
+    "other": "我確認我有權與收件人分享這些項目。"
+  },
+  {
+    "id": "Create secure Media Share",
+    "other": "建立安全的媒體分享"
+  },
+  {
+    "id": "No active Media Shares.",
+    "other": "沒有有效的媒體分享。"
+  },
+  {
+    "id": "Edit multiple items",
+    "other": "批次編輯項目"
+  },
+  {
+    "id": "Apply the same metadata fields to selected Library Content. Blank fields stay unchanged.",
+    "other": "將相同的中繼資料欄位套用到所選媒體庫內容。空白欄位保持不變。"
+  },
+  {
+    "id": "Select items",
+    "other": "選取項目"
+  },
+  {
+    "id": "Metadata changes",
+    "other": "中繼資料變更"
+  },
+  {
+    "id": "Apply metadata",
+    "other": "套用中繼資料"
+  },
+  {
+    "id": "System sections",
+    "other": "系統區段"
+  },
+  {
+    "id": "Review local Server activity, recent playback, and safe diagnostics in one place.",
+    "other": "在同一處檢視本機伺服器活動、近期播放與安全診斷資訊。"
+  },
+  {
+    "id": "The local audit journal records security and administration events without request bodies or secrets. Administrative events can include configured Library folders.",
+    "other": "本機稽核日誌記錄安全與管理事件，但不包含要求內容或機密資訊。管理事件可能包含已設定的媒體庫資料夾。"
+  },
+  {
+    "id": "Playback history stays on this Server and is visible only to Owners.",
+    "other": "播放紀錄只保存在此伺服器上，且只有擁有者可以檢視。"
+  },
+  {
+    "id": "Healthy",
+    "other": "正常"
+  },
+  {
+    "id": "Needs attention",
+    "other": "需要注意"
+  },
+  {
+    "id": "Version:",
+    "other": "版本："
+  },
+  {
+    "id": "Manage while away · Kinosail",
+    "other": "外出時管理 · Kinosail"
+  },
+  {
+    "id": "Manage while away",
+    "other": "外出時管理"
+  },
+  {
+    "id": "Your Owner controls stay private. At home, sign in at your local Server address. Away from home, connect a paired device first.",
+    "other": "你的擁有者控制項保持私密。在家時，請透過本機伺服器位址登入。外出時，請先連線已配對的裝置。"
+  },
+  {
+    "id": "Private management",
+    "other": "私人管理"
+  },
+  {
+    "id": "Off · manage at home",
+    "other": "關閉 · 在家中管理"
+  },
+  {
+    "id": "Watching away from home is a",
+    "other": "外出觀看是一項"
+  },
+  {
+    "id": "separate setting",
+    "other": "獨立設定"
+  },
+  {
+    "id": ". Enabling public viewing never enables Owner access.",
+    "other": "。開啟公開觀看絕不會啟用擁有者存取權限。"
+  },
+  {
+    "id": "Start at home with your Owner account and two-step sign-in. Use your trusted local HTTPS address, or finish",
+    "other": "在家中使用你的擁有者帳戶與兩步驟登入開始。使用你信任的本機 HTTPS 位址，或先完成"
+  },
+  {
+    "id": "public HTTPS setup",
+    "other": "公開 HTTPS 設定"
+  },
+  {
+    "id": "Public Server hostname and management port",
+    "other": "公開伺服器主機名稱與管理連接埠"
+  },
+  {
+    "id": "). This is the address your paired device uses to find your Server.",
+    "other": "）。這是已配對裝置用來找到你的伺服器的位址。"
+  },
+  {
+    "id": "Enable private management",
+    "other": "啟用私人管理"
+  },
+  {
+    "id": "Paired devices",
+    "other": "已配對裝置"
+  },
+  {
+    "id": "No Owner devices are paired.",
+    "other": "沒有已配對的擁有者裝置。"
+  },
+  {
+    "id": "Lost a device or cannot connect?",
+    "other": "遺失裝置或無法連線？"
+  },
+  {
+    "id": "At home, open your local Server address and sign in as an Owner. Revoke the missing device here, or turn management off to disconnect every device. Sign out lost devices in Settings as well.",
+    "other": "在家時，開啟你的本機伺服器位址並以擁有者身分登入。可在此撤銷遺失的裝置，或關閉管理以中斷所有裝置。也請在設定中登出遺失的裝置。"
+  },
+  {
+    "id": "After an Owner’s credentials or security policy change, pair that Owner’s devices again at home. Keep your account recovery codes somewhere safe, away from the paired device.",
+    "other": "擁有者的認證資料或安全政策變更後，請在家中重新配對該擁有者的裝置。請將帳戶復原碼保存在安全的地方，並遠離已配對的裝置。"
+  },
+  {
+    "id": "For local terminal recovery, run",
+    "other": "如需透過本機終端機復原，請執行"
+  },
+  {
+    "id": "inside the Server container. It disconnects private management within two seconds and clears its pairings.",
+    "other": "在伺服器容器內執行。此指令會在兩秒內中斷私人管理並清除所有配對。"
+  },
+  {
+    "id": "If your Server is offline or this device was revoked, turn off its WireGuard tunnel to restore normal DNS. If your home internet address changed, turn the tunnel off and on to reconnect.",
+    "other": "如果你的伺服器離線或此裝置已被撤銷，請關閉其 WireGuard 隧道以還原正常 DNS。如果家中的網際網路位址已變更，請關閉再開啟隧道以重新連線。"
+  },
+  {
+    "id": "If browser secure DNS bypasses the tunnel, use the device’s automatic DNS setting while managing your Server. A certificate warning means you should stop and fix HTTPS setup.",
+    "other": "如果瀏覽器安全 DNS 繞過了隧道，請在管理伺服器時使用裝置的自動 DNS 設定。出現憑證警告表示你應停止並修正 HTTPS 設定。"
+  },
+  {
+    "id": "Close playback settings",
+    "other": "關閉播放設定"
+  },
+  {
+    "id": "Playback settings",
+    "other": "播放設定"
+  },
+  {
+    "id": "Close",
+    "other": "關閉"
+  },
+  {
+    "id": "Playback behavior",
+    "other": "播放行為"
+  },
+  {
+    "id": "Try the original file first. Use a compatible version if the format cannot play.",
+    "other": "優先使用原始檔案。如果格式無法播放，則使用相容版本。"
+  },
+  {
+    "id": "Use the original file and never convert it.",
+    "other": "使用原始檔案，不進行轉換。"
+  },
+  {
+    "id": "Use a compatible version, converting only what your device needs.",
+    "other": "使用相容版本，只轉換您的裝置需要的部分。"
+  },
+  {
+    "id": "Loading video…",
+    "other": "正在載入影片…"
+  },
+  {
+    "id": "Enter fullscreen",
+    "other": "進入全螢幕"
+  },
+  {
+    "id": "Picture-in-Picture",
+    "other": "子母畫面"
+  },
+  {
+    "id": "QR scanner camera preview",
+    "other": "QR 碼掃描器相機預覽"
+  },
+  {
+    "id": "Six-digit code",
+    "other": "六位數代碼"
+  },
+  {
+    "id": "Digit 1 of 6",
+    "other": "第 1 位，共 6 位"
+  },
+  {
+    "id": "Digit 2 of 6",
+    "other": "第 2 位，共 6 位"
+  },
+  {
+    "id": "Digit 3 of 6",
+    "other": "第 3 位，共 6 位"
+  },
+  {
+    "id": "Digit 4 of 6",
+    "other": "第 4 位，共 6 位"
+  },
+  {
+    "id": "Digit 5 of 6",
+    "other": "第 5 位，共 6 位"
+  },
+  {
+    "id": "Digit 6 of 6",
+    "other": "第 6 位，共 6 位"
+  },
+  {
+    "id": "Enter the six-digit code shown by your TV or app. It will use this profile’s access and content settings.",
+    "other": "輸入電視或應用程式上顯示的六位數代碼。它會使用此使用者設定檔的存取與內容設定。"
+  },
+  {
+    "id": "Scan QR code",
+    "other": "掃描 QR 碼"
+  },
+  {
+    "id": "Stop scanning",
+    "other": "停止掃描"
+  },
+  {
+    "id": "Watch away from home",
+    "other": "外出觀看"
+  },
+  {
+    "id": "Public access is turned off.",
+    "other": "公開存取已關閉。"
+  },
+  {
+    "id": "Set up your Server, then add one rule in your router.",
+    "other": "設定伺服器，然後在路由器中新增一條規則。"
+  },
+  {
+    "id": "Your library, with Viewer access",
+    "other": "你的媒體庫（觀看者權限）"
+  },
+  {
+    "id": "Public HTTPS lets approved Viewers browse and play their allowed Libraries, save viewing progress, and use enabled download features. Owner settings, Profile management, backups, and integrations stay on your home network or an explicitly paired",
+    "other": "公網 HTTPS 允許已核准的觀看者瀏覽並播放其可存取的媒體庫、儲存觀看進度，並使用已啟用的下載功能。擁有者設定、設定檔管理、備份和整合功能僅保留在您的家庭網路，或僅限於明確配對的"
+  },
+  {
+    "id": "private management device",
+    "other": "私人管理裝置"
+  },
+  {
+    "id": "What does opening this port allow?",
+    "other": "開放此連接埠會允許什麼？"
+  },
+  {
+    "id": "Opening a port makes the sign-in page reachable from the internet. A stolen Viewer session can expose that Viewer's media and activity. Keep Kinosail and your router updated; no internet-facing service can promise protection from every server vulnerability.",
+    "other": "開放連接埠會讓登入頁面可從網際網路存取。遭竊的觀看者工作階段可能會洩露該觀看者的媒體與活動紀錄。請保持 Kinosail 和路由器為最新版本；任何面向網際網路的服務都無法保證防範所有伺服器漏洞。"
+  },
+  {
+    "id": "Your public address will appear here after you configure DuckDNS.",
+    "other": "設定 DuckDNS 後，您的公開位址將顯示在此處。"
+  },
+  {
+    "id": "Set up access step by step",
+    "other": "逐步設定存取"
+  },
+  {
+    "id": "Router rule for the standard HTTPS installation",
+    "other": "標準 HTTPS 安裝的路由器規則"
+  },
+  {
+    "id": "Router field",
+    "other": "路由器欄位"
+  },
+  {
+    "id": "What to enter",
+    "other": "填入內容"
+  },
+  {
+    "id": "Use port 443 even if a router guide uses a different example.",
+    "other": "即使路由器指南使用其他範例，也請使用連接埠 443。"
+  },
+  {
+    "id": "Find instructions for your router",
+    "other": "尋找路由器說明"
+  },
+  {
+    "id": "Official manufacturer guides. Use your router model's instructions and the Kinosail values above.",
+    "other": "官方廠商指南。請使用您路由器型號的說明，以及上方的 Kinosail 值。"
+  },
+  {
+    "id": "port-forwarding guide (opens a new tab)",
+    "other": "連接埠轉送指南（在新分頁中開啟）"
+  },
+  {
+    "id": "Router missing? Check the model on its label and search the manufacturer's support site for “port forwarding.” An internet-provider router may need its provider's app.",
+    "other": "找不到路由器？請查看機身標籤上的型號，並在廠商支援網站搜尋「連接埠轉送」。網路業者提供的路由器可能需要使用業者的應用程式。"
+  },
+  {
+    "id": "Check your Server",
+    "other": "檢查伺服器"
+  },
+  {
+    "id": "Outside access is unverified. Server checks cannot confirm that your router or internet provider allows incoming connections.",
+    "other": "外部存取尚未驗證。伺服器檢查無法確認您的路由器或網路業者是否允許連入連線。"
+  },
+  {
+    "id": "Check again",
+    "other": "重新檢查"
+  },
+  {
+    "id": "Passed",
+    "other": "已通過"
+  },
+  {
+    "id": "If it does not connect",
+    "other": "如果無法連線"
+  },
+  {
+    "id": "The connection times out",
+    "other": "連線逾時"
+  },
+  {
+    "id": "Check the selected Server device, TCP 443 in both port fields, and the Server firewall. Confirm DuckDNS points to your current public IP address. If port 443 is already used, resolve the conflict before opening anything else.",
+    "other": "請檢查所選的伺服器裝置、兩個連接埠欄位中的 TCP 443，以及伺服器防火牆。確認 DuckDNS 指向您目前的公用 IP 位址。如果連接埠 443 已被使用，請先解決衝突，再開放其他連接埠。"
+  },
+  {
+    "id": "If you have a router behind an internet-provider router, both need the rule: forward TCP 443 on the outer router to the inner router's WAN address, then on the inner router to the Server. Ask your provider for help if you are unsure.",
+    "other": "如果您的路由器位於另一台業者路由器之後，兩台路由器都需要設定此規則：先在外層路由器將 TCP 443 轉送到內層路由器的 WAN 位址，再在內層路由器將其轉送到伺服器。如果不確定，請向業者洽詢。"
+  },
+  {
+    "id": "Ask your internet provider: “Do I have a public IPv4 address, and can I receive incoming TCP 443 connections?” A private WAN address or 100.64.0.0–100.127.255.255 can mean double NAT or carrier-grade NAT (CGNAT). Port forwarding alone cannot fix CGNAT; ask for a public address or use an owner-controlled VPN that supports your network.",
+    "other": "請詢問您的網路業者：「我是否有公用 IPv4 位址，能否接收連入的 TCP 443 連線？」私有 WAN 位址或 100.64.0.0–100.127.255.255 可能表示雙重 NAT 或電信級 NAT（CGNAT）。僅靠連接埠轉送無法解決 CGNAT；請申請公用位址，或使用由擁有者控制且支援您網路的 VPN。"
+  },
+  {
+    "id": "A certificate warning appears",
+    "other": "出現憑證警告"
+  },
+  {
+    "id": "Stop. Check that you used your exact DuckDNS HTTPS address and that TCP 443 reaches the Server's public HTTPS port. Wait for certificate issuance and check the error in Settings. Never bypass a warning at the public address.",
+    "other": "請停止操作。請檢查您使用的 DuckDNS HTTPS 位址是否完全正確，以及 TCP 443 是否能到達伺服器的公用 HTTPS 連接埠。等待憑證簽發，並在「設定」中查看錯誤。切勿略過公用位址上的警告。"
+  },
+  {
+    "id": "The page opens, but sign-in fails",
+    "other": "頁面可以開啟，但登入失敗"
+  },
+  {
+    "id": "Use a remote-enabled Viewer, not an Owner. Password-only public sign-in is disabled. In a browser, choose Get a sign-in code. You can also use Quick Connect in the Kinosail app or a compatible Jellyfin app. Approve the code from a local Viewer session secured with an authenticator or passkey. Enable Jellyfin apps in Settings if you use one. Approvals and adding passkeys stay local; do not try to enroll a new passkey on the public listener.",
+    "other": "請使用已啟用遠端存取的觀看者，而非擁有者。已停用僅使用密碼的公開登入。在瀏覽器中，選擇「取得登入代碼」。您也可以在 Kinosail 應用程式或相容的 Jellyfin 應用程式中使用快速連線。請在以驗證器或通行密鑰保護的本機觀看者工作階段中核准該代碼。如果您使用 Jellyfin 應用程式，請先在設定中啟用。核准及新增通行密鑰只能在本機進行；請勿嘗試在公開監聽器上註冊新的通行密鑰。"
+  },
+  {
+    "id": "Turn it off whenever you need",
+    "other": "需要時隨時關閉"
+  },
+  {
+    "id": "At home, open",
+    "other": "在家時，開啟"
+  },
+  {
+    "id": "Settings → Watch away from home",
+    "other": "設定 → 外出觀看"
+  },
+  {
+    "id": "and choose Disable public access now. This stops public viewing, revokes public sessions, and keeps public access off after restart. Remove the Kinosail port-forwarding rule in your router too when you no longer need it. Local access stays available.",
+    "other": "並選擇「立即停用公開存取」。這會停止公開觀看、撤銷公開工作階段，並在重新啟動後保持公開存取關閉。不再需要時，也請刪除路由器中的 Kinosail 連接埠轉送規則。本機存取仍可使用。"
+  },
+  {
+    "id": "SCIM base URL",
+    "other": "SCIM 基礎 URL"
+  },
+  {
+    "id": "SCIM bearer token",
+    "other": "SCIM 承載權杖"
+  },
+  {
+    "id": "Bearer token",
+    "other": "承載權杖"
+  },
+  {
+    "id": "SCIM token expiration date",
+    "other": "SCIM 權杖到期日期"
+  },
+  {
+    "id": "SCIM provisioning",
+    "other": "SCIM 佈建"
+  },
+  {
+    "id": "Connect a System for Cross-domain Identity Management (SCIM) 2.0 provider. Kinosail provisions Viewer Profiles and never grants Owner access.",
+    "other": "連接跨網域身分管理（SCIM）2.0 提供者。Kinosail 會佈建觀看者設定檔，且絕不授予擁有者存取權限。"
+  },
+  {
+    "id": "Base URL",
+    "other": "基礎 URL"
+  },
+  {
+    "id": "Enter this URL in your provider. Use bearer token authentication.",
+    "other": "在提供者處輸入此 URL。請使用承載權杖驗證。"
+  },
+  {
+    "id": "SCIM is not configured.",
+    "other": "尚未設定 SCIM。"
+  },
+  {
+    "id": "Copy token",
+    "other": "複製權杖"
+  },
+  {
+    "id": "Expires on",
+    "other": "到期日"
+  },
+  {
+    "id": "Copy the generated token into your provider before you save. Kinosail hides it after this page.",
+    "other": "儲存前，請將產生的權杖複製到提供者。離開此頁後，Kinosail 會隱藏該權杖。"
+  },
+  {
+    "id": "Provider attributes:",
+    "other": "提供者屬性："
+  },
+  {
+    "id": "Codec and hardware support",
+    "other": "編解碼器與硬體支援"
+  },
+  {
+    "id": "Video codecs",
+    "other": "影片編解碼器"
+  },
+  {
+    "id": "Video compatibility",
+    "other": "影片相容性"
+  },
+  {
+    "id": "Automatic prefers a verified H.264 pipeline for broad compatibility. Other formats require matching device and encoder evidence.",
+    "other": "「自動」優先使用已驗證的 H.264 管線，以獲得廣泛相容性。其他格式需要相符的裝置與編碼器驗證結果。"
+  },
+  {
+    "id": "Video formats",
+    "other": "影片格式"
+  },
+  {
+    "id": "Next step:",
+    "other": "下一步："
+  },
+  {
+    "id": "Ways to convert video",
+    "other": "影片轉換方式"
+  },
+  {
+    "id": "FFmpeg option:",
+    "other": "FFmpeg 選項："
+  },
+  {
+    "id": "Video conversion",
+    "other": "影片轉換"
+  },
+  {
+    "id": "Automatic checks each playback device only when Kinosail must convert video. It prefers H.264 and uses only encoding paths that passed a local HLS smoke check. A manual choice forces that format for every playback device.",
+    "other": "「自動」僅在 Kinosail 必須轉換影片時，才會檢查每台播放裝置。它優先使用 H.264，且只會使用通過本機 HLS 冒煙測試的編碼路徑。手動選擇會讓每台播放裝置都強制使用該格式。"
+  },
+  {
+    "id": "Conversion preference",
+    "other": "轉換偏好設定"
+  },
+  {
+    "id": "Video format",
+    "other": "影片格式"
+  },
+  {
+    "id": "Speed up with",
+    "other": "使用以下方式加速"
+  },
+  {
+    "id": "Processor",
+    "other": "處理器"
+  },
+  {
+    "id": "Automatic will use:",
+    "other": "「自動」將使用："
+  },
+  {
+    "id": "> Improve HDR colors on non-HDR screens",
+    "other": "> 在非 HDR 螢幕上改善 HDR 色彩"
+  },
+  {
+    "id": "Season %d",
+    "other": "第 %d 季"
+  },
+  {
+    "id": "Level %d",
+    "other": "等級 %d"
+  },
+  {
+    "id": "Move %s",
+    "other": "移動 %s"
+  },
+  {
+    "id": "Move %s up",
+    "other": "上移 %s"
+  },
+  {
+    "id": "Move %s down",
+    "other": "下移 %s"
+  },
+  {
+    "id": "Move %s earlier",
+    "other": "將 %s 前移"
+  },
+  {
+    "id": "Move %s later",
+    "other": "將 %s 後移"
+  },
+  {
+    "id": "%s, 1 title",
+    "other": "%s，1 個標題"
+  },
+  {
+    "id": "%s, %d titles",
+    "other": "%s，%d 個標題"
+  },
+  {
+    "id": "Add to %s",
+    "other": "新增到 %s"
+  },
+  {
+    "id": "Delete %s?",
+    "other": "刪除 %s？"
+  },
+  {
+    "id": "Continue without saving",
+    "other": "不儲存並繼續"
+  },
+  {
+    "id": "Current track details and actions",
+    "other": "目前曲目的詳細資料與操作"
+  },
+  {
+    "id": "Loading queue…",
+    "other": "正在載入佇列…"
+  },
+  {
+    "id": "Next track",
+    "other": "下一首"
+  },
+  {
+    "id": "Play again",
+    "other": "再播放一次"
+  },
+  {
+    "id": "Play episode",
+    "other": "播放這一集"
+  },
+  {
+    "id": "Previous track",
+    "other": "上一首"
+  },
+  {
+    "id": "Resume",
+    "other": "繼續播放"
+  },
+  {
+    "id": "Retry loading queue",
+    "other": "重試載入佇列"
+  },
+  {
+    "id": "Retry saving position",
+    "other": "重試儲存位置"
+  },
+  {
+    "id": "Room disconnected · reconnecting…",
+    "other": "房間已中斷連線 · 正在重新連線…"
+  },
+  {
+    "id": "Saving progress…",
+    "other": "正在儲存進度…"
+  },
+  {
+    "id": "Signed in. Opening your library…",
+    "other": "已登入。正在開啟你的媒體庫…"
+  },
+  {
+    "id": "Verifying your passkey…",
+    "other": "正在驗證你的通行金鑰…"
+  },
+  {
+    "id": "Watched status is not saved. Retry or continue without saving.",
+    "other": "觀看狀態未儲存。請重試，或不儲存並繼續。"
+  },
+  {
+    "id": "Watched status is not saved. Retry while this page is open.",
+    "other": "觀看狀態未儲存。請在此頁面開啟時重試。"
+  },
+  {
+    "id": "Your latest position is not saved. Retry while this page is open.",
+    "other": "你最新的播放位置未儲存。請在此頁面開啟時重試。"
+  },
+  {
+    "id": "Your position is not saved. Reload this page to check access to this title.",
+    "other": "你的播放位置未儲存。請重新載入此頁面，確認你是否有權存取此影片。"
+  },
+  {
+    "id": "Your position is not saved. Reload this page to reconnect to Kinosail Server.",
+    "other": "你的播放位置未儲存。請重新載入此頁面，以重新連線到 Kinosail Server。"
+  },
+  {
+    "id": "Your position is not saved. Reload this page to sign in again.",
+    "other": "你的播放位置未儲存。請重新載入此頁面並再次登入。"
+  },
+  {
+    "id": "of",
+    "other": "/"
+  },
+  {
+    "id": "Patron Order",
+    "other": "贊助者勳章"
+  },
+  {
+    "id": "Living Standard",
+    "other": "常駐旗幟"
+  },
+  {
+    "id": "First Token",
+    "other": "初航信物"
+  },
+  {
+    "id": "Crew Coin",
+    "other": "船員金幣"
+  },
+  {
+    "id": "Navigator Compass",
+    "other": "領航羅盤"
+  },
+  {
+    "id": "Patron Shield",
+    "other": "贊助者之盾"
+  },
+  {
+    "id": "Steward Medal",
+    "other": "總管獎章"
+  },
+  {
+    "id": "Lighthouse Crest",
+    "other": "燈塔徽"
+  },
+  {
+    "id": "Commodore Order",
+    "other": "准將勳章"
+  },
+  {
+    "id": "Admiral Star",
+    "other": "上將之星"
+  },
+  {
+    "id": "North Star Sovereign",
+    "other": "北極星君主"
+  },
+  {
+    "id": "Legacy Seal",
+    "other": "傳承印章"
+  },
+  {
+    "id": "Wake Light",
+    "other": "航跡燈"
+  },
+  {
+    "id": "Crew Signal",
+    "other": "船員信號"
+  },
+  {
+    "id": "Navigator Pulse",
+    "other": "領航脈衝"
+  },
+  {
+    "id": "Helmsman Orbit",
+    "other": "舵手軌道"
+  },
+  {
+    "id": "Beacon Watch",
+    "other": "燈塔守望"
+  },
+  {
+    "id": "Lighthouse Standard",
+    "other": "燈塔旗"
+  },
+  {
+    "id": "Commodore Vanguard",
+    "other": "准將先鋒"
+  },
+  {
+    "id": "Admiral Array",
+    "other": "上將陣列"
+  },
+  {
+    "id": "North Star Crown",
+    "other": "北極星王冠"
+  },
+  {
+    "id": "Legacy Constellation",
+    "other": "傳承星座"
+  },
+  {
+    "id": "Wakebound Crest",
+    "other": "航跡徽"
+  },
+  {
+    "id": "Twin Current",
+    "other": "雙流"
+  },
+  {
+    "id": "Navigator Union",
+    "other": "領航聯盟"
+  },
+  {
+    "id": "Helmsman's Accord",
+    "other": "舵手之約"
+  },
+  {
+    "id": "Beacon Pact",
+    "other": "燈塔之約"
+  },
+  {
+    "id": "Lighthouse Ascendant",
+    "other": "燈塔晉升"
+  },
+  {
+    "id": "Commodore Full Sail",
+    "other": "准將全帆"
+  },
+  {
+    "id": "Admiral Full Sail",
+    "other": "上將全帆"
+  },
+  {
+    "id": "North Star Dominion",
+    "other": "北極星疆域"
+  },
+  {
+    "id": "Sovereign Full Sail",
+    "other": "君主全帆"
+  },
+  {
+    "id": "A quiet enamel sail, marking the beginning.",
+    "other": "一枚靜謐的琺瑯帆形徽章，標記旅程的開端。"
+  },
+  {
+    "id": "A stronger edge for a place in the crew.",
+    "other": "一圈更醒目的邊框，象徵船員行列中的一席之地。"
+  },
+  {
+    "id": "A compass frame for the journey ahead.",
+    "other": "一個羅盤外框，為接下來的航程指引方向。"
+  },
+  {
+    "id": "A shield around the Kinosail sail.",
+    "other": "環繞 Kinosail 船帆的一面盾牌。"
+  },
+  {
+    "id": "A ribboned mark of lasting stewardship.",
+    "other": "一枚繫著緞帶的長久守護標記。"
+  },
+  {
+    "id": "A raised crest with a guiding star.",
+    "other": "一枚帶有指路星的凸起徽記。"
+  },
+  {
+    "id": "Laurel leaves and a command ribbon.",
+    "other": "月桂葉與指揮綬帶。"
+  },
+  {
+    "id": "A broad star with full admiralty detail.",
+    "other": "一枚細節齊全的上將級星章。"
+  },
+  {
+    "id": "A crowned polar star above the sail.",
+    "other": "帆上方一顆戴冠的北極星。"
+  },
+  {
+    "id": "The complete sail, laurel, and constellation.",
+    "other": "完整的船帆、月桂與星座。"
+  },
+  {
+    "id": "Your badge",
+    "other": "您的徽章"
+  },
+  {
+    "id": "Full Sail",
+    "other": "全帆"
+  },
+  {
+    "id": "The supporter key could not be read.",
+    "other": "無法讀取支持者金鑰。"
+  },
+  {
+    "id": "The supporter details could not be read.",
+    "other": "無法讀取支持者詳細資訊。"
+  },
+  {
+    "id": "Remux",
+    "other": "封裝轉換"
+  },
+  {
+    "id": "Transcoding audio",
+    "other": "音訊轉碼中"
+  },
+  {
+    "id": "Playback unavailable",
+    "other": "無法播放"
+  },
+  {
+    "id": "Original video and audio. No conversion.",
+    "other": "原始影片與音訊，不進行轉換。"
+  },
+  {
+    "id": "Repackages the original video and audio without conversion.",
+    "other": "在不轉換的情況下重新封裝原始影片與音訊。"
+  },
+  {
+    "id": "Keeps the original video. Converts only the selected audio.",
+    "other": "保留原始影片，僅轉換所選音訊。"
+  },
+  {
+    "id": "Converts audio for this device.",
+    "other": "為此裝置轉換音訊。"
+  },
+  {
+    "id": "This device cannot decode the original video.",
+    "other": "此裝置無法解碼原始影片。"
+  },
+  {
+    "id": "The original resolution exceeds this device limit.",
+    "other": "原始解析度超出此裝置的限制。"
+  },
+  {
+    "id": "The original exceeds an explicit streaming limit.",
+    "other": "原始內容超出了明確設定的串流上限。"
+  },
+  {
+    "id": "This device cannot display the original HDR format.",
+    "other": "此裝置無法顯示原始 HDR 格式。"
+  },
+  {
+    "id": "The selected subtitles must be added to the video.",
+    "other": "所選字幕必須加入影片中。"
+  },
+  {
+    "id": "Exact automatic skipping requires video conversion.",
+    "other": "精確的自動跳過需要轉換影片。"
+  },
+  {
+    "id": "Converts the original video for this device.",
+    "other": "為此裝置轉換原始影片。"
+  },
+  {
+    "id": "Playback is unavailable.",
+    "other": "無法播放。"
+  },
+  {
+    "id": "Public listener and DuckDNS update are healthy",
+    "other": "公開監聽器與 DuckDNS 更新正常"
+  },
+  {
+    "id": "Public application socket and DuckDNS update are ready; confirm the gateway using cellular data",
+    "other": "公開應用程式通訊端與 DuckDNS 更新已就緒；請使用行動數據確認閘道。"
+  },
+  {
+    "id": "Profile and authorization state is readable",
+    "other": "使用者設定檔與授權狀態可讀取"
+  },
+  {
+    "id": "Dedicated public HTTPS is configured",
+    "other": "已設定專用公開 HTTPS"
+  },
+  {
+    "id": "Only approved sign-in and Viewer routes are exposed",
+    "other": "僅開放已核准的登入與觀看者路由"
+  },
+  {
+    "id": "Public certificate is valid for more than 24 hours",
+    "other": "公開憑證有效期超過 24 小時"
+  },
+  {
+    "id": "A remote-enabled Viewer has a passkey or authenticator for secure sign-in",
+    "other": "已啟用遠端存取的觀看者擁有通行密鑰或驗證器，可安全登入。"
+  },
+  {
+    "id": "Persistent public-only kill switch is available",
+    "other": "可使用持續的僅公開存取緊急開關"
+  },
+  {
+    "id": "Update this installation by deploying a newer Kinosail container.",
+    "other": "請部署較新的 Kinosail 容器以更新此安裝。"
+  },
+  {
+    "id": "Kinosail is current",
+    "other": "Kinosail 已是最新版本"
+  },
+  {
+    "id": "The last check could not reach GitHub",
+    "other": "上次檢查無法連線至 GitHub"
+  },
+  {
+    "id": "No public Kinosail release is available yet",
+    "other": "尚無公開的 Kinosail 發行版本"
+  },
+  {
+    "id": "The installed update manager has received the update request.",
+    "other": "已安裝的更新管理器已收到更新請求。"
+  },
+  {
+    "id": "The installed update manager reports that Kinosail is current.",
+    "other": "已安裝的更新管理器回報 Kinosail 已是最新版本。"
+  },
+  {
+    "id": "Kinosail found a usable encoder.",
+    "other": "Kinosail 找到了可用的編碼器。"
+  },
+  {
+    "id": "Not available yet",
+    "other": "尚不可用"
+  },
+  {
+    "id": "Not ready for streaming",
+    "other": "尚未準備好串流"
+  },
+  {
+    "id": "Browser playback is not reliable enough for Kinosail streaming",
+    "other": "瀏覽器播放的可靠性不足以支援 Kinosail 串流"
+  },
+  {
+    "id": "FFmpeg update needed",
+    "other": "需要更新 FFmpeg"
+  },
+  {
+    "id": "Hardware setup needed",
+    "other": "需要設定硬體"
+  },
+  {
+    "id": "An encoder is present, but no usable device or software backend is available",
+    "other": "已偵測到編碼器，但沒有可用的裝置或軟體後端"
+  },
+  {
+    "id": "Review the hardware entries below, then run the local transcoder test.",
+    "other": "檢查下方的硬體項目，然後執行本機轉碼測試。"
+  },
+  {
+    "id": "Use an x86-64 Linux or Windows Server.",
+    "other": "請使用 x86-64 Linux 或 Windows Server。"
+  },
+  {
+    "id": "Use a Linux or x86-64 Windows Server.",
+    "other": "請使用 Linux 或 x86-64 Windows Server。"
+  },
+  {
+    "id": "Install the NVIDIA driver and Container Toolkit, then rerun the installer.",
+    "other": "請安裝 NVIDIA 驅動程式與 Container Toolkit，然後重新執行安裝程式。"
+  },
+  {
+    "id": "Use an x86-64 or Arm64 Linux or FreeBSD Server.",
+    "other": "請使用 x86-64 或 Arm64 Linux 或 FreeBSD 伺服器。"
+  },
+  {
+    "id": "Use an Arm64 Linux Server.",
+    "other": "請使用 Arm64 Linux 伺服器。"
+  },
+  {
+    "id": "Make the Rockchip video devices available on the host, then rerun the installer.",
+    "other": "請在主機上啟用 Rockchip 影像裝置，然後重新執行安裝程式。"
+  },
+  {
+    "id": "Linux V4L2 hardware encoder",
+    "other": "Linux V4L2 硬體編碼器"
+  },
+  {
+    "id": "Use a Linux Server.",
+    "other": "請使用 Linux 伺服器。"
+  },
+  {
+    "id": "Use a native macOS Server. Linux containers cannot access VideoToolbox.",
+    "other": "請使用原生 macOS 伺服器。Linux 容器無法存取 VideoToolbox。"
+  },
+  {
+    "id": "Use a native x86-64 Windows Server. Linux AMD GPUs use VA-API.",
+    "other": "請使用原生 x86-64 Windows Server。Linux AMD 顯示卡使用 VA-API。"
+  },
+  {
+    "id": "Use a native Windows Server.",
+    "other": "請使用原生 Windows Server。"
+  },
+  {
+    "id": "Asahi Linux does not yet provide Apple hardware video encoding.",
+    "other": "Asahi Linux 尚未提供 Apple 硬體視訊編碼。"
+  },
+  {
+    "id": "Software encoding only",
+    "other": "僅軟體編碼"
+  },
+  {
+    "id": "Keep Automatic selected. Kinosail will use its software encoders.",
+    "other": "保持選取「自動」。Kinosail 將使用其軟體編碼器。"
+  },
+  {
+    "id": "Different system",
+    "other": "不同系統"
+  },
+  {
+    "id": "Keep Automatic selected. Kinosail will use a backend for this system.",
+    "other": "保持選取「自動」。Kinosail 將為此系統使用一個後端。"
+  },
+  {
+    "id": "Detection off",
+    "other": "偵測已關閉"
+  },
+  {
+    "id": "Device access needed",
+    "other": "需要裝置存取權限"
+  },
+  {
+    "id": "FFmpeg includes this backend, but Kinosail cannot access its hardware device.",
+    "other": "FFmpeg 包含此後端，但 Kinosail 無法存取其硬體裝置。"
+  },
+  {
+    "id": "Ready to test",
+    "other": "可以測試"
+  },
+  {
+    "id": "Kinosail found the FFmpeg encoder and its device interface.",
+    "other": "Kinosail 已找到 FFmpeg 編碼器及其裝置介面。"
+  },
+  {
+    "id": "Run the local transcoder test to confirm this device.",
+    "other": "執行本機轉碼測試，以確認此裝置。"
+  },
+  {
+    "id": "Software encoding works on every system, but it uses the CPU.",
+    "other": "軟體編碼適用於所有系統，但會佔用 CPU。"
+  },
+  {
+    "id": "Run the local transcoder test to confirm this FFmpeg installation.",
+    "other": "執行本機轉碼測試，以確認此 FFmpeg 安裝。"
+  },
+  {
+    "id": "This FFmpeg build has no supported software video encoder.",
+    "other": "此 FFmpeg 版本沒有受支援的軟體視訊編碼器。"
+  },
+  {
+    "id": "Install an FFmpeg build with libx264.",
+    "other": "安裝包含 libx264 的 FFmpeg 版本。"
+  },
+  {
+    "id": "FFmpeg unavailable",
+    "other": "FFmpeg 無法使用"
+  },
+  {
+    "id": "Kinosail could not run the configured FFmpeg executable.",
+    "other": "Kinosail 無法執行已設定的 FFmpeg 執行檔。"
+  },
+  {
+    "id": "Intel graphics",
+    "other": "Intel 顯示卡"
+  },
+  {
+    "id": "AMD or Intel graphics",
+    "other": "AMD 或 Intel 顯示卡"
+  },
+  {
+    "id": "Rockchip graphics",
+    "other": "Rockchip 顯示卡"
+  },
+  {
+    "id": "Built-in Linux video hardware",
+    "other": "內建 Linux 視訊硬體"
+  },
+  {
+    "id": "Windows video hardware",
+    "other": "Windows 視訊硬體"
+  },
+  {
+    "id": "Apple Silicon",
+    "other": "Apple 晶片"
+  },
+  {
+    "id": "Smoke check passed",
+    "other": "冒煙測試通過"
+  },
+  {
+    "id": "Needs setup",
+    "other": "需要設定"
+  },
+  {
+    "id": "Processor only",
+    "other": "僅處理器"
+  },
+  {
+    "id": "Other system",
+    "other": "其他系統"
+  },
+  {
+    "id": "The local HLS smoke check passed. Processor speed and real media still affect playback.",
+    "other": "本機 HLS 冒煙測試已通過。處理器速度與實際媒體仍會影響播放。"
+  },
+  {
+    "id": "Apple hardware video encoding is not available on Asahi Linux yet. Automatic uses the processor.",
+    "other": "Asahi Linux 尚不支援 Apple 硬體視訊編碼。「自動」將使用處理器。"
+  },
+  {
+    "id": "A local HLS smoke check passed. This does not certify every input format or playback device.",
+    "other": "本機 HLS 冒煙測試已通過。這不代表所有輸入格式或播放裝置都已通過認證。"
+  },
+  {
+    "id": "Kinosail found this option, but no encoding operation is currently verified.",
+    "other": "Kinosail 已找到此選項，但目前尚未驗證任何編碼作業。"
+  },
+  {
+    "id": "This option is for a different system.",
+    "other": "此選項適用於其他系統。"
+  },
+  {
+    "id": "Works with the widest range of TVs, phones, and browsers.",
+    "other": "相容性最廣，適用於各類電視、手機和瀏覽器。"
+  },
+  {
+    "id": "Can save bandwidth on newer playback devices.",
+    "other": "在較新的播放裝置上可節省頻寬。"
+  },
+  {
+    "id": "Can save more bandwidth, but some older devices cannot play it.",
+    "other": "可節省更多頻寬，但部分舊裝置無法播放。"
+  },
+  {
+    "id": "Useful for compatible browsers and streaming devices.",
+    "other": "適用於相容的瀏覽器與串流裝置。"
+  },
+  {
+    "id": "Not verified. Kinosail decodes on the processor and encodes on this device.",
+    "other": "未驗證。Kinosail 在處理器上解碼，並在此裝置上編碼。"
+  },
+  {
+    "id": "AMD AMF is not included in this FFmpeg build.",
+    "other": "此 FFmpeg 版本未包含 AMD AMF。"
+  },
+  {
+    "id": "AMD/Intel VA-API is not included in this FFmpeg build.",
+    "other": "此 FFmpeg 版本未包含 AMD/Intel VA-API。"
+  },
+  {
+    "id": "Apple VideoToolbox is not included in this FFmpeg build.",
+    "other": "此 FFmpeg 版本未包含 Apple VideoToolbox。"
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_amf.",
+    "other": "安裝包含 h264_amf 的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_mf.",
+    "other": "安裝包含 h264_mf 的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_nvenc.",
+    "other": "安裝包含 h264_nvenc 的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_qsv.",
+    "other": "安裝包含 h264_qsv 的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_rkmpp.",
+    "other": "安裝包含 h264_rkmpp 的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_v4l2m2m.",
+    "other": "安裝包含 h264_v4l2m2m 的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_vaapi.",
+    "other": "安裝包含 h264_vaapi 的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build that includes h264_videotoolbox.",
+    "other": "安裝包含 h264_videotoolbox 的 FFmpeg 版本。"
+  },
+  {
+    "id": "Intel Quick Sync is not included in this FFmpeg build.",
+    "other": "此 FFmpeg 版本未包含 Intel Quick Sync。"
+  },
+  {
+    "id": "Kinosail Player did not inspect FFmpeg.",
+    "other": "Kinosail Player 未檢查 FFmpeg。"
+  },
+  {
+    "id": "Kinosail Player did not inspect this FFmpeg installation.",
+    "other": "Kinosail Player 未檢查此 FFmpeg 安裝。"
+  },
+  {
+    "id": "Kinosail Subtitles did not inspect FFmpeg.",
+    "other": "Kinosail Subtitles 未檢查 FFmpeg。"
+  },
+  {
+    "id": "Kinosail Subtitles did not inspect this FFmpeg installation.",
+    "other": "Kinosail Subtitles 未檢查此 FFmpeg 安裝。"
+  },
+  {
+    "id": "Linux V4L2 hardware encoder is not included in this FFmpeg build.",
+    "other": "此 FFmpeg 版本未包含 Linux V4L2 硬體編碼器。"
+  },
+  {
+    "id": "Make /dev/dri available on the host, then rerun the installer. It adds container access automatically.",
+    "other": "讓主機可以使用 /dev/dri，然後重新執行安裝程式。安裝程式會自動新增容器存取權限。"
+  },
+  {
+    "id": "NVIDIA NVENC/NVDEC is not included in this FFmpeg build.",
+    "other": "此 FFmpeg 版本未包含 NVIDIA NVENC/NVDEC。"
+  },
+  {
+    "id": "Rockchip RKMPP is not included in this FFmpeg build.",
+    "other": "此 FFmpeg 版本未包含 Rockchip RKMPP。"
+  },
+  {
+    "id": "Set KINOSAIL_GPU_BACKEND=device and map the encoder, such as /dev/video11:/dev/video11, then rerun the installer.",
+    "other": "設定 KINOSAIL_GPU_BACKEND=device，並對應編碼器（例如 /dev/video11:/dev/video11），然後重新執行安裝程式。"
+  },
+  {
+    "id": "Windows Media Foundation is not included in this FFmpeg build.",
+    "other": "此 FFmpeg 版本未包含 Windows Media Foundation。"
+  },
+  {
+    "id": "Install an FFmpeg build with a supported AV1 encoder.",
+    "other": "安裝包含受支援 AV1 編碼器的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build with a supported AV2 encoder.",
+    "other": "安裝包含受支援 AV2 編碼器的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build with a supported AVC / H.264 encoder.",
+    "other": "安裝包含受支援 AVC / H.264 編碼器的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build with a supported HEVC / H.265 encoder.",
+    "other": "安裝包含受支援 HEVC / H.265 編碼器的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build with a supported VP9 encoder.",
+    "other": "安裝包含受支援 VP9 編碼器的 FFmpeg 版本。"
+  },
+  {
+    "id": "Install an FFmpeg build with a supported VVC / H.266 encoder.",
+    "other": "安裝包含受支援 VVC / H.266 編碼器的 FFmpeg 版本。"
+  },
+  {
+    "id": "libvvenc is not present in the installed FFmpeg build; Browser playback is not reliable enough for Kinosail streaming",
+    "other": "已安裝的 FFmpeg 版本中沒有 libvvenc；瀏覽器播放的可靠性不足以用於 Kinosail 串流"
+  },
+  {
+    "id": "Privacy note: the private LAN address is published in public DNS and the hostname appears in public certificate-transparency logs. Use the narrowest token your provider supports. Kinosail stores it in the protected secrets file and never shows it here. No certificate install is required.",
+    "other": "隱私說明：私有 LAN 位址會發布到公共 DNS 中，主機名稱也會出現在公共憑證透明度紀錄裡。請使用您的供應商支援的最小權限權杖。Kinosail 會將其存放在受保護的金鑰檔案中，此處不會顯示。無需安裝憑證。"
+  },
+  {
+    "id": "Restart required. Your sign-in and passkey address becomes the trusted hostname on this Kinosail port. Sign in there with your password and MFA, then add your passkeys again for the new address.",
+    "other": "需要重新啟動。您的登入與通行密鑰位址將成為此 Kinosail 連接埠上受信任的主機名稱。請在該位址使用密碼與 MFA 登入，然後為新位址重新新增通行密鑰。"
+  },
+  {
+    "id": "Use a supported DNS provider and Let's Encrypt certificate when a device rejects the private certificate.",
+    "other": "當裝置拒絕私有憑證時，請使用受支援的 DNS 供應商和 Let's Encrypt 憑證。"
+  },
+  {
+    "id": "or use trusted HTTPS below.",
+    "other": "或使用下方的受信任 HTTPS。"
+  },
+  {
+    "id": "use",
+    "other": "使用"
+  },
+  {
+    "id": "and",
+    "other": "和"
+  },
+  {
+    "id": "Automatic per device",
+    "other": "依裝置自動"
+  },
+  {
+    "id": "complete",
+    "other": "已完成"
+  },
+  {
+    "id": "queued",
+    "other": "排隊中"
+  },
+  {
+    "id": "failed",
+    "other": "失敗"
+  },
+  {
+    "id": "disabled",
+    "other": "已關閉"
+  },
+  {
+    "id": "starting",
+    "other": "正在啟動"
+  },
+  {
+    "id": "Connect OpenID Connect",
+    "other": "連接 OpenID Connect"
+  },
+  {
+    "id": "Connect SAML",
+    "other": "連接 SAML"
+  },
+  {
+    "id": "Dark (default)",
+    "other": "深色（預設）"
+  },
+  {
+    "id": "· Active sessions:",
+    "other": "· 作用中的工作階段："
+  },
+  {
+    "id": "Delete Collection",
+    "other": "刪除系列"
+  },
+  {
+    "id": "· Kinosail Subtitles",
+    "other": "· Kinosail 字幕"
+  },
+  {
+    "id": "Language · Kinosail Subtitles",
+    "other": "語言 · Kinosail 字幕"
+  },
+  {
+    "id": "Save OpenSubtitles",
+    "other": "儲存 OpenSubtitles"
+  },
+  {
+    "id": "Media Libraries",
+    "other": "媒體庫"
+  },
+  {
+    "id": "Kinosail Player masterwork",
+    "other": "Kinosail Player 傑作"
+  },
+  {
+    "id": "Kinosail Player %s, level %d, %s",
+    "other": "Kinosail Player，%s，等級 %d，%s"
+  },
+  {
+    "id": "Download %s certificate",
+    "other": "下載 %s 證書"
+  },
+  {
+    "id": "Share %s",
+    "other": "分享 %s"
+  },
+  {
+    "id": "Preview %s certificate",
+    "other": "預覽 %s 證書"
+  },
+  {
+    "id": "Your Kinosail Player %s certificate",
+    "other": "您的 Kinosail Player %s 證書"
+  },
+  {
+    "id": "%s reader",
+    "other": "%s 閱讀器"
+  },
+  {
+    "id": "Chapter %d of %d",
+    "other": "第 %d 章，共 %d 章"
+  },
+  {
+    "id": "Page %d of %d",
+    "other": "第 %d 頁，共 %d 頁"
+  },
+  {
+    "id": "Part %d",
+    "other": "第 %d 部分"
+  },
+  {
+    "id": "%d episodes stacked",
+    "other": "%d 集已合併"
+  },
+  {
+    "id": "Playback method",
+    "other": "播放方式"
+  },
+  {
+    "id": "Playback policy",
+    "other": "播放政策"
+  },
+  {
+    "id": "Direct First",
+    "other": "直接播放優先"
+  },
+  {
+    "id": "Direct Play only",
+    "other": "僅直接播放"
+  },
+  {
+    "id": "Direct Play stopped",
+    "other": "直接播放已停止"
   }
 ]

@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"html"
 	"net/http"
 	"slices"
 	"strings"
@@ -63,7 +64,9 @@ func withApplicationShell(settings *settingsStore, updates *updateChecker, patte
 			page.writeTo(writer)
 			return
 		}
-		page.body = *bytes.NewBuffer(injectApplicationShell(page.body.Bytes(), navigation.body.Bytes()))
+		shell := injectApplicationShell(page.body.Bytes(), navigation.body.Bytes())
+		skip := html.EscapeString(localeCatalog.Localize(preferredLanguage(request), "Skip to content"))
+		page.body = *bytes.NewBuffer(bytes.Replace(shell, []byte(`href="#main">Skip to content</a>`), []byte(`href="#main">`+skip+`</a>`), 1))
 		page.Header().Del("Content-Length")
 		page.writeTo(writer)
 	})
