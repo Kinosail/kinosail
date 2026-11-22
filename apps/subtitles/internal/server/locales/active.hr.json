@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "Aktivne sesije:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "Nije moguće prikazati API ključ. Pokušajte ponovo."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "Sigurnosna kopija nije dostupna. Provjerite postavke sigurnosne kopije i pokušajte ponovo."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "Kompatibilna verzija"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "Kopirajte ovaj ključ odmah. Nakon napuštanja ove stranice više ga nećete moći vidjeti."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "Nije moguće postaviti aplikaciju za autentifikaciju. Pokušajte ponovo."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "Nije moguće stvoriti Owner račun. Pokušajte ponovo."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "Nije moguće prijaviti se. Pokušajte ponovo."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "Nije moguće odjaviti se. Pokušajte ponovo."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "Nije moguće pročitati ove titlove. Isprobajte drugu stazu titlova."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "Spremite svoj API ključ"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "Ovaj zahtjev došao je s druge adrese. Otvorite Kinosail na uobičajenoj adresi i pokušajte ponovo."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "Izvorna datoteka"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "Preuzmi sigurnosnu kopiju poslužitelja"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "Preuzimanja nisu omogućena za ovaj Viewer Profile. Zamolite Ownera da ih omogući."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "Titlovi iz ove datoteke nisu dostupni. Isprobajte drugu stazu titlova."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "Dovrši prijavu"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "Prilagodi se izgledu uređaja ili odaberi svijetlu ili tamnu temu."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "Taj kôd nije radio. Unesite trenutačni kôd iz aplikacije za autentifikaciju."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "Nije moguće ažurirati zbirku. Osvježite stranicu i pokušajte ponovo."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "Ime ili lozinka nisu točni. Pokušajte ponovo."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "Nije moguće ažurirati Moj popis. Osvježite stranicu i pokušajte ponovo."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "Nije moguće ažurirati popis za reprodukciju. Osvježite stranicu i pokušajte ponovo."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "Nije moguće spremiti ovaj položaj. Osvježite i pokušajte ponovo."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "Nije moguće ažurirati status gledanja. Osvježite i pokušajte ponovo."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "Odaberite jezik s popisa."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "Nije moguće spremiti podatke o mediju. Pokušajte ponovo."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "Provjerite podatke o mediju i pokušajte ponovo."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "Pružatelj metapodataka nije dostupan. Pokušajte ponovo kasnije."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "Ova stavka nije pronađena."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "Nije moguće upotrijebiti vaš passkey. Pokušajte ponovo ili odaberite drugi način prijave."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Passkey radi samo na sigurnoj adresi Kinosaila. Otvorite Kinosail na uobičajenoj adresi i pokušajte ponovo."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "Pregled nije dostupan. Pokušajte ponovo."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "Nije moguće pristupiti spremljenim profilima. Pokušajte ponovo kasnije."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "Spremno za preuzimanje"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "Zahtjev je prevelik. Smanjite količinu podataka i pokušajte ponovo."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to manage your subtitles."
+    "other": "Prijavite se da biste upravljali titlovima."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Pokušaj prijave je istekao ili se nije mogao potvrditi. Počnite ponovo."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "Nije moguće dovršiti prijavu preko vaše organizacije. Počnite ponovo."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "Vaš račun organizacije nije povezan s Viewer Profileom. Zamolite Ownera da ga poveže."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "Prijava preko organizacije nije dostupna. Isprobajte drugi način prijave."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "Nije moguće dovršiti prijavu preko vaše organizacije. Pokušajte ponovo."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Pokušaj prijave je istekao ili se nije mogao potvrditi. Počnite ponovo."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "Nije moguće potvrditi prijavu preko vaše organizacije. Počnite ponovo."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "Pružatelj titlova nije dostupan. Pokušajte ponovo kasnije."
   },
   {
     "id": "Subtitles",

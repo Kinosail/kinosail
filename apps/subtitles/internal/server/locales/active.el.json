@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "Ενεργές συνεδρίες:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "Δεν ήταν δυνατή η εμφάνιση του κλειδιού API. Δοκιμάστε ξανά."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "Το αντίγραφο ασφαλείας δεν είναι διαθέσιμο. Ελέγξτε τις ρυθμίσεις αντιγράφου ασφαλείας και δοκιμάστε ξανά."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "Συμβατή έκδοση"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "Αντιγράψτε τώρα αυτό το κλειδί. Δεν θα μπορείτε να το ξαναδείτε αφού φύγετε από αυτή τη σελίδα."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "Δεν ήταν δυνατή η ρύθμιση της εφαρμογής ελέγχου ταυτότητας. Δοκιμάστε ξανά."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "Δεν ήταν δυνατή η δημιουργία του λογαριασμού ιδιοκτήτη. Δοκιμάστε ξανά."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "Δεν ήταν δυνατή η σύνδεση. Δοκιμάστε ξανά."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "Δεν ήταν δυνατή η αποσύνδεση. Δοκιμάστε ξανά."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "Δεν ήταν δυνατή η ανάγνωση αυτών των υποτίτλων. Δοκιμάστε άλλο κομμάτι υποτίτλων."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "Αποθηκεύστε το κλειδί API σας"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "Αυτό το αίτημα προήλθε από διαφορετική διεύθυνση. Ανοίξτε το Kinosail στη συνηθισμένη διεύθυνσή του και δοκιμάστε ξανά."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "Αρχικό αρχείο"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "Λήψη αντιγράφου ασφαλείας του διακομιστή"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "Οι λήψεις δεν είναι ενεργοποιημένες για αυτό το προφίλ προβολής. Ζητήστε από τον ιδιοκτήτη να τις ενεργοποιήσει."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "Οι υπότιτλοι αυτού του αρχείου δεν είναι διαθέσιμοι. Δοκιμάστε άλλο κομμάτι υποτίτλων."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "Ολοκλήρωση σύνδεσης"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "Ταιριάξτε με την εμφάνιση της συσκευής σας ή επιλέξτε φωτεινό ή σκούρο."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "Ο κωδικός δεν λειτούργησε. Εισαγάγετε τον τρέχοντα κωδικό από την εφαρμογή ελέγχου ταυτότητας."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "Δεν ήταν δυνατή η ενημέρωση της Συλλογής. Ανανεώστε τη σελίδα και δοκιμάστε ξανά."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "Το όνομα ή ο κωδικός πρόσβασης είναι λάθος. Δοκιμάστε ξανά."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "Δεν ήταν δυνατή η ενημέρωση της Λίστας μου. Ανανεώστε τη σελίδα και δοκιμάστε ξανά."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "Δεν ήταν δυνατή η ενημέρωση της λίστας αναπαραγωγής. Ανανεώστε τη σελίδα και δοκιμάστε ξανά."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "Δεν ήταν δυνατή η αποθήκευση αυτής της θέσης. Ανανεώστε και δοκιμάστε ξανά."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "Δεν ήταν δυνατή η ενημέρωση της κατάστασης προβολής. Ανανεώστε και δοκιμάστε ξανά."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "Επιλέξτε μια γλώσσα από τη λίστα."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "Δεν ήταν δυνατή η αποθήκευση των λεπτομερειών πολυμέσων. Δοκιμάστε ξανά."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "Ελέγξτε τις λεπτομέρειες πολυμέσων και δοκιμάστε ξανά."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "Ο πάροχος μεταδεδομένων δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "Αυτό το στοιχείο δεν βρέθηκε."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "Δεν ήταν δυνατή η χρήση του κλειδιού πρόσβασης. Δοκιμάστε ξανά ή χρησιμοποιήστε άλλη μέθοδο σύνδεσης."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Τα κλειδιά πρόσβασης λειτουργούν μόνο στη ασφαλή διεύθυνση του Kinosail. Ανοίξτε το Kinosail στη συνηθισμένη διεύθυνσή του και δοκιμάστε ξανά."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "Η προεπισκόπηση δεν είναι διαθέσιμη. Δοκιμάστε ξανά."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "Δεν ήταν δυνατή η πρόσβαση στα αποθηκευμένα προφίλ. Δοκιμάστε ξανά αργότερα."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "Έτοιμο για λήψη"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "Αυτό το αίτημα είναι πολύ μεγάλο. Μειώστε την ποσότητα δεδομένων και δοκιμάστε ξανά."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to manage your subtitles."
+    "other": "Συνδεθείτε για να διαχειριστείτε τους υποτίτλους σας."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Η προσπάθεια σύνδεσης έληξε ή δεν μπόρεσε να επαληθευτεί. Ξεκινήστε ξανά."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "Δεν ήταν δυνατή η ολοκλήρωση της σύνδεσης με τον οργανισμό σας. Ξεκινήστε ξανά."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "Ο λογαριασμός του οργανισμού σας δεν είναι συνδεδεμένος με προφίλ προβολής. Ζητήστε από τον ιδιοκτήτη να τον συνδέσει."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "Η σύνδεση οργανισμού δεν είναι διαθέσιμη. Δοκιμάστε άλλη μέθοδο σύνδεσης."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "Δεν ήταν δυνατή η ολοκλήρωση της σύνδεσης με τον οργανισμό σας. Δοκιμάστε ξανά."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Η προσπάθεια σύνδεσης έληξε ή δεν μπόρεσε να επαληθευτεί. Ξεκινήστε ξανά."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "Δεν ήταν δυνατή η επαλήθευση της σύνδεσής σας με τον οργανισμό. Ξεκινήστε ξανά."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "Ο πάροχος υποτίτλων δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα."
   },
   {
     "id": "Subtitles",

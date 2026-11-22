@@ -729,7 +729,7 @@
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Ключи доступа работают только по защищённому адресу Kinosail. Откройте Kinosail по обычному адресу и повторите попытку."
   },
   {
     "id": "Password",

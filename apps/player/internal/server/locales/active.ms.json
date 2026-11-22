@@ -29,7 +29,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "Sesi aktif:"
   },
   {
     "id": "Add a passkey",
@@ -49,7 +49,7 @@
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
-    "other": "Add the setup key or setup link to your authenticator app."
+    "other": "Tambahkan kunci persediaan atau pautan persediaan pada aplikasi pengesahan anda."
   },
   {
     "id": "Add to",
@@ -93,7 +93,7 @@
   },
   {
     "id": "analyzed item(s)",
-    "other": "Analyzed items:"
+    "other": "Item yang dianalisis:"
   },
   {
     "id": "API key name",
@@ -105,7 +105,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "Kunci API tidak dapat dipaparkan. Cuba lagi."
   },
   {
     "id": "API key · Kinosail Player",
@@ -197,7 +197,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "Sandaran tidak tersedia. Semak tetapan sandaran dan cuba lagi."
   },
   {
     "id": "Backups need setup.",
@@ -273,7 +273,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "Versi serasi"
   },
   {
     "id": "compatible",
@@ -345,27 +345,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "Salin kunci ini sekarang. Anda tidak boleh melihatnya semula selepas meninggalkan halaman ini."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "Aplikasi pengesahan anda tidak dapat disediakan. Cuba lagi."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "Akaun Pemilik tidak dapat dicipta. Cuba lagi."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "Tidak dapat log masuk. Cuba lagi."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "Tidak dapat log keluar. Cuba lagi."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "Sari kata ini tidak dapat dibaca. Cuba trek sari kata yang lain."
   },
   {
     "id": "Create",
@@ -393,7 +393,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "Simpan kunci API anda"
   },
   {
     "id": "Credentials configured",
@@ -405,7 +405,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "Permintaan ini datang dari alamat lain. Buka Kinosail di alamat biasanya dan cuba lagi."
   },
   {
     "id": "Curate",
@@ -465,7 +465,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "Fail asal"
   },
   {
     "id": "Directed by",
@@ -501,7 +501,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "Muat turun sandaran Pelayan"
   },
   {
     "id": "Download safe diagnostics",
@@ -513,7 +513,7 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "Muat turun tidak diaktifkan untuk Profil Penonton ini. Minta Pemilik mengaktifkannya."
   },
   {
     "id": "Edit metadata",
@@ -525,7 +525,7 @@
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "Sari kata daripada fail ini tidak tersedia. Cuba trek sari kata yang lain."
   },
   {
     "id": "Enable DLNA",
@@ -557,11 +557,11 @@
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Enter the code shown by your TV or app. It will use this profile’s access and content settings."
+    "other": "Masukkan kod yang dipaparkan pada TV atau aplikasi anda. Kod ini akan menggunakan tetapan akses dan kandungan profil ini."
   },
   {
     "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "Environment variables and YAML settings take priority. Changes saved here apply after the Server restarts."
+    "other": "Pembolehubah persekitaran dan tetapan YAML diutamakan. Perubahan yang disimpan di sini berkuat kuasa selepas Pelayan dimulakan semula."
   },
   {
     "id": "Environment default",
@@ -589,7 +589,7 @@
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Let devices on this local network discover and play media directly. Turning this off revokes their DLNA access."
+    "other": "Benarkan peranti pada rangkaian setempat ini mencari dan memainkan media secara terus. Mematikan ini akan membatalkan akses DLNA mereka."
   },
   {
     "id": "Externally managed",
@@ -609,7 +609,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "Selesaikan log masuk"
   },
   {
     "id": "Folder inside media mount",
@@ -617,7 +617,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "Ikut penampilan peranti anda atau pilih cerah atau gelap."
   },
   {
     "id": "Following the room leader",
@@ -689,31 +689,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "Kod itu tidak berfungsi. Masukkan kod semasa daripada aplikasi pengesahan anda."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "Koleksi tidak dapat dikemas kini. Muat semula halaman dan cuba lagi."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "Nama atau kata laluan tidak betul. Cuba lagi."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "Senarai Saya tidak dapat dikemas kini. Muat semula halaman dan cuba lagi."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "Senarai main tidak dapat dikemas kini. Muat semula halaman dan cuba lagi."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "Kedudukan ini tidak dapat disimpan. Muat semula dan cuba lagi."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "Status tontonan tidak dapat dikemas kini. Muat semula dan cuba lagi."
   },
   {
     "id": "Invite link",
@@ -733,7 +733,7 @@
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Copy each key when you create it; you cannot view it again. Browse access is selected by default."
+    "other": "Salin setiap kunci semasa anda mencipta; anda tidak boleh melihatnya semula. Akses semak imbas dipilih secara lalai."
   },
   {
     "id": "Kinosail",
@@ -757,7 +757,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "Pilih bahasa daripada senarai."
   },
   {
     "id": "Last error",
@@ -869,11 +869,11 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "Butiran media tidak dapat disimpan. Cuba lagi."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "Semak butiran media dan cuba lagi."
   },
   {
     "id": "Metadata provider",
@@ -881,7 +881,7 @@
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "Penyedia metadata tidak tersedia. Cuba lagi kemudian."
   },
   {
     "id": "Metrics",
@@ -909,7 +909,7 @@
   },
   {
     "id": "name and a 12-character password are required",
-    "other": "Enter a name and a password with at least 12 characters."
+    "other": "Masukkan nama dan kata laluan sekurang-kurangnya 12 aksara."
   },
   {
     "id": "Never",
@@ -925,7 +925,7 @@
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Kinosail finds new media when copying finishes. Scheduled scans catch changes it may have missed."
+    "other": "Kinosail mengesan media baharu selepas penyalinan selesai. Imbasan berjadual menangkap perubahan yang mungkin terlepas."
   },
   {
     "id": "New password",
@@ -1001,7 +1001,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "Item ini tidak dapat ditemui."
   },
   {
     "id": "Not now",
@@ -1077,11 +1077,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "Kunci laluan anda tidak berfungsi. Cuba lagi atau gunakan kaedah log masuk lain."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Kunci laluan hanya berfungsi di alamat selamat Kinosail. Buka Kinosail di alamat biasanya, kemudian cuba lagi."
   },
   {
     "id": "Password",
@@ -1101,7 +1101,7 @@
   },
   {
     "id": "Play the next Episode automatically",
-    "other": "Play the next episode automatically"
+    "other": "Mainkan episod seterusnya secara automatik"
   },
   {
     "id": "Playback",
@@ -1161,7 +1161,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "Pratonton tidak tersedia. Cuba lagi."
   },
   {
     "id": "Private by design",
@@ -1173,7 +1173,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "Profil tersimpan tidak dapat diakses. Cuba lagi kemudian."
   },
   {
     "id": "Profile to reset",
@@ -1233,7 +1233,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "Sedia untuk dimuat turun"
   },
   {
     "id": "Recap",
@@ -1297,7 +1297,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "Permintaan ini terlalu besar. Kurangkan jumlah data dan cuba lagi."
   },
   {
     "id": "Reset password",
@@ -1437,7 +1437,7 @@
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Manage your library, playback preferences, and Server settings."
+    "other": "Urus pustaka, keutamaan main balik dan tetapan Pelayan anda."
   },
   {
     "id": "Show",
@@ -1453,7 +1453,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your library."
+    "other": "Log masuk ke pustaka anda."
   },
   {
     "id": "Sign in with passkey",
@@ -1549,31 +1549,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Percubaan log masuk anda telah tamat tempoh atau tidak dapat disahkan. Mulakan semula."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "Log masuk dengan organisasi anda tidak dapat diselesaikan. Mulakan semula."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "Akaun organisasi anda tidak dipautkan kepada Profil Penonton. Minta Pemilik memautkannya."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "Log masuk organisasi tidak tersedia. Cuba kaedah log masuk lain."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "Log masuk dengan organisasi anda tidak dapat diselesaikan. Cuba lagi."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Percubaan log masuk anda telah tamat tempoh atau tidak dapat disahkan. Mulakan semula."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "Log masuk organisasi anda tidak dapat disahkan. Mulakan semula."
   },
   {
     "id": "Start in seconds",
@@ -1613,11 +1613,11 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "Penyedia sari kata tidak tersedia. Cuba lagi kemudian."
   },
   {
     "id": "subtitle track(s)",
-    "other": "Subtitle tracks:"
+    "other": "Trek sari kata:"
   },
   {
     "id": "Subtitles",
@@ -1673,7 +1673,7 @@
   },
   {
     "id": "This signs out the profile and deletes it.",
-    "other": "This signs the Viewer Profile out on all devices and permanently deletes it."
+    "other": "Tindakan ini log keluar Profil Penonton pada semua peranti dan memadamkannya secara kekal."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1905,11 +1905,11 @@
   },
   {
     "id": "Offline playback needs an active service worker",
-    "other": "Offline playback is not ready in this browser. Reconnect to the Server and reload Kinosail."
+    "other": "Main balik luar talian belum sedia dalam pelayar ini. Sambung semula ke Pelayan dan muat semula Kinosail."
   },
   {
     "id": "Could not remove local offline data.",
-    "other": "Could not remove this device’s offline data. Try again."
+    "other": "Data luar talian pada peranti ini tidak dapat dialih keluar. Cuba lagi."
   },
   {
     "id": "stored on this device",
@@ -1933,7 +1933,7 @@
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
-    "other": "No downloads are ready on this device for this Viewer Profile."
+    "other": "Tiada muat turun sedia pada peranti ini untuk Profil Penonton ini."
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
@@ -1985,7 +1985,7 @@
   },
   {
     "id": "Request needs another try",
-    "other": "Could not complete the request"
+    "other": "Permintaan tidak dapat diselesaikan"
   },
   {
     "id": "Return to form",
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "invalid title request",
-    "other": "Could not open this title. Return to the library and try again."
+    "other": "Tajuk ini tidak dapat dibuka. Kembali ke pustaka dan cuba lagi."
   },
   {
     "id": "Audio is fixed in this downloaded copy.",

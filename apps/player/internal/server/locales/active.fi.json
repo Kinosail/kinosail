@@ -29,7 +29,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "Aktiiviset istunnot:"
   },
   {
     "id": "Add a passkey",
@@ -49,7 +49,7 @@
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
-    "other": "Add the setup key or setup link to your authenticator app."
+    "other": "Lisää määritysavain tai asennuslinkki todennussovellukseesi."
   },
   {
     "id": "Add to",
@@ -93,7 +93,7 @@
   },
   {
     "id": "analyzed item(s)",
-    "other": "Analyzed items:"
+    "other": "Analysoidut kohteet:"
   },
   {
     "id": "API key name",
@@ -105,7 +105,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "API-avainta ei voitu näyttää. Yritä uudelleen."
   },
   {
     "id": "API key · Kinosail Player",
@@ -197,7 +197,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "Varmuuskopio ei ole käytettävissä. Tarkista varmuuskopioasetukset ja yritä uudelleen."
   },
   {
     "id": "Backups need setup.",
@@ -273,7 +273,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "Yhteensopiva versio"
   },
   {
     "id": "compatible",
@@ -345,27 +345,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "Kopioi tämä avain nyt. Et voi katsoa sitä uudelleen, kun poistut tältä sivulta."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "Todennussovellusta ei voitu ottaa käyttöön. Yritä uudelleen."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "Omistajan tiliä ei voitu luoda. Yritä uudelleen."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "Kirjautuminen ei onnistunut. Yritä uudelleen."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "Uloskirjautuminen ei onnistunut. Yritä uudelleen."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "Näitä tekstityksiä ei voitu lukea. Kokeile toista tekstitysraitaa."
   },
   {
     "id": "Create",
@@ -393,7 +393,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "Tallenna API-avaimesi"
   },
   {
     "id": "Credentials configured",
@@ -405,7 +405,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "Pyyntö tuli eri osoitteesta. Avaa Kinosail sen tavallisessa osoitteessa ja yritä uudelleen."
   },
   {
     "id": "Curate",
@@ -465,7 +465,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "Alkuperäinen tiedosto"
   },
   {
     "id": "Directed by",
@@ -501,7 +501,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "Lataa palvelimen varmuuskopio"
   },
   {
     "id": "Download safe diagnostics",
@@ -513,7 +513,7 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "Katsojaprofiilille ei ole sallittu latauksia. Pyydä omistajaa sallimaan ne."
   },
   {
     "id": "Edit metadata",
@@ -525,7 +525,7 @@
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "Tämän tiedoston tekstityksiä ei ole saatavilla. Kokeile toista tekstitysraitaa."
   },
   {
     "id": "Enable DLNA",
@@ -557,11 +557,11 @@
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Enter the code shown by your TV or app. It will use this profile’s access and content settings."
+    "other": "Anna TV:ssä tai sovelluksessa näkyvä koodi. Se käyttää tämän profiilin käyttöoikeuksia ja sisältöasetuksia."
   },
   {
     "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "Environment variables and YAML settings take priority. Changes saved here apply after the Server restarts."
+    "other": "Ympäristömuuttujat ja YAML-asetukset ovat etusijalla. Tässä tehdyt muutokset tulevat voimaan palvelimen uudelleenkäynnistyksen jälkeen."
   },
   {
     "id": "Environment default",
@@ -589,7 +589,7 @@
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Let devices on this local network discover and play media directly. Turning this off revokes their DLNA access."
+    "other": "Anna tämän paikallisverkon laitteiden löytää ja toistaa media suoraan. Tämän poistaminen peruuttaa niiden DLNA-käyttöoikeuden."
   },
   {
     "id": "Externally managed",
@@ -609,7 +609,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "Viimeistele kirjautuminen"
   },
   {
     "id": "Folder inside media mount",
@@ -617,7 +617,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "Seuraa laitteen teemaa tai valitse vaalea tai tumma teema."
   },
   {
     "id": "Following the room leader",
@@ -689,31 +689,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "Koodi ei toiminut. Anna todennussovelluksesi nykyinen koodi."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "Kokoelmaa ei voitu päivittää. Päivitä sivu ja yritä uudelleen."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "Nimi tai salasana on virheellinen. Yritä uudelleen."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "Omaa listaa ei voitu päivittää. Päivitä sivu ja yritä uudelleen."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "Soittolistaa ei voitu päivittää. Päivitä sivu ja yritä uudelleen."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "Tätä kohtaa ei voitu tallentaa. Päivitä sivu ja yritä uudelleen."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "Katselutilaa ei voitu päivittää. Päivitä sivu ja yritä uudelleen."
   },
   {
     "id": "Invite link",
@@ -733,7 +733,7 @@
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Copy each key when you create it; you cannot view it again. Browse access is selected by default."
+    "other": "Kopioi jokainen avain luodessasi; sitä ei voi katsoa myöhemmin. Selauskäyttö on oletuksena valittuna."
   },
   {
     "id": "Kinosail",
@@ -757,7 +757,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "Valitse kieli luettelosta."
   },
   {
     "id": "Last error",
@@ -869,11 +869,11 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "Median tietoja ei voitu tallentaa. Yritä uudelleen."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "Tarkista median tiedot ja yritä uudelleen."
   },
   {
     "id": "Metadata provider",
@@ -881,7 +881,7 @@
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "Metatietojen palveluntarjoaja ei ole käytettävissä. Yritä myöhemmin uudelleen."
   },
   {
     "id": "Metrics",
@@ -909,7 +909,7 @@
   },
   {
     "id": "name and a 12-character password are required",
-    "other": "Enter a name and a password with at least 12 characters."
+    "other": "Anna nimi ja salasana, jossa on vähintään 12 merkkiä."
   },
   {
     "id": "Never",
@@ -925,7 +925,7 @@
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Kinosail finds new media when copying finishes. Scheduled scans catch changes it may have missed."
+    "other": "Kinosail löytää uuden median kopioinnin päätyttyä. Ajastetut tarkistukset löytävät muutokset, jotka saattavat jäädä huomaamatta."
   },
   {
     "id": "New password",
@@ -1001,7 +1001,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "Kohdetta ei löytynyt."
   },
   {
     "id": "Not now",
@@ -1077,11 +1077,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "Avainkirjautumista ei voitu käyttää. Yritä uudelleen tai käytä toista kirjautumistapaa."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Avainkirjautuminen toimii vain Kinosailin suojatussa HTTPS-osoitteessa. Avaa Kinosail sen tavallisessa osoitteessa ja yritä uudelleen."
   },
   {
     "id": "Password",
@@ -1101,7 +1101,7 @@
   },
   {
     "id": "Play the next Episode automatically",
-    "other": "Play the next episode automatically"
+    "other": "Toista seuraava jakso automaattisesti"
   },
   {
     "id": "Playback",
@@ -1161,7 +1161,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "Esikatselu ei ole käytettävissä. Yritä uudelleen."
   },
   {
     "id": "Private by design",
@@ -1173,7 +1173,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "Tallennettuja profiileja ei voitu avata. Yritä myöhemmin uudelleen."
   },
   {
     "id": "Profile to reset",
@@ -1233,7 +1233,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "Valmis ladattavaksi"
   },
   {
     "id": "Recap",
@@ -1297,7 +1297,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "Pyyntö on liian suuri. Vähennä tietomäärää ja yritä uudelleen."
   },
   {
     "id": "Reset password",
@@ -1437,7 +1437,7 @@
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Manage your library, playback preferences, and Server settings."
+    "other": "Hallitse kirjastoa, toistoasetuksia ja palvelimen asetuksia."
   },
   {
     "id": "Show",
@@ -1453,7 +1453,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your library."
+    "other": "Kirjaudu kirjastoosi."
   },
   {
     "id": "Sign in with passkey",
@@ -1549,31 +1549,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Kirjautumisyritys on vanhentunut tai sitä ei voitu vahvistaa. Aloita alusta."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "Organisaatiosi kautta kirjautumista ei voitu viimeistellä. Aloita alusta."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "Organisaatiosi tiliä ei ole linkitetty katsojaprofiiliin. Pyydä omistajaa linkittämään se."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "Organisaatiokirjautuminen ei ole käytettävissä. Käytä toista kirjautumistapaa."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "Organisaatiokirjautumista ei voitu viimeistellä. Yritä uudelleen."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Kirjautumisyritys on vanhentunut tai sitä ei voitu vahvistaa. Aloita alusta."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "Organisaatiokirjautumista ei voitu vahvistaa. Aloita alusta."
   },
   {
     "id": "Start in seconds",
@@ -1613,11 +1613,11 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "Tekstityspalveluntarjoaja ei ole käytettävissä. Yritä myöhemmin uudelleen."
   },
   {
     "id": "subtitle track(s)",
-    "other": "Subtitle tracks:"
+    "other": "Tekstitysraidat:"
   },
   {
     "id": "Subtitles",
@@ -1673,7 +1673,7 @@
   },
   {
     "id": "This signs out the profile and deletes it.",
-    "other": "This signs the Viewer Profile out on all devices and permanently deletes it."
+    "other": "Tämä kirjaa katsojaprofiilin ulos kaikilta laitteilta ja poistaa sen pysyvästi."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1905,11 +1905,11 @@
   },
   {
     "id": "Offline playback needs an active service worker",
-    "other": "Offline playback is not ready in this browser. Reconnect to the Server and reload Kinosail."
+    "other": "Offline-toisto ei ole valmis tässä selaimessa. Yhdistä palvelimeen uudelleen ja lataa Kinosail uudelleen."
   },
   {
     "id": "Could not remove local offline data.",
-    "other": "Could not remove this device’s offline data. Try again."
+    "other": "Laitteen offline-tietoja ei voitu poistaa. Yritä uudelleen."
   },
   {
     "id": "stored on this device",
@@ -1933,7 +1933,7 @@
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
-    "other": "No downloads are ready on this device for this Viewer Profile."
+    "other": "Tälle katsojaprofiilille ei ole valmiita latauksia tällä laitteella."
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
@@ -1985,7 +1985,7 @@
   },
   {
     "id": "Request needs another try",
-    "other": "Could not complete the request"
+    "other": "Pyyntöä ei voitu suorittaa"
   },
   {
     "id": "Return to form",
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "invalid title request",
-    "other": "Could not open this title. Return to the library and try again."
+    "other": "Tätä nimikettä ei voitu avata. Palaa kirjastoon ja yritä uudelleen."
   },
   {
     "id": "Audio is fixed in this downloaded copy.",

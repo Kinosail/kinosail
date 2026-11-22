@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "הפעלות פעילות:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "לא ניתן להציג את מפתח ה-API. נסו שוב."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "הגיבוי אינו זמין. בדקו את הגדרות הגיבוי ונסו שוב."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "גרסה תואמת"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "העתיקו את המפתח הזה עכשיו. לא תוכלו לצפות בו שוב אחרי שתעזבו את הדף."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "לא ניתן להגדיר את אפליקציית האימות שלכם. נסו שוב."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "לא ניתן ליצור את חשבון הבעלים. נסו שוב."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "לא ניתן להתחבר. נסו שוב."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "לא ניתן להתנתק. נסו שוב."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "לא ניתן לקרוא את הכתוביות האלה. נסו רצועת כתוביות אחרת."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "שמרו את מפתח ה-API שלכם"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "הבקשה הגיעה מכתובת אחרת. פתחו את Kinosail בכתובת הרגילה שלו ונסו שוב."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "קובץ מקורי"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "הורדת גיבוי השרת"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "הורדות אינן מופעלות עבור פרופיל הצופה הזה. בקשו מהבעלים להפעיל אותן."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "כתוביות מהקובץ הזה אינן זמינות. נסו רצועת כתוביות אחרת."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "סיום הכניסה"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "התאימו למראה המכשיר שלכם, או בחרו בהיר או כהה."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "הקוד לא עבד. הזינו את הקוד הנוכחי מאפליקציית האימות שלכם."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "לא ניתן לעדכן את האוסף. רעננו את הדף ונסו שוב."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "השם או הסיסמה שגויים. נסו שוב."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "לא ניתן לעדכן את הרשימה שלי. רעננו את הדף ונסו שוב."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "לא ניתן לעדכן את רשימת ההשמעה. רעננו את הדף ונסו שוב."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "לא ניתן לשמור את המיקום הזה. רעננו ונסו שוב."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "לא ניתן לעדכן את סטטוס הצפייה. רעננו ונסו שוב."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "בחרו שפה מהרשימה."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "לא ניתן לשמור את פרטי המדיה. נסו שוב."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "בדקו את פרטי המדיה ונסו שוב."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "ספק המטא-נתונים אינו זמין. נסו שוב מאוחר יותר."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "הפריט לא נמצא."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "לא ניתן להשתמש במפתח הגישה שלכם. נסו שוב או השתמשו בשיטת כניסה אחרת."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "מפתחות גישה פועלים רק בכתובת המאובטחת של Kinosail. פתחו את Kinosail בכתובת הרגילה שלו ונסו שוב."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "התצוגה המקדימה אינה זמינה. נסו שוב."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "לא ניתן לגשת לפרופילים השמורים. נסו שוב מאוחר יותר."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "מוכן להורדה"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "הבקשה גדולה מדי. צמצמו את כמות הנתונים ונסו שוב."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to manage your subtitles."
+    "other": "היכנסו כדי לנהל את הכתוביות שלכם."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "ניסיון הכניסה פג תוקף או שלא ניתן היה לאמת אותו. התחילו שוב."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "לא ניתן להשלים את הכניסה דרך הארגון שלכם. התחילו שוב."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "חשבון הארגון שלכם אינו מקושר לפרופיל צופה. בקשו מהבעלים לקשר אותו."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "כניסה דרך ארגון אינה זמינה. נסו שיטת כניסה אחרת."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "לא ניתן להשלים את הכניסה דרך הארגון שלכם. נסו שוב."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "ניסיון הכניסה פג תוקף או שלא ניתן היה לאמת אותו. התחילו שוב."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "לא ניתן לאמת את הכניסה דרך הארגון שלכם. התחילו שוב."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "ספק הכתוביות אינו זמין. נסו שוב מאוחר יותר."
   },
   {
     "id": "Subtitles",

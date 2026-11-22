@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "Phiên đang hoạt động:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "Không thể hiển thị khóa API. Vui lòng thử lại."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "Bản sao lưu hiện không khả dụng. Kiểm tra cài đặt sao lưu và thử lại."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "Phiên bản tương thích"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "Sao chép khóa này ngay bây giờ. Bạn sẽ không thể xem lại sau khi rời trang này."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "Không thể thiết lập ứng dụng xác thực của bạn. Vui lòng thử lại."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "Không thể tạo tài khoản Chủ sở hữu. Vui lòng thử lại."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "Không thể đăng nhập. Vui lòng thử lại."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "Không thể đăng xuất. Vui lòng thử lại."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "Không thể đọc các phụ đề này. Hãy thử một bản phụ đề khác."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "Lưu khóa API của bạn"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "Yêu cầu này đến từ một địa chỉ khác. Mở Kinosail tại địa chỉ thường dùng và thử lại."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "Tệp gốc"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "Tải xuống bản sao lưu Máy chủ"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "Hồ sơ người xem này chưa bật tải xuống. Hãy nhờ Chủ sở hữu bật tính năng này."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "Phụ đề từ tệp này không khả dụng. Hãy thử một bản phụ đề khác."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "Hoàn tất đăng nhập"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "Theo giao diện thiết bị của bạn, hoặc chọn sáng hoặc tối cố định."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "Mã này không đúng. Nhập mã hiện tại từ ứng dụng xác thực của bạn."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "Không thể cập nhật Bộ sưu tập. Làm mới trang và thử lại."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "Tên hoặc mật khẩu không đúng. Vui lòng thử lại."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "Không thể cập nhật Danh sách của tôi. Làm mới trang và thử lại."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "Không thể cập nhật danh sách phát. Làm mới trang và thử lại."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "Không thể lưu vị trí này. Làm mới và thử lại."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "Không thể cập nhật trạng thái đã xem. Làm mới và thử lại."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "Chọn một ngôn ngữ trong danh sách."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "Không thể lưu thông tin phương tiện. Vui lòng thử lại."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "Kiểm tra thông tin phương tiện và thử lại."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "Nhà cung cấp siêu dữ liệu không khả dụng. Vui lòng thử lại sau."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "Không tìm thấy mục này."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "Không thể dùng khóa đăng nhập của bạn. Thử lại hoặc dùng phương thức đăng nhập khác."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Khóa đăng nhập chỉ hoạt động tại địa chỉ HTTPS an toàn của Kinosail. Mở Kinosail tại địa chỉ thường dùng, rồi thử lại."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "Không thể xem trước. Vui lòng thử lại."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "Không thể truy cập các hồ sơ đã lưu. Vui lòng thử lại sau."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "Sẵn sàng để tải xuống"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "Yêu cầu này quá lớn. Hãy giảm lượng dữ liệu và thử lại."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to manage your subtitles."
+    "other": "Đăng nhập để quản lý phụ đề của bạn."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Lần đăng nhập đã hết hạn hoặc không thể xác minh. Hãy bắt đầu lại."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "Không thể hoàn tất đăng nhập qua tổ chức. Hãy bắt đầu lại."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "Tài khoản tổ chức của bạn chưa được liên kết với hồ sơ người xem. Hãy nhờ Chủ sở hữu liên kết."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "Đăng nhập qua tổ chức hiện không khả dụng. Hãy thử phương thức đăng nhập khác."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "Không thể hoàn tất đăng nhập qua tổ chức. Vui lòng thử lại."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Lần đăng nhập đã hết hạn hoặc không thể xác minh. Hãy bắt đầu lại."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "Không thể xác minh đăng nhập qua tổ chức. Hãy bắt đầu lại."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "Nhà cung cấp phụ đề không khả dụng. Vui lòng thử lại sau."
   },
   {
     "id": "Subtitles",

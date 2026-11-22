@@ -29,7 +29,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "Sesiuni active:"
   },
   {
     "id": "Add a passkey",
@@ -49,7 +49,7 @@
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
-    "other": "Add the setup key or setup link to your authenticator app."
+    "other": "Adăugați cheia de configurare sau linkul de configurare în aplicația de autentificare."
   },
   {
     "id": "Add to",
@@ -93,7 +93,7 @@
   },
   {
     "id": "analyzed item(s)",
-    "other": "Analyzed items:"
+    "other": "Elemente analizate:"
   },
   {
     "id": "API key name",
@@ -105,7 +105,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "Cheia API nu a putut fi afișată. Încercați din nou."
   },
   {
     "id": "API key · Kinosail Player",
@@ -197,7 +197,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "Copia de rezervă nu este disponibilă. Verificați setările copiei de rezervă și încercați din nou."
   },
   {
     "id": "Backups need setup.",
@@ -273,7 +273,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "Versiune compatibilă"
   },
   {
     "id": "compatible",
@@ -345,27 +345,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "Copiați cheia acum. Nu o veți mai putea vedea după ce părăsiți această pagină."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "Nu s-a putut configura aplicația de autentificare. Încercați din nou."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "Nu s-a putut crea contul Owner. Încercați din nou."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "Nu s-a putut face autentificarea. Încercați din nou."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "Nu s-a putut face deconectarea. Încercați din nou."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "Nu s-au putut citi aceste subtitrări. Încercați altă pistă de subtitrări."
   },
   {
     "id": "Create",
@@ -393,7 +393,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "Salvați cheia API"
   },
   {
     "id": "Credentials configured",
@@ -405,7 +405,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "Această cerere a venit de la o altă adresă. Deschideți Kinosail la adresa obișnuită și încercați din nou."
   },
   {
     "id": "Curate",
@@ -465,7 +465,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "Fișier original"
   },
   {
     "id": "Directed by",
@@ -501,7 +501,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "Descarcă backupul serverului"
   },
   {
     "id": "Download safe diagnostics",
@@ -513,7 +513,7 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "Descărcările nu sunt activate pentru acest Viewer Profile. Cereți Owner-ului să le activeze."
   },
   {
     "id": "Edit metadata",
@@ -525,7 +525,7 @@
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "Subtitrările din acest fișier nu sunt disponibile. Încercați altă pistă de subtitrări."
   },
   {
     "id": "Enable DLNA",
@@ -557,11 +557,11 @@
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Enter the code shown by your TV or app. It will use this profile’s access and content settings."
+    "other": "Introduceți codul afișat de televizor sau de aplicație. Va folosi accesul și setările de conținut ale acestui profil."
   },
   {
     "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "Environment variables and YAML settings take priority. Changes saved here apply after the Server restarts."
+    "other": "Variabilele de mediu și setările YAML au prioritate. Modificările salvate aici se aplică după repornirea serverului."
   },
   {
     "id": "Environment default",
@@ -589,7 +589,7 @@
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Let devices on this local network discover and play media directly. Turning this off revokes their DLNA access."
+    "other": "Permiteți dispozitivelor din această rețea locală să descopere și să redea direct conținutul media. Dezactivarea revocă accesul lor DLNA."
   },
   {
     "id": "Externally managed",
@@ -609,7 +609,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "Finalizați autentificarea"
   },
   {
     "id": "Folder inside media mount",
@@ -617,7 +617,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "Potriviți aspectul dispozitivului sau alegeți tema luminoasă ori întunecată."
   },
   {
     "id": "Following the room leader",
@@ -689,31 +689,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "Codul nu a funcționat. Introduceți codul actual din aplicația de autentificare."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "Nu s-a putut actualiza Colecția. Reîncărcați pagina și încercați din nou."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "Numele sau parola sunt incorecte. Încercați din nou."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "Nu s-a putut actualiza Lista mea. Reîncărcați pagina și încercați din nou."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "Nu s-a putut actualiza lista de redare. Reîncărcați pagina și încercați din nou."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "Nu s-a putut salva această poziție. Reîncărcați și încercați din nou."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "Nu s-a putut actualiza starea de vizionare. Reîncărcați și încercați din nou."
   },
   {
     "id": "Invite link",
@@ -733,7 +733,7 @@
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Copy each key when you create it; you cannot view it again. Browse access is selected by default."
+    "other": "Copiați fiecare cheie când o creați; nu o veți mai putea vedea. Accesul de navigare este selectat implicit."
   },
   {
     "id": "Kinosail",
@@ -757,7 +757,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "Alegeți o limbă din listă."
   },
   {
     "id": "Last error",
@@ -869,11 +869,11 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "Nu s-au putut salva detaliile media. Încercați din nou."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "Verificați detaliile media și încercați din nou."
   },
   {
     "id": "Metadata provider",
@@ -881,7 +881,7 @@
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "Furnizorul de metadate nu este disponibil. Încercați mai târziu."
   },
   {
     "id": "Metrics",
@@ -909,7 +909,7 @@
   },
   {
     "id": "name and a 12-character password are required",
-    "other": "Enter a name and a password with at least 12 characters."
+    "other": "Introduceți un nume și o parolă de cel puțin 12 caractere."
   },
   {
     "id": "Never",
@@ -925,7 +925,7 @@
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Kinosail finds new media when copying finishes. Scheduled scans catch changes it may have missed."
+    "other": "Kinosail găsește conținutul media nou când se termină copierea. Scanările programate detectează modificările care ar fi putut fi ratate."
   },
   {
     "id": "New password",
@@ -1001,7 +1001,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "Acest element nu a putut fi găsit."
   },
   {
     "id": "Not now",
@@ -1077,11 +1077,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "Nu s-a putut folosi cheia de acces. Încercați din nou sau folosiți altă metodă de autentificare."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Cheile de acces funcționează doar la adresa securizată a Kinosail. Deschideți Kinosail la adresa obișnuită și încercați din nou."
   },
   {
     "id": "Password",
@@ -1101,7 +1101,7 @@
   },
   {
     "id": "Play the next Episode automatically",
-    "other": "Play the next episode automatically"
+    "other": "Redă automat episodul următor"
   },
   {
     "id": "Playback",
@@ -1161,7 +1161,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "Previzualizarea nu este disponibilă. Încercați din nou."
   },
   {
     "id": "Private by design",
@@ -1173,7 +1173,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "Nu s-au putut accesa profilurile salvate. Încercați mai târziu."
   },
   {
     "id": "Profile to reset",
@@ -1233,7 +1233,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "Gata de descărcare"
   },
   {
     "id": "Recap",
@@ -1297,7 +1297,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "Cererea este prea mare. Reduceți cantitatea de date și încercați din nou."
   },
   {
     "id": "Reset password",
@@ -1437,7 +1437,7 @@
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Manage your library, playback preferences, and Server settings."
+    "other": "Gestionați biblioteca, preferințele de redare și setările serverului."
   },
   {
     "id": "Show",
@@ -1453,7 +1453,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your library."
+    "other": "Autentificați-vă în biblioteca dvs."
   },
   {
     "id": "Sign in with passkey",
@@ -1549,31 +1549,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Încercarea de autentificare a expirat sau nu a putut fi verificată. Începeți din nou."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "Nu s-a putut finaliza autentificarea cu organizația dvs. Începeți din nou."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "Contul organizației dvs. nu este asociat cu un Viewer Profile. Cereți Owner-ului să îl asocieze."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "Autentificarea prin organizație nu este disponibilă. Încercați altă metodă de autentificare."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "Nu s-a putut finaliza autentificarea cu organizația dvs. Încercați din nou."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Încercarea de autentificare a expirat sau nu a putut fi verificată. Începeți din nou."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "Nu s-a putut verifica autentificarea cu organizația dvs. Începeți din nou."
   },
   {
     "id": "Start in seconds",
@@ -1613,11 +1613,11 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "Furnizorul de subtitrări nu este disponibil. Încercați mai târziu."
   },
   {
     "id": "subtitle track(s)",
-    "other": "Subtitle tracks:"
+    "other": "Piste de subtitrări:"
   },
   {
     "id": "Subtitles",
@@ -1673,7 +1673,7 @@
   },
   {
     "id": "This signs out the profile and deletes it.",
-    "other": "This signs the Viewer Profile out on all devices and permanently deletes it."
+    "other": "Aceasta deconectează profilul de pe toate dispozitivele și îl șterge definitiv."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1905,11 +1905,11 @@
   },
   {
     "id": "Offline playback needs an active service worker",
-    "other": "Offline playback is not ready in this browser. Reconnect to the Server and reload Kinosail."
+    "other": "Redarea offline nu este pregătită în acest browser. Reconectați-vă la server și reîncărcați Kinosail."
   },
   {
     "id": "Could not remove local offline data.",
-    "other": "Could not remove this device’s offline data. Try again."
+    "other": "Nu s-au putut șterge datele offline ale acestui dispozitiv. Încercați din nou."
   },
   {
     "id": "stored on this device",
@@ -1933,7 +1933,7 @@
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
-    "other": "No downloads are ready on this device for this Viewer Profile."
+    "other": "Nu există descărcări pregătite pe acest dispozitiv pentru acest Viewer Profile."
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
@@ -1985,7 +1985,7 @@
   },
   {
     "id": "Request needs another try",
-    "other": "Could not complete the request"
+    "other": "Nu s-a putut finaliza cererea"
   },
   {
     "id": "Return to form",
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "invalid title request",
-    "other": "Could not open this title. Return to the library and try again."
+    "other": "Nu s-a putut deschide acest titlu. Reveniți la bibliotecă și încercați din nou."
   },
   {
     "id": "Audio is fixed in this downloaded copy.",

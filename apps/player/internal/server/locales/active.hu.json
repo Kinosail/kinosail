@@ -29,7 +29,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "Aktív munkamenetek:"
   },
   {
     "id": "Add a passkey",
@@ -49,7 +49,7 @@
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
-    "other": "Add the setup key or setup link to your authenticator app."
+    "other": "Adja meg a beállítókulcsot vagy beállítási hivatkozást a hitelesítő alkalmazásában."
   },
   {
     "id": "Add to",
@@ -93,7 +93,7 @@
   },
   {
     "id": "analyzed item(s)",
-    "other": "Analyzed items:"
+    "other": "Elemzett elemek:"
   },
   {
     "id": "API key name",
@@ -105,7 +105,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "Az API-kulcsot nem sikerült megjeleníteni. Próbálja újra."
   },
   {
     "id": "API key · Kinosail Player",
@@ -197,7 +197,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "A biztonsági mentés nem érhető el. Ellenőrizze a mentés beállításait, és próbálja újra."
   },
   {
     "id": "Backups need setup.",
@@ -273,7 +273,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "Kompatibilis verzió"
   },
   {
     "id": "compatible",
@@ -345,27 +345,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "Másolja ki most a kulcsot. Az oldal elhagyása után már nem tekintheti meg."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "A hitelesítő alkalmazást nem sikerült beállítani. Próbálja újra."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "A tulajdonosi fiókot nem sikerült létrehozni. Próbálja újra."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "Nem sikerült bejelentkezni. Próbálja újra."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "Nem sikerült kijelentkezni. Próbálja újra."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "Ezeket a feliratokat nem sikerült beolvasni. Próbáljon másik feliratsávot."
   },
   {
     "id": "Create",
@@ -393,7 +393,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "Mentse el az API-kulcsát"
   },
   {
     "id": "Credentials configured",
@@ -405,7 +405,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "A kérés másik címről érkezett. Nyissa meg a Kinosailt a szokásos címén, és próbálja újra."
   },
   {
     "id": "Curate",
@@ -465,7 +465,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "Eredeti fájl"
   },
   {
     "id": "Directed by",
@@ -501,7 +501,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "Szerverbiztonsági mentés letöltése"
   },
   {
     "id": "Download safe diagnostics",
@@ -513,7 +513,7 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "A letöltés nincs engedélyezve ehhez a nézői profilhoz. Kérje meg a tulajdonost, hogy engedélyezze."
   },
   {
     "id": "Edit metadata",
@@ -525,7 +525,7 @@
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "Ennek a fájlnak a feliratait nem lehet elérni. Próbáljon másik feliratsávot."
   },
   {
     "id": "Enable DLNA",
@@ -557,11 +557,11 @@
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Enter the code shown by your TV or app. It will use this profile’s access and content settings."
+    "other": "Adja meg a TV-n vagy az alkalmazásban látható kódot. A profil hozzáférési és tartalmi beállításait fogja használni."
   },
   {
     "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "Environment variables and YAML settings take priority. Changes saved here apply after the Server restarts."
+    "other": "A környezeti változók és a YAML-beállítások elsőbbséget élveznek. Az itt mentett módosítások a szerver újraindítása után lépnek életbe."
   },
   {
     "id": "Environment default",
@@ -589,7 +589,7 @@
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Let devices on this local network discover and play media directly. Turning this off revokes their DLNA access."
+    "other": "Engedélyezi, hogy a helyi hálózat eszközei közvetlenül megtalálják és lejátsszák a médiát. Kikapcsolásával visszavonja a DLNA-hozzáférésüket."
   },
   {
     "id": "Externally managed",
@@ -609,7 +609,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "Bejelentkezés befejezése"
   },
   {
     "id": "Folder inside media mount",
@@ -617,7 +617,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "Igazodjon az eszköz megjelenéséhez, vagy válassza a világos vagy a sötét módot."
   },
   {
     "id": "Following the room leader",
@@ -689,31 +689,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "Ez a kód nem működött. Adja meg a hitelesítő alkalmazás aktuális kódját."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "A gyűjteményt nem sikerült frissíteni. Frissítse az oldalt, és próbálja újra."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "A név vagy a jelszó helytelen. Próbálja újra."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "A Saját listát nem sikerült frissíteni. Frissítse az oldalt, és próbálja újra."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "A lejátszási listát nem sikerült frissíteni. Frissítse az oldalt, és próbálja újra."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "Ezt a pozíciót nem sikerült menteni. Frissítsen, és próbálja újra."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "A megtekintési állapotot nem sikerült frissíteni. Frissítsen, és próbálja újra."
   },
   {
     "id": "Invite link",
@@ -733,7 +733,7 @@
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Copy each key when you create it; you cannot view it again. Browse access is selected by default."
+    "other": "Kulcsot létrehozáskor másoljon ki; később már nem tekintheti meg. Alapértelmezés szerint a böngészési hozzáférés van kiválasztva."
   },
   {
     "id": "Kinosail",
@@ -757,7 +757,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "Válasszon nyelvet a listából."
   },
   {
     "id": "Last error",
@@ -869,11 +869,11 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "A médiaadatokat nem sikerült menteni. Próbálja újra."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "Ellenőrizze a médiaadatokat, és próbálja újra."
   },
   {
     "id": "Metadata provider",
@@ -881,7 +881,7 @@
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "A metaadat-szolgáltató nem érhető el. Próbálja újra később."
   },
   {
     "id": "Metrics",
@@ -909,7 +909,7 @@
   },
   {
     "id": "name and a 12-character password are required",
-    "other": "Enter a name and a password with at least 12 characters."
+    "other": "Adjon meg nevet és legalább 12 karakteres jelszót."
   },
   {
     "id": "Never",
@@ -925,7 +925,7 @@
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Kinosail finds new media when copying finishes. Scheduled scans catch changes it may have missed."
+    "other": "A Kinosail a másolás befejezése után találja meg az új médiát. Az ütemezett vizsgálatok felkutatják a kimaradt változásokat."
   },
   {
     "id": "New password",
@@ -1001,7 +1001,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "Ez az elem nem található."
   },
   {
     "id": "Not now",
@@ -1077,11 +1077,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "A hozzáférési kulcsot nem lehetett használni. Próbálja újra, vagy válasszon másik bejelentkezési módot."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "A hozzáférési kulcsok csak a Kinosail biztonságos címén működnek. Nyissa meg a Kinosailt a szokásos címén, majd próbálja újra."
   },
   {
     "id": "Password",
@@ -1101,7 +1101,7 @@
   },
   {
     "id": "Play the next Episode automatically",
-    "other": "Play the next episode automatically"
+    "other": "A következő epizód automatikus lejátszása"
   },
   {
     "id": "Playback",
@@ -1161,7 +1161,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "Az előnézet nem érhető el. Próbálja újra."
   },
   {
     "id": "Private by design",
@@ -1173,7 +1173,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "A mentett profilokat nem sikerült elérni. Próbálja újra később."
   },
   {
     "id": "Profile to reset",
@@ -1233,7 +1233,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "Letöltésre kész"
   },
   {
     "id": "Recap",
@@ -1297,7 +1297,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "Ez a kérés túl nagy. Csökkentse az adatmennyiséget, és próbálja újra."
   },
   {
     "id": "Reset password",
@@ -1437,7 +1437,7 @@
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Manage your library, playback preferences, and Server settings."
+    "other": "Kezelje a könyvtárát, a lejátszási beállításokat és a szerver beállításait."
   },
   {
     "id": "Show",
@@ -1453,7 +1453,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your library."
+    "other": "Jelentkezzen be a könyvtárába."
   },
   {
     "id": "Sign in with passkey",
@@ -1549,31 +1549,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "A bejelentkezési kísérlet lejárt, vagy nem sikerült ellenőrizni. Kezdje elölről."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "A szervezeti bejelentkezést nem sikerült befejezni. Kezdje elölről."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "A szervezeti fiókja nincs összekapcsolva nézői profillal. Kérje meg a tulajdonost, hogy kapcsolja össze."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "A szervezeti bejelentkezés nem érhető el. Próbáljon másik bejelentkezési módot."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "A szervezeti bejelentkezést nem sikerült befejezni. Próbálja újra."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "A bejelentkezési kísérlet lejárt, vagy nem sikerült ellenőrizni. Kezdje elölről."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "A szervezeti bejelentkezést nem sikerült ellenőrizni. Kezdje elölről."
   },
   {
     "id": "Start in seconds",
@@ -1613,11 +1613,11 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "A feliratszolgáltató nem érhető el. Próbálja újra később."
   },
   {
     "id": "subtitle track(s)",
-    "other": "Subtitle tracks:"
+    "other": "Feliratsávok:"
   },
   {
     "id": "Subtitles",
@@ -1673,7 +1673,7 @@
   },
   {
     "id": "This signs out the profile and deletes it.",
-    "other": "This signs the Viewer Profile out on all devices and permanently deletes it."
+    "other": "Ez minden eszközön kijelentkezteti a nézői profilt, és véglegesen törli."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1905,11 +1905,11 @@
   },
   {
     "id": "Offline playback needs an active service worker",
-    "other": "Offline playback is not ready in this browser. Reconnect to the Server and reload Kinosail."
+    "other": "Az offline lejátszás ebben a böngészőben nem áll készen. Csatlakozzon újra a szerverhez, és töltse újra a Kinosailt."
   },
   {
     "id": "Could not remove local offline data.",
-    "other": "Could not remove this device’s offline data. Try again."
+    "other": "Ennek az eszköznek az offline adatait nem sikerült eltávolítani. Próbálja újra."
   },
   {
     "id": "stored on this device",
@@ -1933,7 +1933,7 @@
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
-    "other": "No downloads are ready on this device for this Viewer Profile."
+    "other": "Ezen az eszközön még nincs letöltésre kész tartalom ehhez a nézői profilhoz."
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
@@ -1985,7 +1985,7 @@
   },
   {
     "id": "Request needs another try",
-    "other": "Could not complete the request"
+    "other": "A kérést nem sikerült befejezni"
   },
   {
     "id": "Return to form",
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "invalid title request",
-    "other": "Could not open this title. Return to the library and try again."
+    "other": "Ezt a címet nem sikerült megnyitni. Térjen vissza a könyvtárba, és próbálja újra."
   },
   {
     "id": "Audio is fixed in this downloaded copy.",

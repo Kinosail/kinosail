@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "เซสชันที่ใช้งานอยู่:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "ไม่สามารถแสดงคีย์ API ได้ โปรดลองอีกครั้ง"
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "การสำรองข้อมูลไม่พร้อมใช้งาน โปรดตรวจสอบการตั้งค่าการสำรองข้อมูลแล้วลองอีกครั้ง"
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "เวอร์ชันที่เข้ากันได้"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "คัดลอกคีย์นี้ตอนนี้ คุณจะดูอีกครั้งไม่ได้หลังออกจากหน้านี้"
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "ไม่สามารถตั้งค่าแอปยืนยันตัวตนได้ โปรดลองอีกครั้ง"
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "ไม่สามารถสร้างบัญชี Owner ได้ โปรดลองอีกครั้ง"
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้ง"
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "ไม่สามารถออกจากระบบได้ โปรดลองอีกครั้ง"
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "ไม่สามารถอ่านคำบรรยายเหล่านี้ได้ โปรดลองใช้แทร็กคำบรรยายอื่น"
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "บันทึกคีย์ API ของคุณ"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "คำขอนี้มาจากที่อยู่อื่น โปรดเปิด Kinosail ที่ที่อยู่ปกติแล้วลองอีกครั้ง"
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "ไฟล์ต้นฉบับ"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "ดาวน์โหลดการสำรองข้อมูลเซิร์ฟเวอร์"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "การดาวน์โหลดไม่ได้เปิดใช้งานสำหรับ Viewer Profile นี้ โปรดขอให้ Owner เปิดใช้"
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "คำบรรยายจากไฟล์นี้ไม่พร้อมใช้งาน โปรดลองใช้แทร็กคำบรรยายอื่น"
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "เสร็จสิ้นการลงชื่อเข้าใช้"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "ทำให้ตรงกับการแสดงผลของอุปกรณ์ หรือเลือกโหมดสว่างหรือมืด"
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "รหัสนี้ใช้ไม่ได้ โปรดกรอกรหัสปัจจุบันจากแอปยืนยันตัวตนของคุณ"
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "ไม่สามารถอัปเดตคอลเลกชันได้ โปรดรีเฟรชหน้าแล้วลองอีกครั้ง"
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "ชื่อหรือรหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง"
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "ไม่สามารถอัปเดต My List ได้ โปรดรีเฟรชหน้าแล้วลองอีกครั้ง"
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "ไม่สามารถอัปเดตเพลย์ลิสต์ได้ โปรดรีเฟรชหน้าแล้วลองอีกครั้ง"
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "ไม่สามารถบันทึกตำแหน่งนี้ได้ โปรดรีเฟรชแล้วลองอีกครั้ง"
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "ไม่สามารถอัปเดตสถานะการรับชมได้ โปรดรีเฟรชแล้วลองอีกครั้ง"
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "เลือกภาษาจากรายการ"
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "ไม่สามารถบันทึกรายละเอียดสื่อได้ โปรดลองอีกครั้ง"
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "ตรวจสอบรายละเอียดสื่อแล้วลองอีกครั้ง"
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "ผู้ให้บริการข้อมูลเมตาไม่พร้อมใช้งาน โปรดลองอีกครั้งภายหลัง"
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "ไม่พบรายการนี้"
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "ไม่สามารถใช้พาสคีย์ได้ โปรดลองอีกครั้งหรือใช้วิธีลงชื่อเข้าใช้อื่น"
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "พาสคีย์ใช้ได้เฉพาะที่ที่อยู่ที่ปลอดภัยของ Kinosail เปิด Kinosail ที่ที่อยู่ปกติแล้วลองอีกครั้ง"
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "ไม่สามารถแสดงตัวอย่างได้ โปรดลองอีกครั้ง"
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "ไม่สามารถเข้าถึงโปรไฟล์ที่บันทึกไว้ได้ โปรดลองอีกครั้งภายหลัง"
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "พร้อมดาวน์โหลด"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "คำขอนี้ใหญ่เกินไป โปรดลดปริมาณข้อมูลแล้วลองอีกครั้ง"
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to manage your subtitles."
+    "other": "ลงชื่อเข้าใช้เพื่อจัดการคำบรรยายของคุณ"
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "การลงชื่อเข้าใช้หมดอายุหรือไม่สามารถยืนยันได้ โปรดเริ่มใหม่"
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "ไม่สามารถลงชื่อเข้าใช้ผ่านองค์กรของคุณได้ โปรดเริ่มใหม่"
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "บัญชีองค์กรของคุณยังไม่ได้เชื่อมกับ Viewer Profile โปรดขอให้ Owner เชื่อมให้"
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "การลงชื่อเข้าใช้ขององค์กรไม่พร้อมใช้งาน โปรดลองวิธีลงชื่อเข้าใช้อื่น"
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "ไม่สามารถลงชื่อเข้าใช้ผ่านองค์กรของคุณได้ โปรดลองอีกครั้ง"
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "การลงชื่อเข้าใช้หมดอายุหรือไม่สามารถยืนยันได้ โปรดเริ่มใหม่"
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "ไม่สามารถยืนยันการลงชื่อเข้าใช้ขององค์กรของคุณได้ โปรดเริ่มใหม่"
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "ผู้ให้บริการคำบรรยายไม่พร้อมใช้งาน โปรดลองอีกครั้งภายหลัง"
   },
   {
     "id": "Subtitles",

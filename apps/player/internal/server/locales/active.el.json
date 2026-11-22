@@ -29,7 +29,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "Active sessions:"
+    "other": "Ενεργές συνεδρίες:"
   },
   {
     "id": "Add a passkey",
@@ -49,7 +49,7 @@
   },
   {
     "id": "Add this secret or URI to your authenticator app.",
-    "other": "Add the setup key or setup link to your authenticator app."
+    "other": "Προσθέστε το κλειδί ή τον σύνδεσμο ρύθμισης στην εφαρμογή ελέγχου ταυτότητας."
   },
   {
     "id": "Add to",
@@ -93,7 +93,7 @@
   },
   {
     "id": "analyzed item(s)",
-    "other": "Analyzed items:"
+    "other": "Αναλυμένα στοιχεία:"
   },
   {
     "id": "API key name",
@@ -105,7 +105,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "Could not display the API key. Try again."
+    "other": "Δεν ήταν δυνατή η εμφάνιση του κλειδιού API. Δοκιμάστε ξανά."
   },
   {
     "id": "API key · Kinosail Player",
@@ -197,7 +197,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "The backup is unavailable. Check the backup settings and try again."
+    "other": "Το αντίγραφο ασφαλείας δεν είναι διαθέσιμο. Ελέγξτε τις ρυθμίσεις αντιγράφου ασφαλείας και δοκιμάστε ξανά."
   },
   {
     "id": "Backups need setup.",
@@ -273,7 +273,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatible version"
+    "other": "Συμβατή έκδοση"
   },
   {
     "id": "compatible",
@@ -345,27 +345,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. You cannot view it again after leaving this page."
+    "other": "Αντιγράψτε τώρα αυτό το κλειδί. Δεν θα μπορείτε να το ξαναδείτε αφού φύγετε από αυτή τη σελίδα."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "Could not set up your authenticator app. Try again."
+    "other": "Δεν ήταν δυνατή η ρύθμιση της εφαρμογής ελέγχου ταυτότητας. Δοκιμάστε ξανά."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "Could not create the Owner account. Try again."
+    "other": "Δεν ήταν δυνατή η δημιουργία του λογαριασμού ιδιοκτήτη. Δοκιμάστε ξανά."
   },
   {
     "id": "could not create session",
-    "other": "Could not sign in. Try again."
+    "other": "Δεν ήταν δυνατή η σύνδεση. Δοκιμάστε ξανά."
   },
   {
     "id": "could not end session",
-    "other": "Could not sign out. Try again."
+    "other": "Δεν ήταν δυνατή η αποσύνδεση. Δοκιμάστε ξανά."
   },
   {
     "id": "could not read subtitles",
-    "other": "Could not read these subtitles. Try another subtitle track."
+    "other": "Δεν ήταν δυνατή η ανάγνωση αυτών των υποτίτλων. Δοκιμάστε άλλο κομμάτι υποτίτλων."
   },
   {
     "id": "Create",
@@ -393,7 +393,7 @@
   },
   {
     "id": "Created once",
-    "other": "Save your API key"
+    "other": "Αποθηκεύστε το κλειδί API σας"
   },
   {
     "id": "Credentials configured",
@@ -405,7 +405,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
+    "other": "Αυτό το αίτημα προήλθε από διαφορετική διεύθυνση. Ανοίξτε το Kinosail στη συνηθισμένη διεύθυνσή του και δοκιμάστε ξανά."
   },
   {
     "id": "Curate",
@@ -465,7 +465,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Original file"
+    "other": "Αρχικό αρχείο"
   },
   {
     "id": "Directed by",
@@ -501,7 +501,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download Server backup"
+    "other": "Λήψη αντιγράφου ασφαλείας του διακομιστή"
   },
   {
     "id": "Download safe diagnostics",
@@ -513,7 +513,7 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
+    "other": "Οι λήψεις δεν είναι ενεργοποιημένες για αυτό το προφίλ προβολής. Ζητήστε από τον ιδιοκτήτη να τις ενεργοποιήσει."
   },
   {
     "id": "Edit metadata",
@@ -525,7 +525,7 @@
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "Subtitles from this file are unavailable. Try another subtitle track."
+    "other": "Οι υπότιτλοι αυτού του αρχείου δεν είναι διαθέσιμοι. Δοκιμάστε άλλο κομμάτι υποτίτλων."
   },
   {
     "id": "Enable DLNA",
@@ -557,11 +557,11 @@
   },
   {
     "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Enter the code shown by your TV or app. It will use this profile’s access and content settings."
+    "other": "Εισαγάγετε τον κωδικό που εμφανίζεται στην τηλεόραση ή στην εφαρμογή σας. Θα χρησιμοποιεί τις ρυθμίσεις πρόσβασης και περιεχομένου αυτού του προφίλ."
   },
   {
     "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "Environment variables and YAML settings take priority. Changes saved here apply after the Server restarts."
+    "other": "Οι μεταβλητές περιβάλλοντος και οι ρυθμίσεις YAML έχουν προτεραιότητα. Οι αλλαγές που αποθηκεύονται εδώ ισχύουν μετά την επανεκκίνηση του διακομιστή."
   },
   {
     "id": "Environment default",
@@ -589,7 +589,7 @@
   },
   {
     "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Let devices on this local network discover and play media directly. Turning this off revokes their DLNA access."
+    "other": "Επιτρέψτε στις συσκευές αυτού του τοπικού δικτύου να εντοπίζουν και να αναπαράγουν πολυμέσα απευθείας. Με την απενεργοποίηση, ανακαλείται η πρόσβασή τους DLNA."
   },
   {
     "id": "Externally managed",
@@ -609,7 +609,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish signing in"
+    "other": "Ολοκλήρωση σύνδεσης"
   },
   {
     "id": "Folder inside media mount",
@@ -617,7 +617,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Match your device’s appearance or choose light or dark."
+    "other": "Ταιριάξτε με την εμφάνιση της συσκευής σας ή επιλέξτε φωτεινό ή σκούρο."
   },
   {
     "id": "Following the room leader",
@@ -689,31 +689,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "That code did not work. Enter the current code from your authenticator app."
+    "other": "Ο κωδικός δεν λειτούργησε. Εισαγάγετε τον τρέχοντα κωδικό από την εφαρμογή ελέγχου ταυτότητας."
   },
   {
     "id": "invalid Collection state",
-    "other": "Could not update the Collection. Refresh the page and try again."
+    "other": "Δεν ήταν δυνατή η ενημέρωση της Συλλογής. Ανανεώστε τη σελίδα και δοκιμάστε ξανά."
   },
   {
     "id": "invalid credentials",
-    "other": "The name or password is incorrect. Try again."
+    "other": "Το όνομα ή ο κωδικός πρόσβασης είναι λάθος. Δοκιμάστε ξανά."
   },
   {
     "id": "invalid list state",
-    "other": "Could not update My List. Refresh the page and try again."
+    "other": "Δεν ήταν δυνατή η ενημέρωση της Λίστας μου. Ανανεώστε τη σελίδα και δοκιμάστε ξανά."
   },
   {
     "id": "invalid playlist state",
-    "other": "Could not update the playlist. Refresh the page and try again."
+    "other": "Δεν ήταν δυνατή η ενημέρωση της λίστας αναπαραγωγής. Ανανεώστε τη σελίδα και δοκιμάστε ξανά."
   },
   {
     "id": "invalid progress",
-    "other": "Could not save this position. Refresh and try again."
+    "other": "Δεν ήταν δυνατή η αποθήκευση αυτής της θέσης. Ανανεώστε και δοκιμάστε ξανά."
   },
   {
     "id": "invalid watched state",
-    "other": "Could not update the watched status. Refresh and try again."
+    "other": "Δεν ήταν δυνατή η ενημέρωση της κατάστασης προβολής. Ανανεώστε και δοκιμάστε ξανά."
   },
   {
     "id": "Invite link",
@@ -733,7 +733,7 @@
   },
   {
     "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Copy each key when you create it; you cannot view it again. Browse access is selected by default."
+    "other": "Αντιγράψτε κάθε κλειδί όταν το δημιουργείτε· δεν θα μπορείτε να το ξαναδείτε. Η πρόσβαση περιήγησης είναι επιλεγμένη από προεπιλογή."
   },
   {
     "id": "Kinosail",
@@ -757,7 +757,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "Choose a language from the list."
+    "other": "Επιλέξτε μια γλώσσα από τη λίστα."
   },
   {
     "id": "Last error",
@@ -869,11 +869,11 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "Could not save the media details. Try again."
+    "other": "Δεν ήταν δυνατή η αποθήκευση των λεπτομερειών πολυμέσων. Δοκιμάστε ξανά."
   },
   {
     "id": "metadata is invalid",
-    "other": "Check the media details and try again."
+    "other": "Ελέγξτε τις λεπτομέρειες πολυμέσων και δοκιμάστε ξανά."
   },
   {
     "id": "Metadata provider",
@@ -881,7 +881,7 @@
   },
   {
     "id": "metadata provider unavailable",
-    "other": "The metadata provider is unavailable. Try again later."
+    "other": "Ο πάροχος μεταδεδομένων δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα."
   },
   {
     "id": "Metrics",
@@ -909,7 +909,7 @@
   },
   {
     "id": "name and a 12-character password are required",
-    "other": "Enter a name and a password with at least 12 characters."
+    "other": "Εισαγάγετε ένα όνομα και έναν κωδικό πρόσβασης με τουλάχιστον 12 χαρακτήρες."
   },
   {
     "id": "Never",
@@ -925,7 +925,7 @@
   },
   {
     "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Kinosail finds new media when copying finishes. Scheduled scans catch changes it may have missed."
+    "other": "Το Kinosail εντοπίζει νέα πολυμέσα όταν ολοκληρωθεί η αντιγραφή. Οι προγραμματισμένοι έλεγχοι εντοπίζουν αλλαγές που ίσως έχουν χαθεί."
   },
   {
     "id": "New password",
@@ -1001,7 +1001,7 @@
   },
   {
     "id": "not found",
-    "other": "This item could not be found."
+    "other": "Αυτό το στοιχείο δεν βρέθηκε."
   },
   {
     "id": "Not now",
@@ -1077,11 +1077,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Could not use your passkey. Try again or use another sign-in method."
+    "other": "Δεν ήταν δυνατή η χρήση του κλειδιού πρόσβασης. Δοκιμάστε ξανά ή χρησιμοποιήστε άλλη μέθοδο σύνδεσης."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Τα κλειδιά πρόσβασης λειτουργούν μόνο στη ασφαλή διεύθυνση του Kinosail. Ανοίξτε το Kinosail στη συνηθισμένη διεύθυνσή του και δοκιμάστε ξανά."
   },
   {
     "id": "Password",
@@ -1101,7 +1101,7 @@
   },
   {
     "id": "Play the next Episode automatically",
-    "other": "Play the next episode automatically"
+    "other": "Αναπαραγωγή του επόμενου επεισοδίου αυτόματα"
   },
   {
     "id": "Playback",
@@ -1161,7 +1161,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "The preview is unavailable. Try again."
+    "other": "Η προεπισκόπηση δεν είναι διαθέσιμη. Δοκιμάστε ξανά."
   },
   {
     "id": "Private by design",
@@ -1173,7 +1173,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "Could not access the saved profiles. Try again later."
+    "other": "Δεν ήταν δυνατή η πρόσβαση στα αποθηκευμένα προφίλ. Δοκιμάστε ξανά αργότερα."
   },
   {
     "id": "Profile to reset",
@@ -1233,7 +1233,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready to download"
+    "other": "Έτοιμο για λήψη"
   },
   {
     "id": "Recap",
@@ -1297,7 +1297,7 @@
   },
   {
     "id": "request is too large",
-    "other": "This request is too large. Reduce the amount of data and try again."
+    "other": "Αυτό το αίτημα είναι πολύ μεγάλο. Μειώστε την ποσότητα δεδομένων και δοκιμάστε ξανά."
   },
   {
     "id": "Reset password",
@@ -1437,7 +1437,7 @@
   },
   {
     "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Manage your library, playback preferences, and Server settings."
+    "other": "Διαχειριστείτε τη βιβλιοθήκη σας, τις προτιμήσεις αναπαραγωγής και τις ρυθμίσεις του διακομιστή."
   },
   {
     "id": "Show",
@@ -1453,7 +1453,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your library."
+    "other": "Συνδεθείτε στη βιβλιοθήκη σας."
   },
   {
     "id": "Sign in with passkey",
@@ -1549,31 +1549,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Η προσπάθεια σύνδεσης έληξε ή δεν μπόρεσε να επαληθευτεί. Ξεκινήστε ξανά."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "Could not finish signing in with your organization. Start again."
+    "other": "Δεν ήταν δυνατή η ολοκλήρωση της σύνδεσης με τον οργανισμό σας. Ξεκινήστε ξανά."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
+    "other": "Ο λογαριασμός του οργανισμού σας δεν είναι συνδεδεμένος με προφίλ προβολής. Ζητήστε από τον ιδιοκτήτη να τον συνδέσει."
   },
   {
     "id": "SSO is unavailable",
-    "other": "Organization sign-in is unavailable. Try another sign-in method."
+    "other": "Η σύνδεση οργανισμού δεν είναι διαθέσιμη. Δοκιμάστε άλλη μέθοδο σύνδεσης."
   },
   {
     "id": "SSO session could not be created",
-    "other": "Could not finish signing in with your organization. Try again."
+    "other": "Δεν ήταν δυνατή η ολοκλήρωση της σύνδεσης με τον οργανισμό σας. Δοκιμάστε ξανά."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "Your sign-in attempt expired or could not be verified. Start again."
+    "other": "Η προσπάθεια σύνδεσης έληξε ή δεν μπόρεσε να επαληθευτεί. Ξεκινήστε ξανά."
   },
   {
     "id": "SSO token validation failed",
-    "other": "Could not verify your organization sign-in. Start again."
+    "other": "Δεν ήταν δυνατή η επαλήθευση της σύνδεσής σας με τον οργανισμό. Ξεκινήστε ξανά."
   },
   {
     "id": "Start in seconds",
@@ -1613,11 +1613,11 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "The subtitle provider is unavailable. Try again later."
+    "other": "Ο πάροχος υποτίτλων δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα."
   },
   {
     "id": "subtitle track(s)",
-    "other": "Subtitle tracks:"
+    "other": "Κομμάτια υποτίτλων:"
   },
   {
     "id": "Subtitles",
@@ -1673,7 +1673,7 @@
   },
   {
     "id": "This signs out the profile and deletes it.",
-    "other": "This signs the Viewer Profile out on all devices and permanently deletes it."
+    "other": "Με αυτό αποσυνδέεται το προφίλ προβολής από όλες τις συσκευές και διαγράφεται οριστικά."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1905,11 +1905,11 @@
   },
   {
     "id": "Offline playback needs an active service worker",
-    "other": "Offline playback is not ready in this browser. Reconnect to the Server and reload Kinosail."
+    "other": "Η αναπαραγωγή εκτός σύνδεσης δεν είναι έτοιμη σε αυτό το πρόγραμμα περιήγησης. Συνδεθείτε ξανά στον διακομιστή και φορτώστε ξανά το Kinosail."
   },
   {
     "id": "Could not remove local offline data.",
-    "other": "Could not remove this device’s offline data. Try again."
+    "other": "Δεν ήταν δυνατή η κατάργηση των δεδομένων εκτός σύνδεσης αυτής της συσκευής. Δοκιμάστε ξανά."
   },
   {
     "id": "stored on this device",
@@ -1933,7 +1933,7 @@
   },
   {
     "id": "No verified downloads are ready for this Viewer Profile.",
-    "other": "No downloads are ready on this device for this Viewer Profile."
+    "other": "Δεν υπάρχουν έτοιμες λήψεις σε αυτή τη συσκευή για αυτό το προφίλ προβολής."
   },
   {
     "id": "Open Kinosail online and choose a Viewer Profile first.",
@@ -1985,7 +1985,7 @@
   },
   {
     "id": "Request needs another try",
-    "other": "Could not complete the request"
+    "other": "Δεν ήταν δυνατή η ολοκλήρωση του αιτήματος"
   },
   {
     "id": "Return to form",
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "invalid title request",
-    "other": "Could not open this title. Return to the library and try again."
+    "other": "Δεν ήταν δυνατό το άνοιγμα αυτού του τίτλου. Επιστρέψτε στη βιβλιοθήκη και δοκιμάστε ξανά."
   },
   {
     "id": "Audio is fixed in this downloaded copy.",

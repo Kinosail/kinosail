@@ -1081,7 +1081,7 @@
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "Le passkey funzionano solo all'indirizzo HTTPS sicuro di Kinosail. Apri quell'indirizzo e riprova."
   },
   {
     "id": "Password",
@@ -1985,7 +1985,7 @@
   },
   {
     "id": "Request needs another try",
-    "other": "Could not complete the request"
+    "other": "Impossibile completare la richiesta."
   },
   {
     "id": "Return to form",
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "invalid title request",
-    "other": "Could not open this title. Return to the library and try again."
+    "other": "Impossibile aprire questo titolo. Torna alla libreria e riprova."
   },
   {
     "id": "Audio is fixed in this downloaded copy.",

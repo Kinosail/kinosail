@@ -1985,7 +1985,7 @@
   },
   {
     "id": "Request needs another try",
-    "other": "Could not complete the request"
+    "other": "Die Anfrage konnte nicht abgeschlossen werden."
   },
   {
     "id": "Return to form",
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "invalid title request",
-    "other": "Could not open this title. Return to the library and try again."
+    "other": "Dieser Titel konnte nicht geöffnet werden. Kehren Sie zur Bibliothek zurück und versuchen Sie es erneut."
   },
   {
     "id": "Audio is fixed in this downloaded copy.",

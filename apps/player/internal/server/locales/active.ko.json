@@ -1081,7 +1081,7 @@
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
+    "other": "패스키는 Kinosail의 보안 주소에서만 작동합니다. 평소 사용하는 주소에서 Kinosail을 열고 다시 시도하세요."
   },
   {
     "id": "Password",
@@ -1985,7 +1985,7 @@
   },
   {
     "id": "Request needs another try",
-    "other": "Could not complete the request"
+    "other": "요청을 완료할 수 없습니다"
   },
   {
     "id": "Return to form",
@@ -2005,7 +2005,7 @@
   },
   {
     "id": "invalid title request",
-    "other": "Could not open this title. Return to the library and try again."
+    "other": "이 제목을 열 수 없습니다. 라이브러리로 돌아가 다시 시도하세요."
   },
   {
     "id": "Audio is fixed in this downloaded copy.",
