@@ -141,7 +141,7 @@ func playbackCompatibility(facts MediaFacts, client ClientCapabilities, audio Au
 func choosePlaybackMode(plan *PlaybackPlan, intent NetworkIntent, client ClientCapabilities, compatible compatibility) {
 	forceDirect := intent.ForceDirect || intent.PreferDirect && !intent.ForceTranscode
 	videoCompatible := compatible.video && compatible.size && compatible.bitrate && compatible.hdr && plan.SubtitleMode != "burn-in"
-	plan.AudioCompatibilityRequired = !compatible.audio && videoCompatible
+	plan.AudioCompatibilityRequired = !compatible.audio
 	needsVideo := intent.ForceTranscode || !videoCompatible
 	switch {
 	case forceDirect:

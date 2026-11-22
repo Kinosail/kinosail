@@ -52,7 +52,7 @@ func (fixture TranscodeFixture) UnsupportedCodecInMP4DefaultsToDirectPlaybackWit
 	}
 	ffprobe := filepath.Join(t.TempDir(), "ffprobe")
 	//nolint:gosec // G306: the fake FFprobe adapter must be executable.
-	if err := os.WriteFile(ffprobe, []byte("#!/bin/sh\nprintf '%s' '{\"streams\":[{\"codec_type\":\"video\",\"codec_name\":\"hevc\"},{\"codec_type\":\"audio\",\"codec_name\":\"eac3\"}]}'\n"), 0o700); err != nil {
+	if err := os.WriteFile(ffprobe, []byte("#!/bin/sh\nprintf '%s' '{\"streams\":[{\"codec_type\":\"video\",\"codec_name\":\"hevc\"},{\"codec_type\":\"audio\",\"codec_name\":\"aac\"}]}'\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 	handler := fixture.New(TranscodeConfig{MediaDir: mediaDir, FFprobe: ffprobe})
