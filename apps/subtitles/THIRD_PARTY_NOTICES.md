@@ -11,7 +11,7 @@ listed license files control. Kinosail's license does not replace them.
 | govad | 2026-03-30 revision | MIT | [`third_party/govad.LICENSE`](third_party/govad.LICENSE) |
 | Silero VAD model | v5 weights | MIT | [`third_party/silero-vad.LICENSE`](third_party/silero-vad.LICENSE) |
 | SecLists test fixture | Pinned repository revision | MIT | [`third_party/seclists.LICENSE`](third_party/seclists.LICENSE) |
-| Jellyfin FFmpeg runtime | 8.1.3-1 | GNU GPL v3 or later for the packaged build | [Exact release, source, and build files](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.3-1) |
+| Jellyfin FFmpeg runtime | 8.1.3-2 | GNU GPL v3 or later for the packaged build | [Exact release, source, and build files](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.3-2) |
 | FDK AAC stripped library in Jellyfin FFmpeg | stripped5 | Fraunhofer FDK AAC terms | [NOTICE](third_party/fdk-aac-stripped.NOTICE), [source](https://gitlab.freedesktop.org/wtaymans/fdk-aac-stripped/-/tree/stripped5) |
 | libarchive tools | Debian runtime package | BSD-2-Clause and Debian package terms | [libarchive](https://github.com/libarchive/libarchive) |
 

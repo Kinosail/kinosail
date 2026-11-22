@@ -14,10 +14,10 @@ curl --proto '=https' --tlsv1.2 --fail --location --max-time 120 --max-filesize 
   https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.gz
 curl --proto '=https' --tlsv1.2 --fail --location --max-time 120 --max-filesize 16777216 \
   --output "$tools/actionlint.tar.gz" \
-  https://github.com/kjanat/actionlint/releases/download/v1.17.0/actionlint_1.17.0_linux_amd64.tar.gz
+  https://github.com/kjanat/actionlint/releases/download/v1.17.1/actionlint_1.17.1_linux_amd64.tar.gz
 printf '%s  %s\n' \
   b7af85e41cc99489dcc21d66c6d5f3685138f06d34651e6d34b42ec6d54fe6f6 "$tools/shellcheck.tar.gz" \
-  620abd485a12b6ab1125b844a876414e1d5bd2af8a3125b27f82b01d0d9d6e5a "$tools/actionlint.tar.gz" | sha256sum --check --strict
+  6bfe0f49f0e108b9b23732baf7de63bfa4d89174fa40f9cb98feb9676df3318f "$tools/actionlint.tar.gz" | sha256sum --check --strict
 
 tar -xzf "$tools/shellcheck.tar.gz" -C "$tools" shellcheck-v0.11.0/shellcheck
 tar -xzf "$tools/actionlint.tar.gz" -C "$tools" actionlint
