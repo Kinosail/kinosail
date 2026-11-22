@@ -42,9 +42,8 @@ To install a file you downloaded, run `sudo apt install ./Kinosail-Linux-x64.deb
 After you install:
 
 1. On the same computer, open `https://localhost:38127`. Your browser warns about the certificate the first time. This is expected for a new server.
-2. Create your Owner Profile.
-3. Put your movies and shows in `/srv/media`, or set `KINOSAIL_MEDIA_DIR` in `/etc/kinosail/kinosail.env`. The `kinosail` user must be able to read the folder.
-4. To watch on your TV and phone, set `KINOSAIL_LISTEN=0.0.0.0:38127` in the same file. Then run `sudo systemctl restart kinosail`.
+2. Create your account. The setup wizard then helps you protect it, pick your movie and show folders, and share Kinosail with your TV and phone.
+3. If a folder does not appear, the `kinosail` user cannot read it. Move your media to `/srv/media`, or let the `kinosail` user read the folder.
 
 To remove Kinosail, run `sudo apt remove kinosail` or `sudo dnf remove kinosail`. Your library data stays in `/var/lib/kinosail` until you delete it.
 

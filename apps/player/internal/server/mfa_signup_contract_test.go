@@ -7,9 +7,9 @@ import (
 )
 
 func TestSingleOwnerMustEnrollOneAuthenticationFactor(t *testing.T) {
-	servertest.AssertSingleOwnerMustEnrollOneAuthenticationFactor(t, servertest.MFAPolicyFixture{Library: libraryAPIFixture, Web: requestWithCookie})
+	servertest.AssertSingleOwnerMustEnrollOneAuthenticationFactor(t, servertest.MFAPolicyFixture{Library: libraryAPIFixture, Web: requestWithCookie, OptionalOwnerMFA: true})
 }
 
 func TestOwnerCanChooseTOTPWhenSigningUpThroughWebAndAPI(t *testing.T) {
-	servertest.AssertOwnerCanChooseTOTPWhenSigningUpThroughWebAndAPI(t, servertest.MFAPolicyFixture{Library: libraryAPIFixture, Web: requestWithCookie})
+	servertest.AssertOwnerCanChooseTOTPWhenSigningUpThroughWebAndAPI(t, servertest.MFAPolicyFixture{Library: libraryAPIFixture, Web: requestWithCookie, OptionalOwnerMFA: true})
 }

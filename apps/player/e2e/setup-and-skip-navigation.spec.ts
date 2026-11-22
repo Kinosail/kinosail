@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 for (const viewport of viewports) {
   test(`TMDB instructions stay readable at ${viewport.width}px${viewport.width === 390 ? " @smoke" : ""}`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
-    for (const path of ['/settings/configuration', '/onboarding/connection']) {
+    for (const path of ['/settings/configuration', '/onboarding/connection#integrations.tmdb']) {
       await page.goto(path);
       const section = page.locator('section').filter({ has: page.getByRole('heading', { name: 'Movie artwork and details', exact: true }) });
       const instructions = section.locator('ol');
@@ -24,7 +24,7 @@ for (const viewport of viewports) {
         expect(box.right).toBeLessThanOrEqual(box.viewport);
       }
       expect(await instructions.evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
-      await section.screenshot({ path: testInfo.outputPath(`${path.replaceAll('/', '-')}.png`) });
+      await section.screenshot({ path: testInfo.outputPath(`${path.replace(/#.*/, '').replaceAll('/', '-')}.png`) });
     }
   });
 }

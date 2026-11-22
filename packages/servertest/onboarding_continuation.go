@@ -19,7 +19,7 @@ func (fixture OnboardingFixture) OwnerCanRerunOnboardingFromSettings(t *testing.
 		t.Fatalf("retrigger onboarding = %d, location = %q", trigger.Code, trigger.Header().Get("Location"))
 	}
 	start := fixture.Web(t, handler, http.MethodGet, "/onboarding", "", owner)
-	if start.Code != http.StatusSeeOther || start.Header().Get("Location") != "/onboarding/connection" {
+	if start.Code != http.StatusSeeOther || start.Header().Get("Location") != "/onboarding/media" {
 		t.Fatalf("start onboarding = %d, location = %q", start.Code, start.Header().Get("Location"))
 	}
 	finish := fixture.Web(t, handler, http.MethodGet, "/onboarding/finish", "", owner)

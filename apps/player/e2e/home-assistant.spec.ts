@@ -72,7 +72,7 @@ test("Home Assistant stays dark until the Owner enables it in Settings and the w
 			await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
 			await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-settings-home-assistant.png`), fullPage: true });
 
-			await page.goto("/onboarding/connection");
+			await page.goto("/onboarding/connection#home-assistant");
 			await expect(page.getByLabel("Connect Home Assistant", { exact: true })).toBeChecked();
 			await expect(page.locator('#trusted-https-configuration form[action="/onboarding/trusted-https"]')).toBeVisible();
 			expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
@@ -105,7 +105,7 @@ test("Home Assistant stays dark until the Owner enables it in Settings and the w
 		await page.screenshot({ path: testInfo.outputPath("390-home-assistant-approval.png"), fullPage: true });
 
 		await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
-		await page.goto("/onboarding/connection");
+		await page.goto("/onboarding/connection#home-assistant");
 		await expect(page.getByLabel("Connect Home Assistant", { exact: true })).toBeChecked();
 		expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 		await page.screenshot({ path: testInfo.outputPath("forced-colors-wizard-home-assistant.png"), fullPage: true });

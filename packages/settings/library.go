@@ -120,7 +120,7 @@ func normalizeLibraryPath(path string) (string, error) {
 		return "", errors.New("library folder must be inside the media mount")
 	}
 	path = filepath.Clean(path)
-	if path == ".." || strings.HasPrefix(path, ".."+string(filepath.Separator)) {
+	if !filepath.IsLocal(path) {
 		return "", errors.New("library folder must be inside the media mount")
 	}
 	return path, nil

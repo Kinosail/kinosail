@@ -85,10 +85,11 @@ async function setup(app) {
   await page.goto(app.url+'/setup');
   await page.getByLabel('Name', {exact:true}).fill('Synthetic Owner');
   await page.locator('#new-password').fill(randomBytes(24).toString('hex'));
-  await page.getByLabel(/Add extra sign-in protection now/).uncheck();
-  await page.getByRole('button', {name:'Create Owner & continue'}).click();
-  await page.getByRole('button', {name:'Create passkey', exact:true}).click();
-  await expect(page).toHaveURL(app.url+'/onboarding/connection');
+  const protection = page.getByLabel(/Add extra sign-in protection now/);
+  if (await protection.count()) await protection.uncheck();
+  await page.getByRole('button', {name:/^Create (Owner|account) & continue$/}).click();
+  await page.getByRole('button', {name:/^(Create passkey|Use Touch ID, Windows Hello, or my phone)$/}).click();
+  await expect(page).toHaveURL(new RegExp('^'+app.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')+'/onboarding/(connection|media)$'));
   await page.goto(app.url+'/onboarding/finish');
   await page.goto(app.url+'/');
   await page.evaluate(async () => {

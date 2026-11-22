@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "aded50252e6178a7f4f43ceffc97d647258379684c834a76f8cff614493ae625"
+const reviewedRouteInventorySHA256 = "95bff209e61ba515464221ea6711e6ae1d98e0f6391bd30ac5466948babb766d"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -65,7 +65,7 @@ var ownerOnlyRoutes = routeSet(
 	"GET /api/v1/media-shares", "GET /settings/media-shares", "GET /settings/remote-readiness",
 	"GET /metadata/bulk",
 	"GET /Auth/Keys", "GET /Users", "POST /Auth/Keys",
-	"GET /home-assistant/authorize", "GET /onboarding", "GET /onboarding/connection", "GET /onboarding/finish", "GET /onboarding/household", "GET /onboarding/migrate", "GET /settings", "GET /settings/agent-connections", "GET /settings/backup", "GET /settings/backups", "GET /settings/configuration", "GET /settings/diagnostics.json", "GET /settings/metrics", "GET /settings/system",
+	"GET /home-assistant/authorize", "GET /onboarding", "GET /onboarding/connection", "GET /onboarding/finish", "GET /onboarding/household", "GET /onboarding/media", "GET /onboarding/migrate", "GET /settings", "GET /settings/agent-connections", "GET /settings/backup", "GET /settings/backups", "GET /settings/configuration", "GET /settings/diagnostics.json", "GET /settings/metrics", "GET /settings/system",
 	"POST /api/v1/api-keys", "POST /api/v1/backups", "POST /api/v1/backups/verify", "POST /api/v1/collections", "POST /api/v1/metadata/bulk",
 	"POST /api/v1/items/{id}/metadata/refresh", "POST /api/v1/libraries",
 	"POST /api/v1/marker-analysis", "POST /api/v1/profiles", "POST /api/v1/tasks/{task}",
@@ -78,7 +78,7 @@ var ownerOnlyRoutes = routeSet(
 	"POST /api/v1/supporter/activate", "POST /supporter/activate",
 	"POST /api/v1/viewing-imports/preview", "POST /api/v1/viewing-imports/{id}/apply", "POST /api/v1/viewing-syncs", "POST /api/v1/viewing-syncs/{id}/run",
 	"POST /collection/{name}/delete", "POST /collection/{name}/{id}", "POST /collection/{name}/items/{id}", "POST /collections", "POST /markers/{id}", "POST /markers/{id}/remove",
-	"POST /metadata/bulk", "POST /metadata/{id}", "POST /metadata/{id}/refresh", "POST /onboarding/household", "POST /onboarding/jellyfin", "POST /onboarding/tmdb", "POST /onboarding/trusted-https", "POST /onboarding/updates", "POST /onboarding/updates/check", "POST /onboarding/viewing-imports/apply", "POST /onboarding/viewing-imports/preview", "POST /scan",
+	"POST /metadata/bulk", "POST /metadata/{id}", "POST /metadata/{id}/refresh", "POST /onboarding/household", "POST /onboarding/media", "POST /onboarding/media/remove", "POST /onboarding/devices", "POST /onboarding/jellyfin", "POST /onboarding/tmdb", "POST /onboarding/trusted-https", "POST /onboarding/updates", "POST /onboarding/updates/check", "POST /onboarding/viewing-imports/apply", "POST /onboarding/viewing-imports/preview", "POST /scan",
 	"POST /settings/agent-connections/revoke", "POST /settings/api-keys", "POST /settings/api-keys/revoke", "POST /settings/backups/verify", "POST /settings/cache/clear",
 	"POST /settings/configuration", "POST /settings/configuration/reset", "POST /settings/dlna", "POST /settings/encrypted-backup", "POST /settings/jellyfin",
 	"POST /home-assistant/authorize", "POST /settings/home-assistant", "POST /settings/home-assistant/pair", "POST /onboarding/home-assistant",
@@ -138,7 +138,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 489, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 493, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }
