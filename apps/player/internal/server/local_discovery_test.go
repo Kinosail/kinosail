@@ -52,7 +52,7 @@ func TestAndroidDiscoveredInterfaceAddressUsesNormalHostGate(t *testing.T) {
 			allowed      bool
 		}{
 			{origin, alias, true},
-			{origin, net.JoinHostPort(host, "9999"), false},
+			{origin, net.JoinHostPort(host, "9999"), true},
 			{"https://player.example.com", alias, false},
 		} {
 			called := false

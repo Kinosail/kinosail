@@ -75,6 +75,15 @@ docker compose logs --follow kinosail
 
 On the same computer, open <https://localhost:38127>. Your browser will warn you about the local certificate. Trust it only for your own Server. Create the first Owner with a unique password that has at least 12 characters. Then add a passkey or TOTP authenticator.
 
+To open the Server from other devices on your home network:
+
+1. Create the first Owner at `https://localhost:38127`.
+2. In `.env`, change `KINOSAIL_BIND=127.0.0.1` to `KINOSAIL_BIND=0.0.0.0`.
+3. Run `docker compose up -d`.
+4. On another device, open `https://<computer-address>:38127`, for example `https://192.168.1.20:38127`.
+
+Kinosail accepts private network addresses (`10.x`, `172.16.x` to `172.31.x`, `192.168.x`, Tailscale `100.64.x` to `100.127.x`, and IPv6 `fd..`) when `KINOSAIL_AUTH_URL` is blank or points to `localhost`. To use a name such as `media.home`, add it to `KINOSAIL_TLS_HOSTS`. If you set `KINOSAIL_AUTH_URL` to a public HTTPS address, add each LAN name or IP address to `KINOSAIL_TLS_HOSTS`.
+
 ## Docker CLI
 
 Use this if you prefer `docker run` to Compose. This pulls the same published container image. Change the media path to an existing folder on the Docker host before running the command:
