@@ -2074,5 +2074,9 @@
   {
     "id": "Enter the current 6-digit code to confirm the app.",
     "other": "앱을 확인하려면 현재 6자리 코드를 입력하세요."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "이 주소는 허용되지 않습니다. 구성된 주소로 Kinosail을 열거나 이 주소를 KINOSAIL_TLS_HOSTS에 추가하세요."
   }
 ]

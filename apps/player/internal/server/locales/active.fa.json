@@ -2074,5 +2074,9 @@
   {
     "id": "Enter the current 6-digit code to confirm the app.",
     "other": "برای تأیید برنامه، کد ۶ رقمی فعلی را وارد کنید."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "این نشانی مجاز نیست. Kinosail را با نشانی پیکربندی‌شده باز کنید یا این نشانی را به KINOSAIL_TLS_HOSTS اضافه کنید."
   }
 ]

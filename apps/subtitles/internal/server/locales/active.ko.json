@@ -1258,5 +1258,9 @@
   {
     "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
     "other": "Kinosail Subtitles가 미디어 폴더를 읽는 중입니다. 스캔이 완료되면 여기에 자막 현황이 표시됩니다."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "이 주소는 허용되지 않습니다. 구성된 주소로 Kinosail을 열거나 이 주소를 KINOSAIL_TLS_HOSTS에 추가하세요."
   }
 ]

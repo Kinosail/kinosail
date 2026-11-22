@@ -1258,5 +1258,9 @@
   {
     "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
     "other": "A Kinosail Subtitles beolvassa a médiamappáit. A vizsgálat befejezése után a feliratlefedettség itt jelenik meg."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "Ez a cím nem engedélyezett. Nyissa meg a Kinosail alkalmazást a beállított címén, vagy adja hozzá ezt a címet a KINOSAIL_TLS_HOSTS listához."
   }
 ]
