@@ -1,0 +1,70 @@
+name: kinosail
+arch: ${KINOSAIL_ARCH}
+platform: linux
+version: ${KINOSAIL_VERSION}
+version_schema: semver
+release: "1"
+section: video
+priority: optional
+maintainer: Kinosail <noreply@kinosail.com>
+vendor: Kinosail
+homepage: https://kinosail.com/
+license: LicenseRef-PolyForm-Perimeter-1.0.1
+description: |-
+  Kinosail Player media server.
+  Streams your own movies and shows to your browser, phone, and TV.
+  Runs in the background as the kinosail system service.
+recommends:
+  - libarchive-tools
+  - tesseract-ocr
+overrides:
+  rpm:
+    recommends:
+      - bsdtar
+      - tesseract
+contents:
+  - src: ./kinosail
+    dst: /usr/lib/kinosail/kinosail
+    file_info:
+      mode: 0755
+  - src: ./runtime/ffmpeg
+    dst: /usr/lib/kinosail/runtime/ffmpeg
+    file_info:
+      mode: 0755
+  - src: ./runtime/ffprobe
+    dst: /usr/lib/kinosail/runtime/ffprobe
+    file_info:
+      mode: 0755
+  - src: ./runtime/fpcalc
+    dst: /usr/lib/kinosail/runtime/fpcalc
+    file_info:
+      mode: 0755
+  - src: ./native-installation.json
+    dst: /usr/lib/kinosail/native-installation.json
+    file_info:
+      mode: 0644
+  - src: ./linux/kinosail.defaults
+    dst: /usr/lib/kinosail/kinosail.defaults
+    file_info:
+      mode: 0644
+  - src: ./linux/kinosail.service
+    dst: /usr/lib/systemd/system/kinosail.service
+    file_info:
+      mode: 0644
+  - src: ./linux/kinosail.env
+    dst: /etc/kinosail/kinosail.env
+    type: config|noreplace
+    file_info:
+      mode: 0644
+  - src: ./LICENSE
+    dst: /usr/share/doc/kinosail/LICENSE
+    file_info:
+      mode: 0644
+  - src: ./THIRD_PARTY_NOTICES.md
+    dst: /usr/share/doc/kinosail/THIRD_PARTY_NOTICES.md
+    file_info:
+      mode: 0644
+scripts:
+  postinstall: ./linux/postinstall.sh
+  preremove: ./linux/preremove.sh
+  postremove: ./linux/postremove.sh

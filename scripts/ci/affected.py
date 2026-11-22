@@ -71,7 +71,7 @@ def affected(paths):
             if relative.startswith(("internal/server/", "e2e/")):
                 selected[f"{app}_browsers"] = selected["web"] = True
                 selected["javascript-typescript"] = True
-            if (relative.startswith("scripts/") or parts[-1].startswith(("Containerfile", "compose"))
+            if (relative.startswith(("scripts/", "packaging/")) or parts[-1].startswith(("Containerfile", "compose"))
                     or relative in ("Makefile", "go.sum")):
                 selected[f"{app}_tools"] = selected[f"{app}_arm"] = True
                 selected["supply"] = True

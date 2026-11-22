@@ -1,0 +1,19 @@
+name: Set up nfpm
+description: Install the pinned, checksum-verified nfpm release that builds Linux packages
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        set -euo pipefail
+        case "$RUNNER_ARCH" in
+          X64) asset=nfpm_2.49.0_Linux_x86_64.tar.gz; digest=2afaa5ffb5e3493402e31e7c67a5a1fb42133e3f66fc315ca0051934125561c7 ;;
+          ARM64) asset=nfpm_2.49.0_Linux_arm64.tar.gz; digest=d4eee71839e92c68cbd3b101640bad32d2856fc551acae0635be9118e48c9d9c ;;
+          *) echo "unsupported runner architecture" >&2; exit 1 ;;
+        esac
+        directory="$RUNNER_TEMP/nfpm"
+        mkdir -p "$directory"
+        curl --fail --location --proto '=https' --max-time 120 --output "$directory/nfpm.tar.gz" "https://github.com/goreleaser/nfpm/releases/download/v2.49.0/$asset"
+        echo "$digest  $directory/nfpm.tar.gz" | sha256sum -c -
+        tar -xzf "$directory/nfpm.tar.gz" -C "$directory" nfpm
+        echo "$directory" >> "$GITHUB_PATH"

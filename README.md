@@ -2,7 +2,7 @@
 
 **A free, self-hosted media server for your movies, shows, music, audiobooks, books, and photos.** Kinosail is a private alternative to Plex, Jellyfin, and Emby. It runs in one Docker container, reads your media folders read-only, and needs no vendor account. Remote streaming and hardware transcoding are free.
 
-**[Quick start](#quick-start)** · **[Website](https://kinosail.com/)** · **[Docs](https://kinosail.com/docs/)** · **[Compare with Plex, Jellyfin, and Emby](https://kinosail.com/compare/)** · **[NAS and Proxmox](https://kinosail.com/getting-started/platforms/)**
+**[Download](https://kinosail.com/download/)** · **[Quick start](#quick-start)** · **[Website](https://kinosail.com/)** · **[Docs](https://kinosail.com/docs/)** · **[Compare with Plex, Jellyfin, and Emby](https://kinosail.com/compare/)** · **[NAS and Proxmox](https://kinosail.com/getting-started/platforms/)**
 
 <p align="center">
   <a href=".github/assets/player-home-desktop.webp"><img src=".github/assets/player-home-desktop.webp" width="880" alt="Kinosail web Player Home with a featured fictional film, a Resume button, and a Continue watching row"></a>
@@ -20,6 +20,17 @@
 - **Made for a household.** Viewer Profiles keep progress separate and limit libraries. Watch Rooms keep everyone in sync.
 - **Switch without starting over.** Import watched state and resume positions from Plex or Jellyfin, and keep using compatible Jellyfin mobile apps.
 - **Built to automate.** Use the versioned HTTP API, or connect an AI assistant through the built-in MCP server.
+
+## Download
+
+**[Get the installer for your computer at kinosail.com/download](https://kinosail.com/download/).** The page detects your computer and links to the exact file for the newest version. Kinosail then runs in the background and starts by itself. You do not need Docker.
+
+| Computer | Download |
+| --- | --- |
+| Linux (Debian, Ubuntu, Raspberry Pi OS) | [x64 .deb](https://github.com/Kinosail/kinosail/releases/latest/download/Kinosail-Linux-x64.deb) · [arm64 .deb](https://github.com/Kinosail/kinosail/releases/latest/download/Kinosail-Linux-arm64.deb) |
+| Linux (Fedora, RHEL, openSUSE) | [x64 .rpm](https://github.com/Kinosail/kinosail/releases/latest/download/Kinosail-Linux-x64.rpm) · [arm64 .rpm](https://github.com/Kinosail/kinosail/releases/latest/download/Kinosail-Linux-arm64.rpm) |
+| Linux, one command | `curl -fsSL https://kinosail.com/install.sh \| sh` |
+| Windows and macOS | Coming soon. Use Docker Desktop with the quick start below for now. |
 
 ## Quick start
 

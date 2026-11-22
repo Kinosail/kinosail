@@ -1,0 +1,8 @@
+KINOSAIL_LISTEN=127.0.0.1:38127
+KINOSAIL_DATA_DIR=/var/lib/kinosail
+KINOSAIL_CACHE_DIR=/var/cache/kinosail
+KINOSAIL_BACKUP_DIR=/var/lib/kinosail/backups
+KINOSAIL_MEDIA_DIR=/srv/media
+KINOSAIL_FFMPEG=/usr/lib/kinosail/runtime/ffmpeg
+KINOSAIL_FFPROBE=/usr/lib/kinosail/runtime/ffprobe
+KINOSAIL_FPCALC=/usr/lib/kinosail/runtime/fpcalc
