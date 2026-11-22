@@ -56,7 +56,7 @@ func builtInCommand(name string, input io.Reader, output io.Writer, dataDir, lis
 		return true, servertransport.CheckHealth(listen, tlsEnabled, authURL)
 	case "tls-certificate":
 		return true, servertransport.WriteTrustAnchor(output, dataDir)
-	case updatecontrol.CommandArtifact, updatecontrol.CommandPlan, updatecontrol.CommandReport:
+	case updatecontrol.CommandArtifact, updatecontrol.CommandPlan, updatecontrol.CommandReport, updatecontrol.CommandVerify:
 		return true, updateCommand(name, input, output, dataDir, runtime.GOOS, runtime.GOARCH)
 	case "version":
 		_, err := fmt.Fprintln(output, version)
@@ -79,7 +79,7 @@ func unsafeArgs(args []string) bool {
 }
 
 func usageError() error {
-	return errors.New("usage: kinosail [backup|config|healthcheck|mcp-stdio|restore|tls-certificate|update-artifact|update-plan|update-report|version]")
+	return errors.New("usage: kinosail [backup|config|healthcheck|mcp-stdio|restore|tls-certificate|update-artifact|update-plan|update-report|update-verify|version]")
 }
 
 func ConfigureMCPRuntime(args []string) {
