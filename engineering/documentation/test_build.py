@@ -85,7 +85,7 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertEqual(hero_links[0], [f'{prefix}/download/', 'Download Kinosail'])
                     self.assertIn(['https://github.com/Kinosail/kinosail', 'View source on GitHub'], hero_links)
                     self.assertIn([f'{prefix}/docs/', 'Read the docs'], hero_links)
-                    self.assertIn([f'{prefix}/quickstart/', 'Get started with Docker'], hero_links)
+                    self.assertIn([f'{prefix}/quickstart/', 'Use Docker or a NAS'], hero_links)
                     self.assertIn(['#inside', 'See screenshots'], hero_links)
                     for app_name in ('player', 'subtitles'):
                         self.assertEqual(
