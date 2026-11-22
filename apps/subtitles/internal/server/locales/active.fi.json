@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "active session(s)"
+    "other": "Active sessions:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "API key view failed"
+    "other": "Could not display the API key. Try again."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "backup is unavailable"
+    "other": "The backup is unavailable. Check the backup settings and try again."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatibility stream"
+    "other": "Compatible version"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. Kinosail stores only its hash."
+    "other": "Copy this key now. You cannot view it again after leaving this page."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "could not create MFA enrollment"
+    "other": "Could not set up your authenticator app. Try again."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "could not create Owner Profile"
+    "other": "Could not create the Owner account. Try again."
   },
   {
     "id": "could not create session",
-    "other": "could not create session"
+    "other": "Could not sign in. Try again."
   },
   {
     "id": "could not end session",
-    "other": "could not end session"
+    "other": "Could not sign out. Try again."
   },
   {
     "id": "could not read subtitles",
-    "other": "could not read subtitles"
+    "other": "Could not read these subtitles. Try another subtitle track."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Created once"
+    "other": "Save your API key"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "cross-origin request denied"
+    "other": "This request came from a different address. Open Kinosail at its usual address and try again."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Direct stream"
+    "other": "Original file"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download portable state archive"
+    "other": "Download Server backup"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "downloads are not enabled for this Viewer Profile"
+    "other": "Downloads are not enabled for this Viewer Profile. Ask the Owner to enable them."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "embedded subtitles are unavailable"
+    "other": "Subtitles from this file are unavailable. Try another subtitle track."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish sign in"
+    "other": "Finish signing in"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Follow this device or choose a fixed theme."
+    "other": "Match your device’s appearance or choose light or dark."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "invalid authentication code"
+    "other": "That code did not work. Enter the current code from your authenticator app."
   },
   {
     "id": "invalid Collection state",
-    "other": "invalid Collection state"
+    "other": "Could not update the Collection. Refresh the page and try again."
   },
   {
     "id": "invalid credentials",
-    "other": "invalid credentials"
+    "other": "The name or password is incorrect. Try again."
   },
   {
     "id": "invalid list state",
-    "other": "invalid list state"
+    "other": "Could not update My List. Refresh the page and try again."
   },
   {
     "id": "invalid playlist state",
-    "other": "invalid playlist state"
+    "other": "Could not update the playlist. Refresh the page and try again."
   },
   {
     "id": "invalid progress",
-    "other": "invalid progress"
+    "other": "Could not save this position. Refresh and try again."
   },
   {
     "id": "invalid watched state",
-    "other": "invalid watched state"
+    "other": "Could not update the watched status. Refresh and try again."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "language is invalid"
+    "other": "Choose a language from the list."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "metadata could not be saved"
+    "other": "Could not save the media details. Try again."
   },
   {
     "id": "metadata is invalid",
-    "other": "metadata is invalid"
+    "other": "Check the media details and try again."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "metadata provider unavailable"
+    "other": "The metadata provider is unavailable. Try again later."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "not found"
+    "other": "This item could not be found."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Passkey failed."
+    "other": "Could not use your passkey. Try again or use another sign-in method."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "Passkeys work only at Kinosail's secure address. Open Kinosail at its usual address, then try again."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "preview unavailable"
+    "other": "The preview is unavailable. Try again."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "profile storage is unavailable"
+    "other": "Could not access the saved profiles. Try again later."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready offline"
+    "other": "Ready to download"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "request is too large"
+    "other": "This request is too large. Reduce the amount of data and try again."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your private media universe."
+    "other": "Sign in to manage your subtitles."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO challenge is invalid or expired"
+    "other": "Your sign-in attempt expired or could not be verified. Start again."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO code exchange failed"
+    "other": "Could not finish signing in with your organization. Start again."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO identity is not linked to a Viewer Profile"
+    "other": "Your organization account is not linked to a Viewer Profile. Ask the Owner to link it."
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO is unavailable"
+    "other": "Organization sign-in is unavailable. Try another sign-in method."
   },
   {
     "id": "SSO session could not be created",
-    "other": "SSO session could not be created"
+    "other": "Could not finish signing in with your organization. Try again."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO state is invalid or expired"
+    "other": "Your sign-in attempt expired or could not be verified. Start again."
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO token validation failed"
+    "other": "Could not verify your organization sign-in. Start again."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "subtitle provider unavailable"
+    "other": "The subtitle provider is unavailable. Try again later."
   },
   {
     "id": "Subtitles",

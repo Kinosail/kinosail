@@ -11,7 +11,7 @@ import (
 
 func TestSetupViewRendersAccessibleRouterInstructions(t *testing.T) {
 	t.Parallel()
-	view := template.Must(template.New("setup").Funcs(template.FuncMap{"icon": func(string) string { return "" }}).Parse(ReadinessViewSource("Player", "75")))
+	view := template.Must(template.New("setup").Funcs(template.FuncMap{"icon": func(string) string { return "" }, "t": func(value string) string { return value }}).Parse(ReadinessViewSource("Player", "75")))
 	var output bytes.Buffer
 	data := SecurePublicReadiness(Status{Mode: "https", Hostname: "family.duckdns.org"}, nil, nil, time.Now())
 	if err := view.Execute(&output, data); err != nil {
@@ -40,7 +40,7 @@ func TestSetupViewRendersAccessibleRouterInstructions(t *testing.T) {
 
 func TestSetupViewEscapesFieldAndLinkLabels(t *testing.T) {
 	t.Parallel()
-	view := template.Must(template.New("setup").Funcs(template.FuncMap{"icon": func(string) string { return "" }}).Parse(ReadinessViewSource("Player", "75")))
+	view := template.Must(template.New("setup").Funcs(template.FuncMap{"icon": func(string) string { return "" }, "t": func(value string) string { return value }}).Parse(ReadinessViewSource("Player", "75")))
 	data := Readiness{NextSteps: []SetupStep{{Title: "<script>attack()</script>", Fields: []SetupField{{Label: "<img src=x>", Value: "<script>attack()</script>"}}, Links: []SetupLink{{Label: "<svg onload=attack()>", URL: "https://www.asus.com/"}}}}}
 	var output bytes.Buffer
 	if err := view.Execute(&output, data); err != nil {

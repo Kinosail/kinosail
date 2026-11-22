@@ -45,16 +45,6 @@ func TestWriteUIStateFixtures(t *testing.T) {
 	plain := func(view *template.Template, data any) func(*bytes.Buffer) error {
 		return func(output *bytes.Buffer) error { return view.Execute(output, data) }
 	}
-	csrf := func(view *template.Template, data any) func(*bytes.Buffer) error {
-		return func(output *bytes.Buffer) error {
-			response := httptest.NewRecorder()
-			if err := executeCSRFTemplate(view, response, request, data); err != nil {
-				return err
-			}
-			_, err := output.Write(response.Body.Bytes())
-			return err
-		}
-	}
 
 	preview := viewingImportWebPage{
 		viewingImportPreview: viewingImportPreview{
@@ -91,7 +81,7 @@ func TestWriteUIStateFixtures(t *testing.T) {
 		"oidc-mfa":                     localized(oidcMFAView, "fixture-challenge"),
 		"viewing-import-preview":       localized(viewingImportPreviewView, preview),
 		"viewing-import-result":        localized(viewingImportResultView, viewingImportSummary{Applied: 2, ListsApplied: 1, Unchanged: 3}),
-		"mcp-approval":                 csrf(mcpApprovalView, mcpApprovalData{ClientName: "Living Room agent", ProfileName: "Owner", RequestID: "fixture-request", Write: true, Manage: true}),
+		"mcp-approval":                 localized(mcpApprovalView, mcpApprovalData{ClientName: "Living Room agent", ProfileName: "Owner", RequestID: "fixture-request", Write: true, Manage: true}),
 		"state-contracts":              plain(template.Must(template.New("state-contracts").Parse(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UI state contracts · Kinosail</title><link rel="stylesheet" href="/static/app.css?v=electric-20"></head><body class="settings-page"><main class="settings-shell"><header class="settings-intro"><span class="eyebrow">State contract</span><h1>System feedback</h1><p>Every state remains readable, calm, and explicit.</p></header><section class="wide"><h2>Empty</h2><div class="empty"><h2>Nothing here yet.</h2><p>Add Library Content to begin.</p></div></section><section aria-busy="true"><h2>Loading</h2><p role="status" class="status">Scanning the Library…</p><button disabled>Scanning</button></section><section><h2>Error</h2><div role="alert">The Server could not finish this request.</div></section><section><h2>Unavailable</h2><fieldset disabled aria-disabled="true"><label>Managed value <input value="Set by deployment"></label><button>Save</button></fieldset><p class="managed-setting">This setting is managed by the deployment.</p></section></main></body></html>`)), nil),
 	}
 	for name, render := range fixtures {

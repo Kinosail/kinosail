@@ -9,11 +9,11 @@
   },
   {
     "id": "Access",
-    "other": "訪問"
+    "other": "存取"
   },
   {
     "id": "Account · Kinosail Subtitles",
-    "other": "帳號·Kinosail"
+    "other": "帳號 · Kinosail Subtitles"
   },
   {
     "id": "Actions",
@@ -21,11 +21,11 @@
   },
   {
     "id": "active session(s)",
-    "other": "活動會話"
+    "other": "使用中的工作階段："
   },
   {
     "id": "Add a passkey",
-    "other": "新增金鑰"
+    "other": "新增通行金鑰"
   },
   {
     "id": "Add folder",
@@ -33,7 +33,7 @@
   },
   {
     "id": "Add media or try another search.",
-    "other": "新增媒體或嘗試其他搜尋。"
+    "other": "新增媒體，或嘗試其他搜尋。"
   },
   {
     "id": "Add to",
@@ -41,11 +41,11 @@
   },
   {
     "id": "Album",
-    "other": "相簿"
+    "other": "專輯"
   },
   {
     "id": "Albums",
-    "other": "相簿"
+    "other": "專輯"
   },
   {
     "id": "all",
@@ -69,11 +69,11 @@
   },
   {
     "id": "API key view failed",
-    "other": "API 金鑰查看失敗"
+    "other": "無法顯示 API 金鑰。請再試一次。"
   },
   {
     "id": "API key · Kinosail Subtitles",
-    "other": "API 金鑰·Kinosail"
+    "other": "API 金鑰 · Kinosail Subtitles"
   },
   {
     "id": "API keys",
@@ -85,11 +85,11 @@
   },
   {
     "id": "Apple VideoToolbox",
-    "other": "Apple VideoToolbox"
+    "other": "Apple VideoToolbox 硬體加速"
   },
   {
     "id": "Apply",
-    "other": "應用"
+    "other": "套用"
   },
   {
     "id": "Audio",
@@ -105,7 +105,7 @@
   },
   {
     "id": "Authentication or recovery code",
-    "other": "驗證或復原代碼"
+    "other": "驗證碼或復原碼"
   },
   {
     "id": "authentication required",
@@ -113,7 +113,7 @@
   },
   {
     "id": "Authorize device",
-    "other": "授權設備"
+    "other": "授權裝置"
   },
   {
     "id": "Automatic",
@@ -137,7 +137,7 @@
   },
   {
     "id": "Back to library",
-    "other": "回傳庫"
+    "other": "返回媒體庫"
   },
   {
     "id": "Back up now",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "備份不可用"
+    "other": "備份不可用。請檢查備份設定，然後再試一次。"
   },
   {
     "id": "Backups need setup.",
@@ -153,11 +153,11 @@
   },
   {
     "id": "Backups · Kinosail Subtitles",
-    "other": "備份·Kinosail"
+    "other": "備份 · Kinosail 字幕"
   },
   {
     "id": "Book",
-    "other": "預訂"
+    "other": "書籍"
   },
   {
     "id": "Books",
@@ -169,7 +169,7 @@
   },
   {
     "id": "Browse library",
-    "other": "瀏覽庫"
+    "other": "瀏覽媒體庫"
   },
   {
     "id": "Cancel",
@@ -181,11 +181,11 @@
   },
   {
     "id": "Chapters",
-    "other": "章"
+    "other": "章節"
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "選擇此瀏覽器的語言。"
+    "other": "為此瀏覽器選擇語言。"
   },
   {
     "id": "Code",
@@ -193,11 +193,11 @@
   },
   {
     "id": "Collection",
-    "other": "收藏"
+    "other": "系列"
   },
   {
     "id": "Collections",
-    "other": "集合"
+    "other": "系列"
   },
   {
     "id": "Commercial",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "相容性流"
+    "other": "相容版本"
   },
   {
     "id": "compatible",
@@ -217,31 +217,31 @@
   },
   {
     "id": "Configuration error",
-    "other": "配置錯誤"
+    "other": "設定錯誤"
   },
   {
     "id": "Configuration · Kinosail Subtitles",
-    "other": "配置·Kinosail"
+    "other": "設定 · Kinosail 字幕"
   },
   {
     "id": "Connect",
-    "other": "連接"
+    "other": "連線"
   },
   {
     "id": "Connect a device",
-    "other": "連接設備"
+    "other": "連接裝置"
   },
   {
     "id": "Connected",
-    "other": "已連接"
+    "other": "已連線"
   },
   {
     "id": "Connecting",
-    "other": "正在連接"
+    "other": "正在連線"
   },
   {
     "id": "Connecting…",
-    "other": "正在連線..."
+    "other": "正在連線…"
   },
   {
     "id": "Content",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "立即複製此金鑰。 Kinosail 僅儲存其雜湊值。"
+    "other": "請立即複製此金鑰。離開此頁面後將無法再次查看。"
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "無法建立 MFA 註冊"
+    "other": "無法設定驗證器應用程式。請再試一次。"
   },
   {
     "id": "could not create Owner Profile",
-    "other": "無法建立擁有者個人資料"
+    "other": "無法建立擁有者帳號。請再試一次。"
   },
   {
     "id": "could not create session",
-    "other": "無法建立會話"
+    "other": "無法登入。請再試一次。"
   },
   {
     "id": "could not end session",
-    "other": "無法結束會話"
+    "other": "無法登出。請再試一次。"
   },
   {
     "id": "could not read subtitles",
-    "other": "無法讀取字幕"
+    "other": "無法讀取這些字幕。請嘗試其他字幕軌。"
   },
   {
     "id": "Create",
@@ -281,15 +281,15 @@
   },
   {
     "id": "Create a passkey",
-    "other": "建立金鑰"
+    "other": "建立通行密鑰"
   },
   {
     "id": "Create passkey",
-    "other": "建立金鑰"
+    "other": "建立通行密鑰"
   },
   {
     "id": "Created once",
-    "other": "建立一次"
+    "other": "儲存 API 金鑰"
   },
   {
     "id": "Credentials configured",
@@ -301,15 +301,15 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "跨來源請求被拒絕"
+    "other": "此請求來自其他地址。請在慣用地址開啟 Kinosail 後再試一次。"
   },
   {
     "id": "Curate",
-    "other": "規劃"
+    "other": "策劃"
   },
   {
     "id": "Dark",
-    "other": "黑暗"
+    "other": "深色"
   },
   {
     "id": "default",
@@ -321,7 +321,7 @@
   },
   {
     "id": "Deployment configuration",
-    "other": "部署配置"
+    "other": "部署設定"
   },
   {
     "id": "Destination",
@@ -337,7 +337,7 @@
   },
   {
     "id": "Direct",
-    "other": "直接"
+    "other": "直接播放"
   },
   {
     "id": "direct",
@@ -345,15 +345,15 @@
   },
   {
     "id": "Direct connection unavailable",
-    "other": "直接連接不可用"
+    "other": "直接連線不可用"
   },
   {
     "id": "Direct stream",
-    "other": "直接流"
+    "other": "原始檔案"
   },
   {
     "id": "Directed by",
-    "other": "導演："
+    "other": "導演"
   },
   {
     "id": "Disaster recovery",
@@ -361,7 +361,7 @@
   },
   {
     "id": "DLNA",
-    "other": "DLNA"
+    "other": "DLNA 協定"
   },
   {
     "id": "Download",
@@ -369,11 +369,11 @@
   },
   {
     "id": "Download original",
-    "other": "下載正本"
+    "other": "下載原始檔案"
   },
   {
     "id": "Download portable state archive",
-    "other": "下載便攜式狀態存檔"
+    "other": "下載伺服器備份"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "此檢視者個人資料未啟用下載"
+    "other": "此觀看者設定檔未啟用下載。請讓擁有者啟用。"
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "嵌入字幕不可用"
+    "other": "無法使用此檔案中的字幕。請嘗試其他字幕軌。"
   },
   {
     "id": "Enabled",
@@ -413,11 +413,11 @@
   },
   {
     "id": "Find",
-    "other": "查找"
+    "other": "尋找"
   },
   {
     "id": "Find something",
-    "other": "找東西"
+    "other": "尋找內容"
   },
   {
     "id": "Finish sign in",
@@ -425,11 +425,11 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "介質裝載內的資料夾"
+    "other": "媒體掛載點內的資料夾"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "關注此設備或選擇固定主題。"
+    "other": "跟隨裝置外觀，或選擇淺色或深色。"
   },
   {
     "id": "From",
@@ -441,11 +441,11 @@
   },
   {
     "id": "General",
-    "other": "常規"
+    "other": "一般"
   },
   {
     "id": "Genres",
-    "other": "流派"
+    "other": "類型"
   },
   {
     "id": "Group",
@@ -457,7 +457,7 @@
   },
   {
     "id": "History",
-    "other": "歷史"
+    "other": "觀看紀錄"
   },
   {
     "id": "Home",
@@ -465,7 +465,7 @@
   },
   {
     "id": "if enabled",
-    "other": "如果啟用"
+    "other": "如已啟用"
   },
   {
     "id": "Install",
@@ -473,39 +473,39 @@
   },
   {
     "id": "Intel Quick Sync",
-    "other": "英特爾快速同步"
+    "other": "Intel Quick Sync 硬體加速"
   },
   {
     "id": "Intro",
-    "other": "簡介"
+    "other": "片頭"
   },
   {
     "id": "invalid authentication code",
-    "other": "驗證碼無效"
+    "other": "驗證碼無效。請輸入驗證器應用程式中的目前驗證碼。"
   },
   {
     "id": "invalid Collection state",
-    "other": "無效的集合狀態"
+    "other": "無法更新系列。請重新整理頁面後再試一次。"
   },
   {
     "id": "invalid credentials",
-    "other": "無效憑證"
+    "other": "使用者名稱或密碼不正確。請再試一次。"
   },
   {
     "id": "invalid list state",
-    "other": "無效清單狀態"
+    "other": "無法更新我的片單。請重新整理頁面後再試一次。"
   },
   {
     "id": "invalid playlist state",
-    "other": "播放清單狀態無效"
+    "other": "無法更新播放清單。請重新整理頁面後再試一次。"
   },
   {
     "id": "invalid progress",
-    "other": "無效進度"
+    "other": "無法儲存此位置。請重新整理後再試一次。"
   },
   {
     "id": "invalid watched state",
-    "other": "觀看狀態無效"
+    "other": "無法更新觀看狀態。請重新整理後再試一次。"
   },
   {
     "id": "Keep",
@@ -513,7 +513,7 @@
   },
   {
     "id": "Kinosail",
-    "other": "KinoSAIL"
+    "other": "Kinosail"
   },
   {
     "id": "Language",
@@ -521,11 +521,11 @@
   },
   {
     "id": "language is invalid",
-    "other": "語言無效"
+    "other": "請從清單中選擇語言。"
   },
   {
     "id": "Last error",
-    "other": "最後一個錯誤"
+    "other": "最近一次錯誤"
   },
   {
     "id": "Last successful backup",
@@ -541,31 +541,31 @@
   },
   {
     "id": "Libraries",
-    "other": "庫"
+    "other": "媒體庫"
   },
   {
     "id": "Library",
-    "other": "庫"
+    "other": "媒體庫"
   },
   {
     "id": "Library folders",
-    "other": "庫資料夾"
+    "other": "媒體庫資料夾"
   },
   {
     "id": "Library items",
-    "other": "庫項目"
+    "other": "媒體庫項目"
   },
   {
     "id": "Library organization",
-    "other": "圖書館組織"
+    "other": "媒體庫整理"
   },
   {
     "id": "Licensed credential configured",
-    "other": "已配置許可證憑證"
+    "other": "已配置授權憑證"
   },
   {
     "id": "Light",
-    "other": "光"
+    "other": "淺色"
   },
   {
     "id": "Local account",
@@ -585,19 +585,19 @@
   },
   {
     "id": "Media mount",
-    "other": "介質安裝"
+    "other": "媒體掛載點"
   },
   {
     "id": "metadata could not be saved",
-    "other": "無法保存元資料"
+    "other": "無法儲存媒體詳細資料。請再試一次。"
   },
   {
     "id": "metadata is invalid",
-    "other": "元資料無效"
+    "other": "請檢查媒體詳細資料後再試一次。"
   },
   {
     "id": "metadata provider unavailable",
-    "other": "元資料提供者不可用"
+    "other": "中繼資料提供者無法使用。請稍後再試。"
   },
   {
     "id": "Metrics",
@@ -613,7 +613,7 @@
   },
   {
     "id": "My List",
-    "other": "我的清單"
+    "other": "我的片單"
   },
   {
     "id": "Name",
@@ -629,27 +629,27 @@
   },
   {
     "id": "New profile name",
-    "other": "新個人資料名稱"
+    "other": "新觀看者設定檔名稱"
   },
   {
     "id": "New profile password",
-    "other": "新個人資料密碼"
+    "other": "新觀看者設定檔密碼"
   },
   {
     "id": "New secret",
-    "other": "新秘密"
+    "other": "新密鑰"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "尚未記錄任何活動。"
+    "other": "尚無活動紀錄。"
   },
   {
     "id": "No device selected",
-    "other": "未選擇任何裝置"
+    "other": "未選擇裝置"
   },
   {
     "id": "No playback recorded yet.",
-    "other": "尚未錄製播放。"
+    "other": "尚無播放紀錄。"
   },
   {
     "id": "None",
@@ -657,7 +657,7 @@
   },
   {
     "id": "Not configured",
-    "other": "未配置"
+    "other": "未設定"
   },
   {
     "id": "not detected",
@@ -665,19 +665,19 @@
   },
   {
     "id": "not found",
-    "other": "未找到"
+    "other": "找不到此項目。"
   },
   {
     "id": "Not now",
-    "other": "現在不行"
+    "other": "暫不"
   },
   {
     "id": "Nothing found.",
-    "other": "未找到任何內容。"
+    "other": "找不到任何內容。"
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
-    "other": "NVIDIA NVENC/NVDEC"
+    "other": "NVIDIA NVENC/NVDEC（NVIDIA 顯示卡）"
   },
   {
     "id": "Off",
@@ -693,23 +693,23 @@
   },
   {
     "id": "On",
-    "other": "於"
+    "other": "開啟"
   },
   {
     "id": "OpenID Connect",
-    "other": "OpenID Connect"
+    "other": "OpenID Connect 登入"
   },
   {
     "id": "OpenSubtitles",
-    "other": "OpenSubtitles"
+    "other": "OpenSubtitles 字幕來源"
   },
   {
     "id": "Outro",
-    "other": "尾奏"
+    "other": "片尾"
   },
   {
     "id": "Owner",
-    "other": "所有者"
+    "other": "擁有者"
   },
   {
     "id": "Owner access required",
@@ -717,19 +717,19 @@
   },
   {
     "id": "Owner controls",
-    "other": "所有者控制"
+    "other": "擁有者控制"
   },
   {
     "id": "Passkey added.",
-    "other": "已新增金鑰。"
+    "other": "已新增通行密鑰。"
   },
   {
     "id": "Passkey failed.",
-    "other": "金鑰失敗。"
+    "other": "無法使用您的通行密鑰。請重試，或使用其他登入方式。"
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "通行密鑰只能在 Kinosail 的安全位址中使用。請開啟 Kinosail 的常用位址，然後再試一次。"
   },
   {
     "id": "Password",
@@ -741,7 +741,7 @@
   },
   {
     "id": "Play",
-    "other": "玩"
+    "other": "播放"
   },
   {
     "id": "Play on device",
@@ -753,7 +753,7 @@
   },
   {
     "id": "Playback history",
-    "other": "播放歷史記錄"
+    "other": "播放紀錄"
   },
   {
     "id": "Playback speed",
@@ -761,11 +761,11 @@
   },
   {
     "id": "Playing here",
-    "other": "在這裡播放"
+    "other": "正在這裡播放"
   },
   {
     "id": "Playing on device",
-    "other": "在裝置上播放"
+    "other": "正在裝置上播放"
   },
   {
     "id": "Playlist",
@@ -777,11 +777,11 @@
   },
   {
     "id": "Plot",
-    "other": "情節"
+    "other": "劇情"
   },
   {
     "id": "Preferred language",
-    "other": "首選語言"
+    "other": "偏好語言"
   },
   {
     "id": "Prepare",
@@ -789,23 +789,23 @@
   },
   {
     "id": "preview unavailable",
-    "other": "預覽不可用"
+    "other": "無法顯示預覽。請重試。"
   },
   {
     "id": "Profile",
-    "other": "個人資料"
+    "other": "使用者設定檔"
   },
   {
     "id": "profile storage is unavailable",
-    "other": "設定檔儲存不可用"
+    "other": "無法存取已儲存的設定檔。請稍後再試。"
   },
   {
     "id": "Profile type",
-    "other": "設定檔類型"
+    "other": "使用者設定檔類型"
   },
   {
     "id": "Profiles",
-    "other": "個人資料"
+    "other": "使用者設定檔"
   },
   {
     "id": "Protected automatically",
@@ -813,19 +813,19 @@
   },
   {
     "id": "Quality",
-    "other": "質量"
+    "other": "畫質"
   },
   {
     "id": "quality",
-    "other": "質量"
+    "other": "畫質"
   },
   {
     "id": "Quick Connect",
-    "other": "快速連接"
+    "other": "快速連線"
   },
   {
     "id": "Rating",
-    "other": "評級"
+    "other": "分級"
   },
   {
     "id": "Read now",
@@ -837,15 +837,15 @@
   },
   {
     "id": "ready",
-    "other": "準備好"
+    "other": "就緒"
   },
   {
     "id": "Ready offline",
-    "other": "離線就緒"
+    "other": "可供下載"
   },
   {
     "id": "Recap",
-    "other": "回顧"
+    "other": "前情回顧"
   },
   {
     "id": "Recent activity",
@@ -861,15 +861,15 @@
   },
   {
     "id": "Recently played",
-    "other": "最近玩過"
+    "other": "最近播放"
   },
   {
     "id": "Recovery",
-    "other": "恢復"
+    "other": "復原"
   },
   {
     "id": "Recovery codes",
-    "other": "恢復代碼"
+    "other": "復原碼"
   },
   {
     "id": "Recommended",
@@ -881,7 +881,7 @@
   },
   {
     "id": "Remove",
-    "other": "刪除"
+    "other": "移除"
   },
   {
     "id": "Remove from",
@@ -897,11 +897,11 @@
   },
   {
     "id": "request is too large",
-    "other": "請求太大"
+    "other": "請求過大。請減少資料量後再試一次。"
   },
   {
     "id": "Return to settings",
-    "other": "回傳設定"
+    "other": "返回設定"
   },
   {
     "id": "Revoke",
@@ -909,11 +909,11 @@
   },
   {
     "id": "Rockchip RKMPP",
-    "other": "瑞芯微RKMPP"
+    "other": "瑞芯微 RKMPP"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "房間已斷開連接·重新加載以重新連接"
+    "other": "房間已中斷連線 · 重新載入以重新連線"
   },
   {
     "id": "Safety scan",
@@ -921,11 +921,11 @@
   },
   {
     "id": "Save",
-    "other": "保存"
+    "other": "儲存"
   },
   {
     "id": "Save schedule",
-    "other": "保存行程"
+    "other": "儲存時間表"
   },
   {
     "id": "Schedule",
@@ -933,7 +933,7 @@
   },
   {
     "id": "Search library",
-    "other": "搜尋庫"
+    "other": "搜尋媒體庫"
   },
   {
     "id": "Search results",
@@ -941,15 +941,15 @@
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "秘密被隱藏並僅包含在加密復原備份中。"
+    "other": "敏感資訊已隱藏，僅包含在加密的復原備份中。"
   },
   {
     "id": "Secure your account",
-    "other": "保護您的帳號"
+    "other": "保護您的帳戶"
   },
   {
     "id": "Secure your account · Kinosail Subtitles",
-    "other": "保護您的帳號 · Kinosail Subtitles"
+    "other": "保護您的帳戶 · Kinosail Subtitles"
   },
   {
     "id": "Server settings",
@@ -957,7 +957,7 @@
   },
   {
     "id": "Set up Kinosail Subtitles",
-    "other": "設定 Kinosail"
+    "other": "設定 Kinosail Subtitles"
   },
   {
     "id": "Settings",
@@ -965,11 +965,11 @@
   },
   {
     "id": "Settings sections",
-    "other": "設定部分"
+    "other": "設定分區"
   },
   {
     "id": "Settings · Kinosail Subtitles",
-    "other": "設定·Kinosail"
+    "other": "設定 · Kinosail Subtitles"
   },
   {
     "id": "Show",
@@ -977,7 +977,7 @@
   },
   {
     "id": "Shows",
-    "other": "演出"
+    "other": "影集"
   },
   {
     "id": "Sign in",
@@ -985,11 +985,11 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "登入您的私人媒體世界。"
+    "other": "登入以管理您的字幕。"
   },
   {
     "id": "Sign in with passkey",
-    "other": "使用金鑰登入"
+    "other": "使用通行密鑰登入"
   },
   {
     "id": "Sign in with SSO",
@@ -1001,7 +1001,7 @@
   },
   {
     "id": "Sign out",
-    "other": "退出"
+    "other": "登出"
   },
   {
     "id": "Single sign-on",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO 質詢無效或已過期"
+    "other": "登入嘗試已過期或無法驗證。請重新開始。"
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO 代碼交換失敗"
+    "other": "無法完成組織登入。請重新開始。"
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO 身分未連結至檢視者個人資料"
+    "other": "您的組織帳戶尚未連結觀看者設定檔。請請擁有者完成連結。"
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO 不可用"
+    "other": "組織登入不可用。請嘗試其他登入方式。"
   },
   {
     "id": "SSO session could not be created",
-    "other": "無法建立 SSO 會話"
+    "other": "無法完成組織登入。請重試。"
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO 狀態無效或已過期"
+    "other": "登入嘗試已過期或無法驗證。請重新開始。"
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO 令牌驗證失敗"
+    "other": "無法驗證您的組織登入。請重新開始。"
   },
   {
     "id": "Status",
@@ -1065,7 +1065,7 @@
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "將這些代碼儲存在安全的地方。每個工作一次。"
+    "other": "請將這些代碼儲存在安全的地方。每個代碼只能使用一次。"
   },
   {
     "id": "Subtitle provider",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "字幕提供者不可用"
+    "other": "字幕提供者不可用。請稍後再試。"
   },
   {
     "id": "Subtitles",
@@ -1089,43 +1089,43 @@
   },
   {
     "id": "System",
-    "other": "系统"
+    "other": "系統"
   },
   {
     "id": "Tagline",
-    "other": "标语"
+    "other": "標語"
   },
   {
     "id": "Theme",
-    "other": "主题"
+    "other": "主題"
   },
   {
     "id": "This Collection is empty.",
-    "other": "此集合為空。"
+    "other": "此系列為空。"
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "這將永久刪除該集合。"
+    "other": "這將永久刪除該系列。"
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "這將永久刪除播放清單。"
+    "other": "這將永久刪除該播放清單。"
   },
   {
     "id": "This playlist is empty.",
-    "other": "此播放列表为空。"
+    "other": "此播放清單為空。"
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "本產品使用 TMDB API，但未經 TMDB 認可或認證。"
+    "other": "本產品使用 TMDB API，但未獲得 TMDB 認可或認證。"
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "透過 PG/TV-PG"
+    "other": "PG / TV-PG 及以下"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "透過 PG-13 / TV-14"
+    "other": "PG-13 / TV-14 及以下"
   },
   {
     "id": "Title",
@@ -1145,7 +1145,7 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "將 HDR 色調對應到 SDR"
+    "other": "將 HDR 色調映射為 SDR"
   },
   {
     "id": "too many login attempts",
@@ -1153,11 +1153,11 @@
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "「一起觀看」房間太多"
+    "other": "「一起觀看」房間過多"
   },
   {
     "id": "Track",
-    "other": "跟踪"
+    "other": "追蹤"
   },
   {
     "id": "Transcoder",
@@ -1169,19 +1169,19 @@
   },
   {
     "id": "Try again",
-    "other": "重试"
+    "other": "重試"
   },
   {
     "id": "Two-factor authentication",
-    "other": "雙重認證"
+    "other": "雙因素驗證"
   },
   {
     "id": "Two-factor authentication · Kinosail Subtitles",
-    "other": "雙重認證·Kinosail"
+    "other": "雙因素驗證 · Kinosail Subtitles"
   },
   {
     "id": "Type",
-    "other": "类型"
+    "other": "類型"
   },
   {
     "id": "Until",
@@ -1209,27 +1209,27 @@
   },
   {
     "id": "Video",
-    "other": "视频"
+    "other": "影片"
   },
   {
     "id": "Viewer",
-    "other": "查看者"
+    "other": "觀看者"
   },
   {
     "id": "Viewer access is not available",
-    "other": "查看者存取權限不可用"
+    "other": "觀看者存取權限不可用"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "正在等待您的金鑰..."
+    "other": "正在等待您的通行密鑰…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together 狀態無效"
+    "other": "「一起觀看」狀態無效"
   },
   {
     "id": "watched",
-    "other": "观看"
+    "other": "已觀看"
   },
   {
     "id": "Watched",
@@ -1241,15 +1241,15 @@
   },
   {
     "id": "when ready.",
-    "other": "準備好後."
+    "other": "準備好後。"
   },
   {
     "id": "Year",
-    "other": "年"
+    "other": "年份"
   },
   {
     "id": "Your library",
-    "other": "您的图书馆"
+    "other": "您的媒體庫"
   },
   {
     "id": "Scanning your Library",
