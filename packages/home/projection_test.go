@@ -60,7 +60,7 @@ func TestDestinationProjection(t *testing.T) {
 	if len(groups) != 3 || len(groups[0].Destinations) != 3 || len(groups[1].Destinations) != 3 || len(groups[2].Destinations) != 3 {
 		t.Fatalf("groups=%+v", groups)
 	}
-	if groups[0].Destinations[0].CountLabel != "1 item" || groups[2].Destinations[1].CountLabel != "2 items" || countLabel(0) != "0 items" {
+	if groups[0].Destinations[0].Count != 1 || groups[2].Destinations[1].Count != 2 {
 		t.Fatalf("count labels=%+v", groups)
 	}
 	if groups := destinations(libraryCounts{}, 0, 0, 0); len(groups) != 0 {

@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "active session(s)"
+    "other": "جلسه‌های فعال:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "API key view failed"
+    "other": "کلید API نمایش داده نشد. دوباره تلاش کنید."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "backup is unavailable"
+    "other": "پشتیبان در دسترس نیست. تنظیمات پشتیبان را بررسی کنید و دوباره تلاش کنید."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatibility stream"
+    "other": "نسخه سازگار"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. Kinosail stores only its hash."
+    "other": "همین حالا این کلید را کپی کنید. پس از ترک این صفحه، دیگر نمی‌توانید آن را ببینید."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "could not create MFA enrollment"
+    "other": "برنامه احراز هویت شما تنظیم نشد. دوباره تلاش کنید."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "could not create Owner Profile"
+    "other": "حساب مالک ایجاد نشد. دوباره تلاش کنید."
   },
   {
     "id": "could not create session",
-    "other": "could not create session"
+    "other": "ورود انجام نشد. دوباره تلاش کنید."
   },
   {
     "id": "could not end session",
-    "other": "could not end session"
+    "other": "خروج انجام نشد. دوباره تلاش کنید."
   },
   {
     "id": "could not read subtitles",
-    "other": "could not read subtitles"
+    "other": "این زیرنویس‌ها خوانده نشدند. مسیر زیرنویس دیگری را امتحان کنید."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Created once"
+    "other": "کلید API خود را ذخیره کنید"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "cross-origin request denied"
+    "other": "این درخواست از نشانی دیگری آمده است. Kinosail را در نشانی همیشگی‌اش باز کنید و دوباره تلاش کنید."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Direct stream"
+    "other": "فایل اصلی"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download portable state archive"
+    "other": "دانلود نسخه پشتیبان سرور"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "downloads are not enabled for this Viewer Profile"
+    "other": "دانلود برای این پروفایل بیننده فعال نیست. از مالک بخواهید آن را فعال کند."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "embedded subtitles are unavailable"
+    "other": "زیرنویس‌های این فایل در دسترس نیستند. مسیر زیرنویس دیگری را امتحان کنید."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish sign in"
+    "other": "تکمیل ورود"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Follow this device or choose a fixed theme."
+    "other": "ظاهر دستگاه خود را دنبال کنید یا حالت روشن یا تیره را انتخاب کنید."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "invalid authentication code"
+    "other": "این کد کار نکرد. کد فعلی برنامه احراز هویت خود را وارد کنید."
   },
   {
     "id": "invalid Collection state",
-    "other": "invalid Collection state"
+    "other": "مجموعه به‌روزرسانی نشد. صفحه را تازه کنید و دوباره تلاش کنید."
   },
   {
     "id": "invalid credentials",
-    "other": "invalid credentials"
+    "other": "نام یا رمز عبور نادرست است. دوباره تلاش کنید."
   },
   {
     "id": "invalid list state",
-    "other": "invalid list state"
+    "other": "فهرست من به‌روزرسانی نشد. صفحه را تازه کنید و دوباره تلاش کنید."
   },
   {
     "id": "invalid playlist state",
-    "other": "invalid playlist state"
+    "other": "فهرست پخش به‌روزرسانی نشد. صفحه را تازه کنید و دوباره تلاش کنید."
   },
   {
     "id": "invalid progress",
-    "other": "invalid progress"
+    "other": "این موقعیت ذخیره نشد. صفحه را تازه کنید و دوباره تلاش کنید."
   },
   {
     "id": "invalid watched state",
-    "other": "invalid watched state"
+    "other": "وضعیت تماشا به‌روزرسانی نشد. صفحه را تازه کنید و دوباره تلاش کنید."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "language is invalid"
+    "other": "یک زبان از فهرست انتخاب کنید."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "metadata could not be saved"
+    "other": "جزئیات رسانه ذخیره نشد. دوباره تلاش کنید."
   },
   {
     "id": "metadata is invalid",
-    "other": "metadata is invalid"
+    "other": "جزئیات رسانه را بررسی کنید و دوباره تلاش کنید."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "metadata provider unavailable"
+    "other": "ارائه‌دهنده فراداده در دسترس نیست. بعداً دوباره تلاش کنید."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "not found"
+    "other": "این مورد پیدا نشد."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Passkey failed."
+    "other": "کلید دسترسی شما کار نکرد. دوباره تلاش کنید یا از روش ورود دیگری استفاده کنید."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "کلیدهای دسترسی فقط در نشانی امن Kinosail کار می‌کنند. Kinosail را در نشانی همیشگی‌اش باز کنید و دوباره تلاش کنید."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "preview unavailable"
+    "other": "پیش‌نمایش در دسترس نیست. دوباره تلاش کنید."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "profile storage is unavailable"
+    "other": "دسترسی به پروفایل‌های ذخیره‌شده ممکن نشد. بعداً دوباره تلاش کنید."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready offline"
+    "other": "آماده دانلود"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "request is too large"
+    "other": "این درخواست خیلی بزرگ است. حجم داده را کم کنید و دوباره تلاش کنید."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your private media universe."
+    "other": "برای مدیریت زیرنویس‌های خود وارد شوید."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO challenge is invalid or expired"
+    "other": "تلاش ورود منقضی شده یا تأیید نشد. دوباره شروع کنید."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO code exchange failed"
+    "other": "ورود با سازمان شما کامل نشد. دوباره شروع کنید."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO identity is not linked to a Viewer Profile"
+    "other": "حساب سازمانی شما به یک پروفایل بیننده وصل نیست. از مالک بخواهید آن را وصل کند."
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO is unavailable"
+    "other": "ورود سازمانی در دسترس نیست. روش ورود دیگری را امتحان کنید."
   },
   {
     "id": "SSO session could not be created",
-    "other": "SSO session could not be created"
+    "other": "ورود با سازمان شما کامل نشد. دوباره تلاش کنید."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO state is invalid or expired"
+    "other": "تلاش ورود منقضی شده یا تأیید نشد. دوباره شروع کنید."
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO token validation failed"
+    "other": "ورود سازمانی شما تأیید نشد. دوباره شروع کنید."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "subtitle provider unavailable"
+    "other": "ارائه‌دهنده زیرنویس در دسترس نیست. بعداً دوباره تلاش کنید."
   },
   {
     "id": "Subtitles",

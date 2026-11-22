@@ -729,7 +729,7 @@
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "パスキーは Kinosail の安全なアドレスでのみ使用できます。通常のアドレスで Kinosail を開き、もう一度お試しください。"
   },
   {
     "id": "Password",

@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "active session(s)"
+    "other": "সক্রিয় সেশন:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "API key view failed"
+    "other": "API কী দেখানো যায়নি। আবার চেষ্টা করুন।"
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "backup is unavailable"
+    "other": "ব্যাকআপ পাওয়া যাচ্ছে না। ব্যাকআপ সেটিংস দেখে আবার চেষ্টা করুন।"
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatibility stream"
+    "other": "সামঞ্জস্যপূর্ণ সংস্করণ"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. Kinosail stores only its hash."
+    "other": "এখনই এই কী কপি করুন। এই পাতা ছেড়ে গেলে আর দেখা যাবে না।"
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "could not create MFA enrollment"
+    "other": "আপনার অথেনটিকেটর অ্যাপ সেট আপ করা যায়নি। আবার চেষ্টা করুন।"
   },
   {
     "id": "could not create Owner Profile",
-    "other": "could not create Owner Profile"
+    "other": "Owner অ্যাকাউন্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।"
   },
   {
     "id": "could not create session",
-    "other": "could not create session"
+    "other": "সাইন ইন করা যায়নি। আবার চেষ্টা করুন।"
   },
   {
     "id": "could not end session",
-    "other": "could not end session"
+    "other": "সাইন আউট করা যায়নি। আবার চেষ্টা করুন।"
   },
   {
     "id": "could not read subtitles",
-    "other": "could not read subtitles"
+    "other": "এই সাবটাইটেলগুলো পড়া যায়নি। অন্য একটি সাবটাইটেল ট্র্যাক চেষ্টা করুন।"
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Created once"
+    "other": "আপনার API কী সংরক্ষণ করুন"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "cross-origin request denied"
+    "other": "এই অনুরোধ অন্য একটি ঠিকানা থেকে এসেছে। Kinosail তার সাধারণ ঠিকানায় খুলে আবার চেষ্টা করুন।"
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Direct stream"
+    "other": "মূল ফাইল"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download portable state archive"
+    "other": "সার্ভার ব্যাকআপ ডাউনলোড করুন"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "downloads are not enabled for this Viewer Profile"
+    "other": "এই Viewer Profile-এ ডাউনলোড চালু নেই। সেগুলো চালু করতে Owner-কে বলুন।"
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "embedded subtitles are unavailable"
+    "other": "এই ফাইলের সাবটাইটেল পাওয়া যাচ্ছে না। অন্য একটি সাবটাইটেল ট্র্যাক চেষ্টা করুন।"
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish sign in"
+    "other": "সাইন ইন সম্পন্ন করুন"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Follow this device or choose a fixed theme."
+    "other": "আপনার ডিভাইসের থিম অনুসরণ করুন, অথবা হালকা বা গাঢ় থিম বেছে নিন।"
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "invalid authentication code"
+    "other": "সেই কোড কাজ করেনি। আপনার অথেনটিকেটর অ্যাপের বর্তমান কোডটি লিখুন।"
   },
   {
     "id": "invalid Collection state",
-    "other": "invalid Collection state"
+    "other": "Collection আপডেট করা যায়নি। পৃষ্ঠাটি রিফ্রেশ করে আবার চেষ্টা করুন।"
   },
   {
     "id": "invalid credentials",
-    "other": "invalid credentials"
+    "other": "নাম বা পাসওয়ার্ড ভুল। আবার চেষ্টা করুন।"
   },
   {
     "id": "invalid list state",
-    "other": "invalid list state"
+    "other": "My List আপডেট করা যায়নি। পৃষ্ঠাটি রিফ্রেশ করে আবার চেষ্টা করুন।"
   },
   {
     "id": "invalid playlist state",
-    "other": "invalid playlist state"
+    "other": "প্লেলিস্ট আপডেট করা যায়নি। পৃষ্ঠাটি রিফ্রেশ করে আবার চেষ্টা করুন।"
   },
   {
     "id": "invalid progress",
-    "other": "invalid progress"
+    "other": "এই অবস্থান সংরক্ষণ করা যায়নি। রিফ্রেশ করে আবার চেষ্টা করুন।"
   },
   {
     "id": "invalid watched state",
-    "other": "invalid watched state"
+    "other": "দেখা হয়েছে কি না, সেই স্ট্যাটাস আপডেট করা যায়নি। রিফ্রেশ করে আবার চেষ্টা করুন।"
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "language is invalid"
+    "other": "তালিকা থেকে একটি ভাষা বেছে নিন।"
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "metadata could not be saved"
+    "other": "মিডিয়ার বিবরণ সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।"
   },
   {
     "id": "metadata is invalid",
-    "other": "metadata is invalid"
+    "other": "মিডিয়ার বিবরণ যাচাই করে আবার চেষ্টা করুন।"
   },
   {
     "id": "metadata provider unavailable",
-    "other": "metadata provider unavailable"
+    "other": "মেটাডেটা প্রদানকারী পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।"
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "not found"
+    "other": "এই আইটেমটি খুঁজে পাওয়া যায়নি।"
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Passkey failed."
+    "other": "আপনার পাসকি ব্যবহার করা যায়নি। আবার চেষ্টা করুন বা অন্য সাইন-ইন পদ্ধতি ব্যবহার করুন।"
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "পাসকি শুধু Kinosail-এর নিরাপদ HTTPS ঠিকানায় কাজ করে। সেই ঠিকানা খুলে তারপর আবার চেষ্টা করুন।"
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "preview unavailable"
+    "other": "প্রিভিউ পাওয়া যাচ্ছে না। আবার চেষ্টা করুন।"
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "profile storage is unavailable"
+    "other": "সংরক্ষিত প্রোফাইল অ্যাক্সেস করা যায়নি। পরে আবার চেষ্টা করুন।"
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready offline"
+    "other": "ডাউনলোডের জন্য প্রস্তুত"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "request is too large"
+    "other": "এই অনুরোধ অনেক বড়। ডেটার পরিমাণ কমিয়ে আবার চেষ্টা করুন।"
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your private media universe."
+    "other": "সাবটাইটেল পরিচালনা করতে সাইন ইন করুন।"
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO challenge is invalid or expired"
+    "other": "সাইন-ইনের চেষ্টার মেয়াদ শেষ হয়েছে বা যাচাই করা যায়নি। আবার শুরু করুন।"
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO code exchange failed"
+    "other": "আপনার প্রতিষ্ঠানের মাধ্যমে সাইন ইন সম্পন্ন করা যায়নি। আবার শুরু করুন।"
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO identity is not linked to a Viewer Profile"
+    "other": "আপনার প্রতিষ্ঠানের অ্যাকাউন্ট কোনো Viewer Profile-এর সাথে যুক্ত নয়। Owner-কে এটি যুক্ত করতে বলুন।"
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO is unavailable"
+    "other": "প্রতিষ্ঠানের সাইন-ইন এখন পাওয়া যাচ্ছে না। অন্য একটি সাইন-ইন পদ্ধতি ব্যবহার করুন।"
   },
   {
     "id": "SSO session could not be created",
-    "other": "SSO session could not be created"
+    "other": "প্রতিষ্ঠানের মাধ্যমে সাইন ইন সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।"
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO state is invalid or expired"
+    "other": "সাইন-ইনের চেষ্টার মেয়াদ শেষ হয়েছে বা যাচাই করা যায়নি। আবার শুরু করুন।"
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO token validation failed"
+    "other": "প্রতিষ্ঠানের সাইন-ইন যাচাই করা যায়নি। আবার শুরু করুন।"
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "subtitle provider unavailable"
+    "other": "সাবটাইটেল প্রদানকারী পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।"
   },
   {
     "id": "Subtitles",

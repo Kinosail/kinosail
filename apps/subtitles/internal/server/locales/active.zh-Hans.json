@@ -13,7 +13,7 @@
   },
   {
     "id": "Account · Kinosail Subtitles",
-    "other": "帐户·Kinosail"
+    "other": "账号 · Kinosail Subtitles"
   },
   {
     "id": "Actions",
@@ -21,11 +21,11 @@
   },
   {
     "id": "active session(s)",
-    "other": "活动会话"
+    "other": "活动会话："
   },
   {
     "id": "Add a passkey",
-    "other": "添加密钥"
+    "other": "添加通行密钥"
   },
   {
     "id": "Add folder",
@@ -33,7 +33,7 @@
   },
   {
     "id": "Add media or try another search.",
-    "other": "添加媒体或尝试其他搜索。"
+    "other": "添加媒体，或尝试其他搜索。"
   },
   {
     "id": "Add to",
@@ -41,11 +41,11 @@
   },
   {
     "id": "Album",
-    "other": "相册"
+    "other": "专辑"
   },
   {
     "id": "Albums",
-    "other": "相册"
+    "other": "专辑"
   },
   {
     "id": "all",
@@ -69,11 +69,11 @@
   },
   {
     "id": "API key view failed",
-    "other": "API 密钥查看失败"
+    "other": "无法显示 API 密钥。请重试。"
   },
   {
     "id": "API key · Kinosail Subtitles",
-    "other": "API 密钥·Kinosail"
+    "other": "API 密钥 · Kinosail Subtitles"
   },
   {
     "id": "API keys",
@@ -85,7 +85,7 @@
   },
   {
     "id": "Apple VideoToolbox",
-    "other": "Apple VideoToolbox"
+    "other": "Apple VideoToolbox 硬件加速"
   },
   {
     "id": "Apply",
@@ -97,7 +97,7 @@
   },
   {
     "id": "Audiobooks",
-    "other": "有声读物"
+    "other": "有声书"
   },
   {
     "id": "Authentication code",
@@ -105,11 +105,11 @@
   },
   {
     "id": "Authentication or recovery code",
-    "other": "身份验证或恢复代码"
+    "other": "验证码或恢复代码"
   },
   {
     "id": "authentication required",
-    "other": "需要身份验证"
+    "other": "需要验证"
   },
   {
     "id": "Authorize device",
@@ -137,7 +137,7 @@
   },
   {
     "id": "Back to library",
-    "other": "返回库"
+    "other": "返回媒体库"
   },
   {
     "id": "Back up now",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "备份不可用"
+    "other": "备份不可用。请检查备份设置，然后重试。"
   },
   {
     "id": "Backups need setup.",
@@ -153,11 +153,11 @@
   },
   {
     "id": "Backups · Kinosail Subtitles",
-    "other": "备份·Kinosail"
+    "other": "备份 · Kinosail 字幕"
   },
   {
     "id": "Book",
-    "other": "预订"
+    "other": "书籍"
   },
   {
     "id": "Books",
@@ -169,7 +169,7 @@
   },
   {
     "id": "Browse library",
-    "other": "浏览库"
+    "other": "浏览媒体库"
   },
   {
     "id": "Cancel",
@@ -185,7 +185,7 @@
   },
   {
     "id": "Choose the language for this browser.",
-    "other": "选择此浏览器的语言。"
+    "other": "为此浏览器选择语言。"
   },
   {
     "id": "Code",
@@ -193,11 +193,11 @@
   },
   {
     "id": "Collection",
-    "other": "收藏"
+    "other": "合集"
   },
   {
     "id": "Collections",
-    "other": "集合"
+    "other": "合集"
   },
   {
     "id": "Commercial",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "兼容性流"
+    "other": "兼容版本"
   },
   {
     "id": "compatible",
@@ -221,7 +221,7 @@
   },
   {
     "id": "Configuration · Kinosail Subtitles",
-    "other": "配置·Kinosail"
+    "other": "配置 · Kinosail 字幕"
   },
   {
     "id": "Connect",
@@ -241,7 +241,7 @@
   },
   {
     "id": "Connecting…",
-    "other": "正在连接..."
+    "other": "正在连接…"
   },
   {
     "id": "Content",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "立即复制此密钥。 Kinosail 仅存储其哈希值。"
+    "other": "请立即复制此密钥。离开此页面后将无法再次查看。"
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "无法创建 MFA 注册"
+    "other": "无法设置验证器应用。请重试。"
   },
   {
     "id": "could not create Owner Profile",
-    "other": "无法创建所有者个人资料"
+    "other": "无法创建所有者账户。请重试。"
   },
   {
     "id": "could not create session",
-    "other": "无法创建会话"
+    "other": "无法登录。请重试。"
   },
   {
     "id": "could not end session",
-    "other": "无法结束会话"
+    "other": "无法退出登录。请重试。"
   },
   {
     "id": "could not read subtitles",
-    "other": "无法读取字幕"
+    "other": "无法读取这些字幕。请尝试其他字幕轨道。"
   },
   {
     "id": "Create",
@@ -281,15 +281,15 @@
   },
   {
     "id": "Create a passkey",
-    "other": "创建密钥"
+    "other": "创建通行密钥"
   },
   {
     "id": "Create passkey",
-    "other": "创建密钥"
+    "other": "创建通行密钥"
   },
   {
     "id": "Created once",
-    "other": "创建一次"
+    "other": "保存 API 密钥"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "跨源请求被拒绝"
+    "other": "此请求来自其他地址。请在常用地址打开 Kinosail 后重试。"
   },
   {
     "id": "Curate",
@@ -309,7 +309,7 @@
   },
   {
     "id": "Dark",
-    "other": "黑暗"
+    "other": "深色"
   },
   {
     "id": "default",
@@ -325,7 +325,7 @@
   },
   {
     "id": "Destination",
-    "other": "目的地"
+    "other": "目标"
   },
   {
     "id": "detected, unavailable",
@@ -337,7 +337,7 @@
   },
   {
     "id": "Direct",
-    "other": "直接"
+    "other": "直接播放"
   },
   {
     "id": "direct",
@@ -349,11 +349,11 @@
   },
   {
     "id": "Direct stream",
-    "other": "直接流"
+    "other": "原始文件"
   },
   {
     "id": "Directed by",
-    "other": "导演："
+    "other": "导演"
   },
   {
     "id": "Disaster recovery",
@@ -361,7 +361,7 @@
   },
   {
     "id": "DLNA",
-    "other": "DLNA"
+    "other": "DLNA 协议"
   },
   {
     "id": "Download",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "下载便携式状态存档"
+    "other": "下载服务器备份"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "此查看者个人资料未启用下载"
+    "other": "此观看者档案未启用下载。请让所有者启用下载。"
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "嵌入字幕不可用"
+    "other": "无法使用此文件中的字幕。请尝试其他字幕轨道。"
   },
   {
     "id": "Enabled",
@@ -417,7 +417,7 @@
   },
   {
     "id": "Find something",
-    "other": "找东西"
+    "other": "查找内容"
   },
   {
     "id": "Finish sign in",
@@ -425,11 +425,11 @@
   },
   {
     "id": "Folder inside media mount",
-    "other": "介质装载内的文件夹"
+    "other": "媒体挂载点内的文件夹"
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "关注此设备或选择固定主题。"
+    "other": "跟随设备外观，或选择浅色或深色。"
   },
   {
     "id": "From",
@@ -445,11 +445,11 @@
   },
   {
     "id": "Genres",
-    "other": "流派"
+    "other": "类型"
   },
   {
     "id": "Group",
-    "other": "组"
+    "other": "群组"
   },
   {
     "id": "Hardware",
@@ -457,7 +457,7 @@
   },
   {
     "id": "History",
-    "other": "历史"
+    "other": "观看历史"
   },
   {
     "id": "Home",
@@ -465,7 +465,7 @@
   },
   {
     "id": "if enabled",
-    "other": "如果启用"
+    "other": "如已启用"
   },
   {
     "id": "Install",
@@ -473,39 +473,39 @@
   },
   {
     "id": "Intel Quick Sync",
-    "other": "英特尔快速同步"
+    "other": "Intel Quick Sync 硬件加速"
   },
   {
     "id": "Intro",
-    "other": "简介"
+    "other": "片头"
   },
   {
     "id": "invalid authentication code",
-    "other": "验证码无效"
+    "other": "验证码无效。请输入验证器应用中的当前验证码。"
   },
   {
     "id": "invalid Collection state",
-    "other": "无效的集合状态"
+    "other": "无法更新合集。请刷新页面后重试。"
   },
   {
     "id": "invalid credentials",
-    "other": "无效凭据"
+    "other": "用户名或密码不正确。请重试。"
   },
   {
     "id": "invalid list state",
-    "other": "无效列表状态"
+    "other": "无法更新我的片单。请刷新页面后重试。"
   },
   {
     "id": "invalid playlist state",
-    "other": "播放列表状态无效"
+    "other": "无法更新播放列表。请刷新页面后重试。"
   },
   {
     "id": "invalid progress",
-    "other": "无效进度"
+    "other": "无法保存此位置。请刷新后重试。"
   },
   {
     "id": "invalid watched state",
-    "other": "观看状态无效"
+    "other": "无法更新观看状态。请刷新后重试。"
   },
   {
     "id": "Keep",
@@ -513,7 +513,7 @@
   },
   {
     "id": "Kinosail",
-    "other": "KinoSAIL"
+    "other": "Kinosail"
   },
   {
     "id": "Language",
@@ -521,11 +521,11 @@
   },
   {
     "id": "language is invalid",
-    "other": "语言无效"
+    "other": "请从列表中选择语言。"
   },
   {
     "id": "Last error",
-    "other": "最后一个错误"
+    "other": "最近一次错误"
   },
   {
     "id": "Last successful backup",
@@ -541,23 +541,23 @@
   },
   {
     "id": "Libraries",
-    "other": "库"
+    "other": "媒体库"
   },
   {
     "id": "Library",
-    "other": "库"
+    "other": "媒体库"
   },
   {
     "id": "Library folders",
-    "other": "库文件夹"
+    "other": "媒体库文件夹"
   },
   {
     "id": "Library items",
-    "other": "库项目"
+    "other": "媒体库项目"
   },
   {
     "id": "Library organization",
-    "other": "图书馆组织"
+    "other": "媒体库整理"
   },
   {
     "id": "Licensed credential configured",
@@ -565,11 +565,11 @@
   },
   {
     "id": "Light",
-    "other": "光"
+    "other": "浅色"
   },
   {
     "id": "Local account",
-    "other": "本地帐户"
+    "other": "本地账户"
   },
   {
     "id": "Mark",
@@ -585,19 +585,19 @@
   },
   {
     "id": "Media mount",
-    "other": "介质安装"
+    "other": "媒体挂载点"
   },
   {
     "id": "metadata could not be saved",
-    "other": "无法保存元数据"
+    "other": "无法保存媒体详情。请重试。"
   },
   {
     "id": "metadata is invalid",
-    "other": "元数据无效"
+    "other": "请检查媒体详情后重试。"
   },
   {
     "id": "metadata provider unavailable",
-    "other": "元数据提供程序不可用"
+    "other": "元数据提供程序不可用。请稍后重试。"
   },
   {
     "id": "Metrics",
@@ -613,7 +613,7 @@
   },
   {
     "id": "My List",
-    "other": "我的列表"
+    "other": "我的片单"
   },
   {
     "id": "Name",
@@ -629,27 +629,27 @@
   },
   {
     "id": "New profile name",
-    "other": "新个人资料名称"
+    "other": "新观看者档案名称"
   },
   {
     "id": "New profile password",
-    "other": "新个人资料密码"
+    "other": "新观看者档案密码"
   },
   {
     "id": "New secret",
-    "other": "新秘密"
+    "other": "新密钥"
   },
   {
     "id": "No activity recorded yet.",
-    "other": "尚未记录任何活动。"
+    "other": "尚无活动记录。"
   },
   {
     "id": "No device selected",
-    "other": "未选择任何设备"
+    "other": "未选择设备"
   },
   {
     "id": "No playback recorded yet.",
-    "other": "尚未录制播放。"
+    "other": "尚无播放记录。"
   },
   {
     "id": "None",
@@ -665,11 +665,11 @@
   },
   {
     "id": "not found",
-    "other": "未找到"
+    "other": "找不到此项目。"
   },
   {
     "id": "Not now",
-    "other": "现在不行"
+    "other": "暂不"
   },
   {
     "id": "Nothing found.",
@@ -677,7 +677,7 @@
   },
   {
     "id": "NVIDIA NVENC/NVDEC",
-    "other": "NVIDIA NVENC/NVDEC"
+    "other": "NVIDIA NVENC/NVDEC（英伟达显卡）"
   },
   {
     "id": "Off",
@@ -693,19 +693,19 @@
   },
   {
     "id": "On",
-    "other": "于"
+    "other": "开启"
   },
   {
     "id": "OpenID Connect",
-    "other": "OpenID Connect"
+    "other": "OpenID Connect 登录"
   },
   {
     "id": "OpenSubtitles",
-    "other": "OpenSubtitles"
+    "other": "OpenSubtitles 字幕源"
   },
   {
     "id": "Outro",
-    "other": "尾奏"
+    "other": "片尾"
   },
   {
     "id": "Owner",
@@ -721,15 +721,15 @@
   },
   {
     "id": "Passkey added.",
-    "other": "已添加密钥。"
+    "other": "已添加通行密钥。"
   },
   {
     "id": "Passkey failed.",
-    "other": "密钥失败。"
+    "other": "无法使用您的通行密钥。请重试，或使用其他登录方式。"
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "通行密钥只能在 Kinosail 的安全地址中使用。请打开 Kinosail 的常用地址，然后重试。"
   },
   {
     "id": "Password",
@@ -741,7 +741,7 @@
   },
   {
     "id": "Play",
-    "other": "玩"
+    "other": "播放"
   },
   {
     "id": "Play on device",
@@ -761,11 +761,11 @@
   },
   {
     "id": "Playing here",
-    "other": "在这里播放"
+    "other": "正在此处播放"
   },
   {
     "id": "Playing on device",
-    "other": "在设备上播放"
+    "other": "正在设备上播放"
   },
   {
     "id": "Playlist",
@@ -777,11 +777,11 @@
   },
   {
     "id": "Plot",
-    "other": "情节"
+    "other": "剧情"
   },
   {
     "id": "Preferred language",
-    "other": "首选语言"
+    "other": "偏好语言"
   },
   {
     "id": "Prepare",
@@ -789,23 +789,23 @@
   },
   {
     "id": "preview unavailable",
-    "other": "预览不可用"
+    "other": "无法显示预览。请重试。"
   },
   {
     "id": "Profile",
-    "other": "个人资料"
+    "other": "用户档案"
   },
   {
     "id": "profile storage is unavailable",
-    "other": "配置文件存储不可用"
+    "other": "无法访问已保存的档案。请稍后再试。"
   },
   {
     "id": "Profile type",
-    "other": "配置文件类型"
+    "other": "用户档案类型"
   },
   {
     "id": "Profiles",
-    "other": "个人资料"
+    "other": "用户档案"
   },
   {
     "id": "Protected automatically",
@@ -813,11 +813,11 @@
   },
   {
     "id": "Quality",
-    "other": "质量"
+    "other": "画质"
   },
   {
     "id": "quality",
-    "other": "质量"
+    "other": "画质"
   },
   {
     "id": "Quick Connect",
@@ -825,7 +825,7 @@
   },
   {
     "id": "Rating",
-    "other": "评级"
+    "other": "分级"
   },
   {
     "id": "Read now",
@@ -837,15 +837,15 @@
   },
   {
     "id": "ready",
-    "other": "准备好"
+    "other": "就绪"
   },
   {
     "id": "Ready offline",
-    "other": "离线就绪"
+    "other": "可供下载"
   },
   {
     "id": "Recap",
-    "other": "回顾"
+    "other": "前情回顾"
   },
   {
     "id": "Recent activity",
@@ -861,7 +861,7 @@
   },
   {
     "id": "Recently played",
-    "other": "最近玩过"
+    "other": "最近播放"
   },
   {
     "id": "Recovery",
@@ -881,7 +881,7 @@
   },
   {
     "id": "Remove",
-    "other": "删除"
+    "other": "移除"
   },
   {
     "id": "Remove from",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "请求太大"
+    "other": "请求过大。请减少数据量后重试。"
   },
   {
     "id": "Return to settings",
@@ -909,11 +909,11 @@
   },
   {
     "id": "Rockchip RKMPP",
-    "other": "瑞芯微RKMPP"
+    "other": "瑞芯微 RKMPP"
   },
   {
     "id": "Room disconnected · reload to reconnect",
-    "other": "房间已断开连接·重新加载以重新连接"
+    "other": "房间已断开连接 · 重新加载以重新连接"
   },
   {
     "id": "Safety scan",
@@ -925,7 +925,7 @@
   },
   {
     "id": "Save schedule",
-    "other": "保存日程"
+    "other": "保存时间表"
   },
   {
     "id": "Schedule",
@@ -933,7 +933,7 @@
   },
   {
     "id": "Search library",
-    "other": "搜索库"
+    "other": "搜索媒体库"
   },
   {
     "id": "Search results",
@@ -941,15 +941,15 @@
   },
   {
     "id": "Secrets are hidden and included only in encrypted recovery backups.",
-    "other": "秘密被隐藏并仅包含在加密恢复备份中。"
+    "other": "敏感信息已隐藏，仅包含在加密的恢复备份中。"
   },
   {
     "id": "Secure your account",
-    "other": "保护您的帐户"
+    "other": "保护您的账户"
   },
   {
     "id": "Secure your account · Kinosail Subtitles",
-    "other": "保护您的帐户 · Kinosail Subtitles"
+    "other": "保护您的账户 · Kinosail Subtitles"
   },
   {
     "id": "Server settings",
@@ -957,7 +957,7 @@
   },
   {
     "id": "Set up Kinosail Subtitles",
-    "other": "设置 Kinosail"
+    "other": "设置 Kinosail Subtitles"
   },
   {
     "id": "Settings",
@@ -965,11 +965,11 @@
   },
   {
     "id": "Settings sections",
-    "other": "设置部分"
+    "other": "设置分区"
   },
   {
     "id": "Settings · Kinosail Subtitles",
-    "other": "设置·Kinosail"
+    "other": "设置 · Kinosail Subtitles"
   },
   {
     "id": "Show",
@@ -977,7 +977,7 @@
   },
   {
     "id": "Shows",
-    "other": "演出"
+    "other": "电视剧"
   },
   {
     "id": "Sign in",
@@ -985,11 +985,11 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "登录您的私人媒体世界。"
+    "other": "登录以管理您的字幕。"
   },
   {
     "id": "Sign in with passkey",
-    "other": "使用密钥登录"
+    "other": "使用通行密钥登录"
   },
   {
     "id": "Sign in with SSO",
@@ -1001,7 +1001,7 @@
   },
   {
     "id": "Sign out",
-    "other": "退出"
+    "other": "退出登录"
   },
   {
     "id": "Single sign-on",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO 质询无效或已过期"
+    "other": "登录尝试已过期或无法验证。请重新开始。"
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO 代码交换失败"
+    "other": "无法完成组织登录。请重新开始。"
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO 身份未链接到查看者个人资料"
+    "other": "您的组织账户尚未关联观看者档案。请让所有者完成关联。"
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO 不可用"
+    "other": "组织登录不可用。请尝试其他登录方式。"
   },
   {
     "id": "SSO session could not be created",
-    "other": "无法创建 SSO 会话"
+    "other": "无法完成组织登录。请重试。"
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO 状态无效或已过期"
+    "other": "登录尝试已过期或无法验证。请重新开始。"
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO 令牌验证失败"
+    "other": "无法验证您的组织登录。请重新开始。"
   },
   {
     "id": "Status",
@@ -1065,15 +1065,15 @@
   },
   {
     "id": "Store these codes somewhere safe. Each works once.",
-    "other": "将这些代码存储在安全的地方。每个工作一次。"
+    "other": "请将这些代码保存在安全的地方。每个代码只能使用一次。"
   },
   {
     "id": "Subtitle provider",
-    "other": "字幕提供商"
+    "other": "字幕提供方"
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "字幕提供商不可用"
+    "other": "字幕提供方不可用。请稍后再试。"
   },
   {
     "id": "Subtitles",
@@ -1101,15 +1101,15 @@
   },
   {
     "id": "This Collection is empty.",
-    "other": "此集合为空。"
+    "other": "此合集为空。"
   },
   {
     "id": "This permanently deletes the Collection.",
-    "other": "这将永久删除该集合。"
+    "other": "这将永久删除该合集。"
   },
   {
     "id": "This permanently deletes the playlist.",
-    "other": "这将永久删除播放列表。"
+    "other": "这将永久删除该播放列表。"
   },
   {
     "id": "This playlist is empty.",
@@ -1117,15 +1117,15 @@
   },
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "other": "本产品使用 TMDB API，但未经 TMDB 认可或认证。"
+    "other": "本产品使用 TMDB API，但未获得 TMDB 认可或认证。"
   },
   {
     "id": "Through PG / TV-PG",
-    "other": "通过 PG/TV-PG"
+    "other": "PG / TV-PG 及以下"
   },
   {
     "id": "Through PG-13 / TV-14",
-    "other": "通过 PG-13 / TV-14"
+    "other": "PG-13 / TV-14 及以下"
   },
   {
     "id": "Title",
@@ -1133,11 +1133,11 @@
   },
   {
     "id": "Title, artist, genre",
-    "other": "标题、艺术家、流派"
+    "other": "标题、艺术家、类型"
   },
   {
     "id": "Title, artist, genre…",
-    "other": "标题、艺术家、流派…"
+    "other": "标题、艺术家、类型…"
   },
   {
     "id": "TMDB",
@@ -1145,7 +1145,7 @@
   },
   {
     "id": "Tone-map HDR to SDR",
-    "other": "将 HDR 色调映射到 SDR"
+    "other": "将 HDR 色调映射为 SDR"
   },
   {
     "id": "too many login attempts",
@@ -1153,11 +1153,11 @@
   },
   {
     "id": "too many Watch Together rooms",
-    "other": "“一起观看”房间太多"
+    "other": "“一起观看”房间过多"
   },
   {
     "id": "Track",
-    "other": "跟踪"
+    "other": "追踪"
   },
   {
     "id": "Transcoder",
@@ -1177,7 +1177,7 @@
   },
   {
     "id": "Two-factor authentication · Kinosail Subtitles",
-    "other": "双因素身份验证·Kinosail"
+    "other": "双因素身份验证 · Kinosail Subtitles"
   },
   {
     "id": "Type",
@@ -1213,23 +1213,23 @@
   },
   {
     "id": "Viewer",
-    "other": "查看者"
+    "other": "观看者"
   },
   {
     "id": "Viewer access is not available",
-    "other": "查看者访问权限不可用"
+    "other": "观看者访问权限不可用"
   },
   {
     "id": "Waiting for your passkey…",
-    "other": "正在等待您的密钥..."
+    "other": "正在等待您的通行密钥…"
   },
   {
     "id": "Watch Together state is invalid",
-    "other": "Watch Together 状态无效"
+    "other": "“一起观看”状态无效"
   },
   {
     "id": "watched",
-    "other": "观看"
+    "other": "已观看"
   },
   {
     "id": "Watched",
@@ -1241,15 +1241,15 @@
   },
   {
     "id": "when ready.",
-    "other": "准备好后."
+    "other": "准备好后。"
   },
   {
     "id": "Year",
-    "other": "年"
+    "other": "年份"
   },
   {
     "id": "Your library",
-    "other": "您的图书馆"
+    "other": "您的媒体库"
   },
   {
     "id": "Scanning your Library",

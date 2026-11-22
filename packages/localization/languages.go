@@ -73,3 +73,38 @@ func IsTranslated(tag string) bool {
 	_, ok := translatedLanguageTags[tag]
 	return ok
 }
+
+func translationSource(tag string) string {
+	if IsTranslated(tag) {
+		return tag
+	}
+	requested, err := language.Parse(tag)
+	if err != nil {
+		return tag
+	}
+	base, _ := requested.Base()
+	script, _ := requested.Script()
+	region, _ := requested.Region()
+	source := ""
+	for _, candidate := range supportedLanguageTags {
+		if !IsTranslated(candidate) {
+			continue
+		}
+		parsed := language.MustParse(candidate)
+		candidateBase, _ := parsed.Base()
+		candidateScript, _ := parsed.Script()
+		if candidateBase != base || candidateScript != script {
+			continue
+		}
+		if candidateRegion, _ := parsed.Region(); candidateRegion == region {
+			return candidate
+		}
+		if source == "" {
+			source = candidate
+		}
+	}
+	if source == "" {
+		return tag
+	}
+	return source
+}

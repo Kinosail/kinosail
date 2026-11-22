@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "active session(s)"
+    "other": "Mga aktibong session:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "API key view failed"
+    "other": "Hindi maipakita ang API key. Subukan ulit."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "backup is unavailable"
+    "other": "Hindi available ang backup. Suriin ang mga setting ng backup at subukan ulit."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatibility stream"
+    "other": "Compatible na bersyon"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. Kinosail stores only its hash."
+    "other": "Kopyahin na ngayon ang key na ito. Hindi mo na ito matitingnan muli pagkatapos umalis sa pahinang ito."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "could not create MFA enrollment"
+    "other": "Hindi na-set up ang iyong authenticator app. Subukan ulit."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "could not create Owner Profile"
+    "other": "Hindi nagawa ang Owner account. Subukan ulit."
   },
   {
     "id": "could not create session",
-    "other": "could not create session"
+    "other": "Hindi nakapag-sign in. Subukan ulit."
   },
   {
     "id": "could not end session",
-    "other": "could not end session"
+    "other": "Hindi nakapag-sign out. Subukan ulit."
   },
   {
     "id": "could not read subtitles",
-    "other": "could not read subtitles"
+    "other": "Hindi mabasa ang mga subtitle na ito. Subukan ang ibang subtitle track."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Created once"
+    "other": "I-save ang iyong API key"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "cross-origin request denied"
+    "other": "Galing sa ibang address ang request na ito. Buksan ang Kinosail sa karaniwan nitong address at subukan ulit."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Direct stream"
+    "other": "Orihinal na file"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download portable state archive"
+    "other": "I-download ang Server backup"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "downloads are not enabled for this Viewer Profile"
+    "other": "Hindi naka-enable ang mga download para sa Viewer Profile na ito. Hilingin sa Owner na i-enable ang mga ito."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "embedded subtitles are unavailable"
+    "other": "Hindi available ang mga subtitle ng file na ito. Subukan ang ibang subtitle track."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish sign in"
+    "other": "Tapusin ang sign in"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Follow this device or choose a fixed theme."
+    "other": "Sundin ang itsura ng device mo o pumili ng light o dark."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "invalid authentication code"
+    "other": "Hindi gumana ang code na iyon. Ilagay ang kasalukuyang code mula sa iyong authenticator app."
   },
   {
     "id": "invalid Collection state",
-    "other": "invalid Collection state"
+    "other": "Hindi ma-update ang Collection. I-refresh ang page at subukan ulit."
   },
   {
     "id": "invalid credentials",
-    "other": "invalid credentials"
+    "other": "Mali ang pangalan o password. Subukan ulit."
   },
   {
     "id": "invalid list state",
-    "other": "invalid list state"
+    "other": "Hindi ma-update ang My List. I-refresh ang page at subukan ulit."
   },
   {
     "id": "invalid playlist state",
-    "other": "invalid playlist state"
+    "other": "Hindi ma-update ang playlist. I-refresh ang page at subukan ulit."
   },
   {
     "id": "invalid progress",
-    "other": "invalid progress"
+    "other": "Hindi ma-save ang posisyong ito. I-refresh at subukan ulit."
   },
   {
     "id": "invalid watched state",
-    "other": "invalid watched state"
+    "other": "Hindi ma-update ang watched status. I-refresh at subukan ulit."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "language is invalid"
+    "other": "Pumili ng wika sa listahan."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "metadata could not be saved"
+    "other": "Hindi ma-save ang mga detalye ng media. Subukan ulit."
   },
   {
     "id": "metadata is invalid",
-    "other": "metadata is invalid"
+    "other": "Suriin ang mga detalye ng media at subukan ulit."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "metadata provider unavailable"
+    "other": "Hindi available ang metadata provider. Subukan ulit mamaya."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "not found"
+    "other": "Hindi mahanap ang item na ito."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Passkey failed."
+    "other": "Hindi magamit ang iyong passkey. Subukan ulit o gumamit ng ibang paraan ng sign-in."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "Gumagana ang passkey sa secure na address ng Kinosail lamang. Buksan ang Kinosail sa karaniwan nitong address at subukan ulit."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "preview unavailable"
+    "other": "Hindi available ang preview. Subukan ulit."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "profile storage is unavailable"
+    "other": "Hindi ma-access ang mga naka-save na profile. Subukan ulit mamaya."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready offline"
+    "other": "Handa nang i-download"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "request is too large"
+    "other": "Masyadong malaki ang request na ito. Bawasan ang dami ng data at subukan ulit."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your private media universe."
+    "other": "Mag-sign in para pamahalaan ang iyong mga subtitle."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO challenge is invalid or expired"
+    "other": "Nag-expire ang sign-in attempt mo o hindi ito ma-verify. Magsimula ulit."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO code exchange failed"
+    "other": "Hindi natapos ang sign-in sa pamamagitan ng iyong organisasyon. Magsimula ulit."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO identity is not linked to a Viewer Profile"
+    "other": "Hindi naka-link sa Viewer Profile ang account ng iyong organisasyon. Hilingin sa Owner na i-link ito."
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO is unavailable"
+    "other": "Hindi available ang sign-in ng organisasyon. Subukan ang ibang paraan ng sign-in."
   },
   {
     "id": "SSO session could not be created",
-    "other": "SSO session could not be created"
+    "other": "Hindi natapos ang sign-in sa pamamagitan ng iyong organisasyon. Subukan ulit."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO state is invalid or expired"
+    "other": "Nag-expire ang sign-in attempt mo o hindi ito ma-verify. Magsimula ulit."
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO token validation failed"
+    "other": "Hindi ma-verify ang sign-in ng iyong organisasyon. Magsimula ulit."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "subtitle provider unavailable"
+    "other": "Hindi available ang subtitle provider. Subukan ulit mamaya."
   },
   {
     "id": "Subtitles",

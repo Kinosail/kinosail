@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "active session(s)"
+    "other": "Активни сесии:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "API key view failed"
+    "other": "API ключът не можа да се покаже. Опитайте отново."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "backup is unavailable"
+    "other": "Резервното копие не е налично. Проверете настройките за резервно копие и опитайте отново."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatibility stream"
+    "other": "Съвместима версия"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. Kinosail stores only its hash."
+    "other": "Копирайте този ключ сега. След като напуснете страницата, няма да можете да го видите отново."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "could not create MFA enrollment"
+    "other": "Приложението ви за удостоверяване не можа да се настрои. Опитайте отново."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "could not create Owner Profile"
+    "other": "Акаунтът на собственика не можа да се създаде. Опитайте отново."
   },
   {
     "id": "could not create session",
-    "other": "could not create session"
+    "other": "Не можа да се влезе. Опитайте отново."
   },
   {
     "id": "could not end session",
-    "other": "could not end session"
+    "other": "Не можа да се излезе. Опитайте отново."
   },
   {
     "id": "could not read subtitles",
-    "other": "could not read subtitles"
+    "other": "Тези субтитри не можаха да се прочетат. Опитайте друг запис със субтитри."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Created once"
+    "other": "Запазете своя API ключ"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "cross-origin request denied"
+    "other": "Заявката идва от друг адрес. Отворете Kinosail на обичайния му адрес и опитайте отново."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Direct stream"
+    "other": "Оригинален файл"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download portable state archive"
+    "other": "Изтегляне на резервно копие на сървъра"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "downloads are not enabled for this Viewer Profile"
+    "other": "Изтеглянията не са разрешени за този профил на зрител. Помолете собственика да ги разреши."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "embedded subtitles are unavailable"
+    "other": "Субтитрите от този файл не са налични. Опитайте друг запис със субтитри."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish sign in"
+    "other": "Завършване на влизането"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Follow this device or choose a fixed theme."
+    "other": "Съобразете се с външния вид на устройството си или изберете светла или тъмна тема."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "invalid authentication code"
+    "other": "Този код не работи. Въведете текущия код от приложението си за удостоверяване."
   },
   {
     "id": "invalid Collection state",
-    "other": "invalid Collection state"
+    "other": "Колекцията не можа да се актуализира. Презаредете страницата и опитайте отново."
   },
   {
     "id": "invalid credentials",
-    "other": "invalid credentials"
+    "other": "Името или паролата са неверни. Опитайте отново."
   },
   {
     "id": "invalid list state",
-    "other": "invalid list state"
+    "other": "„Моят списък“ не можа да се актуализира. Презаредете страницата и опитайте отново."
   },
   {
     "id": "invalid playlist state",
-    "other": "invalid playlist state"
+    "other": "Списъкът за възпроизвеждане не можа да се актуализира. Презаредете страницата и опитайте отново."
   },
   {
     "id": "invalid progress",
-    "other": "invalid progress"
+    "other": "Тази позиция не можа да се запази. Презаредете и опитайте отново."
   },
   {
     "id": "invalid watched state",
-    "other": "invalid watched state"
+    "other": "Статусът на гледане не можа да се актуализира. Презаредете и опитайте отново."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "language is invalid"
+    "other": "Изберете език от списъка."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "metadata could not be saved"
+    "other": "Данните за медията не можаха да се запазят. Опитайте отново."
   },
   {
     "id": "metadata is invalid",
-    "other": "metadata is invalid"
+    "other": "Проверете данните за медията и опитайте отново."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "metadata provider unavailable"
+    "other": "Доставчикът на метаданни не е наличен. Опитайте по-късно."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "not found"
+    "other": "Този елемент не можа да се намери."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Passkey failed."
+    "other": "Ключът ви за достъп не можа да се използва. Опитайте отново или използвайте друг начин за влизане."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "Ключовете за достъп работят само на защитения адрес на Kinosail. Отворете Kinosail на обичайния му адрес и опитайте отново."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "preview unavailable"
+    "other": "Визуализацията не е налична. Опитайте отново."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "profile storage is unavailable"
+    "other": "Запазените профили не можаха да се отворят. Опитайте по-късно."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready offline"
+    "other": "Готово за изтегляне"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "request is too large"
+    "other": "Заявката е твърде голяма. Намалете количеството данни и опитайте отново."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your private media universe."
+    "other": "Влезте, за да управлявате субтитрите си."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO challenge is invalid or expired"
+    "other": "Опитът за влизане изтече или не можа да се потвърди. Започнете отначало."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO code exchange failed"
+    "other": "Влизането с вашата организация не можа да се завърши. Започнете отначало."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO identity is not linked to a Viewer Profile"
+    "other": "Акаунтът ви в организацията не е свързан с профил на зрител. Помолете собственика да го свърже."
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO is unavailable"
+    "other": "Влизането чрез организация не е налично. Опитайте друг начин за влизане."
   },
   {
     "id": "SSO session could not be created",
-    "other": "SSO session could not be created"
+    "other": "Влизането с вашата организация не можа да се завърши. Опитайте отново."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO state is invalid or expired"
+    "other": "Опитът за влизане изтече или не можа да се потвърди. Започнете отначало."
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO token validation failed"
+    "other": "Влизането с организацията ви не можа да се потвърди. Започнете отначало."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "subtitle provider unavailable"
+    "other": "Доставчикът на субтитри не е наличен. Опитайте по-късно."
   },
   {
     "id": "Subtitles",

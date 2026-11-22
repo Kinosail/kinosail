@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "active session(s)"
+    "other": "Sesi aktif:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "API key view failed"
+    "other": "Kunci API tidak dapat ditampilkan. Coba lagi."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "backup is unavailable"
+    "other": "Cadangan tidak tersedia. Periksa pengaturan cadangan dan coba lagi."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatibility stream"
+    "other": "Versi yang kompatibel"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. Kinosail stores only its hash."
+    "other": "Salin kunci ini sekarang. Anda tidak dapat melihatnya lagi setelah meninggalkan halaman ini."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "could not create MFA enrollment"
+    "other": "Aplikasi autentikator Anda tidak dapat disiapkan. Coba lagi."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "could not create Owner Profile"
+    "other": "Akun Pemilik tidak dapat dibuat. Coba lagi."
   },
   {
     "id": "could not create session",
-    "other": "could not create session"
+    "other": "Tidak dapat masuk. Coba lagi."
   },
   {
     "id": "could not end session",
-    "other": "could not end session"
+    "other": "Tidak dapat keluar. Coba lagi."
   },
   {
     "id": "could not read subtitles",
-    "other": "could not read subtitles"
+    "other": "Subtitel ini tidak dapat dibaca. Coba trek subtitel lain."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Created once"
+    "other": "Simpan kunci API Anda"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "cross-origin request denied"
+    "other": "Permintaan ini berasal dari alamat lain. Buka Kinosail di alamat biasanya dan coba lagi."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Direct stream"
+    "other": "File asli"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download portable state archive"
+    "other": "Unduh cadangan Server"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "downloads are not enabled for this Viewer Profile"
+    "other": "Unduhan tidak diaktifkan untuk Profil Penonton ini. Minta Pemilik untuk mengaktifkannya."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "embedded subtitles are unavailable"
+    "other": "Subtitel dari file ini tidak tersedia. Coba trek subtitel lain."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish sign in"
+    "other": "Selesaikan masuk"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Follow this device or choose a fixed theme."
+    "other": "Ikuti tampilan perangkat Anda atau pilih terang atau gelap."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "invalid authentication code"
+    "other": "Kode itu tidak berhasil. Masukkan kode terbaru dari aplikasi autentikator Anda."
   },
   {
     "id": "invalid Collection state",
-    "other": "invalid Collection state"
+    "other": "Koleksi tidak dapat diperbarui. Muat ulang halaman dan coba lagi."
   },
   {
     "id": "invalid credentials",
-    "other": "invalid credentials"
+    "other": "Nama atau kata sandi salah. Coba lagi."
   },
   {
     "id": "invalid list state",
-    "other": "invalid list state"
+    "other": "Daftar Saya tidak dapat diperbarui. Muat ulang halaman dan coba lagi."
   },
   {
     "id": "invalid playlist state",
-    "other": "invalid playlist state"
+    "other": "Daftar putar tidak dapat diperbarui. Muat ulang halaman dan coba lagi."
   },
   {
     "id": "invalid progress",
-    "other": "invalid progress"
+    "other": "Posisi ini tidak dapat disimpan. Muat ulang dan coba lagi."
   },
   {
     "id": "invalid watched state",
-    "other": "invalid watched state"
+    "other": "Status tontonan tidak dapat diperbarui. Muat ulang dan coba lagi."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "language is invalid"
+    "other": "Pilih bahasa dari daftar."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "metadata could not be saved"
+    "other": "Detail media tidak dapat disimpan. Coba lagi."
   },
   {
     "id": "metadata is invalid",
-    "other": "metadata is invalid"
+    "other": "Periksa detail media dan coba lagi."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "metadata provider unavailable"
+    "other": "Penyedia metadata tidak tersedia. Coba lagi nanti."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "not found"
+    "other": "Item ini tidak dapat ditemukan."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Passkey failed."
+    "other": "Kunci sandi Anda tidak dapat digunakan. Coba lagi atau gunakan metode masuk lain."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "Kunci sandi hanya berfungsi di alamat aman Kinosail. Buka Kinosail di alamat biasanya, lalu coba lagi."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "preview unavailable"
+    "other": "Pratinjau tidak tersedia. Coba lagi."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "profile storage is unavailable"
+    "other": "Profil tersimpan tidak dapat diakses. Coba lagi nanti."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready offline"
+    "other": "Siap diunduh"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "request is too large"
+    "other": "Permintaan ini terlalu besar. Kurangi jumlah data dan coba lagi."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your private media universe."
+    "other": "Masuk untuk mengelola subtitel Anda."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO challenge is invalid or expired"
+    "other": "Percobaan masuk Anda kedaluwarsa atau tidak dapat diverifikasi. Mulai lagi."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO code exchange failed"
+    "other": "Tidak dapat menyelesaikan masuk dengan organisasi Anda. Mulai lagi."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO identity is not linked to a Viewer Profile"
+    "other": "Akun organisasi Anda belum terhubung ke Profil Penonton. Minta Pemilik untuk menghubungkannya."
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO is unavailable"
+    "other": "Masuk organisasi tidak tersedia. Coba metode masuk lain."
   },
   {
     "id": "SSO session could not be created",
-    "other": "SSO session could not be created"
+    "other": "Tidak dapat menyelesaikan masuk dengan organisasi Anda. Coba lagi."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO state is invalid or expired"
+    "other": "Percobaan masuk Anda kedaluwarsa atau tidak dapat diverifikasi. Mulai lagi."
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO token validation failed"
+    "other": "Tidak dapat memverifikasi masuk organisasi Anda. Mulai lagi."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "subtitle provider unavailable"
+    "other": "Penyedia subtitel tidak tersedia. Coba lagi nanti."
   },
   {
     "id": "Subtitles",

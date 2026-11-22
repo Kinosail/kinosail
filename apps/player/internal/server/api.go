@@ -139,7 +139,7 @@ func (api apiServices) RegisterProductAPI(mux *http.ServeMux) {
 	registerProductAPI(mux, api)
 	api.remotePlayers.register(mux)
 	api.homeAssistant.Register(mux, api.auth.owner, func(writer http.ResponseWriter, request *http.Request, view homeassistant.Approval) error {
-		return executeCSRFTemplate(homeAssistantApprovalView, writer, request, view)
+		return homeAssistantApprovalView.Execute(writer, request, view)
 	})
 }
 

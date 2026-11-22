@@ -21,7 +21,7 @@
   },
   {
     "id": "active session(s)",
-    "other": "active session(s)"
+    "other": "Sessions actives:"
   },
   {
     "id": "Add a passkey",
@@ -69,7 +69,7 @@
   },
   {
     "id": "API key view failed",
-    "other": "API key view failed"
+    "other": "No s’ha pogut mostrar la clau d’API. Torna-ho a provar."
   },
   {
     "id": "API key · Kinosail Subtitles",
@@ -145,7 +145,7 @@
   },
   {
     "id": "backup is unavailable",
-    "other": "backup is unavailable"
+    "other": "La còpia de seguretat no està disponible. Revisa la configuració de la còpia i torna-ho a provar."
   },
   {
     "id": "Backups need setup.",
@@ -209,7 +209,7 @@
   },
   {
     "id": "Compatibility stream",
-    "other": "Compatibility stream"
+    "other": "Versió compatible"
   },
   {
     "id": "compatible",
@@ -253,27 +253,27 @@
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
-    "other": "Copy this key now. Kinosail stores only its hash."
+    "other": "Copia aquesta clau ara. No la podràs tornar a veure després de sortir d’aquesta pàgina."
   },
   {
     "id": "could not create MFA enrollment",
-    "other": "could not create MFA enrollment"
+    "other": "No s’ha pogut configurar l’aplicació d’autenticació. Torna-ho a provar."
   },
   {
     "id": "could not create Owner Profile",
-    "other": "could not create Owner Profile"
+    "other": "No s’ha pogut crear el compte del propietari. Torna-ho a provar."
   },
   {
     "id": "could not create session",
-    "other": "could not create session"
+    "other": "No s’ha pogut iniciar la sessió. Torna-ho a provar."
   },
   {
     "id": "could not end session",
-    "other": "could not end session"
+    "other": "No s’ha pogut tancar la sessió. Torna-ho a provar."
   },
   {
     "id": "could not read subtitles",
-    "other": "could not read subtitles"
+    "other": "No s’han pogut llegir aquests subtítols. Prova una altra pista de subtítols."
   },
   {
     "id": "Create",
@@ -289,7 +289,7 @@
   },
   {
     "id": "Created once",
-    "other": "Created once"
+    "other": "Desa la teva clau d’API"
   },
   {
     "id": "Credentials configured",
@@ -301,7 +301,7 @@
   },
   {
     "id": "cross-origin request denied",
-    "other": "cross-origin request denied"
+    "other": "Aquesta sol·licitud ve d’una adreça diferent. Obre Kinosail a la seva adreça habitual i torna-ho a provar."
   },
   {
     "id": "Curate",
@@ -349,7 +349,7 @@
   },
   {
     "id": "Direct stream",
-    "other": "Direct stream"
+    "other": "Fitxer original"
   },
   {
     "id": "Directed by",
@@ -373,7 +373,7 @@
   },
   {
     "id": "Download portable state archive",
-    "other": "Download portable state archive"
+    "other": "Descarrega la còpia de seguretat del servidor"
   },
   {
     "id": "Download safe diagnostics",
@@ -385,11 +385,11 @@
   },
   {
     "id": "downloads are not enabled for this Viewer Profile",
-    "other": "downloads are not enabled for this Viewer Profile"
+    "other": "Les descàrregues no estan activades per a aquest perfil de visualització. Demana al propietari que les activi."
   },
   {
     "id": "embedded subtitles are unavailable",
-    "other": "embedded subtitles are unavailable"
+    "other": "Els subtítols d’aquest fitxer no estan disponibles. Prova una altra pista de subtítols."
   },
   {
     "id": "Enabled",
@@ -421,7 +421,7 @@
   },
   {
     "id": "Finish sign in",
-    "other": "Finish sign in"
+    "other": "Acaba d’iniciar la sessió"
   },
   {
     "id": "Folder inside media mount",
@@ -429,7 +429,7 @@
   },
   {
     "id": "Follow this device or choose a fixed theme.",
-    "other": "Follow this device or choose a fixed theme."
+    "other": "Fes que coincideixi amb l’aspecte del dispositiu o tria clar o fosc."
   },
   {
     "id": "From",
@@ -481,31 +481,31 @@
   },
   {
     "id": "invalid authentication code",
-    "other": "invalid authentication code"
+    "other": "Aquest codi no funciona. Introdueix el codi actual de la teva aplicació d’autenticació."
   },
   {
     "id": "invalid Collection state",
-    "other": "invalid Collection state"
+    "other": "No s’ha pogut actualitzar la col·lecció. Actualitza la pàgina i torna-ho a provar."
   },
   {
     "id": "invalid credentials",
-    "other": "invalid credentials"
+    "other": "El nom o la contrasenya són incorrectes. Torna-ho a provar."
   },
   {
     "id": "invalid list state",
-    "other": "invalid list state"
+    "other": "No s’ha pogut actualitzar La meva llista. Actualitza la pàgina i torna-ho a provar."
   },
   {
     "id": "invalid playlist state",
-    "other": "invalid playlist state"
+    "other": "No s’ha pogut actualitzar la llista de reproducció. Actualitza la pàgina i torna-ho a provar."
   },
   {
     "id": "invalid progress",
-    "other": "invalid progress"
+    "other": "No s’ha pogut desar aquesta posició. Actualitza la pàgina i torna-ho a provar."
   },
   {
     "id": "invalid watched state",
-    "other": "invalid watched state"
+    "other": "No s’ha pogut actualitzar l’estat de visualitzat. Actualitza la pàgina i torna-ho a provar."
   },
   {
     "id": "Keep",
@@ -521,7 +521,7 @@
   },
   {
     "id": "language is invalid",
-    "other": "language is invalid"
+    "other": "Tria un idioma de la llista."
   },
   {
     "id": "Last error",
@@ -589,15 +589,15 @@
   },
   {
     "id": "metadata could not be saved",
-    "other": "metadata could not be saved"
+    "other": "No s’han pogut desar els detalls del contingut. Torna-ho a provar."
   },
   {
     "id": "metadata is invalid",
-    "other": "metadata is invalid"
+    "other": "Revisa els detalls del contingut i torna-ho a provar."
   },
   {
     "id": "metadata provider unavailable",
-    "other": "metadata provider unavailable"
+    "other": "El proveïdor de metadades no està disponible. Torna-ho a provar més tard."
   },
   {
     "id": "Metrics",
@@ -665,7 +665,7 @@
   },
   {
     "id": "not found",
-    "other": "not found"
+    "other": "No s’ha pogut trobar aquest element."
   },
   {
     "id": "Not now",
@@ -725,11 +725,11 @@
   },
   {
     "id": "Passkey failed.",
-    "other": "Passkey failed."
+    "other": "No s’ha pogut utilitzar la clau d’accés. Torna-ho a provar o fes servir un altre mètode d’inici de sessió."
   },
   {
     "id": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator.",
-    "other": "Passkeys need the configured Server address and trusted HTTPS. Open that address, trust the Server certificate, or use an authenticator."
+    "other": "Les claus d’accés només funcionen a l’adreça segura de Kinosail. Obre Kinosail a la seva adreça habitual i torna-ho a provar."
   },
   {
     "id": "Password",
@@ -789,7 +789,7 @@
   },
   {
     "id": "preview unavailable",
-    "other": "preview unavailable"
+    "other": "La vista prèvia no està disponible. Torna-ho a provar."
   },
   {
     "id": "Profile",
@@ -797,7 +797,7 @@
   },
   {
     "id": "profile storage is unavailable",
-    "other": "profile storage is unavailable"
+    "other": "No s’han pogut obtenir els perfils desats. Torna-ho a provar més tard."
   },
   {
     "id": "Profile type",
@@ -841,7 +841,7 @@
   },
   {
     "id": "Ready offline",
-    "other": "Ready offline"
+    "other": "Preparat per descarregar"
   },
   {
     "id": "Recap",
@@ -897,7 +897,7 @@
   },
   {
     "id": "request is too large",
-    "other": "request is too large"
+    "other": "Aquesta sol·licitud és massa gran. Redueix la quantitat de dades i torna-ho a provar."
   },
   {
     "id": "Return to settings",
@@ -985,7 +985,7 @@
   },
   {
     "id": "Sign in to your private media universe.",
-    "other": "Sign in to your private media universe."
+    "other": "Inicia la sessió per gestionar els teus subtítols."
   },
   {
     "id": "Sign in with passkey",
@@ -1033,31 +1033,31 @@
   },
   {
     "id": "SSO challenge is invalid or expired",
-    "other": "SSO challenge is invalid or expired"
+    "other": "L’intent d’inici de sessió ha caducat o no s’ha pogut verificar. Torna a començar."
   },
   {
     "id": "SSO code exchange failed",
-    "other": "SSO code exchange failed"
+    "other": "No s’ha pogut acabar d’iniciar la sessió amb la teva organització. Torna a començar."
   },
   {
     "id": "SSO identity is not linked to a Viewer Profile",
-    "other": "SSO identity is not linked to a Viewer Profile"
+    "other": "El compte de la teva organització no està enllaçat a cap perfil de visualització. Demana al propietari que l’enllaci."
   },
   {
     "id": "SSO is unavailable",
-    "other": "SSO is unavailable"
+    "other": "L’inici de sessió amb l’organització no està disponible. Prova un altre mètode d’inici de sessió."
   },
   {
     "id": "SSO session could not be created",
-    "other": "SSO session could not be created"
+    "other": "No s’ha pogut acabar d’iniciar la sessió amb la teva organització. Torna-ho a provar."
   },
   {
     "id": "SSO state is invalid or expired",
-    "other": "SSO state is invalid or expired"
+    "other": "L’intent d’inici de sessió ha caducat o no s’ha pogut verificar. Torna a començar."
   },
   {
     "id": "SSO token validation failed",
-    "other": "SSO token validation failed"
+    "other": "No s’ha pogut verificar l’inici de sessió de la teva organització. Torna a començar."
   },
   {
     "id": "Status",
@@ -1073,7 +1073,7 @@
   },
   {
     "id": "subtitle provider unavailable",
-    "other": "subtitle provider unavailable"
+    "other": "El proveïdor de subtítols no està disponible. Torna-ho a provar més tard."
   },
   {
     "id": "Subtitles",

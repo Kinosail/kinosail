@@ -1,6 +1,7 @@
 package localization
 
 import (
+	"html/template"
 	"maps"
 	"slices"
 	"strings"
@@ -41,6 +42,9 @@ func newCatalogState(bundle *i18n.Bundle, languages []Language, messages []Messa
 	state := &catalogState{messages: messages, translations: make(map[string]map[string]string, len(languages)), groups: make(map[string]int, len(languages))}
 	for _, supported := range languages {
 		translated := localizeMessages(bundle, supported.Tag, messages)
+		if source := translationSource(supported.Tag); source != supported.Tag {
+			fillUntranslated(translated, localizeMessages(bundle, source, messages), messages)
+		}
 		group := slices.IndexFunc(state.groupTags, func(tag string) bool { return maps.Equal(state.translations[tag], translated) })
 		if group < 0 {
 			group = len(state.groupTags)
@@ -67,6 +71,16 @@ func localizeMessages(bundle *i18n.Bundle, tag string, messages []Message) map[s
 		}
 	}
 	return translated
+}
+
+func fillUntranslated(translated, source map[string]string, messages []Message) {
+	for _, message := range messages {
+		if value := translated[message.ID]; value == "" || value == message.Other || value == message.ID {
+			if replacement := source[message.ID]; replacement != "" {
+				translated[message.ID] = replacement
+			}
+		}
+	}
 }
 
 func (catalog *Catalog) group(tag string) (int, string, bool) {
@@ -146,14 +160,21 @@ func (catalog *Catalog) translateBody(source, tag string) string {
 func (catalog *Catalog) translateText(source, tag string) string {
 	var translations []string
 	for _, message := range catalog.state().messages {
-		if message.Other == "" || !strings.Contains(source, message.Other) {
+		if message.Other == "" {
 			continue
 		}
-		if translated := catalog.Localize(tag, message.ID); translated != message.Other {
+		translated := catalog.Localize(tag, message.ID)
+		if translated == message.Other {
+			continue
+		}
+		for _, phrase := range [...][2]string{{message.Other, translated}, {template.HTMLEscapeString(message.Other), template.HTMLEscapeString(translated)}} {
+			if !strings.Contains(source, phrase[0]) {
+				continue
+			}
 			marker := translationMarker(len(translations))
-			if replaced := replaceLocalizedPhrase(source, message.Other, marker); replaced != source {
+			if replaced := replaceLocalizedPhrase(source, phrase[0], marker); replaced != source {
 				source = replaced
-				translations = append(translations, translated)
+				translations = append(translations, phrase[1])
 			}
 		}
 	}
