@@ -28,9 +28,9 @@ step() {
 
 install_package() {
 	if [[ "$format" == deb ]]; then
-		DEBIAN_FRONTEND=noninteractive apt-get install -y --reinstall "$package"
+		DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends --reinstall "$package"
 	else
-		dnf install -y "$package" || dnf reinstall -y "$package"
+		dnf install -y --setopt=install_weak_deps=False "$package" || dnf reinstall -y "$package"
 	fi
 }
 
