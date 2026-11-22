@@ -23,6 +23,7 @@ type CommandConfig struct {
 	Policy       Policy
 	OpenDatabase func(string) (CommandDatabase, error)
 	Version      func() string
+	Trust        TrustConfig
 }
 
 type Command func(string, io.Reader, io.Writer, string, string, string) error
@@ -33,6 +34,7 @@ func BindCommand(config CommandConfig) Command {
 			return errors.New("update command is not configured")
 		}
 	}
+	config.Trust = defaultTrust(config.Trust)
 	commands := commandSet{config: config}
 	return commands.run
 }
@@ -49,6 +51,8 @@ func (commands commandSet) run(name string, input io.Reader, output io.Writer, d
 		return commands.writePlan(output, dataDir)
 	case CommandReport:
 		return commands.recordReport(input, dataDir)
+	case CommandVerify:
+		return commands.verifyUpdate(output, dataDir, goos, arch)
 	default:
 		return errors.New("unknown update command")
 	}

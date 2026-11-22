@@ -246,7 +246,7 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
                 for action in re.findall(r'uses: (\S+)', source):
                     if not action.startswith('./'):
                         self.assertRegex(action, r'@[0-9a-f]{40}$')
-                if path.name != 'release.yml':
+                if path.name not in ('release.yml', 'release-trust.yml'):
                     self.assertNotIn('contents: write', source)
                     if path.name not in ('ci.yml', 'publish.yml'):
                         self.assertNotIn('packages: write', source)

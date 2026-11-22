@@ -106,6 +106,21 @@ The official public website is [kinosail.com](https://kinosail.com/), and the so
 
 The recommended installer verifies the container image's keyless signature and pins its digest. A checksum can detect a changed file, but it does not prove who published it. Use the signed check described in [Install with Docker]({{ '/quickstart/' | relative_url }}).
 
+### How updates are protected
+
+Downloads and updates come from GitHub, but Kinosail does not trust the download server. A changed file, a hacked mirror, or a fake website cannot pass the checks. The `kinosail update-verify` command checks an update before it is installed. It approves a version only when all of these checks pass:
+
+1. **The release is signed by the official release workflow.** The [Sigstore](https://www.sigstore.dev/) signature must name `Kinosail/kinosail`, the workflow `.github/workflows/release.yml`, a GitHub-hosted runner, and the exact tag for that version, such as `player-v0.2.0`. A fork, another workflow, or another version's signature is rejected.
+2. **The signature is in the public transparency log.** Every official signature is recorded in the public Rekor log, so nobody can sign a release in secret.
+3. **The update channel announces it.** A signed channel file names the newest version and any revoked versions. It expires after 7 days, so an old channel cannot be replayed to hide a newer fix.
+4. **It is newer than the installed version.** Kinosail never installs an older version.
+5. **It is at least 24 hours old.** This gives time to revoke a bad release before servers install it. A server whose installed version is revoked installs the fix right away.
+6. **Every file matches the signed release manifest.** The manifest lists the SHA-256 checksum and size of each file.
+
+The checks use keyless signing, so there is no private signing key that can be stolen or lost. A scheduled monitor searches the public Rekor log every hour. It opens a GitHub issue if any signature for the repository does not match an official release tag on `main`. It also checks that every release tag points to `main` and that the update channel stays fresh.
+
+These checks cannot stop someone who takes over a maintainer's GitHub account and runs the official release workflow. The monitor and the 24-hour wait are there to detect that and stop it in time.
+
 Security maintenance targets current `main` and the latest published app release, when one exists. Check the [repository security policy](https://github.com/Kinosail/kinosail/blob/main/SECURITY.md) for the current supported revisions and disclosure process. Older releases do not have a long-term-support promise.
 
 ## What you must protect
