@@ -123,7 +123,11 @@ func (folders LibraryFolders) EstimateVideos(relative string) (VideoEstimate, er
 	estimate, scanned := VideoEstimate{Complete: true}, 0
 	walkErr := filepath.WalkDir(root.Path, func(current string, entry fs.DirEntry, err error) error {
 		if err != nil {
-			return nil
+			if current == root.Path {
+				return err
+			}
+			estimate.Complete = false
+			return filepath.SkipDir
 		}
 		scanned++
 		if scanned > maximumEstimateScan {

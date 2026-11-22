@@ -2,6 +2,7 @@ package server_test
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -33,7 +34,7 @@ func wizardMedia(t *testing.T) (string, string) {
 	return media, outside
 }
 
-func wizardOwner(t *testing.T, media string, environment ...string) (http.Handler, *http.Cookie, string) {
+func wizardOwner(t *testing.T, media string, environment ...string) (http.Handler, *http.Cookie) {
 	t.Helper()
 	data := t.TempDir()
 	configured, err := configuration.Load(data, "", func(name string) (string, bool) {
@@ -52,18 +53,18 @@ func wizardOwner(t *testing.T, media string, environment ...string) (http.Handle
 	if setup.Code != http.StatusSeeOther || setup.Header().Get("Location") != "/account?setup=1" || len(setup.Result().Cookies()) != 1 {
 		t.Fatalf("Owner setup = %d %q", setup.Code, setup.Header().Get("Location"))
 	}
-	return handler, setup.Result().Cookies()[0], data
+	return handler, setup.Result().Cookies()[0]
 }
 
-func wizardForm(t *testing.T, handler http.Handler, cookie *http.Cookie, path string, form url.Values) *http.Response {
+func wizardForm(t *testing.T, handler http.Handler, cookie *http.Cookie, path string, form url.Values) *httptest.ResponseRecorder {
 	t.Helper()
-	return requestWithCookie(t, handler, http.MethodPost, path, form.Encode(), cookie).Result()
+	return requestWithCookie(t, handler, http.MethodPost, path, form.Encode(), cookie)
 }
 
 func TestOwnerPicksMediaFoldersDuringSetup(t *testing.T) {
 	t.Parallel()
 	media, _ := wizardMedia(t)
-	handler, owner, _ := wizardOwner(t, media)
+	handler, owner := wizardOwner(t, media)
 
 	prompt := requestWithCookie(t, handler, http.MethodGet, "/account?setup=1", "", owner)
 	assertAPIBody(t, prompt, http.StatusOK, "Protect your account", "Skip for now", `href="/onboarding/media"`, `data-setup-next="/onboarding/media"`)
@@ -75,8 +76,8 @@ func TestOwnerPicksMediaFoldersDuringSetup(t *testing.T) {
 	if strings.Contains(whole.Body.String(), `aria-label="Add Movies"`) {
 		t.Fatalf("covered folder offered an Add button: %q", whole.Body.String())
 	}
-	if removed := wizardForm(t, handler, owner, "/onboarding/media/remove", url.Values{"path": {"."}}); removed.StatusCode != http.StatusSeeOther || removed.Header.Get("Location") != "/onboarding/media" {
-		t.Fatalf("remove whole media folder = %d %q", removed.StatusCode, removed.Header.Get("Location"))
+	if removed := wizardForm(t, handler, owner, "/onboarding/media/remove", url.Values{"path": {"."}}); removed.Code != http.StatusSeeOther || removed.Header().Get("Location") != "/onboarding/media" {
+		t.Fatalf("remove whole media folder = %d %q", removed.Code, removed.Header().Get("Location"))
 	}
 	page := requestWithCookie(t, handler, http.MethodGet, "/onboarding/media", "", owner)
 	assertAPIBody(t, page, http.StatusOK, "Where are your movies and shows?", "No folders yet", "Suggested folders", "Movies", "TV Shows", `name="path" value="Movies"`, "Skip for now", `aria-current="step"`, "&lt;em&gt;Bold")
@@ -90,11 +91,11 @@ func TestOwnerPicksMediaFoldersDuringSetup(t *testing.T) {
 	browse := requestWithCookie(t, handler, http.MethodGet, "/onboarding/media?path=Movies", "", owner)
 	assertAPIBody(t, browse, http.StatusOK, "Arrival (2016)", "Dune (2021)", "Up one folder", "Add this folder", `name="path" value="Movies/Dune (2021)"`)
 
-	if added := wizardForm(t, handler, owner, "/onboarding/media", url.Values{"path": {"Movies"}}); added.StatusCode != http.StatusSeeOther || added.Header.Get("Location") != "/onboarding/media" {
-		t.Fatalf("add Movies = %d %q", added.StatusCode, added.Header.Get("Location"))
+	if added := wizardForm(t, handler, owner, "/onboarding/media", url.Values{"path": {"Movies"}}); added.Code != http.StatusSeeOther || added.Header().Get("Location") != "/onboarding/media" {
+		t.Fatalf("add Movies = %d %q", added.Code, added.Header().Get("Location"))
 	}
-	if added := wizardForm(t, handler, owner, "/onboarding/media", url.Values{"path": {"TV Shows"}}); added.StatusCode != http.StatusSeeOther {
-		t.Fatalf("add TV Shows = %d", added.StatusCode)
+	if added := wizardForm(t, handler, owner, "/onboarding/media", url.Values{"path": {"TV Shows"}}); added.Code != http.StatusSeeOther {
+		t.Fatalf("add TV Shows = %d", added.Code)
 	}
 	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/onboarding/media?path=Movies", "", owner), http.StatusOK, "Already in your folders")
 	chosen := requestWithCookie(t, handler, http.MethodGet, "/onboarding/media", "", owner)
@@ -105,7 +106,7 @@ func TestOwnerPicksMediaFoldersDuringSetup(t *testing.T) {
 func TestMediaPickerRejectsUnsafeFoldersWithoutSideEffects(t *testing.T) {
 	t.Parallel()
 	media, outside := wizardMedia(t)
-	handler, owner, _ := wizardOwner(t, media)
+	handler, owner := wizardOwner(t, media)
 	wizardForm(t, handler, owner, "/onboarding/media/remove", url.Values{"path": {"."}})
 	wizardForm(t, handler, owner, "/onboarding/media", url.Values{"path": {"Movies"}})
 	before := requestWithCookie(t, handler, http.MethodGet, "/api/v1/settings", "", owner).Body.String()
@@ -121,8 +122,8 @@ func TestMediaPickerRejectsUnsafeFoldersWithoutSideEffects(t *testing.T) {
 		"null":      "Movies\x00",
 	} {
 		response := wizardForm(t, handler, owner, "/onboarding/media", url.Values{"path": {folder}})
-		if response.StatusCode != http.StatusSeeOther || response.Header.Get("Location") != "/onboarding/media?message=unavailable" {
-			t.Fatalf("%s add = %d %q", name, response.StatusCode, response.Header.Get("Location"))
+		if response.Code != http.StatusSeeOther || response.Header().Get("Location") != "/onboarding/media?message=unavailable" {
+			t.Fatalf("%s add = %d %q", name, response.Code, response.Header().Get("Location"))
 		}
 		browse := requestWithCookie(t, handler, http.MethodGet, "/onboarding/media?path="+url.QueryEscape(folder), "", owner)
 		if browse.Code != http.StatusOK || strings.Contains(browse.Body.String(), "Private.mkv") || name != "empty" && name != "overlap" && !strings.Contains(browse.Body.String(), "That folder cannot be opened.") {
@@ -139,7 +140,7 @@ func TestMediaPickerRejectsUnsafeFoldersWithoutSideEffects(t *testing.T) {
 func TestOwnerSharesKinosailWithHomeDevices(t *testing.T) {
 	t.Parallel()
 	media, _ := wizardMedia(t)
-	handler, owner, _ := wizardOwner(t, media)
+	handler, owner := wizardOwner(t, media)
 
 	devices := requestWithCookie(t, handler, http.MethodGet, "/onboarding/connection", "", owner)
 	assertAPIBody(t, devices, http.StatusOK, "Watch on your TV and phone", `name="share" value="true" checked`, "Advanced options", "Step 3 of 5")
@@ -147,8 +148,8 @@ func TestOwnerSharesKinosailWithHomeDevices(t *testing.T) {
 	assertAPIBody(t, saved, http.StatusOK, "Restart Kinosail to finish", `href="/onboarding/household"`)
 	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/settings/configuration", "", owner), http.StatusOK, `value="0.0.0.0:38127"`, "Server listening address")
 	again := wizardForm(t, handler, owner, "/onboarding/devices", url.Values{"share": {"true"}})
-	if again.StatusCode != http.StatusSeeOther || again.Header.Get("Location") != "/onboarding/household" {
-		t.Fatalf("unchanged sharing = %d %q", again.StatusCode, again.Header.Get("Location"))
+	if again.Code != http.StatusSeeOther || again.Header().Get("Location") != "/onboarding/household" {
+		t.Fatalf("unchanged sharing = %d %q", again.Code, again.Header().Get("Location"))
 	}
 	private := requestWithCookie(t, handler, http.MethodPost, "/onboarding/devices", "", owner)
 	assertAPIBody(t, private, http.StatusOK, "Restart Kinosail to finish")
@@ -158,7 +159,7 @@ func TestOwnerSharesKinosailWithHomeDevices(t *testing.T) {
 func TestManagedListenAddressKeepsDeploymentChoice(t *testing.T) {
 	t.Parallel()
 	media, _ := wizardMedia(t)
-	handler, owner, _ := wizardOwner(t, media, "KINOSAIL_LISTEN", "0.0.0.0:8096")
+	handler, owner := wizardOwner(t, media, "KINOSAIL_LISTEN", "0.0.0.0:8096")
 
 	devices := requestWithCookie(t, handler, http.MethodGet, "/onboarding/connection", "", owner)
 	assertAPIBody(t, devices, http.StatusOK, "Kinosail is shared with devices on your home network.", "Your installation controls this setting.")
@@ -166,8 +167,8 @@ func TestManagedListenAddressKeepsDeploymentChoice(t *testing.T) {
 		t.Fatalf("managed listen address offered a sharing switch: %q", devices.Body.String())
 	}
 	saved := wizardForm(t, handler, owner, "/onboarding/devices", url.Values{})
-	if saved.StatusCode != http.StatusSeeOther || saved.Header.Get("Location") != "/onboarding/household" {
-		t.Fatalf("managed sharing change = %d %q", saved.StatusCode, saved.Header.Get("Location"))
+	if saved.Code != http.StatusSeeOther || saved.Header().Get("Location") != "/onboarding/household" {
+		t.Fatalf("managed sharing change = %d %q", saved.Code, saved.Header().Get("Location"))
 	}
 	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/settings/configuration", "", owner), http.StatusOK, "<code>KINOSAIL_LISTEN</code>")
 }
@@ -175,7 +176,7 @@ func TestManagedListenAddressKeepsDeploymentChoice(t *testing.T) {
 func TestUnprotectedOwnerMustAddSecondFactorBeforeSensitiveChanges(t *testing.T) {
 	t.Parallel()
 	media, _ := wizardMedia(t)
-	handler, owner, _ := wizardOwner(t, media)
+	handler, owner := wizardOwner(t, media)
 
 	settings := requestWithCookie(t, handler, http.MethodGet, "/settings", "", owner)
 	assertAPIBody(t, settings, http.StatusOK, "Protect your account", `href="/account"`)
