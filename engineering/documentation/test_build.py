@@ -82,7 +82,7 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertIn('free, source-available media server', hero)
                     self.assertIn('<a class="button button-quiet" href="https://github.com/Kinosail/kinosail">View source on GitHub</a>', hero)
                     hero_links = LinkText(hero).links
-                    self.assertEqual(hero_links[0], [f'{prefix}/quickstart/', 'Get started with Docker'])
+                    self.assertEqual(hero_links[0], [f'{prefix}/download/', 'Download Kinosail'])
                     self.assertIn(['https://github.com/Kinosail/kinosail', 'View source on GitHub'], hero_links)
                     self.assertIn([f'{prefix}/docs/', 'Read the docs'], hero_links)
                     self.assertIn([f'{prefix}/quickstart/', 'Get started with Docker'], hero_links)
