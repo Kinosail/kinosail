@@ -23,14 +23,8 @@ func TemplateMessagesAreCatalogued(t *testing.T, roots []string, english map[str
 			if err != nil {
 				return err
 			}
-			for _, match := range templateMessage.FindAllStringSubmatch(string(source), -1) {
-				message, err := strconv.Unquote(match[1])
-				if err != nil || strings.Contains(message, "` + ") {
-					continue
-				}
-				if _, ok := english[message]; !ok {
-					t.Errorf("%s: %q is not in the English catalog", path, message)
-				}
+			for _, message := range uncataloguedTemplateMessages(string(source), english) {
+				t.Errorf("%s: %q is not in the English catalog", path, message)
 			}
 			return nil
 		})
@@ -38,4 +32,18 @@ func TemplateMessagesAreCatalogued(t *testing.T, roots []string, english map[str
 			t.Fatal(err)
 		}
 	}
+}
+
+func uncataloguedTemplateMessages(source string, english map[string]string) []string {
+	var missing []string
+	for _, match := range templateMessage.FindAllStringSubmatch(source, -1) {
+		message, err := strconv.Unquote(match[1])
+		if err != nil || strings.Contains(message, "` + ") {
+			continue
+		}
+		if _, ok := english[message]; !ok {
+			missing = append(missing, message)
+		}
+	}
+	return missing
 }
