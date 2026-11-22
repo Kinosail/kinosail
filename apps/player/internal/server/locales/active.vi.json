@@ -2074,5 +2074,9 @@
   {
     "id": "Enter the current 6-digit code to confirm the app.",
     "other": "Nhập mã 6 chữ số hiện tại để xác nhận ứng dụng."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "Địa chỉ này không được phép. Hãy mở Kinosail tại địa chỉ đã cấu hình, hoặc thêm địa chỉ này vào KINOSAIL_TLS_HOSTS."
   }
 ]

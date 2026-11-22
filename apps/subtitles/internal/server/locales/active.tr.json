@@ -1258,5 +1258,9 @@
   {
     "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
     "other": "Kinosail Subtitles medya klasörlerinizi okuyor. Tarama tamamlandığında altyazı kapsamı burada görünür."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "Bu adrese izin verilmiyor. Kinosail'i yapılandırılmış adresinden açın veya bu adresi KINOSAIL_TLS_HOSTS listesine ekleyin."
   }
 ]

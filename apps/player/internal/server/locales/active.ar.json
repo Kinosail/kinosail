@@ -2074,5 +2074,9 @@
   {
     "id": "Enter the current 6-digit code to confirm the app.",
     "other": "أدخل الرمز الحالي المكوّن من 6 أرقام لتأكيد التطبيق."
+  },
+  {
+    "id": "This address is not allowed. Open Kinosail at its configured address, or add this address to KINOSAIL_TLS_HOSTS.",
+    "other": "هذا العنوان غير مسموح به. افتح Kinosail على عنوانه المُعدّ، أو أضف هذا العنوان إلى KINOSAIL_TLS_HOSTS."
   }
 ]
