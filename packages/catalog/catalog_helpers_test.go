@@ -19,7 +19,7 @@ func NewIndex(ctx context.Context, roots []ScanRoot, cache string, interval time
 }
 
 func titleLetter(title, locale string) string {
-	return titleLetterWithCaser(title, cases.Upper(language.Make(locale)))
+	return titleLetterWithCaser(title, cases.Upper(language.Make(locale)), chineseLocale(locale))
 }
 
 func SafePath(path string, allowed []string) bool {

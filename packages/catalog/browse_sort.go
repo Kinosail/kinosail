@@ -10,6 +10,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"golang.org/x/text/cases"
 	"golang.org/x/text/collate"
 	"golang.org/x/text/language"
 )
@@ -21,7 +22,7 @@ func sortReferences(ctx context.Context, items []*library.Item, order, query, lo
 	order = normalizeSort(order)
 	titles := collate.New(language.Make(locale))
 	if order == "title" && query == "" {
-		return sortTitles(ctx, items, titles)
+		return sortTitles(ctx, items, titles, locale)
 	}
 	var ranks map[*library.Item]int
 	if query != "" {
@@ -71,10 +72,11 @@ func referenceBefore(left, right *library.Item, order string, titles *collate.Co
 	}
 }
 
-func sortTitles(ctx context.Context, items []*library.Item, titles *collate.Collator) error {
+func sortTitles(ctx context.Context, items []*library.Item, titles *collate.Collator, locale string) error {
 	var buffer collate.Buffer
 	keys := make([]byte, 0, len(items)*64)
 	keyed := make([]sortReference, len(items))
+	upper, chinese := cases.Upper(language.Make(locale)), chineseLocale(locale)
 	for position, item := range items {
 		if position%64 == 0 {
 			if err := ctx.Err(); err != nil {
@@ -83,6 +85,9 @@ func sortTitles(ctx context.Context, items []*library.Item, titles *collate.Coll
 		}
 		buffer.Reset()
 		start := len(keys)
+		if chinese {
+			keys = append(append(keys, titleLetterWithCaser(sortTitle(*item), upper, true)...), 0)
+		}
 		keys = append(keys, titles.KeyFromString(&buffer, sortKey(*item))...)
 		keyed[position] = sortReference{item, keys[start:]}
 	}

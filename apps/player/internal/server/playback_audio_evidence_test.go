@@ -17,7 +17,7 @@ func TestAutomaticSkipPreservesSelectedAudioCompatibilityEvidence(t *testing.T) 
 	for _, sample := range []struct {
 		codec, video string
 		required     bool
-	}{{"dts", "h264", true}, {"aac", "h264", false}, {"", "h264", false}, {"dts", "hevc", false}, {"eac3", "hevc", false}} {
+	}{{"dts", "h264", true}, {"aac", "h264", false}, {"", "h264", false}, {"dts", "hevc", true}, {"eac3", "hevc", true}} {
 		t.Run(sample.codec+"-"+sample.video, func(t *testing.T) {
 			media, data, tools := t.TempDir(), t.TempDir(), t.TempDir()
 			if err := os.WriteFile(filepath.Join(media, "Episode.mkv"), []byte("media"), 0o600); err != nil {

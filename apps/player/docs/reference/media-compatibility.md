@@ -51,7 +51,7 @@ This list describes the bundled browser adapter. A device, browser, Jellyfin cli
 
 ## Automatic and Compatibility playback
 
-`Automatic` starts with direct media when possible. It can offer an adaptive HLS fallback when the Viewer may transcode. `Direct` requests only the source path. `Compatibility` requests a server-generated HLS representation. The internal API value is `compatible`.
+`Automatic` starts with direct media when possible. It can offer an adaptive HLS fallback when the Viewer may transcode. When the client cannot play the selected audio track, `Automatic` starts with the converted stream instead. A browser can decode the original video but play no sound from audio it does not support, such as E-AC-3 or DTS in Chrome. In that case the fallback would never start. `Direct` requests only the source path. `Compatibility` requests a server-generated HLS representation. The internal API value is `compatible`.
 
 The playback decision can select:
 
