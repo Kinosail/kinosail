@@ -13,15 +13,19 @@ $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
 $shortcut = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Kinosail.lnk'
 
 trap {
+  "$($_.InvocationInfo.PositionMessage)`n$($_.Exception.Message)" | Set-Content (Join-Path $Evidence 'failure.txt')
   Copy-Item -Path (Join-Path $root 'logs\*') -Destination $Evidence -ErrorAction SilentlyContinue
   Get-Process | Where-Object { $_.Name -like '*kinosail*' } | Format-Table Id, Name, StartTime -AutoSize | Out-String | Set-Content (Join-Path $Evidence 'processes.txt')
   Get-NetTCPConnection -LocalPort 38127 -ErrorAction SilentlyContinue | Out-String | Set-Content (Join-Path $Evidence 'port.txt')
   Get-Process | Where-Object { $_.Name -like '*kinosail*' } | Format-Table Id, Name, CPU, Threads, Handles -AutoSize | Out-String | Add-Content (Join-Path $Evidence 'processes.txt')
   "$script:healthError" | Set-Content (Join-Path $Evidence 'health-error.txt')
   curl.exe --insecure --verbose --max-time 5 https://127.0.0.1:38127/healthz *>&1 | Out-String | Set-Content (Join-Path $Evidence 'health-probe.txt')
-  $env:KINOSAIL_DATA_DIR = Join-Path $root 'data'
-  & (Join-Path $programs 'server\kinosail-server.exe') healthcheck *>&1 | Out-String | Set-Content (Join-Path $Evidence 'healthcheck.txt')
-  "exit $LASTEXITCODE" | Add-Content (Join-Path $Evidence 'healthcheck.txt')
+  $server = Join-Path $programs 'server\kinosail-server.exe'
+  if (Test-Path $server) {
+    $env:KINOSAIL_DATA_DIR = Join-Path $root 'data'
+    & $server healthcheck *>&1 | Out-String | Set-Content (Join-Path $Evidence 'healthcheck.txt')
+    "exit $LASTEXITCODE" | Add-Content (Join-Path $Evidence 'healthcheck.txt')
+  }
   break
 }
 function Step([string]$Text) {
@@ -85,7 +89,7 @@ Wait-Until { -not (Launcher) -and -not (Server) } 'Kinosail kept running after u
 if (Test-Healthy) { throw 'port 38127 still answers after uninstall' }
 if (Test-Path $programs) { throw 'program files remain after uninstall' }
 if (Test-Path $shortcut) { throw 'the Start menu shortcut remains after uninstall' }
-if ($null -ne (Get-ItemProperty -Path $runKey).Kinosail) { throw 'the sign-in entry remains after uninstall' }
+if ($null -ne (Get-ItemProperty -Path $runKey -Name Kinosail -ErrorAction SilentlyContinue)) { throw 'the sign-in entry remains after uninstall' }
 if (-not (Test-Path (Join-Path $root 'data'))) { throw 'uninstall removed the library data' }
 $log = Join-Path $root 'logs\kinosail.log'
 Copy-Item $log (Join-Path $Evidence 'kinosail.log')
