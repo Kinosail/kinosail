@@ -475,8 +475,15 @@ jobs:
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
         with:
           packages: 'platform-tools platforms;android-37.0'
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.m2/repository/org/robolectric
+          key: robolectric-${{ hashFiles('apps/player/apps/android/**/build.gradle.kts') }}
+          restore-keys: robolectric-
       - run: ./gradlew --continue :app:assembleDebug :app:lintDebug :app:testDebugUnitTest :watchcore:testDebugUnitTest :wear:assembleDebug :wear:testDebugUnitTest
         working-directory: apps/player/apps/android
+        env:
+          JAVA_TOOL_OPTIONS: -Drobolectric.dependency.repo.url=https://maven-central.storage-download.googleapis.com/maven2
       - name: Keep Android lint evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
