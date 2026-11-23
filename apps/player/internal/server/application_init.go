@@ -82,27 +82,27 @@ func startAccessFlush(lifecycle context.Context, managed bool, profiles *profile
 	beforeClose(func() { <-flushed })
 }
 
-func initializeApplicationSettings(config Config, stateDB *database.Store, managed bool) (*settingsStore, *updateChecker, string) {
+func initializeApplicationSettings(config Config, stateDB *database.Store, managed bool) (*settingsStore, *updateChecker, *startupFailure) {
 	settings := newSettingsStore(config.MediaDir, config.DataDir, config.DLNAURL, stateDB, config.Configuration)
 	if config.TrustedHTTPSCheck != nil {
 		settings.trustedHTTPSCheck = config.TrustedHTTPSCheck
 	}
 	if settings.err != nil {
-		return nil, nil, "application state is unavailable"
+		return nil, nil, &startupFailure{"application state is unavailable", "settings", settings.err}
 	}
 	updateManager, err := updatecontrol.New(stateDB, updateReleasePolicy())
 	if err != nil {
-		return nil, nil, "application state is unavailable"
+		return nil, nil, &startupFailure{"application state is unavailable", "updates", err}
 	}
 	updates := newUpdateChecker(settings, updateManager)
 	if managed {
 		updates.Schedule(config.Lifecycle)
 	}
 	settings.ffmpeg = config.FFmpeg
-	if settings.startHardwareProbe(config) != nil {
-		return nil, nil, "transcoder configuration is unavailable"
+	if err := settings.startHardwareProbe(config); err != nil {
+		return nil, nil, &startupFailure{"transcoder configuration is unavailable", "transcoder", err}
 	}
-	return settings, updates, ""
+	return settings, updates, nil
 }
 
 func startApplicationMCPHost(config Config, managed bool, adapter *mcpAdapter, profiles *profileStore) {

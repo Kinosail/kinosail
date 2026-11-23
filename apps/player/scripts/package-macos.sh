@@ -19,14 +19,14 @@ app="$stage/image/Kinosail.app"
 helpers="$app/Contents/Helpers"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources" "$helpers"
 for arch in arm64 amd64; do
-	CGO_ENABLED=0 GOOS=darwin GOARCH="$arch" go build -C "$root" -trimpath -ldflags "-s -w -X main.version=$version" -o "$stage/kinosail-$arch" ./cmd/kinosail
+	CGO_ENABLED=0 GOOS=darwin GOARCH="$arch" go build -C "$root" -trimpath -ldflags "-s -w -X main.version=$version" -o "$stage/server-$arch" ./cmd/kinosail
 	python3 -I "$root/scripts/fetch-native-runtime.py" "macos-$arch" "$stage/runtime-$arch"
 done
 for arch in arm64 x86_64; do
-	xcrun swiftc -O -target "$arch-apple-macos13" -o "$stage/Kinosail-$arch" "$root/packaging/macos/Launcher.swift"
+	xcrun swiftc -O -target "$arch-apple-macos13" -o "$stage/launcher-$arch" "$root/packaging/macos/Launcher.swift"
 done
-lipo -create -output "$app/Contents/MacOS/Kinosail" "$stage/Kinosail-arm64" "$stage/Kinosail-x86_64"
-lipo -create -output "$helpers/kinosail" "$stage/kinosail-arm64" "$stage/kinosail-amd64"
+lipo -create -output "$app/Contents/MacOS/Kinosail" "$stage/launcher-arm64" "$stage/launcher-x86_64"
+lipo -create -output "$helpers/kinosail" "$stage/server-arm64" "$stage/server-amd64"
 for command in ffmpeg ffprobe fpcalc; do
 	lipo -create -output "$helpers/$command" "$stage/runtime-arm64/$command" "$stage/runtime-amd64/$command"
 done

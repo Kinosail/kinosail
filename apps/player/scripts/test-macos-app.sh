@@ -55,6 +55,7 @@ for binary in MacOS/Kinosail Helpers/kinosail Helpers/ffmpeg Helpers/ffprobe Hel
 	[[ "$archs" == *" arm64 "* && "$archs" == *" x86_64 "* ]] || { printf '%s is not universal\n' "$binary" >&2; exit 1; }
 done
 [[ "$(plutil -extract LSUIElement raw "$app/Contents/Info.plist")" == true ]]
+[[ "$("$app/Contents/Helpers/kinosail" version)" == v* ]] || { printf 'the server helper is not the Kinosail server\n' >&2; exit 1; }
 
 step "start the menu bar app"
 defaults write com.kinosail.server loginItemConfigured -bool true

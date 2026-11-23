@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"crypto/rand"
+	"errors"
 	"net/http"
 	"runtime"
 	"sync"
@@ -128,12 +129,12 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	}
 	stateDB, err := database.OpenContext(config.Lifecycle, config.DataDir, managedLifecycle)
 	if err != nil {
-		return unavailableApplication(config, "application state is unavailable")
+		return unavailableApplication(config, startupFailure{"application state is unavailable", "database", err})
 	}
 	shutdown := closeApplicationDatabase(config.Lifecycle, config.Drain, stateDB, managedLifecycle)
-	settings, updates, unavailable := initializeApplicationSettings(config, stateDB, managedLifecycle)
-	if unavailable != "" {
-		return unavailableApplication(config, unavailable)
+	settings, updates, failure := initializeApplicationSettings(config, stateDB, managedLifecycle)
+	if failure != nil {
+		return unavailableApplication(config, *failure)
 	}
 	if config.TMDBCheck != nil {
 		settings.tmdbCheck = config.TMDBCheck
@@ -142,7 +143,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	workloads := workload.New(workload.HeavyCapacity(), workload.DeviceSessions(transcodehardware.DeviceSessions))
 	metadata := newMetadataStore(config.Metadata, config.DataDir, config.CacheDir, stateDB)
 	if metadata.err != nil {
-		return unavailableApplication(config, "application state is unavailable")
+		return unavailableApplication(config, startupFailure{"application state is unavailable", "metadata", metadata.err})
 	}
 	settings.metadata = metadata
 	probe := newMediaProbe(config.FFprobe)
@@ -161,20 +162,20 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	progress := newProgressStore(config.DataDir, stateDB)
 	lists := newListStore(config.DataDir, stateDB)
 	if progress.Err() != nil || lists.err != nil {
-		return unavailableApplication(config, "application state is unavailable")
+		return unavailableApplication(config, startupFailure{"application state is unavailable", "progress", errors.Join(progress.Err(), lists.err)})
 	}
 	startProgressCoalescing(progress, shutdown, managedLifecycle)
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
 	startAccessFlush(config.Lifecycle, managedLifecycle, auth.profiles, shutdown.beforeClose)
 	disablePasskeyRedirectsForHTTPS(config, auth)
 	if !auth.audit.Healthy() {
-		return unavailableApplication(config, "activity journal is unavailable")
+		return unavailableApplication(config, startupFailure{"activity journal is unavailable", "activity", nil})
 	}
 	disableInternetForBrokenProfiles(config, auth)
 	viewingImports := newViewingImportManager(lifecycle, config.DataDir, index, progress, lists, auth.profiles)
 	homeAssistant, err := newHomeAssistant(settings, auth.profiles, index, progress, lists, lifecycle, config.AuthURL, rand.Reader)
 	if err != nil {
-		return unavailableApplication(config, "application state is unavailable")
+		return unavailableApplication(config, startupFailure{"application state is unavailable", "home-assistant", err})
 	}
 	agentConnections := newMCPConnections(config.AuthURL, config.DataDir, auth.profiles, stateDB)
 	agentConnections.Configure(config.MCP)
@@ -199,12 +200,12 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	maintenance.SetTrim(sharedmaintenance.CacheTrim{CacheDir: config.CacheDir, SubtitleLimit: config.SubtitleCacheLimit, DownloadLimit: config.DownloadCacheLimit, Downloads: downloads.Manager}.Run)
 	events := wireLiveEvents(index, downloads, homeAssistant)
 	if downloads.Err() != nil {
-		return unavailableApplication(config, "download cache is unavailable")
+		return unavailableApplication(config, startupFailure{"download cache is unavailable", "downloads", downloads.Err()})
 	}
 	shares := newMediaShares(config.DataDir, stateDB, index)
 	experience := newMediaExperienceStore(config.DataDir, stateDB)
 	if experience.err != nil {
-		return unavailableApplication(config, "media preferences are unavailable")
+		return unavailableApplication(config, startupFailure{"media preferences are unavailable", "media-preferences", experience.err})
 	}
 	mux, rooms := http.NewServeMux(), newWatchRooms(config.WatchRoomTTL, index, auth)
 	mux.HandleFunc("GET /static/htmx.min.js", serveScript(htmx))
