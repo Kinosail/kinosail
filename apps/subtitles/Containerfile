@@ -39,7 +39,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
 FROM docker.io/library/debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2
 ARG JELLYFIN_FFMPEG_VERSION=8.1.3-2
-RUN apt-get update \
+ADD https://security.debian.org/debian-security/dists/trixie-security/InRelease /tmp/debian-security-release
+RUN rm /tmp/debian-security-release \
+    && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ca-certificates libaom3 libarchive-tools libchromaprint-tools mesa-va-drivers mesa-vulkan-drivers socat tzdata wget libstdc++6 tesseract-ocr tesseract-ocr-eng tesseract-ocr-spa tesseract-ocr-fra tesseract-ocr-deu tesseract-ocr-ita tesseract-ocr-por tesseract-ocr-nld tesseract-ocr-swe tesseract-ocr-dan tesseract-ocr-nor tesseract-ocr-fin tesseract-ocr-pol tesseract-ocr-ces tesseract-ocr-hun tesseract-ocr-tur tesseract-ocr-ron tesseract-ocr-rus tesseract-ocr-ukr tesseract-ocr-ell \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libaom3)" ge 3.12.1-1+deb13u1 \
