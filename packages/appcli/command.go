@@ -117,8 +117,10 @@ func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHa
 		slog.Error("server lifecycle is not configured")
 		return 1
 	}
-	ctx, stop := signal.NotifyContext(context.Background(), signals...)
+	signaled, stop := signal.NotifyContext(context.Background(), signals...)
 	defer stop()
+	ctx, cancel := withShutdownRequests(signaled)
+	defer cancel()
 	lifecycle, endLifecycle := context.WithCancel(context.Background())
 	defer endLifecycle()
 	internet, trusted := accessManagers(configured, createRemote, createTrusted)

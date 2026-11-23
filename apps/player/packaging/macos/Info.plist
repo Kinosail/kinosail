@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Kinosail</string>
+	<key>CFBundleExecutable</key>
+	<string>Kinosail</string>
+	<key>CFBundleIconFile</key>
+	<string>Kinosail</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.kinosail.server</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Kinosail</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>KINOSAIL_VERSION</string>
+	<key>CFBundleVersion</key>
+	<string>KINOSAIL_VERSION</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.entertainment</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>13.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Kinosail reads the movie and show folders you choose. It never changes your files.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Kinosail reads the movie and show folders you choose. It never changes your files.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Kinosail reads the movie and show folders you choose. It never changes your files.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Kinosail reads the movie and show folders you choose on this drive. It never changes your files.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Kinosail reads the movie and show folders you choose on this network drive. It never changes your files.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Kinosail shares your library with the TVs and phones on your home network.</string>
+</dict>
+</plist>

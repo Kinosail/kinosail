@@ -385,6 +385,60 @@ jobs:
           path: apps/player/.verification/linux-packages
           if-no-files-found: ignore
 
+  desktop:
+    name: Player desktop installer (${{ matrix.system }})
+    needs: plan
+    if: needs.plan.outputs.verified != 'true' && contains(fromJSON(needs.plan.outputs.tools), 'player')
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: macos
+            runner: xcode-27
+          - system: windows
+            runner: windows-2025
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - if: matrix.system == 'macos'
+        uses: ./.github/actions/setup-go
+        with:
+          go-version-file: apps/player/go.mod
+          cache-dependency-path: "**/go.sum"
+          cache-scope: player
+      - if: matrix.system == 'macos'
+        run: |
+          apps/player/scripts/package-macos.sh v0.0.0 "$RUNNER_TEMP/desktop-package"
+          apps/player/scripts/test-macos-app.sh "$RUNNER_TEMP/desktop-package/Kinosail-macOS.dmg" "$RUNNER_TEMP/desktop-evidence"
+      - if: matrix.system == 'windows'
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache: false
+      - if: matrix.system == 'windows'
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          export PATH="$HOME/.dotnet/tools:$PATH"
+          wix extension add --global WixToolset.Util.wixext/5.0.2
+          temp="$(cygpath -u "$RUNNER_TEMP")"
+          apps/player/scripts/stage-windows.sh v0.0.0 "$temp/windows-stage"
+          apps/player/scripts/package-windows.sh "$temp/windows-stage" "$temp/desktop-package"
+      - if: matrix.system == 'windows'
+        shell: pwsh
+        run: apps/player/scripts/test-windows-installer.ps1 -Msi "$env:RUNNER_TEMP\desktop-package\Kinosail-Windows-x64.msi" -Evidence "$env:RUNNER_TEMP\desktop-evidence"
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: desktop-installer-evidence-${{ matrix.system }}
+          path: ${{ runner.temp }}/desktop-evidence
+          if-no-files-found: ignore
+
   client:
     name: Player Swift compilation
     needs: plan
@@ -647,7 +701,7 @@ jobs:
   player-required:
     name: Player checks
     if: always()
-    needs: [plan, go, e2e, proofs, arm, tools, client, android]
+    needs: [plan, go, e2e, proofs, arm, tools, desktop, client, android]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
@@ -662,7 +716,7 @@ jobs:
   subtitles-required:
     name: Subtitles checks
     if: always()
-    needs: [plan, go, e2e, proofs, arm, tools, client, android]
+    needs: [plan, go, e2e, proofs, arm, tools, desktop, client, android]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:

@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 
 	"github.com/MikeO7/kinosail-player/internal/backup"
@@ -60,6 +61,9 @@ func serveConfiguredMCP(ctx context.Context, configured configuration.Snapshot, 
 }
 
 func run(configured configuration.Snapshot) int {
+	if stop, _ := strconv.ParseBool(os.Getenv("KINOSAIL_STOP_WITH_LAUNCHER")); stop {
+		appcli.StopWhenClosed(os.Stdin)
+	}
 	return appcli.Run(configured, terminationSignals(), func(ctx context.Context, drain *sync.WaitGroup, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
 		return newConfiguredHTTPServerWithAccess(ctx, drain, configured, internet, trusted)
 	}, server.Remote)

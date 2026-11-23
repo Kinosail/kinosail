@@ -1,0 +1,52 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+  <Package Name="Kinosail" Manufacturer="Kinosail" Version="$(Version)" UpgradeCode="{D3D7B6C9-7F51-4F64-AD7C-CFA9B5A9A0E8}" Scope="perUser" Language="1033" Compressed="yes">
+    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of Kinosail is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+    <Icon Id="KinosailIcon" SourceFile="$(Stage)\Kinosail.ico" />
+    <Property Id="ARPPRODUCTICON" Value="KinosailIcon" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="ARPURLINFOABOUT" Value="https://kinosail.com/" />
+    <Property Id="ARPHELPLINK" Value="https://kinosail.com/download/" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="Kinosail">
+          <Directory Id="ServerFolder" Name="server" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+
+    <util:CloseApplication Id="CloseKinosail" Target="Kinosail.exe" CloseMessage="yes" RebootPrompt="no" Timeout="25" TerminateProcess="1" />
+
+    <Feature Id="Kinosail">
+      <Component Id="Launcher" Directory="INSTALLFOLDER" Guid="{6E1B5F1C-2C55-4B8A-9C55-3B6B61B4B9A1}">
+        <File Id="LauncherExecutable" Source="$(Stage)\Kinosail.exe" KeyPath="no" />
+        <File Id="LauncherIcon" Source="$(Stage)\Kinosail.ico" KeyPath="no" />
+        <File Id="License" Source="$(Stage)\LICENSE" Name="LICENSE.txt" KeyPath="no" />
+        <File Id="Notices" Source="$(Stage)\THIRD_PARTY_NOTICES.md" KeyPath="no" />
+        <RegistryValue Root="HKCU" Key="Software\Kinosail\Installer" Name="Launcher" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run" Name="Kinosail" Type="string" Value="&quot;[INSTALLFOLDER]Kinosail.exe&quot;" />
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveProgramsFolder" Directory="ProgramsFolder" On="uninstall" />
+      </Component>
+      <Component Id="Server" Directory="ServerFolder" Guid="{0F3C9C2E-8B6D-4E3A-A2B1-7C6F0D6F4E52}">
+        <File Id="ServerExecutable" Source="$(Stage)\server\kinosail-server.exe" KeyPath="no" />
+        <File Id="Ffmpeg" Source="$(Stage)\server\ffmpeg.exe" KeyPath="no" />
+        <File Id="Ffprobe" Source="$(Stage)\server\ffprobe.exe" KeyPath="no" />
+        <File Id="Fpcalc" Source="$(Stage)\server\fpcalc.exe" KeyPath="no" />
+        <RegistryValue Root="HKCU" Key="Software\Kinosail\Installer" Name="Server" Type="integer" Value="1" KeyPath="yes" />
+        <RemoveFolder Id="RemoveServerFolder" Directory="ServerFolder" On="uninstall" />
+      </Component>
+      <Component Id="StartMenu" Directory="ProgramMenuFolder" Guid="{9A4D2B7E-5C1F-4F0B-8E3D-2A6C9B1E7D40}">
+        <Shortcut Id="KinosailShortcut" Name="Kinosail" Description="Open Kinosail" Target="[INSTALLFOLDER]Kinosail.exe" WorkingDirectory="INSTALLFOLDER" Icon="KinosailIcon" />
+        <RegistryValue Root="HKCU" Key="Software\Kinosail\Installer" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </Feature>
+
+    <CustomAction Id="LaunchKinosail" Directory="INSTALLFOLDER" ExeCommand="&quot;[INSTALLFOLDER]Kinosail.exe&quot;" Execute="immediate" Impersonate="yes" Return="asyncNoWait" />
+    <InstallExecuteSequence>
+      <Custom Action="LaunchKinosail" After="InstallFinalize" Condition="NOT (REMOVE~=&quot;ALL&quot;) AND NOT KINOSAIL_NO_LAUNCH" />
+    </InstallExecuteSequence>
+  </Package>
+</Wix>
