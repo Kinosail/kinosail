@@ -13,6 +13,8 @@ evidence="$(cd "$evidence" && pwd)"
 work="$(mktemp -d "${TMPDIR:-/tmp}/kinosail-macos-test.XXXXXX")"
 launcher=""
 cleanup() {
+	cp "$HOME/Library/Logs/Kinosail/kinosail.log" "$evidence/kinosail.log" 2>/dev/null || true
+	pgrep -fl Kinosail >"$evidence/processes.txt" 2>&1 || true
 	[[ -z "$launcher" ]] || kill -KILL "$launcher" 2>/dev/null || true
 	pkill -KILL -f "$work/Applications/Kinosail.app/Contents/Helpers/kinosail" 2>/dev/null || true
 	hdiutil detach -quiet "$work/mount" 2>/dev/null || true
@@ -38,7 +40,8 @@ app="$work/Applications/Kinosail.app"
 step "check the signature and both architectures"
 codesign --verify --strict --deep "$app"
 for binary in MacOS/Kinosail Helpers/kinosail Helpers/ffmpeg Helpers/ffprobe Helpers/fpcalc; do
-	lipo "$app/Contents/$binary" -verify_arch arm64 x86_64
+	archs=" $(lipo -archs "$app/Contents/$binary") "
+	[[ "$archs" == *" arm64 "* && "$archs" == *" x86_64 "* ]] || { printf '%s is not universal\n' "$binary" >&2; exit 1; }
 done
 [[ "$(plutil -extract LSUIElement raw "$app/Contents/Info.plist")" == true ]]
 

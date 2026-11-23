@@ -42,6 +42,18 @@ func (files serverFiles) executable() string {
 }
 func (files serverFiles) marker() string { return filepath.Join(files.root, "setup-opened") }
 
+func (files serverFiles) note(text string) {
+	if os.MkdirAll(files.logs, 0o700) != nil {
+		return
+	}
+	output, err := os.OpenFile(filepath.Join(files.logs, "launcher.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600)
+	if err != nil {
+		return
+	}
+	_, _ = fmt.Fprintf(output, "%s %s\n", time.Now().UTC().Format(time.RFC3339), text)
+	_ = output.Close()
+}
+
 func (files serverFiles) prepare() (*os.File, error) {
 	for _, folder := range []string{files.data, files.backups, files.cache, files.logs} {
 		if err := os.MkdirAll(folder, 0o700); err != nil {
@@ -99,6 +111,7 @@ func (server *supervisor) start() {
 	}
 	log, err := server.files.prepare()
 	if err != nil {
+		server.files.note("server folders could not be prepared")
 		server.status("Kinosail could not start")
 		return
 	}
@@ -110,6 +123,7 @@ func (server *supervisor) start() {
 	}
 	if err != nil {
 		_ = log.Close()
+		server.files.note("server process could not start")
 		server.status("Kinosail could not start")
 		return
 	}

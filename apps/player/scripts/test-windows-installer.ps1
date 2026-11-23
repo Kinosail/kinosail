@@ -12,6 +12,12 @@ $programs = Join-Path $env:LOCALAPPDATA 'Programs\Kinosail'
 $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
 $shortcut = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Kinosail.lnk'
 
+trap {
+  Copy-Item -Path (Join-Path $root 'logs\*') -Destination $Evidence -ErrorAction SilentlyContinue
+  Get-Process | Where-Object { $_.Name -like '*kinosail*' } | Format-Table Id, Name, StartTime -AutoSize | Out-String | Set-Content (Join-Path $Evidence 'processes.txt')
+  Get-NetTCPConnection -LocalPort 38127 -ErrorAction SilentlyContinue | Out-String | Set-Content (Join-Path $Evidence 'port.txt')
+  break
+}
 function Step([string]$Text) {
   $line = "$((Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')) $Text"
   Write-Output $line

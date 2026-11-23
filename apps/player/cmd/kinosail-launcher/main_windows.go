@@ -37,10 +37,12 @@ func run() int {
 	if err != nil {
 		return 1
 	}
+	files.note("launcher started")
 	tray := &trayIcon{}
 	server := &supervisor{files: files, status: tray.setStatus}
 	tray.server = server
 	if err := tray.create(files.install); err != nil {
+		files.note("tray icon could not be created")
 		return 1
 	}
 	server.start()
