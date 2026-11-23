@@ -86,7 +86,7 @@ func (api *jellyfinAPI) identityModule() sharedjellyfin.Identity[viewerProfile] 
 		Secure: secureRequest, Public: publicInternetRequest, Current: currentViewer,
 		ProfileID: func(profile viewerProfile) string { return profile.ID }, Project: api.jellyfinUser,
 		AllowLogin: api.auth.allowCredentialLogin, Authenticate: api.auth.profiles.authenticate,
-		RequiresMFA:   func(profile viewerProfile) bool { return profile.TOTPSecret != "" || api.auth.settings.requireMFA() },
+		RequiresMFA:   func(profile viewerProfile) bool { return profile.TOTPSecret != "" || api.auth.mfaRequired(profile) },
 		Compatibility: compatibilityProfile, Audit: setAuditViewer, LoginSucceeded: api.auth.credentialLoginSucceeded,
 		CreateSession: api.auth.profiles.createCompatibilitySession, SignOut: api.auth.profiles.signOut,
 	}

@@ -25,7 +25,7 @@ func AssertOwnerCanManageOwnerProfilesThroughWeb(t *testing.T, fixture LibraryAP
 		t.Fatalf("second Owner settings = %d %q", response.Code, response.Body.String())
 	}
 	web(t, handler, http.MethodPost, "/settings/profiles/permissions", "id="+fixture.StoredProfileID(t, dataDir, "Partner")+"&owner=false", owner)
-	if response := web(t, handler, http.MethodGet, "/settings", "", partner); response.Code != http.StatusForbidden {
+	if response := web(t, handler, http.MethodGet, "/settings", "", partner); response.Code != http.StatusForbidden && (response.Code != http.StatusSeeOther || response.Header().Get("Location") != "/account?mfa=required") {
 		t.Fatalf("demoted Viewer settings = %d %q", response.Code, response.Body.String())
 	}
 }

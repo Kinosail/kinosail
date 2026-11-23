@@ -28,6 +28,8 @@ Install Kinosail on the computer that holds your movies and shows. It runs in th
 2. **Open Kinosail.** On the same computer, go to `https://localhost:38127`. The first time, your browser warns about the certificate. This is normal for a new server. Choose to continue.
 3. **Follow the setup.** Create your account, pick your movie and show folders, and turn on **Watch on your TV and phone**.
 
+On Linux, if a folder does not appear, the `kinosail` user cannot read it. Move your media to `/srv/media`, or let the `kinosail` user read the folder.
+
 Kinosail keeps itself running. It starts again when the computer restarts.
 
 ## All downloads {#all-downloads}

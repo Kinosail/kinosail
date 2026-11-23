@@ -15,25 +15,28 @@ test("fresh install protects the Owner and reaches playback and a new sign-in", 
     await client.send("WebAuthn.addVirtualAuthenticator", { options: { protocol: "ctap2", transport: "internal", hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } });
   }
   await page.goto("/setup");
-  await expect(page.getByRole("heading", { name: "Set up your Server." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Welcome to Kinosail." })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.getByLabel("Name").fill("Owner");
   await page.locator("#new-password").fill("test-first-install-password");
-  await page.getByLabel(/Add extra sign-in protection now/).uncheck();
-  await page.getByRole("button", { name: "Create Owner & continue" }).click();
-  await expect(page.getByRole("heading", { name: "Protect the Owner account" })).toBeVisible();
+  await page.getByRole("button", { name: "Create account & continue" }).click();
+  await expect(page.getByRole("heading", { name: "Protect your account" })).toBeVisible();
   if (browserName === "chromium") {
-    await page.getByRole("button", { name: "Create passkey" }).click();
+    await page.getByRole("button", { name: "Use Touch ID, Windows Hello, or my phone" }).click();
   } else {
     await page.getByRole("button", { name: "Use an authenticator app instead" }).click();
     secret = (await page.locator("code").first().textContent())!;
     await page.getByLabel("Authentication code").fill(totp(secret));
     await page.getByRole("button", { name: "Turn on extra sign-in protection" }).click();
   }
-  await expect(page).toHaveURL("/onboarding/connection");
-  await expect(page.getByRole("heading", { name: "Secure local access" })).toBeVisible();
+  await expect(page).toHaveURL("/onboarding/media");
+  await expect(page.getByRole("heading", { name: "Where are your movies and shows?" })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.getByRole("link", { name: "Continue to household setup" }).click();
+  await page.getByRole("link", { name: /^(Continue|Skip for now)$/ }).click();
+  await expect(page).toHaveURL("/onboarding/connection");
+  await expect(page.getByRole("heading", { name: "Watch on your TV and phone" })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.goto("/onboarding/household");
   await page.getByRole("link", { name: "Continue to optional viewing history" }).click();
   await page.getByRole("link", { name: "Finish and open Library" }).click();
   await expect(page).toHaveURL("/");

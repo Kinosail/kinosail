@@ -43,9 +43,9 @@ func (auth *mfaAuth) register(mux *http.ServeMux) {
 			localizedError(writer, request, err.Error(), status)
 		},
 		WebConfirmSuccess: func(writer http.ResponseWriter, request *http.Request) {
-			next := "/account"
-			if request.FormValue("next") == "/onboarding/connection" {
-				next = "/onboarding/connection"
+			next, ok := onboardingStep(request.FormValue("next"))
+			if !ok {
+				next = "/account"
 			}
 			http.Redirect(writer, request, next, http.StatusSeeOther)
 		},
@@ -105,8 +105,8 @@ func (auth *mfaAuth) webSetup(writer http.ResponseWriter, request *http.Request)
 func (auth *mfaAuth) writeSetup(writer http.ResponseWriter, request *http.Request, enrollment mfaEnrollment) {
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	next := ""
-	if request.URL.Path == "/setup" || request.FormValue("next") == "/onboarding/connection" {
-		next = "/onboarding/connection"
+	if _, step := onboardingStep(request.FormValue("next")); request.URL.Path == "/setup" || step {
+		next = onboardingFirstStep
 	}
 	_ = mfaSetupView.Execute(writer, request, mfaSetupPage{enrollment, next})
 }

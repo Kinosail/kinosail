@@ -17,10 +17,12 @@ var (
 	restartNoticeCSS []byte
 	//go:embed static/player-audio-queue.css
 	playerAudioQueueCSS []byte
+	//go:embed static/player-onboarding.css
+	playerOnboardingCSS []byte
 
 	playerCoreCSS  = append(append([]byte(nil), playerBaseCSS...), playerStageCSS...)
 	playerQueueCSS = append(append([]byte(nil), playerCoreCSS...), playerAudioQueueCSS...)
-	PlayerCSS      = append(append([]byte(nil), playerQueueCSS...), restartNoticeCSS...)
+	PlayerCSS      = append(append(append([]byte(nil), playerQueueCSS...), restartNoticeCSS...), playerOnboardingCSS...)
 	//go:embed static/subtitles-app.css.patch
 	subtitlesCSSPatch []byte
 

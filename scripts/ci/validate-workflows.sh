@@ -9,10 +9,10 @@ workflows="$repo/.github/workflows"
 fail() { printf 'workflow validation failed: %s\n' "$*" >&2; exit 1; }
 require() { grep -Fq -- "$2" "$1" || fail "$(basename "$1") must contain $2"; }
 
-for name in ci deep publish release layout-stability; do
+for name in ci deep publish release layout-stability release-trust; do
   [[ -f "$workflows/$name.yml" ]] || fail "missing $name.yml"
 done
-[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 5 ]] ||
+[[ "$(find "$workflows" -maxdepth 1 -name '*.yml' -type f | wc -l | tr -d ' ')" == 6 ]] ||
   fail 'unexpected workflow file'
 [[ -f "$repo/.github/dependabot.yml" ]] || fail 'missing Dependabot configuration'
 [[ -f "$repo/.github/pull_request_template.md" ]] || fail 'missing pull request template'
@@ -21,6 +21,13 @@ ci="$workflows/ci.yml"
 deep="$workflows/deep.yml"
 publish="$workflows/publish.yml"
 release="$workflows/release.yml"
+trust="$workflows/release-trust.yml"
+require "$trust" 'python3 scripts/ci/update_channel.py player'
+require "$trust" 'release-trust.yml@refs/heads/main'
+require "$trust" 'python3 scripts/ci/release_monitor.py rekor'
+require "$trust" 'python3 scripts/ci/release_monitor.py audit'
+require "$trust" 'repository: sigstore/rekor-monitor'
+require "$release" 'gh workflow run release-trust.yml'
 require "$ci" '  pull_request:'
 require "$ci" '    branches: [main]'
 require "$ci" '  merge_group:'

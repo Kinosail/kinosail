@@ -8,6 +8,8 @@ section: Start here
 
 Kinosail reads media from the configured media mount. Add folders inside that mount in **Settings → Library folders**, then run a scan and check the result in Library.
 
+The easiest way is the setup guide. On **Where are your movies and shows?**, select **Add** next to a suggested folder, or use **Browse folders** to find one. Kinosail shows how many videos each folder has. You can open this step again at `/onboarding/media`.
+
 ## Prepare the media path
 
 Create one or more folders on the host. Use clear folder names, such as `Movies`, `Shows`, `Music`, `Books`, or `Photos`. The host path must exist before you run the installer or start Compose.

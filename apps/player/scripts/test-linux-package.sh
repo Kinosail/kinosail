@@ -68,6 +68,20 @@ runtime_runs() {
 	as_kinosail /usr/lib/kinosail/runtime/fpcalc -version | grep -q 'fpcalc version'
 }
 
+restarts_after_clean_exit() {
+	local before after
+	before="$(systemctl show -p MainPID --value kinosail.service)"
+	systemctl kill -s INT --kill-whom=main kinosail.service
+	for _ in $(seq 1 60); do
+		after="$(systemctl show -p MainPID --value kinosail.service)"
+		if [[ "$after" != 0 && "$after" != "$before" ]] && healthy; then
+			return 0
+		fi
+		sleep 1
+	done
+	return 1
+}
+
 write_marker() { runuser -u kinosail -- sh -c 'echo kept > /var/lib/kinosail/package-test-marker'; }
 marker_kept() { grep -qx kept /var/lib/kinosail/package-test-marker; }
 service_gone() { ! systemctl is-active --quiet kinosail.service && [[ ! -e /usr/lib/kinosail/kinosail ]]; }
@@ -104,6 +118,7 @@ step healthy healthy
 step loopback-only loopback_only
 step data-owned data_owned
 step runtime-runs runtime_runs
+step restarts-after-clean-exit restarts_after_clean_exit
 step write-marker write_marker
 step repair-install install_package
 step healthy-after-repair healthy

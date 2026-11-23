@@ -50,7 +50,7 @@ func TestOwnerCanStartViewingMigrationFromOnboarding(t *testing.T) {
 
 	handler, token := apiServer(t)
 	connection := apiCall(t, handler, token, http.MethodGet, "/onboarding/connection", nil)
-	assertAPIBody(t, connection, http.StatusOK, "Connect the devices you already own.", "Ready on this Server", "Secure local access", "On by default.", "Jellyfin apps", "Trusted HTTPS for phones, TVs, and Jellyfin apps", "Required for Jellyfin apps. Recommended for phones and TVs.", "Jellyfin routes stay unavailable.", "Remote access comes later", `aria-current="step"`, `aria-label="Account complete"`, `id="trusted-https-configuration"`, `href="#trusted-https-configuration"`, `action="/onboarding/jellyfin"`, `action="/onboarding/trusted-https"`, `href="/onboarding/household"`)
+	assertAPIBody(t, connection, http.StatusOK, "Watch on every screen in your home.", "Watch on your TV and phone", `action="/onboarding/devices"`, `name="share" value="true" checked`, "Advanced options", "Ready on this Server", "Secure local access", "On by default.", "Jellyfin apps", "Trusted HTTPS for phones, TVs, and Jellyfin apps", "Required for Jellyfin apps. Recommended for phones and TVs.", "Jellyfin routes stay unavailable.", "Remote access comes later", `aria-current="step"`, `aria-label="Account complete"`, `id="trusted-https-configuration"`, `href="#trusted-https-configuration"`, `action="/onboarding/jellyfin"`, `action="/onboarding/trusted-https"`)
 	if strings.Contains(connection.Body.String(), `href="/setup"`) {
 		t.Fatalf("completed account remained actionable in onboarding progress: %q", connection.Body.String())
 	}

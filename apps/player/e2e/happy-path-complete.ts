@@ -24,7 +24,8 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture
 		await page.getByLabel("Name").fill("Partner");
 		await page.getByLabel("Password", { exact: true }).fill("partner-password");
 		await page.getByRole("button", { name: "Sign in", exact: true }).click();
-		await expect(page.getByRole("heading", { name: "Extra sign-in protection is required" })).toBeVisible();
+		await expect(page).not.toHaveURL(/mfa=required/);
+		await page.goto("/account");
 		await page.getByRole("button", { name: "Set up an authenticator app" }).click();
 		await expect(page.getByRole("heading", { name: "Add extra sign-in protection" })).toBeVisible();
 		const secret = (await page.locator("code").first().textContent())!;

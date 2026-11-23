@@ -1,0 +1,152 @@
+name: Release trust
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+    - cron: "41 * * * *"
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Which release trust job to run
+        type: choice
+        options: [all, channel, monitor]
+        default: all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-trust-${{ github.event.schedule || inputs.task }}
+  cancel-in-progress: false
+
+jobs:
+  channel:
+    name: Sign the Player update channel
+    if: >-
+      github.repository == 'Kinosail/kinosail' && github.ref == 'refs/heads/main' &&
+      (github.event.schedule == '23 */6 * * *' || (github.event_name == 'workflow_dispatch' && inputs.task != 'monitor'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: Kinosail/kinosail
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532
+        with:
+          cosign-release: 'v3.1.3'
+      - id: channel
+        name: Choose the newest signed release
+        run: python3 scripts/ci/update_channel.py player "$RUNNER_TEMP/channel.json"
+      - name: Verify the announced release signature
+        env:
+          LATEST: ${{ steps.channel.outputs.latest }}
+        run: |
+          [[ "$LATEST" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          release="$RUNNER_TEMP/release"
+          mkdir "$release"
+          gh release download "player-$LATEST" --dir "$release" --pattern 'kinosail-release.json' --pattern 'kinosail-release.json.sigstore.json'
+          cosign verify-blob --bundle "$release/kinosail-release.json.sigstore.json" \
+            --certificate-identity "https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/player-$LATEST" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com "$release/kinosail-release.json"
+          jq -e --arg version "$LATEST" '.version == $version' "$release/kinosail-release.json" >/dev/null
+      - name: Sign the channel statement
+        run: |
+          cd "$RUNNER_TEMP"
+          cosign sign-blob --yes --bundle channel.json.sigstore.json channel.json
+          cosign verify-blob --bundle channel.json.sigstore.json \
+            --certificate-identity https://github.com/Kinosail/kinosail/.github/workflows/release-trust.yml@refs/heads/main \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com channel.json
+      - name: Publish the signed channel
+        run: |
+          if ! gh release view player-channel >/dev/null 2>&1; then
+            gh release create player-channel --target "$GITHUB_SHA" --prerelease --latest=false \
+              --title "Kinosail Player update channel" \
+              --notes "Kinosail updates itself from this signed channel. It names the newest official version and any revoked versions. Download Kinosail from https://kinosail.com/download/."
+          fi
+          gh release upload player-channel "$RUNNER_TEMP/channel.json" "$RUNNER_TEMP/channel.json.sigstore.json" --clobber
+
+  monitor:
+    name: Check signatures, tags, and the update channel
+    needs: channel
+    if: >-
+      always() && github.repository == 'Kinosail/kinosail' && github.ref == 'refs/heads/main' &&
+      (github.event.schedule == '41 * * * *' || (github.event_name == 'workflow_dispatch' && inputs.task != 'channel'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: Kinosail/kinosail
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: sigstore/rekor-monitor
+          ref: fbc5fc49d94db706999e29ac53acac8ec8e1fdea
+          path: rekor-monitor
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: rekor-monitor/go.mod
+          cache-dependency-path: rekor-monitor/go.sum
+          cache-scope: rekor-monitor
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532
+        with:
+          cosign-release: 'v3.1.3'
+      - name: Restore the last checked Rekor position
+        run: |
+          previous="$(gh run list --workflow release-trust.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+          if [[ "$previous" =~ ^[0-9]+$ ]]; then
+            gh run download "$previous" --name rekor-checkpoint --dir "$RUNNER_TEMP/checkpoint" || true
+          fi
+          mkdir -p "$RUNNER_TEMP/checkpoint"
+      - name: Search Rekor for Kinosail signing identities
+        working-directory: rekor-monitor
+        env:
+          CONFIG: |
+            monitoredValues:
+              certIdentities:
+                - certSubject: ^https://github\.com/Kinosail/kinosail/.*$
+                  issuers:
+                    - ^https://token\.actions\.githubusercontent\.com$
+            outputIdentities: ${{ runner.temp }}/identities.jsonl
+            outputIdentitiesFormat: json
+        run: |
+          go run ./cmd/rekor_monitor --once=true --file "$RUNNER_TEMP/checkpoint/checkpoint_log.txt" \
+            --user-agent "Kinosail-release-monitor" --config "$CONFIG"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: rekor-checkpoint
+          path: ${{ runner.temp }}/checkpoint/checkpoint_log.txt
+          retention-days: 14
+          if-no-files-found: error
+      - name: Compare signatures with official releases
+        run: python3 scripts/ci/release_monitor.py rekor "$RUNNER_TEMP/identities.jsonl" | tee -a "$RUNNER_TEMP/problems.txt"
+      - name: Audit release tags and the update channel
+        if: ${{ !cancelled() }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/channel"
+          python3 scripts/ci/release_monitor.py audit "$RUNNER_TEMP/channel" | tee -a "$RUNNER_TEMP/problems.txt"
+      - name: Open or update the security alert
+        if: failure()
+        run: |
+          title="Release monitor alert"
+          body="$(printf 'The release monitor found a problem in [run %s](%s/%s/actions/runs/%s).\n\n' "$GITHUB_RUN_ID" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"; head -c 60000 "$RUNNER_TEMP/problems.txt" 2>/dev/null || true)"
+          existing="$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')"
+          if [[ "$existing" =~ ^[0-9]+$ ]]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi

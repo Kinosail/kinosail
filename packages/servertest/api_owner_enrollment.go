@@ -17,7 +17,7 @@ func (fixture APIParityFixture) OwnerCanCreateAnotherOwnerThroughAPI(t *testing.
 	}
 	MustJSON(t, login, &partner)
 	AssertAPIBody(t, APICall(t, handler, partner.Token, http.MethodGet, "/api/v1/me", nil), http.StatusOK, `"owner":true`)
-	AssertAPIBody(t, APICall(t, handler, partner.Token, http.MethodGet, "/api/v1/settings", nil), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+	fixture.assertUnsecuredOwner(t, handler, partner.Token)
 	enrollment := APICall(t, handler, partner.Token, http.MethodPost, "/api/v1/me/mfa/setup", map[string]any{})
 	var factor struct{ Secret string }
 	MustJSON(t, enrollment, &factor)
@@ -41,7 +41,7 @@ func (fixture APIParityFixture) OwnerCanChangeProfileTypeThroughAPI(t *testing.T
 	AssertAPICalls(t, handler, token, []APITestCall{
 		{Method: http.MethodPut, Path: "/api/v1/profiles/" + profile.ID, Body: map[string]any{"owner": true}, Status: http.StatusOK},
 	})
-	AssertAPIBody(t, APICall(t, handler, partner.Token, http.MethodGet, "/api/v1/settings", nil), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+	fixture.assertUnsecuredOwner(t, handler, partner.Token)
 	enrollment := APICall(t, handler, partner.Token, http.MethodPost, "/api/v1/me/mfa/setup", map[string]any{})
 	var factor struct{ Secret string }
 	MustJSON(t, enrollment, &factor)
@@ -55,4 +55,14 @@ func (fixture APIParityFixture) OwnerCanChangeProfileTypeThroughAPI(t *testing.T
 	if settings := APICall(t, handler, partner.Token, http.MethodGet, "/api/v1/settings", nil); settings.Code != http.StatusForbidden {
 		t.Fatalf("demoted Viewer settings = %d %q", settings.Code, settings.Body.String())
 	}
+}
+
+func (fixture APIParityFixture) assertUnsecuredOwner(t *testing.T, handler http.Handler, token string) {
+	t.Helper()
+	if !fixture.OptionalOwnerMFA {
+		AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/settings", nil), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+		return
+	}
+	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/settings", nil), http.StatusOK, `"name":"Kinosail"`)
+	AssertAPIBody(t, APICall(t, handler, token, http.MethodPost, "/api/v1/api-keys", map[string]any{"name": "Installer"}), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
 }

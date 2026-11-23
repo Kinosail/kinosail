@@ -54,7 +54,12 @@ func OwnerCanBootstrapThroughAPI(t *testing.T, fixture APIParityFixture) {
 	if setup.Code != http.StatusCreated || session.Token == "" {
 		t.Fatalf("setup = %d %q", setup.Code, setup.Body.String())
 	}
-	AssertAPIBody(t, APICall(t, handler, session.Token, http.MethodGet, "/api/v1/settings", nil), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+	if fixture.OptionalOwnerMFA {
+		AssertAPIBody(t, APICall(t, handler, session.Token, http.MethodGet, "/api/v1/settings", nil), http.StatusOK, `"name":"Kinosail"`)
+		AssertAPIBody(t, APICall(t, handler, session.Token, http.MethodPost, "/api/v1/api-keys", map[string]any{"name": "Installer"}), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+	} else {
+		AssertAPIBody(t, APICall(t, handler, session.Token, http.MethodGet, "/api/v1/settings", nil), http.StatusForbidden, `"mfaEnrollmentRequired":true`)
+	}
 	AssertAPIBody(t, APICall(t, handler, session.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": fixture.TOTP(t, session.TOTP.Secret, time.Now())}), http.StatusOK, `"enabled":true`)
 	AssertAPIBody(t, APICall(t, handler, session.Token, http.MethodGet, "/api/v1/settings", nil), http.StatusOK, `"name":"Kinosail"`)
 	conflict := APICall(t, handler, "", http.MethodPost, "/api/v1/setup", map[string]any{"name": "Other", "password": "other-password"})

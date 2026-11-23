@@ -18,5 +18,5 @@ if [ -d /run/systemd/system ]; then
   systemctl enable kinosail.service >/dev/null 2>&1
   systemctl restart kinosail.service
 fi
-printf '\nKinosail is running. Open https://localhost:38127 on this computer to create your Owner Profile.\n'
-printf 'Media folder: /srv/media (change it in /etc/kinosail/kinosail.env).\n\n'
+printf '\nKinosail is running. Open https://localhost:38127 on this computer to finish setup.\n'
+printf 'The setup wizard helps you pick your movie folders and share Kinosail with your TV and phone.\n\n'

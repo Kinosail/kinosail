@@ -31,7 +31,7 @@ func TestPasskeyCeremoniesAreLocalAndServerSide(t *testing.T) {
 	request.Host = "localhost:8080"
 	request.AddCookie(owner)
 	handler.ServeHTTP(prompt, request)
-	if prompt.Code != http.StatusOK || !strings.Contains(prompt.Body.String(), "Protect the Owner account") || strings.Contains(prompt.Body.String(), "Not now") {
+	if prompt.Code != http.StatusOK || !strings.Contains(prompt.Body.String(), "Protect your account") || !strings.Contains(prompt.Body.String(), "Skip for now") {
 		t.Fatalf("prompt = %d %q", prompt.Code, prompt.Body.String())
 	}
 
