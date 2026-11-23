@@ -1,11 +1,19 @@
 ---
 title: Installation overview
-description: Start with Docker, then set up your web Player and media library.
+description: Download Kinosail or use Docker, then set up your web Player and media library.
 section: Start here
 ---
 # Installation overview
 
-**[Install with Docker]({{ '/quickstart/' | relative_url }})** is the recommended path for running the web Player. Use the prebuilt `ghcr.io/kinosail/kinosail-player:latest` container with the current deployment files. Git downloads those files; Go and a local image build are not required.
+Choose one way to install Kinosail:
+
+| Your setup | Use |
+| --- | --- |
+| A Linux computer that stays on | **[Download Kinosail]({{ '/download/' | relative_url }})**. It installs like a normal app, runs in the background, and starts by itself. |
+| A Windows PC or a Mac | Downloads are coming soon. Until then, [install with Docker Desktop]({{ '/quickstart/' | relative_url }}). |
+| A NAS, Unraid, Proxmox, or Docker host | [Install with Docker]({{ '/quickstart/' | relative_url }}) or [install on a NAS or Proxmox]({{ '/getting-started/platforms/' | relative_url }}). |
+
+For Docker, use the prebuilt `ghcr.io/kinosail/kinosail-player:latest` container with the current deployment files. Git downloads those files; Go and a local image build are not required.
 
 For Synology, TrueNAS, QNAP, CasaOS, Portainer, Unraid, or Proxmox VE, follow [Install on a NAS or Proxmox]({{ '/getting-started/platforms/' | relative_url }}). It links to importable Player and Subtitles files and explains the required media path.
 
@@ -13,7 +21,7 @@ The Docker guide installs the continuous container channel. You do not need a nu
 
 ## Your first successful setup
 
-1. [Install with Docker]({{ '/quickstart/' | relative_url }}).
+1. [Download Kinosail]({{ '/download/' | relative_url }}) or [install with Docker]({{ '/quickstart/' | relative_url }}).
 2. [Create and secure your Owner]({{ '/getting-started/first-setup/' | relative_url }}).
 3. [Add your media]({{ '/getting-started/add-media/' | relative_url }}).
 4. [Play an item in your browser]({{ '/user-guide/playback/' | relative_url }}).
