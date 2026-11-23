@@ -70,11 +70,17 @@
       return;
     }
     if (system === 'windows') {
-      say('Kinosail for Windows is coming soon', 'Until then, you can run Kinosail with Docker Desktop.');
+      const link = fileLink('windows-x64-msi');
+      if (!link) return;
+      say('Kinosail for Windows', 'Free. Runs in the background and starts by itself.');
+      offer('Download for Windows', link, 'For Windows 10 and 11. Windows warns the first time. See "The first time you open Kinosail" below.');
       return;
     }
     if (system === 'macos') {
-      say('Kinosail for Mac is coming soon', 'Until then, you can run Kinosail with Docker Desktop.');
+      const link = fileLink('macos-dmg');
+      if (!link) return;
+      say('Kinosail for Mac', 'Free. Runs in the background and starts by itself.');
+      offer('Download for Mac', link, 'For macOS 13 or newer, on Apple silicon or Intel. macOS warns the first time. See "The first time you open Kinosail" below.');
       return;
     }
     if (system !== 'linux') {
