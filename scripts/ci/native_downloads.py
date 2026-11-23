@@ -6,6 +6,8 @@ import re
 import sys
 
 DOWNLOADS = (
+    ("Windows", "x64", "msi", "Windows 10 and 11"),
+    ("macOS", "", "dmg", "macOS 13 Ventura or newer"),
     ("Linux", "x64", "deb", "Debian, Ubuntu, Linux Mint, Pop!_OS, Raspberry Pi OS (64-bit)"),
     ("Linux", "arm64", "deb", "Debian, Ubuntu, Raspberry Pi OS on ARM (64-bit)"),
     ("Linux", "x64", "rpm", "Fedora, RHEL, Rocky, AlmaLinux, openSUSE"),
@@ -16,7 +18,7 @@ REPOSITORY = "https://github.com/Kinosail/kinosail"
 
 
 def names():
-    return [f"Kinosail-{system}-{arch}.{extension}" for system, arch, extension, _ in DOWNLOADS]
+    return [f"Kinosail-{system}{'-' + arch if arch else ''}.{extension}" for system, arch, extension, _ in DOWNLOADS]
 
 
 def verify(directory):
@@ -36,7 +38,7 @@ def notes(app, version):
     if app != "player":
         return f"Kinosail Subtitles {version}. Install it with the Docker instructions in the README.\n"
     tag = f"player-{version}"
-    chips = {"x64": "Intel or AMD", "arm64": "ARM (Raspberry Pi)"}
+    chips = {"x64": "Intel or AMD", "arm64": "ARM (Raspberry Pi)", "": "Apple silicon or Intel"}
     rows = "\n".join(
         f"| {distros} | {chips[arch]} | [Download .{extension}]({REPOSITORY}/releases/download/{tag}/{name}) |"
         for (_, arch, extension, distros), name in zip(DOWNLOADS, names()))
@@ -44,11 +46,12 @@ def notes(app, version):
             f"**[Go to {SITE.removeprefix('https://').rstrip('/')}]({SITE}) and press Download.** The page picks the right file for your computer.\n\n"
             "On Linux, you can also paste this in a terminal. It picks the right file and checks it before it installs:\n\n"
             "```sh\ncurl -fsSL https://kinosail.com/install.sh | sh\n```\n\n"
-            "Windows and Mac downloads are coming soon.\n\n"
+            "Windows and Mac warn the first time you open Kinosail, because the app is not signed yet. "
+            f"[See how to open it]({SITE}#first-open).\n\n"
             "<details><summary>All files in this release</summary>\n\n"
-            "| Your Linux | Chip | File |\n| --- | --- | --- |\n"
+            "| Your computer | Chip | File |\n| --- | --- | --- |\n"
             f"{rows}\n\n"
-            "Run `uname -m` to check your chip. `x86_64` means Intel or AMD. `aarch64` means ARM.\n\n"
+            "On Linux, run `uname -m` to check your chip. `x86_64` means Intel or AMD. `aarch64` means ARM.\n\n"
             "</details>\n\n"
             "Every file is listed in `SHA256SUMS`, which has a Sigstore signature from the Kinosail release workflow. "
             f"Docker users can keep using `ghcr.io/kinosail/kinosail-player:{version.removeprefix('v')}`.\n\n")

@@ -158,14 +158,78 @@ jobs:
           path: ${{ runner.temp }}/native-evidence
           if-no-files-found: ignore
 
+  desktop:
+    name: Build and install-test the ${{ matrix.system }} installer
+    needs: preflight
+    if: needs.preflight.outputs.app == 'player'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: macos
+            runner: xcode-27
+          - system: windows
+            runner: windows-2025
+    defaults:
+      run:
+        shell: bash
+    env:
+      APP_VERSION: ${{ needs.preflight.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - if: matrix.system == 'macos'
+        uses: ./.github/actions/setup-go
+        with:
+          go-version-file: apps/player/go.mod
+          cache-dependency-path: "**/go.sum"
+          cache-scope: player
+      - if: matrix.system == 'macos'
+        run: |
+          apps/player/scripts/package-macos.sh "$APP_VERSION" "$RUNNER_TEMP/native-packages"
+          apps/player/scripts/test-macos-app.sh "$RUNNER_TEMP/native-packages/Kinosail-macOS.dmg" "$RUNNER_TEMP/native-evidence"
+      - if: matrix.system == 'windows'
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache: false
+      - if: matrix.system == 'windows'
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          export PATH="$HOME/.dotnet/tools:$PATH"
+          wix extension add --global WixToolset.Util.wixext/5.0.2
+          temp="$(cygpath -u "$RUNNER_TEMP")"
+          apps/player/scripts/stage-windows.sh "$APP_VERSION" "$temp/windows-stage"
+          apps/player/scripts/package-windows.sh "$temp/windows-stage" "$temp/native-packages"
+      - if: matrix.system == 'windows'
+        shell: pwsh
+        run: apps/player/scripts/test-windows-installer.ps1 -Msi "$env:RUNNER_TEMP\native-packages\Kinosail-Windows-x64.msi" -Evidence "$env:RUNNER_TEMP\native-evidence"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-packages-${{ matrix.system }}
+          path: ${{ runner.temp }}/native-packages
+          if-no-files-found: error
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-evidence-${{ matrix.system }}
+          path: ${{ runner.temp }}/native-evidence
+          if-no-files-found: ignore
+
   release:
     name: Publish signed ${{ needs.preflight.outputs.app }} version
-    needs: [preflight, images, native]
+    needs: [preflight, images, native, desktop]
     if: >-
       always() &&
       needs.preflight.result == 'success' &&
       needs.images.result == 'success' &&
-      (needs.native.result == 'success' || (needs.native.result == 'skipped' && needs.preflight.outputs.app != 'player'))
+      ((needs.native.result == 'success' && needs.desktop.result == 'success') ||
+       (needs.native.result == 'skipped' && needs.desktop.result == 'skipped' && needs.preflight.outputs.app != 'player'))
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
