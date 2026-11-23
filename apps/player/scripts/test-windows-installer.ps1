@@ -39,7 +39,8 @@ function Test-Healthy {
   } catch { $script:healthError = $_.Exception.ToString(); $false }
 }
 function Wait-Until([scriptblock]$Condition, [string]$Failure) {
-  for ($i = 0; $i -lt 120; $i++) {
+  $deadline = (Get-Date).AddSeconds(90)
+  while ((Get-Date) -lt $deadline) {
     if (& $Condition) { return }
     Start-Sleep -Milliseconds 500
   }
