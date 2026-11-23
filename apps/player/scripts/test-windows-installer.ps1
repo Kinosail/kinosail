@@ -16,6 +16,12 @@ trap {
   Copy-Item -Path (Join-Path $root 'logs\*') -Destination $Evidence -ErrorAction SilentlyContinue
   Get-Process | Where-Object { $_.Name -like '*kinosail*' } | Format-Table Id, Name, StartTime -AutoSize | Out-String | Set-Content (Join-Path $Evidence 'processes.txt')
   Get-NetTCPConnection -LocalPort 38127 -ErrorAction SilentlyContinue | Out-String | Set-Content (Join-Path $Evidence 'port.txt')
+  Get-Process | Where-Object { $_.Name -like '*kinosail*' } | Format-Table Id, Name, CPU, Threads, Handles -AutoSize | Out-String | Add-Content (Join-Path $Evidence 'processes.txt')
+  "$script:healthError" | Set-Content (Join-Path $Evidence 'health-error.txt')
+  curl.exe --insecure --verbose --max-time 5 https://127.0.0.1:38127/healthz *>&1 | Out-String | Set-Content (Join-Path $Evidence 'health-probe.txt')
+  $env:KINOSAIL_DATA_DIR = Join-Path $root 'data'
+  & (Join-Path $programs 'server\kinosail-server.exe') healthcheck *>&1 | Out-String | Set-Content (Join-Path $Evidence 'healthcheck.txt')
+  "exit $LASTEXITCODE" | Add-Content (Join-Path $Evidence 'healthcheck.txt')
   break
 }
 function Step([string]$Text) {
@@ -26,7 +32,7 @@ function Step([string]$Text) {
 function Test-Healthy {
   try {
     (Invoke-WebRequest -Uri 'https://127.0.0.1:38127/healthz' -SkipCertificateCheck -UseBasicParsing -TimeoutSec 5).StatusCode -eq 200
-  } catch { $false }
+  } catch { $script:healthError = $_.Exception.ToString(); $false }
 }
 function Wait-Until([scriptblock]$Condition, [string]$Failure) {
   for ($i = 0; $i -lt 120; $i++) {

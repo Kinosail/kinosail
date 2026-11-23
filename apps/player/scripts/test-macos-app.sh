@@ -14,7 +14,15 @@ work="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/kinosail-macos-test.XXXXXX")" && pwd -P
 launcher=""
 cleanup() {
 	if [[ ! -f "$evidence/run.json" ]]; then
-		pkill -QUIT -f "$work/Applications/Kinosail.app/Contents/Helpers/kinosail$" 2>/dev/null && sleep 2
+		curl --insecure --verbose --max-time 5 https://127.0.0.1:38127/healthz >"$evidence/health-probe.txt" 2>&1 || true
+		for pid in $(pgrep -f 'Contents/Helpers/kinosail' || true); do
+			ps -o pid,ppid,stat,%cpu,etime,command -p "$pid" >>"$evidence/server-state.txt" 2>&1 || true
+			lsof -n -p "$pid" >"$evidence/server-files-$pid.txt" 2>&1 || true
+			sample "$pid" 2 -file "$evidence/server-sample-$pid.txt" >/dev/null 2>&1 || true
+			kill -QUIT "$pid" 2>/dev/null || true
+		done
+		log show --last 5m --style compact --predicate 'process == "tccd" OR process == "syspolicyd" OR process == "amfid"' 2>&1 | tail -n 400 >"$evidence/system.log" || true
+		sleep 2
 	fi
 	cp "$HOME/Library/Logs/Kinosail/kinosail.log" "$evidence/kinosail.log" 2>/dev/null || true
 	pgrep -fl Kinosail >"$evidence/processes.txt" 2>&1 || true
