@@ -136,7 +136,7 @@ final class Launcher: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func watchTermination() {
         signal(SIGTERM, SIG_IGN)
         let source = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .main)
-        source.setEventHandler { NSApp.terminate(nil) }
+        source.setEventHandler { NSApp.perform(#selector(NSApplication.terminate(_:)), with: nil, afterDelay: 0) }
         source.resume()
         termination = source
     }
