@@ -25,7 +25,7 @@ function Step([string]$Text) {
 }
 function Test-Healthy {
   try {
-    (Invoke-WebRequest -Uri 'https://localhost:38127/healthz' -SkipCertificateCheck -UseBasicParsing -TimeoutSec 2).StatusCode -eq 200
+    (Invoke-WebRequest -Uri 'https://127.0.0.1:38127/healthz' -SkipCertificateCheck -UseBasicParsing -TimeoutSec 5).StatusCode -eq 200
   } catch { $false }
 }
 function Wait-Until([scriptblock]$Condition, [string]$Failure) {

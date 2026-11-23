@@ -10,9 +10,12 @@ fi
 [[ "$(uname -s)" == Darwin && "${CI:-}" == true ]] || { printf 'run on a disposable macOS CI host\n' >&2; exit 2; }
 mkdir -p "$evidence"
 evidence="$(cd "$evidence" && pwd)"
-work="$(mktemp -d "${TMPDIR:-/tmp}/kinosail-macos-test.XXXXXX")"
+work="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/kinosail-macos-test.XXXXXX")" && pwd -P)"
 launcher=""
 cleanup() {
+	if [[ ! -f "$evidence/run.json" ]]; then
+		pkill -QUIT -f "$work/Applications/Kinosail.app/Contents/Helpers/kinosail$" 2>/dev/null && sleep 2
+	fi
 	cp "$HOME/Library/Logs/Kinosail/kinosail.log" "$evidence/kinosail.log" 2>/dev/null || true
 	pgrep -fl Kinosail >"$evidence/processes.txt" 2>&1 || true
 	[[ -z "$launcher" ]] || kill -KILL "$launcher" 2>/dev/null || true
@@ -22,7 +25,7 @@ cleanup() {
 }
 trap cleanup EXIT
 step() { printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$1" | tee -a "$evidence/steps.log"; }
-healthy() { curl --insecure --silent --fail --max-time 2 https://localhost:38127/healthz >/dev/null; }
+healthy() { curl --insecure --silent --fail --max-time 5 https://127.0.0.1:38127/healthz >/dev/null; }
 wait_healthy() {
 	for _ in $(seq 1 120); do healthy && return 0; sleep 0.5; done
 	return 1
