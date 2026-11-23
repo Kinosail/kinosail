@@ -14,6 +14,7 @@ import (
 const (
 	wmDestroy     = 0x0002
 	wmClose       = 0x0010
+	wmEndSession  = 0x0016
 	wmLButtonUp   = 0x0202
 	wmRButtonUp   = 0x0205
 	wmTray        = 0x8001
@@ -180,7 +181,7 @@ func (tray *trayIcon) procedure(window, kind, wParam, lParam uintptr) uintptr {
 		openKinosail()
 	case kind == wmTray && lParam == wmRButtonUp:
 		tray.showMenu()
-	case kind == wmClose:
+	case kind == wmClose, kind == wmEndSession && wParam != 0:
 		tray.quit()
 	case kind == wmDestroy:
 		_, _, _ = postQuit.Call(0)
