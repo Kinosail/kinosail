@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"log/slog"
 	"net/url"
+	"path/filepath"
 )
 
 const readerConnections = 2
@@ -20,7 +21,7 @@ func connectionDSN(path string, pragmas []string, txlock string) string {
 	if txlock != "" {
 		query.Set("_txlock", txlock)
 	}
-	return (&url.URL{Scheme: "file", Path: path, RawQuery: query.Encode()}).String()
+	return "file:" + (&url.URL{Path: filepath.ToSlash(path)}).EscapedPath() + "?" + query.Encode()
 }
 
 func openDatabase(path string, keepOpen bool, dependencies dependencies) (*sql.DB, error) {

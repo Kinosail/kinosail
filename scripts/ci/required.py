@@ -9,7 +9,7 @@ from affected import FLAGS
 from plan import expected
 
 SCOPES = {"repository": ("repository", "docs"),
-          "app": ("go", "e2e", "proofs", "arm", "tools", "client", "android"),
+          "app": ("go", "e2e", "proofs", "arm", "tools", "desktop", "client", "android"),
           "security": ("security", "codeql-compiled")}
 
 

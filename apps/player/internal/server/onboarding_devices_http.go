@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/configuration"
+	"github.com/MikeO7/kinosail/packages/appcli"
 )
 
 const onboardingLANHTML = `<section class="wide onboarding-first-value" id="watch-everywhere" aria-labelledby="watch-everywhere-title"><h2 id="watch-everywhere-title">Watch on your TV and phone</h2>{{if .LAN.Managed}}<p>{{if .LAN.Shared}}Kinosail is shared with devices on your home network.{{else}}Kinosail only works on this computer.{{end}} Your installation controls this setting.</p>{{if .LAN.Addresses}}<p>On another device, open:</p><ul class="lan-addresses">{{range .LAN.Addresses}}<li><code>{{.}}</code></li>{{end}}</ul>{{end}}<p class="onboarding-actions"><a class="button" href="/onboarding/household">Continue</a></p>{{else}}<form action="/onboarding/devices" method="post"><label class="wizard-check"><input type="checkbox" name="share" value="true" {{if or .LAN.Shared (not .LAN.Chosen)}}checked{{end}}><span><strong>Share Kinosail with devices on my home network</strong><small>Your TVs, phones, and tablets on the same Wi-Fi can play your library. People still need a profile and password. Nothing is shared outside your home.</small></span></label><button>Continue</button></form>{{if .LAN.Shared}}{{if .LAN.Addresses}}<p>On another device, open:</p><ul class="lan-addresses">{{range .LAN.Addresses}}<li><code>{{.}}</code></li>{{end}}</ul><p>The first time, your browser warns about the certificate. This is expected for a new server.</p>{{end}}{{end}}{{end}}</section>`
@@ -70,15 +71,9 @@ func supervisedRestart() bool {
 	if supervised, _ := strconv.ParseBool(os.Getenv("KINOSAIL_SUPERVISED")); !supervised {
 		return false
 	}
-	process, err := os.FindProcess(os.Getpid())
-	if err != nil {
-		return false
-	}
 	time.AfterFunc(time.Second, func() {
 		slog.Info("restarting to apply settings", "operation", "restart", "outcome", "requested")
-		if err := process.Signal(os.Interrupt); err != nil {
-			slog.Warn("restart request failed", "operation", "restart", "outcome", "failed")
-		}
+		appcli.RequestShutdown()
 	})
 	return true
 }
