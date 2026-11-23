@@ -39,7 +39,8 @@ function Test-Healthy {
   } catch { $script:healthError = $_.Exception.ToString(); $false }
 }
 function Wait-Until([scriptblock]$Condition, [string]$Failure) {
-  for ($i = 0; $i -lt 120; $i++) {
+  $deadline = (Get-Date).AddSeconds(90)
+  while ((Get-Date) -lt $deadline) {
     if (& $Condition) { return }
     Start-Sleep -Milliseconds 500
   }
@@ -48,7 +49,9 @@ function Wait-Until([scriptblock]$Condition, [string]$Failure) {
 function Server { Get-Process -Name 'kinosail-server' -ErrorAction SilentlyContinue }
 function Launcher { Get-Process -Name 'Kinosail' -ErrorAction SilentlyContinue }
 function Invoke-Msi([string[]]$Arguments, [string]$Log) {
-  $process = Start-Process -FilePath 'msiexec.exe' -ArgumentList ($Arguments + @('/qn', '/l*v', (Join-Path $Evidence $Log))) -Wait -PassThru
+  $process = Start-Process -FilePath 'msiexec.exe' -ArgumentList ($Arguments + @('/qn', '/l*v', (Join-Path $Evidence $Log))) -PassThru
+  $null = $process.Handle
+  if (-not $process.WaitForExit(300000)) { throw "msiexec $($Arguments[0]) did not finish within 5 minutes" }
   if ($process.ExitCode -ne 0) { throw "msiexec $($Arguments[0]) failed with exit code $($process.ExitCode)" }
 }
 
