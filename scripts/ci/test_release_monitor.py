@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 
-from release_monitor import WORKFLOWS, audit_tags, channel_problems, found_subjects, unexpected_identities
+from release_monitor import WORKFLOWS, audit_tags, channel_problems, found_subjects, newer_release, unexpected_identities
 
 
 def entry(subject, index=7):
@@ -32,8 +32,11 @@ class ReleaseMonitorTests(unittest.TestCase):
             found_subjects("[]")
 
     def test_tags_must_be_on_main_and_published(self):
-        self.assertEqual(audit_tags(["player-v0.1.0"], lambda tag: True, lambda tag: True, lambda tag: False), [])
-        self.assertEqual(audit_tags(["player-v0.2.0"], lambda tag: True, lambda tag: False, lambda tag: True), [])
+        never = lambda tag: False
+        self.assertEqual(audit_tags(["player-v0.1.0"], lambda tag: True, lambda tag: True, never, never), [])
+        self.assertEqual(audit_tags(["player-v0.2.0"], lambda tag: True, lambda tag: False, lambda tag: True, never), [])
+        self.assertEqual(audit_tags(["player-v0.2.0"], lambda tag: True, never, never, lambda tag: True), [])
+        self.assertIn("not on main", audit_tags(["player-v0.2.0"], never, never, never, lambda tag: True)[0])
         cases = {
             "player-v0.2.0": (lambda tag: False, lambda tag: True, lambda tag: False, "not on main"),
             "player-v0.3.0": (lambda tag: True, lambda tag: False, lambda tag: False, "no published release"),
@@ -41,9 +44,20 @@ class ReleaseMonitorTests(unittest.TestCase):
         }
         for tag, (on_main, released, running, message) in cases.items():
             with self.subTest(tag=tag):
-                problems = audit_tags([tag], on_main, released, running)
+                problems = audit_tags([tag], on_main, released, running, lambda tag: False)
                 self.assertEqual(len(problems), 1)
                 self.assertIn(message, problems[0])
+
+    def test_failed_release_is_resolved_only_by_a_newer_release_of_the_same_app(self):
+        published = {"player-v0.2.2", "player-v0.9.0", "subtitles-v1.0.0"}
+        self.assertTrue(newer_release("player-v0.2.0", published))
+        self.assertTrue(newer_release("player-v0.2.1", {"player-v0.2.2"}))
+        self.assertTrue(newer_release("player-v0.8.5", published))
+        self.assertTrue(newer_release("player-v0.9.0", {"player-v0.10.0"}))
+        for tag in ("player-v0.10.0", "player-v1.0.0", "subtitles-v1.0.1", "player-v0.9.0", "player-latest"):
+            with self.subTest(tag=tag):
+                self.assertFalse(newer_release(tag, published))
+        self.assertFalse(newer_release("subtitles-v0.1.0", {"player-v9.0.0"}))
 
     def test_channel_must_stay_fresh(self):
         now = datetime.datetime(2026, 11, 22, 12, tzinfo=datetime.timezone.utc)
