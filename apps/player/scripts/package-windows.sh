@@ -18,5 +18,8 @@ output="$destination/Kinosail-Windows-x64.msi"
 native() {
 	if command -v cygpath >/dev/null; then cygpath -w "$1"; else printf '%s' "$1"; fi
 }
+build="$(mktemp -d "${TMPDIR:-/tmp}/kinosail-windows-package.XXXXXX")"
+trap 'rm -rf -- "$build"' EXIT
 wix build -arch x64 -ext WixToolset.Util.wixext -d "Version=${version#v}" -d "Stage=$(native "$stage")" \
-	-o "$(native "$output")" "$(native "$stage/Kinosail.wxs")"
+	-o "$(native "$build/Kinosail-Windows-x64.msi")" "$(native "$stage/Kinosail.wxs")"
+mv "$build/Kinosail-Windows-x64.msi" "$output"

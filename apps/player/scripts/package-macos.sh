@@ -48,6 +48,11 @@ done
 codesign --force --sign - --timestamp=none "$app"
 codesign --verify --strict --deep "$app"
 ln -s /Applications "$stage/image/Applications"
-hdiutil create -quiet -volname Kinosail -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder "$stage/image" "$stage/Kinosail.dmg"
+for attempt in 1 2 3; do
+	hdiutil create -volname Kinosail -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder "$stage/image" "$stage/Kinosail.dmg" && break
+	rm -f "$stage/Kinosail.dmg"
+	[[ $attempt -lt 3 ]] || { printf 'hdiutil could not create the disk image\n' >&2; exit 1; }
+	sleep 5
+done
 hdiutil verify -quiet "$stage/Kinosail.dmg"
 mv "$stage/Kinosail.dmg" "$output"
