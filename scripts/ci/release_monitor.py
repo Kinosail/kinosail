@@ -38,14 +38,23 @@ def unexpected_identities(subjects, official_tag):
     return problems
 
 
-def audit_tags(tags, on_main, released, release_running):
+def newer_release(tag, published):
+    match = TAG.fullmatch(tag)
+    if not match:
+        return False
+    version = tuple(map(int, match.groups()[1:]))
+    return any(other and other[1] == match[1] and tuple(map(int, other.groups()[1:])) > version
+               for other in map(TAG.fullmatch, published))
+
+
+def audit_tags(tags, on_main, released, release_running, superseded):
     problems = []
     for tag in tags:
         if not TAG.fullmatch(tag):
             problems.append(f"Unexpected release-like tag {tag[:80]}")
         elif not on_main(tag):
             problems.append(f"Release tag {tag} points to a commit that is not on main")
-        elif not released(tag) and not release_running(tag):
+        elif not released(tag) and not release_running(tag) and not superseded(tag):
             problems.append(f"Release tag {tag} has no published release and no running release workflow")
     return problems
 
@@ -78,9 +87,18 @@ def published_tags():
     return {release["tagName"] for release in json.loads(result.stdout)}
 
 
+def release_runs(tag):
+    result = run("gh", "run", "list", "--repo", "Kinosail/kinosail", "--workflow", "release.yml", "--branch", tag, "--json", "status,conclusion")
+    return json.loads(result.stdout or "[]") if result.returncode == 0 else None
+
+
 def release_running(tag):
-    result = run("gh", "run", "list", "--repo", "Kinosail/kinosail", "--workflow", "release.yml", "--branch", tag, "--json", "status")
-    return result.returncode == 0 and any(item.get("status") != "completed" for item in json.loads(result.stdout or "[]"))
+    return any(item.get("status") != "completed" for item in release_runs(tag) or [])
+
+
+def release_ended_unpublished(tag):
+    runs = release_runs(tag)
+    return bool(runs) and all(item.get("status") == "completed" and item.get("conclusion") != "success" for item in runs)
 
 
 def verified_channel(directory):
@@ -102,7 +120,8 @@ def main():
     elif len(sys.argv) == 3 and sys.argv[1] == "audit":
         tags = run("git", "tag", "--list", "player-*", "subtitles-*").stdout.split()
         published = published_tags()
-        problems = audit_tags([tag for tag in tags if tag != "player-channel"], git_tag_on_main, published.__contains__, release_running)
+        superseded = lambda tag: newer_release(tag, published) and release_ended_unpublished(tag)
+        problems = audit_tags([tag for tag in tags if tag != "player-channel"], git_tag_on_main, published.__contains__, release_running, superseded)
         channel = verified_channel(pathlib.Path(sys.argv[2]))
         problems += ["The update channel is missing or its signature does not verify"] if channel is None else channel_problems(channel, datetime.datetime.now(datetime.timezone.utc))
     else:
