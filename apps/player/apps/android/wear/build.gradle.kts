@@ -33,7 +33,7 @@ android {
 
 dependencies {
     implementation(project(":watchcore"))
-    implementation(platform("androidx.compose:compose-bom:2026.09.00"))
+    implementation(platform("androidx.compose:compose-bom:2026.11.01"))
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.fragment:fragment:1.9.1")
     implementation("androidx.wear.compose:compose-material3:1.7.1")
@@ -44,8 +44,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.18")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2026.09.00"))
+    testImplementation("org.robolectric:robolectric:4.18.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2026.11.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4-accessibility")
     androidTestImplementation("androidx.test:runner:1.7.0")
