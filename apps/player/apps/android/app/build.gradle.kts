@@ -5,7 +5,11 @@ plugins {
 
 android {
     namespace = "com.kinosail.player"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         applicationId = "com.kinosail.player"
